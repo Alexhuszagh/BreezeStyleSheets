@@ -1,3 +1,4 @@
 <svg width="16" height="64">
-  <path fill="#5f5f5f" d="M2.08,1.042H5.208v62.5H2.08V1.042Zm7.292,0H12.5v62.5H9.375V1.042Z"/>
+  <rect fill="#5f5f5f" x="2" y="1" width="1" height="62.5"/>
+  <rect fill="#5f5f5f" x="9" y="1" width="1" height="62.5"/>
 </svg>
