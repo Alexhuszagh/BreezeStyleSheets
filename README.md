@@ -45,6 +45,13 @@ License
 
 MIT, see [license](/LICENSE.md).
 
+Example
+=======
+
+**BreezeDark**
+
+![BreezeDark](/assets/BreezeDark.gif)
+
 Acknowledgements
 ================
 
