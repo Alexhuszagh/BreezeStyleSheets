@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="63" height="7" viewBox="0 0 63 7">
+  <rect id="Dark_1" data-name="Dark 1" fill="#292c31" x="25" y="1" width="1" height="5"/>
+  <rect id="Dark_2" data-name="Dark 2" fill="#292c31" x="38" y="1" width="1" height="5"/>
+  <rect id="Light_1" data-name="Light 1" fill="#7f8795" x="23" y="1" width="2" height="5"/>
+  <rect id="Light_2" data-name="Light 2" fill="#7f8795" x="30" y="1" width="2" height="5"/>
+  <rect id="Light_3" data-name="Light 3" fill="#7f8795" x="36" y="1" width="2" height="5"/>
+</svg>

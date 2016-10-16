@@ -1,0 +1,5 @@
+<svg width="1000" height="1000">
+  <path d="M100,100 h800 v800 h-800 v-800 z" fill="none" stroke="#c8c9ca" stroke-width="50" />
+  <path d="M300,300 h400 v400 h-400 v-400 z" fill="none" stroke="#c8c9ca" stroke-width="100" />
+  <path d="M750,250 L 250,750 v-500 h500 z" fill="#c8c9ca"  />
+</svg>
