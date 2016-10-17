@@ -1095,11 +1095,11 @@ QDockWidget::close-button:pressed {
     image: url(:/dark/close-pressed.svg);
 }
 
-QTreeView, QListView
+QTreeView, 
+QListView
 {
     border: 1px solid #76797c;
     background-color: #232629;
-    padding: 3px;
 }
 
 
@@ -1167,10 +1167,21 @@ QTreeView::branch:open:has-children:has-siblings:hover  {
     }
 */
 
-QTableView::item:!selected:hover, QListView::item:!selected:hover, QTreeView::item:!selected:hover  {
+QTableView::item,
+QListView::item,
+QTreeView::item
+{
+    padding: 3px;
+}
+
+QTableView::item:!selected:hover, 
+QListView::item:!selected:hover,
+QTreeView::item:!selected:hover
+{
     background-color: rgba(61, 173, 232, 0.2);
     outline: 0;
-    color: #eff0f1
+    color: #eff0f1;
+    padding: 3px;
 }
 
 QSlider::groove:horizontal {
