@@ -62,6 +62,6 @@ BreezeStyleSheets is a fork of [QDarkStyleSheet](https://github.com/ColinDuquesn
 Contact
 =======
 
-Email: ahuszagh@gmail.com
+Email: ahuszagh@gmail.com  
 Twitter: SkepticalKPop
 
