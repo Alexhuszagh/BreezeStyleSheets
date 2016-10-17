@@ -10,8 +10,9 @@ Copy `breeze.qrc`, `dark.qss`, `light.qss` and the `dark` and `light` folders in
 
 For example:
 
-project.pro
-```
+```qmake
+TARGET = app
+SOURCES = main.cpp
 RESOURCES = breeze.qrc
 ```
 
