@@ -1099,6 +1099,7 @@ QTreeView, QListView
 {
     border: 1px solid #76797c;
     background-color: #232629;
+    padding: 3px;
 }
 
 
