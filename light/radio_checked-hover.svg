@@ -1,0 +1,4 @@
+<svg width="1000" height="1000">
+  <circle cx="500" cy="500" r="400" stroke-width="50" fill="none" stroke="#51c2fc"/>
+  <circle cx="500" cy="500" r="250" fill="#51c2fc"/>
+</svg>
