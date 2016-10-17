@@ -48,13 +48,11 @@ MIT, see [license](/LICENSE.md).
 Example
 =======
 
-**Breeze**
+**Breeze/BreezeDark**
 
-TOOD
+Example user interface using the Breeze and BreezeDark stylesheets side-by-side.
 
-**BreezeDark**
-
-![BreezeDark](/assets/BreezeDark.gif)
+![BreezeDark](/assets/Breeze.gif)
 
 Acknowledgements
 ================
