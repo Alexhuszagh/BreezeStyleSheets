@@ -1,5 +1,7 @@
 <svg x="0px" y="0px" width="18px" height="18px" viewBox="0 0 18 18" enable-background="new 0 0 18 18" xml:space="preserve">
-  <path d="M1.8,1.8 h14.4 v14.4 h-14.4 v-14.4 z" fill="none" stroke-linecap="round" stroke="#58d3ff" stroke-width="1px"/>
-  <path d="M5.4,5.4 h7.2 v7.2 h-7.2 v-7.2 z" fill="none" stroke-linecap="round"  stroke="#58d3ff" stroke-width="2px"/>
-  <path d="M13.5,4.5 L 4.5,13.5 v-9 h9 z" fill="#58d3ff" fill-rule="evenodd"/>
+  <path d="M2,2 h14 v14 h-0.9 v-13.1 h-13.1 z" fill="#58d3ff"/>
+  <path d="M16,16 h-14 v-14 h0.9 v13.1 h13.1 z" fill="#58d3ff"/>
+  <path d="M5,5 h8 v8 h-0.9 v-7.1 h-7.1 z" fill="#58d3ff" fill-rule="evenodd"/>
+  <path d="M13,13 h-8 v-8 h0.9 v7.1 h7.1 z" fill="#58d3ff" fill-rule="evenodd"/>
+  <path d="M13,5 L 5,13 v-8 h8 z" fill="#58d3ff" fill-rule="evenodd"/>
 </svg>

@@ -91,7 +91,7 @@ QGroupBox::indicator
 QCheckBox::indicator:unchecked,
 QCheckBox::indicator:unchecked:focus
 {
-    image: url(:/dark/checkbox_unchecked_disabled.svg);
+    border-image: url(:/dark/checkbox_unchecked_disabled.svg);
 }
 
 QCheckBox::indicator:unchecked:hover,
@@ -101,12 +101,12 @@ QGroupBox::indicator:unchecked:focus,
 QGroupBox::indicator:unchecked:pressed
 {
     border: none;
-    image: url(:/dark/checkbox_unchecked.svg);
+    border-image: url(:/dark/checkbox_unchecked.svg);
 }
 
 QCheckBox::indicator:checked
 {
-    image: url(:/dark/checkbox_checked.svg);
+    border-image: url(:/dark/checkbox_checked.svg);
 }
 
 QCheckBox::indicator:checked:hover,
@@ -117,36 +117,36 @@ QGroupBox::indicator:checked:focus,
 QGroupBox::indicator:checked:pressed
 {
     border: none;
-    image: url(:/dark/checkbox_checked.svg);
+    border-image: url(:/dark/checkbox_checked.svg);
 }
 
 QCheckBox::indicator:indeterminate
 {
-    image: url(:/dark/checkbox_indeterminate.svg);
+    border-image: url(:/dark/checkbox_indeterminate.svg);
 }
 
 QCheckBox::indicator:indeterminate:focus,
 QCheckBox::indicator:indeterminate:hover,
 QCheckBox::indicator:indeterminate:pressed
 {
-    image: url(:/dark/checkbox_indeterminate.svg);
+    border-image: url(:/dark/checkbox_indeterminate.svg);
 }
 
 QCheckBox::indicator:indeterminate:disabled
 {
-    image: url(:/dark/checkbox_indeterminate_disabled.svg);
+    border-image: url(:/dark/checkbox_indeterminate_disabled.svg);
 }
 
 QCheckBox::indicator:checked:disabled,
 QGroupBox::indicator:checked:disabled
 {
-    image: url(:/dark/checkbox_checked_disabled.svg);
+    border-image: url(:/dark/checkbox_checked_disabled.svg);
 }
 
 QCheckBox::indicator:unchecked:disabled,
 QGroupBox::indicator:unchecked:disabled
 {
-    image: url(:/dark/checkbox_unchecked_disabled.svg);
+    border-image: url(:/dark/checkbox_unchecked_disabled.svg);
 }
 
 QRadioButton
@@ -338,7 +338,10 @@ QWidget:focus, QMenuBar:focus
     border: 1px solid #3daee9;
 }
 
-QTabWidget:focus, QCheckBox:focus, QRadioButton:focus, QSlider:focus
+QTabWidget:focus,
+QCheckBox:focus,
+QRadioButton:focus,
+QSlider:focus
 {
     border: none;
 }

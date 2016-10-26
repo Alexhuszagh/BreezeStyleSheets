@@ -95,7 +95,7 @@ QGroupBox::indicator
 QCheckBox::indicator:unchecked,
 QCheckBox::indicator:unchecked:focus
 {
-    image: url(:/light/checkbox_unchecked_disabled.svg);
+    border-image: url(:/light/checkbox_unchecked_disabled.svg);
 }
 
 QCheckBox::indicator:unchecked:hover,
@@ -105,12 +105,12 @@ QGroupBox::indicator:unchecked:focus,
 QGroupBox::indicator:unchecked:pressed
 {
     border: none;
-    image: url(:/light/checkbox_unchecked-hover.svg);
+    border-image: url(:/light/checkbox_unchecked-hover.svg);
 }
 
 QCheckBox::indicator:checked
 {
-    image: url(:/light/checkbox_checked.svg);
+    border-image: url(:/light/checkbox_checked.svg);
 }
 
 QCheckBox::indicator:checked:focus,
@@ -119,23 +119,23 @@ QGroupBox::indicator:checked:focus,
 QGroupBox::indicator:checked:pressed
 {
     border: none;
-    image: url(:/light/checkbox_checked.svg);
+    border-image: url(:/light/checkbox_checked.svg);
 }
 
 QCheckBox::indicator:checked:hover,
 QGroupBox::indicator:checked:hover
 {
-    image: url(:/light/checkbox_checked-hover.svg);
+    border-image: url(:/light/checkbox_checked-hover.svg);
 }
 
 QCheckBox::indicator:indeterminate
 {
-    image: url(:/light/checkbox_indeterminate.svg);
+    border-image: url(:/light/checkbox_indeterminate.svg);
 }
 
 QCheckBox::indicator:indeterminate:hover
 {
-    image: url(:/light/checkbox_indeterminate-hover.svg);
+    border-image: url(:/light/checkbox_indeterminate-hover.svg);
 }
 
 QCheckBox::indicator:indeterminate:focus,
@@ -145,19 +145,19 @@ QCheckBox::indicator:indeterminate:pressed
 
 QCheckBox::indicator:indeterminate:disabled
 {
-    image: url(:/light/checkbox_indeterminate_disabled.svg);
+    border-image: url(:/light/checkbox_indeterminate_disabled.svg);
 }
 
 QCheckBox::indicator:checked:disabled,
 QGroupBox::indicator:checked:disabled
 {
-    image: url(:/light/checkbox_checked_disabled.svg);
+    border-image: url(:/light/checkbox_checked_disabled.svg);
 }
 
 QCheckBox::indicator:unchecked:disabled,
 QGroupBox::indicator:unchecked:disabled
 {
-    image: url(:/light/checkbox_unchecked_disabled.svg);
+    border-image: url(:/light/checkbox_unchecked_disabled.svg);
 }
 
 QRadioButton
