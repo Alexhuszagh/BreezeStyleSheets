@@ -172,16 +172,11 @@ QRadioButton:disabled
 {
     color: #BAB9B8;
 }
-QRadioButton::indicator
-{
-    width: 20px;
-    height: 20px;
-}
 
 QRadioButton::indicator:unchecked,
 QRadioButton::indicator:unchecked:focus
 {
-    image: url(:/light/radio_unchecked_disabled.svg);
+    border-image: url(:/light/radio_unchecked_disabled.svg);
 }
 
 QRadioButton::indicator:unchecked:hover,
@@ -189,14 +184,14 @@ QRadioButton::indicator:unchecked:pressed
 {
     border: none;
     outline: none;
-    image: url(:/light/radio_unchecked-hover.svg);
+    border-image: url(:/light/radio_unchecked-hover.svg);
 }
 
 QRadioButton::indicator:checked
 {
     border: none;
     outline: none;
-    image: url(:/light/radio_checked.svg);
+    border-image: url(:/light/radio_checked.svg);
 }
 
 QRadioButton::indicator:checked:focus,
@@ -204,23 +199,23 @@ QRadioButton::indicator:checked:pressed
 {
     border: none;
     outline: none;
-    image: url(:/light/radio_checked.svg);
+    border-image: url(:/light/radio_checked.svg);
 }
 
 QRadioButton::indicator:checked:hover
 {
-    image: url(:/light/radio_checked-hover.svg);
+    border-image: url(:/light/radio_checked-hover.svg);
 }
 
 QRadioButton::indicator:checked:disabled
 {
     outline: none;
-    image: url(:/light/radio_checked_disabled.svg);
+    border-image: url(:/light/radio_checked_disabled.svg);
 }
 
 QRadioButton::indicator:unchecked:disabled
 {
-    image: url(:/light/radio_unchecked_disabled.svg);
+    border-image: url(:/light/radio_unchecked_disabled.svg);
 }
 
 QMenuBar
