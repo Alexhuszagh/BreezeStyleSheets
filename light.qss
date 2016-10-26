@@ -39,7 +39,7 @@ QToolTip
 {
     background-color: black;
     color: white;
-    padding: 5px;
+    padding: 0.5ex;
 }
 
 QWidget
@@ -68,10 +68,10 @@ QWidget:item:selected
 
 QCheckBox
 {
-    spacing: 5px;
+    spacing: 0.5ex;
     outline: none;
     color: #31363B;
-    margin-bottom: 2px;
+    margin-bottom: 0.2ex;
     opacity: 200;
 }
 
@@ -80,15 +80,9 @@ QCheckBox:disabled
     color: #BAB9B8;
 }
 
-
-QCheckBox::indicator,
 QGroupBox::indicator
 {
-    width: 18px;
-    height: 18px;
-}
-QGroupBox::indicator
-{
+    margin-left: 0.2ex;
     margin-left: 2px;
 }
 
@@ -162,10 +156,10 @@ QGroupBox::indicator:unchecked:disabled
 
 QRadioButton
 {
-    spacing: 5px;
+    spacing: 0.5ex;
     outline: none;
     color: #31363B;
-    margin-bottom: 2px;
+    margin-bottom: 0.2ex;
 }
 
 QRadioButton:disabled
