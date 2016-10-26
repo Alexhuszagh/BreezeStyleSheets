@@ -53,7 +53,7 @@ def main():
     logging.basicConfig(level=logging.DEBUG)
     # create the application and the main window
     app = QtWidgets.QApplication(sys.argv)
-    app.setStyle(QtWidgets.QStyleFactory.create("fusion"))
+    #app.setStyle(QtWidgets.QStyleFactory.create("fusion"))
     window = QtWidgets.QMainWindow()
 
     # setup ui

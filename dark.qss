@@ -219,35 +219,35 @@ QMenuBar::item
 QMenuBar::item:selected
 {
     background: transparent;
-    border: 1px solid #76797c;
+    border: 0.1ex solid #76797c;
 }
 
 QMenuBar::item:pressed
 {
-    border: 1px solid #76797c;
+    border: 0.1ex solid #76797c;
     background-color: #3daee9;
     color: #eff0f1;
-    margin-bottom:-1px;
-    padding-bottom:1px;
+    margin-bottom: -0.1ex;
+    padding-bottom: 0.1ex;
 }
 
 QMenu
 {
-    border: 1px solid #76797c;
+    border: 0.1ex solid #76797c;
     color: #eff0f1;
     margin: 2px;
 }
 
 QMenu::icon
 {
-    margin: 5px;
+    margin: 0.5ex;
 }
 
 QMenu::item
 {
-    padding: 5px 30px 5px 30px;
-    margin-left: 5px;
-    border: 1px solid transparent; /* reserve space for selection border */
+    padding: 0.5ex 3ex 0.5ex 3ex;
+    margin-left: 0.5ex;
+    border: 0.1ex solid transparent; /* reserve space for selection border */
 }
 
 QMenu::item:selected
@@ -257,65 +257,61 @@ QMenu::item:selected
 
 QMenu::separator
 {
-    height: 2px;
+    height: 0.2ex;
     background: lightblue;
-    margin-left: 10px;
-    margin-right: 5px;
-}
-
-QMenu::indicator
-{
-    width: 18px;
-    height: 18px;
+    margin-left: 1ex;
+    margin-right: 0.5ex;
 }
 
 /* non-exclusive indicator = check box style indicator
    (see QActionGroup::setExclusive) */
 QMenu::indicator:non-exclusive:unchecked
 {
-    image: url(:/dark/checkbox_unchecked_disabled.svg);
+    border-image: url(:/dark/checkbox_unchecked_disabled.svg);
 }
 
 QMenu::indicator:non-exclusive:unchecked:selected
 {
-    image: url(:/dark/checkbox_unchecked_disabled.svg);
+    border-image: url(:/dark/checkbox_unchecked_disabled.svg);
 }
 
 QMenu::indicator:non-exclusive:checked
 {
-    image: url(:/dark/checkbox_checked.svg);
+    border-image: url(:/dark/checkbox_checked.svg);
 }
 
 QMenu::indicator:non-exclusive:checked:selected
 {
-    image: url(:/dark/checkbox_checked.svg);
+    border-image: url(:/dark/checkbox_checked.svg);
 }
 
 /* exclusive indicator = radio button style indicator (see QActionGroup::setExclusive) */
 QMenu::indicator:exclusive:unchecked
 {
-    image: url(:/dark/radio_unchecked_disabled.svg);
+    border-image: url(:/dark/radio_unchecked_disabled.svg);
 }
 
 QMenu::indicator:exclusive:unchecked:selected
 {
-    image: url(:/dark/radio_unchecked_disabled.svg);
+    border-image: url(:/dark/radio_unchecked_disabled.svg);
 }
 
 QMenu::indicator:exclusive:checked
 {
-    image: url(:/dark/radio_checked.svg);
+    border-image: url(:/dark/radio_checked.svg);
 }
 
 QMenu::indicator:exclusive:checked:selected
 {
-    image: url(:/dark/radio_checked.svg);
+    border-image: url(:/dark/radio_checked.svg);
 }
 
 QMenu::right-arrow
 {
-    margin: 5px;
-    image: url(:/dark/right_arrow.svg)
+    margin: 0.5ex;
+    border-image: url(:/light/right_arrow.svg);
+    width: 0.6ex;
+    height: 0.9ex;
 }
 
 
@@ -329,13 +325,14 @@ QAbstractItemView
 {
     alternate-background-color: #31363b;
     color: #eff0f1;
-    border: 1px solid 3A3939;
-    border-radius: 2px;
+    border: 0.1ex solid 3A3939;
+    border-radius: 0.2ex;
 }
 
-QWidget:focus, QMenuBar:focus
+QWidget:focus,
+QMenuBar:focus
 {
-    border: 1px solid #3daee9;
+    border: 0.1ex solid #3daee9;
 }
 
 QTabWidget:focus,
@@ -349,50 +346,51 @@ QSlider:focus
 QLineEdit
 {
     background-color: #232629;
-    padding: 5px;
+    padding: 0.5ex;
     border-style: solid;
     border: 1px solid #76797c;
-    border-radius: 2px;
+    border-radius: 0.2ex;
     color: #eff0f1;
 }
 
 QGroupBox
 {
-    border:1px solid #76797c;
-    border-radius: 2px;
-    margin-top: 20px;
+    border: 0.1ex solid #76797c;
+    border-radius: 0.2ex;
+    padding-top: 1ex;
+    margin-top: 1ex;
 }
 
 QGroupBox::title
 {
     subcontrol-origin: margin;
     subcontrol-position: top center;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 10px;
+    padding-left: 0.1ex;
+    padding-right: 0.1ex;
+    margin-top: -0.7ex;
 }
 
 QAbstractScrollArea
 {
-    border-radius: 2px;
+    border-radius: 0.2ex;
     border: 1px solid #76797c;
     background-color: transparent;
 }
 
 QScrollBar:horizontal
 {
-    height: 15px;
-    margin: 3px 15px 3px 15px;
-    border: 1px transparent #2A2929;
-    border-radius: 4px;
+    height: 1.5ex;
+    margin: 0.3ex 1.5ex 0.3ex 1.5ex;
+    border: 0.1ex transparent #2A2929;
+    border-radius: 0.4ex;
     background-color: #2A2929;
 }
 
 QScrollBar::handle:horizontal
 {
     background-color: #605F5F;
-    min-width: 5px;
-    border-radius: 4px;
+    min-width: 0.5ex;
+    border-radius: 0.4ex;
 }
 
 QScrollBar::add-line:horizontal
