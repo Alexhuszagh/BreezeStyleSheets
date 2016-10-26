@@ -3,34 +3,34 @@
  *
  *  :author: Colin Duquesnoy
  *  :editor: Alex Huszagh
- *  :license: MIT, see LICENSE.md 
+ *  :license: MIT, see LICENSE.md
  *
  *  This is originally a fork of QDarkStyleSheet, and is based on Breeze/
  *  BreezeDark color scheme, but is in no way affiliated with KDE.
- * 
+ *
  * ---------------------------------------------------------------------
  *  The MIT License (MIT)
  *
  * Copyright (c) <2013-2014> <Colin Duquesnoy>
  * Copyright (c) <2015-2016> <Alex Huszagh>
  *
- * Permission is hereby granted, free of charge, to any person obtaining 
- * a copy of this software and associated documentation files (the 
- * "Software"), to deal in the Software without restriction, including 
- * without limitation the rights to use, copy, modify, merge, publish, 
- * distribute, sublicense, and/or sell copies of the Software, and to 
- * permit persons to whom the Software is furnished to do so, subject to 
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF 
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY 
- * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * ---------------------------------------------------------------------
  */
@@ -174,8 +174,8 @@ QRadioButton:disabled
 }
 QRadioButton::indicator
 {
-    width: 21px;
-    height: 21px;
+    width: 20px;
+    height: 20px;
 }
 
 QRadioButton::indicator:unchecked,
@@ -830,7 +830,7 @@ QTabBar::tab:top {
 }
 
 QTabBar::tab:top:last,
-QTabBar::tab:top:only-one  
+QTabBar::tab:top:only-one
 {
     color: #31363B;
     border: 1px transparent black;
@@ -860,7 +860,7 @@ QTabBar::tab:top:first:!selected
     background-color: #D9D8D7;
     border: 1px transparent black;
     border-top-left-radius: 2px;
-    border-top-right-radius: 2px;    
+    border-top-right-radius: 2px;
 }
 
 QTabBar::tab:top:!selected:hover {
@@ -889,7 +889,7 @@ QTabBar::tab:bottom
 }
 
 QTabBar::tab:bottom:last,
-QTabBar::tab:bottom:only-one  
+QTabBar::tab:bottom:only-one
 {
     color: #31363B;
     border: 1px transparent black;
@@ -996,7 +996,7 @@ QTabBar::tab:right {
 }
 
 QTabBar::tab:right:last,
-QTabBar::tab:right:only-one 
+QTabBar::tab:right:only-one
 {
     color: #31363B;
     border: 1px transparent black;
@@ -1153,7 +1153,7 @@ QTreeView::branch:open:has-children:has-siblings:hover  {
     }
 */
 
-QTableView::item, 
+QTableView::item,
 QListView::item,
 QTreeView::item
 {
@@ -1161,9 +1161,9 @@ QTreeView::item
 }
 
 
-QTableView::item:!selected:hover, 
-QListView::item:!selected:hover, 
-QTreeView::item:!selected:hover  
+QTableView::item:!selected:hover,
+QListView::item:!selected:hover,
+QTreeView::item:!selected:hover
 {
     background-color: rgba(61, 173, 232, 0.1);
     outline: 0;
@@ -1217,15 +1217,15 @@ QSlider::handle:vertical:hover
     border: 1px solid #51c2fc;
 }
 
-QSlider::sub-page:horizontal, 
-QSlider::add-page:vertical 
+QSlider::sub-page:horizontal,
+QSlider::add-page:vertical
 {
     background: #33A4DF;
     border-radius: 3px;
 }
 
-QSlider::add-page:horizontal, 
-QSlider::sub-page:vertical 
+QSlider::add-page:horizontal,
+QSlider::sub-page:vertical
 {
     background: #BABEC2;
     border-radius: 3px;
@@ -1319,22 +1319,22 @@ QTableView::item:selected:hover
     color: #31363B;
 }
 
-QListView::item:pressed, 
-QTreeView::item:pressed  
+QListView::item:pressed,
+QTreeView::item:pressed
 {
     background: #3daee9;
     color: #31363B;
 }
 
-QTreeView::item:selected:active, 
-QListView::item:selected:active  
+QTreeView::item:selected:active,
+QListView::item:selected:active
 {
     background: #3daee9;
     color: #31363B;
 }
 
-QListView::item:selected:hover, 
-QTreeView::item:selected:hover  
+QListView::item:selected:hover,
+QTreeView::item:selected:hover
 {
     background-color: #51c2fc;
     color: #31363B;
@@ -1463,16 +1463,16 @@ QAbstractSpinBox {
 }
 
 QSpinBox,
-QDoubleSpinBox 
+QDoubleSpinBox
 {
     padding-right: 15px;
 }
 
 QSpinBox::up-button,
-QDoubleSpinBox::up-button 
+QDoubleSpinBox::up-button
 {
     subcontrol-origin: content;
-    subcontrol-position: right top; 
+    subcontrol-position: right top;
 
     width: 16px;
     border-width: 1px;
@@ -1496,11 +1496,11 @@ QDoubleSpinBox::up-arrow:pressed
     height: 10px;
 }
 
-QSpinBox::up-arrow:disabled, 
-QSpinBox::up-arrow:off, 
-QDoubleSpinBox::up-arrow:disabled, 
+QSpinBox::up-arrow:disabled,
+QSpinBox::up-arrow:off,
+QDoubleSpinBox::up-arrow:disabled,
 QDoubleSpinBox::up-arrow:off
-{ 
+{
    image: url(:/light/up_arrow_disabled.svg);
 }
 
@@ -1508,7 +1508,7 @@ QSpinBox::down-button,
 QDoubleSpinBox::down-button
 {
     subcontrol-origin: content;
-    subcontrol-position: right bottom; 
+    subcontrol-position: right bottom;
 
     width: 16px;
     border-width: 1px;
@@ -1532,11 +1532,11 @@ QDoubleSpinBox::down-arrow:pressed
     height: 10px;
 }
 
-QSpinBox::down-arrow:disabled, 
-QSpinBox::down-arrow:off, 
-QDoubleSpinBox::down-arrow:disabled, 
+QSpinBox::down-arrow:disabled,
+QSpinBox::down-arrow:off,
+QDoubleSpinBox::down-arrow:disabled,
 QDoubleSpinBox::down-arrow:off
-{ 
+{
    image: url(:/light/down_arrow_disabled.svg);
 }
 

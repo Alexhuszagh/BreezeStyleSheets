@@ -1,4 +1,4 @@
-<svg width="1000" height="1000">
+<svg x="0pt" y="0pt" width="1000pt" height="1000pt" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000" xml:space="preserve">
   <path d="M100,100 h800 v800 h-800 v-800 z" fill="none" stroke="#3daee9" stroke-width="50" />
   <path d="M300,300 h400 v400 h-400 v-400 z" fill="none" stroke="#3daee9" stroke-width="100" />
   <path d="M750,250 L 250,750 v-500 h500 z" fill="#3daee9"  />
