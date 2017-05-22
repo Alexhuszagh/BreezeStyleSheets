@@ -64,5 +64,5 @@ Contact
 =======
 
 Email: ahuszagh@gmail.com  
-Twitter: SkepticalKPop
+Twitter: KardOnIce
 
