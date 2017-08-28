@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
     QFile file(":/dark.qss");
     file.open(QFile::ReadOnly | QFile::Text);
     QTextStream stream(&file);
-    app->setStyleSheet(stream.readAll());
+    app.setStyleSheet(stream.readAll());
 
     // code goes here
 
