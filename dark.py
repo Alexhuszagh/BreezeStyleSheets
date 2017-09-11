@@ -42,7 +42,6 @@ from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import QFile, QTextStream
 # make the example runnable without the need to install
 
-import breeze
 import example
 
 
