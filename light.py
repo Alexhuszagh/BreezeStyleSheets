@@ -43,7 +43,7 @@ from PyQt5.QtCore import QFile, QTextStream
 # make the example runnable without the need to install
 
 import example
-
+import breeze_resources
 
 def main():
     """
