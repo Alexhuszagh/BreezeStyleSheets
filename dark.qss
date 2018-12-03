@@ -1205,13 +1205,15 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item
 QTreeView::branch:has-children:!has-siblings:closed,
 QTreeView::branch:closed:has-children:has-siblings
 {
-    border-image: url(:/dark/branch-closed.svg);
+    border-image: none;
+    image: url(:/dark/branch_closed.svg);
 }
 
 QTreeView::branch:open:has-children:!has-siblings,
 QTreeView::branch:open:has-children:has-siblings
 {
-    border-image: url(:/dark/branch-open.svg);
+    border-image: none;
+    image: url(:/dark/branch_open.svg);
 }
 
 QTableView::item,
