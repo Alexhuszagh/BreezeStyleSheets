@@ -1,4 +1,4 @@
 <svg width="81" height="58">
-  <rect id="VLine" fill="#bcbfc2" x="38" width="2" height="24"/>
-  <rect id="HLine" fill="#bcbfc2" x="38" y="24" height="2" width="57"/>
+  <rect id="VLine" fill="#bcbfc2" x="36" width="2" height="28"/>
+  <rect id="HLine" fill="#bcbfc2" x="36" y="28" height="1" width="57"/>
 </svg>

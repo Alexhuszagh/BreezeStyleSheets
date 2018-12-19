@@ -5,6 +5,8 @@
     <file>light/hsepartoolbar.svg</file>
     <file>light/vsepartoolbars.svg</file>
     <file>light/stylesheet-branch-end.svg</file>
+    <file>light/stylesheet-branch-end-closed.svg</file>
+    <file>light/stylesheet-branch-end-open.svg</file>
     <file>light/stylesheet-vline.svg</file>
     <file>light/stylesheet-branch-more.svg</file>
     <file>light/branch_closed.svg</file>
@@ -46,6 +48,8 @@
     <file>dark/hsepartoolbar.svg</file>
     <file>dark/vsepartoolbars.svg</file>
     <file>dark/stylesheet-branch-end.svg</file>
+    <file>dark/stylesheet-branch-end-closed.svg</file>
+    <file>dark/stylesheet-branch-end-open.svg</file>
     <file>dark/stylesheet-vline.svg</file>
     <file>dark/stylesheet-branch-more.svg</file>
     <file>dark/branch_closed.svg</file>

@@ -1205,16 +1205,46 @@ QTreeView::branch:!has-children:!has-siblings:adjoins-item
 QTreeView::branch:has-children:!has-siblings:closed,
 QTreeView::branch:closed:has-children:has-siblings
 {
-    border-image: none;
+    border-image: url(:/dark/stylesheet-branch-end-closed.svg) 0;
     image: url(:/dark/branch_closed.svg);
 }
 
 QTreeView::branch:open:has-children:!has-siblings,
 QTreeView::branch:open:has-children:has-siblings
 {
-    border-image: none;
+    border-image: url(:/dark/stylesheet-branch-end-open.svg) 0;
     image: url(:/dark/branch_open.svg);
 }
+
+/*
+QTreeView::branch:has-siblings:!adjoins-item {
+        background: cyan;
+}
+
+QTreeView::branch:has-siblings:adjoins-item {
+        background: red;
+}
+
+QTreeView::branch:!has-children:!has-siblings:adjoins-item {
+        background: blue;
+}
+
+QTreeView::branch:closed:has-children:has-siblings {
+        background: pink;
+}
+
+QTreeView::branch:has-children:!has-siblings:closed {
+        background: gray;
+}
+
+QTreeView::branch:open:has-children:has-siblings {
+        background: magenta;
+}
+
+QTreeView::branch:open:has-children:!has-siblings {
+        background: green;
+}
+*/
 
 QTableView::item,
 QListView::item,
@@ -1232,6 +1262,7 @@ QTreeView::item:!selected:hover
     color: #eff0f1;
     padding: 0.3ex;
 }
+
 
 QSlider::groove:horizontal
 {
