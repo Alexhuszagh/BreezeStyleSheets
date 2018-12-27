@@ -57,13 +57,13 @@ import breeze_resources
 def main():
     app = QtWidgets.QApplication(sys.argv)
 
-    // set stylesheet
+    # set stylesheet
     file = QFile(":/dark.qss")
     file.open(QFile.ReadOnly | QFile.Text)
     stream = QTextStream(file)
     app.setStyleSheet(stream.readAll())
 
-    // code goes here
+    # code goes here
 
     app.exec_()
 }
