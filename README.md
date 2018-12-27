@@ -58,7 +58,7 @@ def main():
     app = QtWidgets.QApplication(sys.argv)
 
     // set stylesheet
-    QFile file(":/dark.qss");
+    file = QFile(":/dark.qss")
     file.open(QFile.ReadOnly | QFile.Text)
     stream = QTextStream(file)
     app.setStyleSheet(stream.readAll())
