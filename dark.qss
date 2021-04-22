@@ -309,7 +309,7 @@ QMenu::indicator:exclusive:checked:selected
 QMenu::right-arrow
 {
     margin: 0.5ex;
-    border-image: url(:/light/right_arrow.svg);
+    border-image: url(:/dark/right_arrow.svg);
     width: 0.6ex;
     height: 0.9ex;
 }
