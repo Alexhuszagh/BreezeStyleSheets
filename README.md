@@ -5,6 +5,12 @@ Breeze and BreezeDark-like stylesheets for Qt Applications.
 
 This stylesheet aims to be similar across all platforms, and provide a nice UI for different font sizes. This is currently under work for scaling to multiple different DPIs and font sizes.
 
+The current status of the migration is:
+
+- Change all `ex` widths to `em` ☐
+- Ensure individual tests for all widgets ☐
+- Port all the changes made to the dark stylesheet to light ☐
+
 C++ Installation
 ================
 
@@ -83,6 +89,11 @@ Example
 Example user interface using the Breeze and BreezeDark stylesheets side-by-side.
 
 ![BreezeDark](/assets/Breeze.gif)
+
+Development
+===========
+
+To configure the assets and the stylesheets, run `configure.py`. To compile the assets and stylesheets for Python, run `pyrcc5 breeze.qrc -o breeze_resources.py`.
 
 Acknowledgements
 ================

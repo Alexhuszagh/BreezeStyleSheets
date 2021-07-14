@@ -1,0 +1,5 @@
+<svg width="100" height="100" >
+  <g transform="scale(0.1)">
+    <path d="M250,500 L 500,750 L 750,500 L 500,250 z" fill="none" stroke="^0^" stroke-width="50" />
+  </g>
+</svg>

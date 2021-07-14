@@ -93,6 +93,34 @@ alignment = {
     'center': QtCore.Qt.AlignCenter,
 }
 
+def add_widgets(layout, children):
+    '''Add 1 or more widgets to the layout.'''
+
+    if isinstance(children, list):
+        for child in children:
+            layout.addWidget(child)
+    else:
+        layout.addWidget(children)
+
+def abstract_button(
+    cls,
+    parent=None,
+    exlusive=False,
+    checked=False,
+    enabled=True,
+):
+    '''Helper to simplify creating abstract buttons.'''
+
+    inst = cls(parent)
+    inst.setAutoExclusive(exlusive)
+    if isinstance(checked, bool):
+        inst.setChecked(checked)
+    else:
+        inst.setTristate(True)
+        inst.setCheckState(checked)
+    inst.setEnabled(enabled)
+    return inst
+
 def main(argv=None):
     'Application entry point'
 
@@ -169,14 +197,63 @@ def main(argv=None):
         child = QtWidgets.QComboBox(widget)
         child.addItem('Item 1')
         child.addItem('Item 2')
+    elif args.widget == 'tab_widget':
+        child = QtWidgets.QTabWidget(widget)
+        child.addTab(QtWidgets.QWidget(), 'Tab 1')
+        child.addTab(QtWidgets.QWidget(), 'Tab 2')
+        child.addTab(QtWidgets.QWidget(), 'Tab 3')
+    elif args.widget == 'closable_tab_widget':
+        child = QtWidgets.QTabWidget(widget)
+        child.setTabPosition(QtWidgets.QTabWidget.East)
+        child.setTabsClosable(True)
+        child.addTab(QtWidgets.QWidget(), 'Tab 1')
+        child.addTab(QtWidgets.QWidget(), 'Tab 2')
+        child.addTab(QtWidgets.QWidget(), 'Tab 3')
+    elif args.widget == 'dock':
+        child = [
+            QtWidgets.QDockWidget(window),
+            QtWidgets.QDockWidget(window),
+        ]
+    elif args.widget == 'radio':
+        child = []
+        child.append(abstract_button(QtWidgets.QRadioButton, widget))
+        child.append(abstract_button(QtWidgets.QRadioButton, widget, checked=True))
+        child.append(abstract_button(QtWidgets.QRadioButton, widget, enabled=False))
+        child.append(abstract_button(QtWidgets.QRadioButton, widget, checked=True, enabled=False))
+    elif args.widget == 'checkbox':
+        child = []
+        child.append(abstract_button(QtWidgets.QCheckBox, widget))
+        child.append(abstract_button(QtWidgets.QCheckBox, widget, checked=True))
+        child.append(abstract_button(QtWidgets.QCheckBox, widget, checked=QtCore.Qt.PartiallyChecked))
+        child.append(abstract_button(QtWidgets.QCheckBox, widget, enabled=False))
+        child.append(abstract_button(QtWidgets.QCheckBox, widget, checked=True, enabled=False))
+        child.append(abstract_button(QtWidgets.QCheckBox, widget, checked=QtCore.Qt.PartiallyChecked, enabled=False))
+    elif args.widget == 'menu_checkbox':
+        child = QtWidgets.QMenuBar(window)
+        child.setGeometry(QtCore.QRect(0, 0, args.width, int(1.5 * font.pointSize())))
+        menu = QtWidgets.QMenu('Main Menu', child)
+        action1 = QtWidgets.QAction('&Action 1', window)
+        action1.setCheckable(True)
+        menu.addAction(action1)
+        action2 = QtWidgets.QAction('&Action 2', window)
+        action2.setCheckable(True)
+        action2.setChecked(True)
+        menu.addAction(action2)
+        submenu = QtWidgets.QMenu('Sub Menu', menu)
+        action3 = QtWidgets.QAction('&Action 3', window)
+        action3.setCheckable(True)
+        submenu.addAction(action3)
+        menu.addAction(submenu.menuAction())
+        child.addAction(menu.menuAction())
+        window.setMenuBar(child)
 
     widget_layout = layout[layout_type](widget)
     if args.compress:
         widget_layout.addStretch(1)
-        widget_layout.addWidget(child)
+        add_widgets(widget_layout, child)
         widget_layout.addStretch(1)
     else:
-        widget_layout.addWidget(child)
+        add_widgets(widget_layout, child)
     if args.alignment is not None:
         widget_layout.setAlignment(alignment[args.alignment])
     window.setCentralWidget(widget)

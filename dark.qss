@@ -875,7 +875,7 @@ QTabBar::close-button
 
 QTabBar::close-button:hover
 {
-    border-image: url(:/dark/close-hover.svg);
+    border-image: url(:/dark/close_hover.svg);
     width: 1.2ex;
     height: 1.2ex;
     background: transparent;
@@ -883,7 +883,7 @@ QTabBar::close-button:hover
 
 QTabBar::close-button:pressed
 {
-    border-image: url(:/dark/close-pressed.svg);
+    border-image: url(:/dark/close_pressed.svg);
     width: 1.2ex;
     height: 1.2ex;
     background: transparent;
@@ -1159,7 +1159,7 @@ QDockWidget::float-button
 
 QDockWidget::float-button:hover
 {
-    border-image: url(:/dark/undock-hover.svg) ;
+    border-image: url(:/dark/undock_hover.svg) ;
 }
 
 QDockWidget::close-button
@@ -1169,12 +1169,12 @@ QDockWidget::close-button
 
 QDockWidget::close-button:hover
 {
-    border-image: url(:/dark/close-hover.svg) ;
+    border-image: url(:/dark/close_hover.svg) ;
 }
 
 QDockWidget::close-button:pressed
 {
-    border-image: url(:/dark/close-pressed.svg) ;
+    border-image: url(:/dark/close_pressed.svg) ;
 }
 
 QTreeView,
@@ -1595,7 +1595,7 @@ QSpinBox::up-arrow:pressed,
 QDoubleSpinBox::up-arrow:hover,
 QDoubleSpinBox::up-arrow:pressed
 {
-    border-image: url(:/dark/up_arrow-hover.svg);
+    border-image: url(:/dark/up_arrow_hover.svg);
     width: 0.9ex;
     height: 0.6ex;
 }
@@ -1631,7 +1631,7 @@ QSpinBox::down-arrow:pressed,
 QDoubleSpinBox::down-arrow:hover,
 QDoubleSpinBox::down-arrow:pressed
 {
-    border-image: url(:/dark/down_arrow-hover.svg);
+    border-image: url(:/dark/down_arrow_hover.svg);
     width: 0.9ex;
     height: 0.6ex;
 }
