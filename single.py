@@ -30,6 +30,7 @@
 '''
 
 import argparse
+import os
 import sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -77,6 +78,12 @@ parser.add_argument(
     help='''add stretch on both sides''',
     action='store_true',
 )
+parser.add_argument(
+    '--scale',
+    help='''scale factor for the UI''',
+    type=float,
+    default=1,
+)
 
 layout = {
     'vertical': QtWidgets.QVBoxLayout,
@@ -105,14 +112,17 @@ def add_widgets(layout, children):
 def abstract_button(
     cls,
     parent=None,
+    *args,
     exlusive=False,
     checked=False,
+    checkable=True,
     enabled=True,
 ):
     '''Helper to simplify creating abstract buttons.'''
 
-    inst = cls(parent)
+    inst = cls(*args, parent)
     inst.setAutoExclusive(exlusive)
+    inst.setCheckable(checkable)
     if isinstance(checked, bool):
         inst.setChecked(checked)
     else:
@@ -125,11 +135,8 @@ def main(argv=None):
     'Application entry point'
 
     args, unknown = parser.parse_known_args(argv)
+    os.environ['QT_SCALE_FACTOR'] = str(args.scale)
     app = QtWidgets.QApplication(argv[:1] + unknown)
-    window = QtWidgets.QMainWindow()
-    window.setWindowTitle('Sample single widget application.')
-    window.resize(args.width, args.height)
-    widget = QtWidgets.QWidget(window)
 
     # setup stylesheet
     if args.stylesheet != 'native':
@@ -145,6 +152,16 @@ def main(argv=None):
     if args.font_family:
         font.setFamily(args.font_family)
     app.setFont(font)
+
+    # Setup the main window.
+    window = QtWidgets.QMainWindow()
+    window.setWindowTitle('Sample single widget application.')
+    window.resize(args.width, args.height)
+    widget = QtWidgets.QWidget()
+    scroll = QtWidgets.QScrollArea()
+    scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+    scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+    scroll.setWidgetResizable(True)
 
     # Load the correct widget.
     layout_type = 'vertical'
@@ -163,13 +180,15 @@ def main(argv=None):
         layout_type = 'horizontal'
         child = QtWidgets.QSlider(widget)
         child.setOrientation(QtCore.Qt.Vertical)
-    #if args.widget == 'splitter_horizontal':
-    #    layout_type = 'vertical'
-    #    child = QtWidgets.QSplitter(widget)
-    #elif args.widget == 'splitter_vertical':
-    #    layout_type = 'horizontal'
-    #    child = QtWidgets.QSplitter(widget)
-    #    child.setOrientation(QtCore.Qt.Vertical)
+    if args.widget == 'splitter_horizontal':
+        layout_type = 'vertical'
+        child = QtWidgets.QSplitter(widget)
+        raise NotImplementedError
+    elif args.widget == 'splitter_vertical':
+        layout_type = 'horizontal'
+        child = QtWidgets.QSplitter(widget)
+        child.setOrientation(QtCore.Qt.Vertical)
+        raise NotImplementedError
     elif args.widget == 'menu':
         child = QtWidgets.QMenuBar(window)
         child.setGeometry(QtCore.QRect(0, 0, args.width, int(1.5 * font.pointSize())))
@@ -178,7 +197,22 @@ def main(argv=None):
         menu.addAction(QtWidgets.QAction('&Action 2', window))
         submenu = QtWidgets.QMenu('Sub Menu', menu)
         submenu.addAction(QtWidgets.QAction('&Action 3', window))
+        action1 = QtWidgets.QAction('&Action 4', window)
+        action1.setCheckable(True)
+        submenu.addAction(action1)
         menu.addAction(submenu.menuAction())
+        action2 = QtWidgets.QAction('&Action 5', window)
+        action2.setCheckable(True)
+        action2.setChecked(True)
+        menu.addSeparator()
+        menu.addAction(action2)
+        action3 = QtWidgets.QAction('&Action 6', window)
+        action3.setCheckable(True)
+        menu.addAction(action3)
+        icon = QtGui.QIcon(':/dark/close.svg')
+        menu.addAction(QtWidgets.QAction(icon, '&Action 7', window))
+        menu.addAction(QtWidgets.QAction(icon, '&Action 8', window))
+        submenu.addAction(QtWidgets.QAction(icon, '&Action 9', window))
         child.addAction(menu.menuAction())
         window.setMenuBar(child)
     elif args.widget == 'status_bar':
@@ -197,8 +231,27 @@ def main(argv=None):
         child = QtWidgets.QComboBox(widget)
         child.addItem('Item 1')
         child.addItem('Item 2')
-    elif args.widget == 'tab_widget':
+    elif args.widget == 'tab_widget_top':
         child = QtWidgets.QTabWidget(widget)
+        child.setTabPosition(QtWidgets.QTabWidget.North)
+        child.addTab(QtWidgets.QWidget(), 'Tab 1')
+        child.addTab(QtWidgets.QWidget(), 'Tab 2')
+        child.addTab(QtWidgets.QWidget(), 'Tab 3')
+    elif args.widget == 'tab_widget_left':
+        child = QtWidgets.QTabWidget(widget)
+        child.setTabPosition(QtWidgets.QTabWidget.West)
+        child.addTab(QtWidgets.QWidget(), 'Tab 1')
+        child.addTab(QtWidgets.QWidget(), 'Tab 2')
+        child.addTab(QtWidgets.QWidget(), 'Tab 3')
+    elif args.widget == 'tab_widget_right':
+        child = QtWidgets.QTabWidget(widget)
+        child.setTabPosition(QtWidgets.QTabWidget.East)
+        child.addTab(QtWidgets.QWidget(), 'Tab 1')
+        child.addTab(QtWidgets.QWidget(), 'Tab 2')
+        child.addTab(QtWidgets.QWidget(), 'Tab 3')
+    elif args.widget == 'tab_widget_bottom':
+        child = QtWidgets.QTabWidget(widget)
+        child.setTabPosition(QtWidgets.QTabWidget.South)
         child.addTab(QtWidgets.QWidget(), 'Tab 1')
         child.addTab(QtWidgets.QWidget(), 'Tab 2')
         child.addTab(QtWidgets.QWidget(), 'Tab 3')
@@ -210,16 +263,19 @@ def main(argv=None):
         child.addTab(QtWidgets.QWidget(), 'Tab 2')
         child.addTab(QtWidgets.QWidget(), 'Tab 3')
     elif args.widget == 'dock':
-        child = [
-            QtWidgets.QDockWidget(window),
-            QtWidgets.QDockWidget(window),
-        ]
+        child = []
+        dock1 = QtWidgets.QDockWidget('&Dock widget 1', window)
+        dock2 = QtWidgets.QDockWidget('&Dock widget 2', window)
+        window.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.LeftDockWidgetArea), dock1)
+        window.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.LeftDockWidgetArea), dock2)
+        window.tabifyDockWidget(dock1, dock2)
     elif args.widget == 'radio':
         child = []
         child.append(abstract_button(QtWidgets.QRadioButton, widget))
         child.append(abstract_button(QtWidgets.QRadioButton, widget, checked=True))
         child.append(abstract_button(QtWidgets.QRadioButton, widget, enabled=False))
         child.append(abstract_button(QtWidgets.QRadioButton, widget, checked=True, enabled=False))
+        child.append(abstract_button(QtWidgets.QRadioButton, widget, 'With Text'))
     elif args.widget == 'checkbox':
         child = []
         child.append(abstract_button(QtWidgets.QCheckBox, widget))
@@ -228,26 +284,103 @@ def main(argv=None):
         child.append(abstract_button(QtWidgets.QCheckBox, widget, enabled=False))
         child.append(abstract_button(QtWidgets.QCheckBox, widget, checked=True, enabled=False))
         child.append(abstract_button(QtWidgets.QCheckBox, widget, checked=QtCore.Qt.PartiallyChecked, enabled=False))
-    elif args.widget == 'menu_checkbox':
-        child = QtWidgets.QMenuBar(window)
+        child.append(abstract_button(QtWidgets.QCheckBox, widget, 'With Text'))
+        child.append(abstract_button(QtWidgets.QCheckBox, widget, 'With Large Text'))
+        checkbox_font = app.font()
+        checkbox_font.setPointSizeF(50.0)
+        child[-1].setFont(checkbox_font)
+    elif args.widget == 'table':
+        # TODO(ahuszagh) Going to need arrows here...
+        child = QtWidgets.QTableWidget(widget)
+        child.setColumnCount(2)
+        child.setRowCount(4)
+        item = QtWidgets.QTableWidgetItem('Row 1')
+        child.setVerticalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem('Row 2')
+        child.setVerticalHeaderItem(1, item)
+        item = QtWidgets.QTableWidgetItem('Row 3')
+        child.setVerticalHeaderItem(2, item)
+        item = QtWidgets.QTableWidgetItem('Row 4')
+        child.setVerticalHeaderItem(3, item)
+        item = QtWidgets.QTableWidgetItem('Column 1')
+        child.setHorizontalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem('Column 2')
+        child.setHorizontalHeaderItem(1, item)
+    elif args.widget == 'list':
+        # TODO(ahuszagh) Need icons?
+        child = QtWidgets.QListWidget(widget)
+        for index in range(10):
+            child.addItem(QtWidgets.QListWidgetItem(f'Item {index + 1}'))
+    elif args.widget == 'scrollbar_vertical':
+        child = QtWidgets.QListWidget(widget)
+        for index in range(100):
+            child.addItem(QtWidgets.QListWidgetItem(f'Item {index + 1}'))
+    elif args.widget == 'scrollbar_horizontal':
+        child = QtWidgets.QTableWidget(widget)
+        child.setColumnCount(100)
+        child.setRowCount(1)
+        item = QtWidgets.QTableWidgetItem(f'Row 1')
+        child.setVerticalHeaderItem(0, item)
+        for index in range(100):
+            item = QtWidgets.QTableWidgetItem(f'Column {index + 1}')
+            child.setHorizontalHeaderItem(index, item)
+    elif args.widget == 'toolbar':
+        child = QtWidgets.QToolBar('Toolbar')
+        child.setOrientation(QtCore.Qt.Vertical)
         child.setGeometry(QtCore.QRect(0, 0, args.width, int(1.5 * font.pointSize())))
-        menu = QtWidgets.QMenu('Main Menu', child)
-        action1 = QtWidgets.QAction('&Action 1', window)
-        action1.setCheckable(True)
-        menu.addAction(action1)
-        action2 = QtWidgets.QAction('&Action 2', window)
-        action2.setCheckable(True)
-        action2.setChecked(True)
-        menu.addAction(action2)
-        submenu = QtWidgets.QMenu('Sub Menu', menu)
-        action3 = QtWidgets.QAction('&Action 3', window)
-        action3.setCheckable(True)
-        submenu.addAction(action3)
-        menu.addAction(submenu.menuAction())
-        child.addAction(menu.menuAction())
-        window.setMenuBar(child)
+        child.addAction('&Action 1')
+        child.addAction('&Action 2')
+        child.addAction('&Action 3')
+        icon = QtGui.QIcon(':/dark/close.svg')
+        child.addAction(icon, '&Action 4')
+        window.addToolBar(child)
+    elif args.widget == 'toolbutton':
+        layout_type = 'horizontal'
+        child = [
+            QtWidgets.QToolButton(widget),
+            QtWidgets.QToolButton(widget),
+        ]
+        window.setTabOrder(child[0], child[1])
+        child[0].setText('Toolbutton 1')
+        child[1].setText('Toolbutton 2')
+        child[1].addActions([
+            QtWidgets.QAction('&Action 5', window),
+            QtWidgets.QAction('&Action 6', window),
+        ])
+    elif args.widget == 'pushbutton':
+        layout_type = 'horizontal'
+        child = []
+        child.append(abstract_button(QtWidgets.QPushButton, widget, 'Button 1', checked=True))
+        child.append(abstract_button(QtWidgets.QPushButton, widget, 'Button 2', enabled=False))
+        child.append(abstract_button(QtWidgets.QPushButton, widget, 'Button 3', checkable=False))
+        icon = QtGui.QIcon(':/dark/close.svg')
+        child.append(abstract_button(QtWidgets.QPushButton, widget, icon, 'Button 4', checkable=False))
+    elif args.widget == 'tree':
+        child = []
+        tree1 = QtWidgets.QTreeWidget(widget)
+        tree1.setHeaderLabel('Tree 1')
+        item1 = QtWidgets.QTreeWidgetItem(tree1, ['Row 1'])
+        item2 = QtWidgets.QTreeWidgetItem(tree1, ['Row 2'])
+        item3 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.1'])
+        item4 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.2'])
+        item5 = QtWidgets.QTreeWidgetItem(item4, ['Row 2.2.1'])
+        item6 = QtWidgets.QTreeWidgetItem(item5, ['Row 2.2.1.1'])
+        item7 = QtWidgets.QTreeWidgetItem(item5, ['Row 2.2.1.2'])
+        item8 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.3'])
+        item9 = QtWidgets.QTreeWidgetItem(tree1, ['Row 3'])
+        item10 = QtWidgets.QTreeWidgetItem(item9, ['Row 3.1'])
+        item11 = QtWidgets.QTreeWidgetItem(tree1, ['Row 4'])
+        child.append(tree1)
+        tree2 = QtWidgets.QTreeWidget(widget)
+        tree2.setHeaderLabel('Tree 2')
+        tree2.header().setSectionsClickable(True)
+        item12 = QtWidgets.QTreeWidgetItem(tree2, ['Row 1', 'Column 2', 'Column 3'])
+        child.append(tree2)
+    else:
+        raise NotImplementedError
 
-    widget_layout = layout[layout_type](widget)
+    # Add the widgets to the layout.
+    widget_layout = layout[layout_type]()
     if args.compress:
         widget_layout.addStretch(1)
         add_widgets(widget_layout, child)
@@ -256,7 +389,9 @@ def main(argv=None):
         add_widgets(widget_layout, child)
     if args.alignment is not None:
         widget_layout.setAlignment(alignment[args.alignment])
-    window.setCentralWidget(widget)
+    widget.setLayout(widget_layout)
+    scroll.setWidget(widget)
+    window.setCentralWidget(scroll)
 
     # run
     window.show()

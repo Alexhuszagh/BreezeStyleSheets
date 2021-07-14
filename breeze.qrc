@@ -48,7 +48,13 @@
     <file>dark/hsepartoolbar.svg</file>
     <file>dark/vsepartoolbars.svg</file>
     <file>dark/branch_closed.svg</file>
+    <file>dark/branch_closed_hover.svg</file>
+    <file>dark/branch_end.svg</file>
+    <file>dark/branch_end_arrow.svg</file>
+    <file>dark/branch_more.svg</file>
+    <file>dark/branch_more_arrow.svg</file>
     <file>dark/branch_open.svg</file>
+    <file>dark/branch_open_hover.svg</file>
     <file>dark/down_arrow.svg</file>
     <file>dark/down_arrow_disabled.svg</file>
     <file>dark/down_arrow_hover.svg</file>
@@ -76,6 +82,7 @@
     <file>dark/radio_checked_disabled.svg</file>
     <file>dark/radio_unchecked.svg</file>
     <file>dark/radio_unchecked_disabled.svg</file>
+    <file>dark/vline.svg</file>
     <file>light.qss</file>
     <file>dark.qss</file>
     <!-- TODO(ahuszagh) Remove -->

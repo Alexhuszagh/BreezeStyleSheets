@@ -31,6 +31,7 @@ colors_map = {
         'close_hover': '#b37979',
         'close_pressed': '#b33e3e',
         'undock': '#a2a2a2',
+        'tree': '#afafaf',
     },
 }
 
@@ -87,7 +88,27 @@ assets = {
     'undock_hover': {
         'default': ['undock', 'foreground'],
     },
-    # TODO(ahuszagh) Add more widgets here...
+    # Tree views.
+    'branch_open': {
+        'default': ['tree'],
+        'hover': ['hover'],
+    },
+    'branch_closed': {
+        'default': ['tree'],
+        'hover': ['hover'],
+    },
+    'branch_end_arrow': {
+        'default': ['tree'],
+    },
+    'branch_more': {
+        'default': ['tree'],
+    },
+    'branch_more_arrow': {
+        'default': ['tree'],
+    },
+    'vline': {
+        'default': ['tree'],
+    },
 }
 
 def replace(contents, colors, color_map):

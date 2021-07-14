@@ -30,6 +30,7 @@
 
 import argparse
 import logging
+import os
 import sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -51,6 +52,12 @@ parser.add_argument(
 parser.add_argument(
     '--font-family',
     help='''the font family'''
+)
+parser.add_argument(
+    '--scale',
+    help='''scale factor for the UI''',
+    type=float,
+    default=1,
 )
 
 class Ui:
@@ -435,6 +442,7 @@ def main(argv=None):
     'Application entry point'
 
     args, unknown = parser.parse_known_args(argv)
+    os.environ['QT_SCALE_FACTOR'] = str(args.scale)
     logging.basicConfig(level=logging.DEBUG)
     app = QtWidgets.QApplication(argv[:1] + unknown)
     window = QtWidgets.QMainWindow()

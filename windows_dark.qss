@@ -264,9 +264,10 @@ QMenu::icon
 
 QMenu::item
 {
-    padding: 0.23em 3ex 0.23em 3ex;
-    margin-left: 0.23em;
+    /* Add extra padding on the right for the QMenu arrow */
+    padding: 0.23em 1.5em 0.23em 1.3em;
     border: 0.09em solid transparent;
+    background: transparent;
 }
 
 QMenu::item:selected
@@ -278,7 +279,9 @@ QMenu::separator
 {
     height: 0.09em;
     background: lightblue;
-    margin-left: 1ex;
+    margin-top: 0.2em;
+    margin-bottom: 0.2em;
+    margin-left: 0.41em;
     margin-right: 0.23em;
 }
 
@@ -377,24 +380,29 @@ QAbstractScrollArea
 
 QScrollBar:horizontal
 {
-    height: 1.5ex;
-    margin: 0.13em 1.5ex 0.13em 1.5ex;
+    height: 0.65em;
+    margin: 0.13em 0.65em 0.13em 0.65em;
     border: 0.09em transparent #2A2929;
-    border-radius: 0.4ex;
+    border-radius: 0.17em;
     background-color: #2A2929;
+}
+
+QScrollBar:horizontal:hover
+{
+    background-color: #626568;
 }
 
 QScrollBar::handle:horizontal
 {
     background-color: #3daee9;
-    min-width: 0.23em;
-    border-radius: 0.4ex;
+    min-width: 0.5em;
+    border-radius: 0.17em;
 }
 
 QScrollBar::add-line:horizontal
 {
     margin: 0em 0.13em 0em 0.13em;
-    border-image: url(:/dark/right_arrow_disabled.svg);
+    border-image: url(:/dark/transparent.svg);
     width: 0.41em;
     height: 0.41em;
     subcontrol-position: right;
@@ -403,8 +411,8 @@ QScrollBar::add-line:horizontal
 
 QScrollBar::sub-line:horizontal
 {
-    margin: 0ex 0.13em 0ex 0.13em;
-    border-image: url(:/dark/left_arrow_disabled.svg);
+    margin: 0em 0.13em 0em 0.13em;
+    border-image: url(:/dark/transparent.svg);
     width: 0.41em;
     height: 0.41em;
     subcontrol-position: left;
@@ -414,7 +422,7 @@ QScrollBar::sub-line:horizontal
 QScrollBar::add-line:horizontal:hover,
 QScrollBar::add-line:horizontal:on
 {
-    border-image: url(:/dark/right_arrow.svg);
+    border-image: url(:/dark/transparent.svg);
     width: 0.41em;
     height: 0.41em;
     subcontrol-position: right;
@@ -424,7 +432,7 @@ QScrollBar::add-line:horizontal:on
 QScrollBar::sub-line:horizontal:hover,
 QScrollBar::sub-line:horizontal:on
 {
-    border-image: url(:/dark/left_arrow.svg);
+    border-image: url(:/dark/transparent.svg);
     width: 0.41em;
     height: 0.41em;
     subcontrol-position: left;
@@ -452,17 +460,22 @@ QScrollBar:vertical
     border-radius: 0.17em;
 }
 
+QScrollBar:vertical:hover
+{
+    background-color: #626568;
+}
+
 QScrollBar::handle:vertical
 {
     background-color: #3daee9;
-    min-height: 0.23em;
+    min-height: 0.5em;
     border-radius: 0.17em;
 }
 
 QScrollBar::sub-line:vertical
 {
     margin: 0.13em 0em 0.13em 0em;
-    border-image: url(:/dark/up_arrow_disabled.svg);
+    border-image: url(:/dark/transparent.svg);
     height: 0.41em;
     width: 0.41em;
     subcontrol-position: top;
@@ -472,7 +485,7 @@ QScrollBar::sub-line:vertical
 QScrollBar::add-line:vertical
 {
     margin: 0.13em 0em 0.13em 0em;
-    border-image: url(:/dark/down_arrow_disabled.svg);
+    border-image: url(:/dark/transparent.svg);
     height: 0.41em;
     width: 0.41em;
     subcontrol-position: bottom;
@@ -482,9 +495,9 @@ QScrollBar::add-line:vertical
 QScrollBar::sub-line:vertical:hover,
 QScrollBar::sub-line:vertical:on
 {
-    border-image: url(:/dark/up_arrow.svg);
-    height: 1ex;
-    width: 1ex;
+    border-image: url(:/dark/transparent.svg);
+    height: 0.41em;
+    width: 0.41em;
     subcontrol-position: top;
     subcontrol-origin: margin;
 }
@@ -492,9 +505,9 @@ QScrollBar::sub-line:vertical:on
 QScrollBar::add-line:vertical:hover,
 QScrollBar::add-line:vertical:on
 {
-    border-image: url(:/dark/down_arrow.svg);
-    height: 1ex;
-    width: 1ex;
+    border-image: url(:/dark/transparent.svg);
+    height: 0.41em;
+    width: 0.41em;
     subcontrol-position: bottom;
     subcontrol-origin: margin;
 }
@@ -505,7 +518,8 @@ QScrollBar::down-arrow:vertical
     background: none;
 }
 
-QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical
 {
     background: none;
 }
@@ -592,36 +606,28 @@ QToolBar
 QToolBar::handle:horizontal
 {
     border-image: url(:/dark/hmovetoolbar.svg);
-    width = 1.6ex;
-    height = 6.4ex;
 }
 
 QToolBar::handle:vertical
 {
     border-image: url(:/dark/vmovetoolbar.svg);
-    width = 5.4ex;
-    height = 1ex;
 }
 
 QToolBar::separator:horizontal
 {
     border-image: url(:/dark/hsepartoolbar.svg);
-    width = 0.7ex;
-    height = 6.3ex;
 }
 
 QToolBar::separator:vertical
 {
     border-image: url(:/dark/vsepartoolbars.svg);
-    width = 6.3ex;
-    height = 0.7ex;
 }
 
 QPushButton
 {
     color: #eff0f1;
     background-color: qlineargradient(x1: 0.5, y1: 0.5 x2: 0.5, y2: 1, stop: 0 #3b4045, stop: 0.5 #31363b);
-    border-width: 0.09em;
+    border-width: 0.04em;
     border-color: #76797c;
     border-style: solid;
     padding: 0.23em;
@@ -632,28 +638,28 @@ QPushButton
 QComboBox:open,
 QPushButton:open
 {
-    border-width: 0.09em;
+    border-width: 0.04em;
     border-color: #76797c;
 }
 
 QComboBox:closed,
 QPushButton:closed
 {
-    border-width: 0.09em;
+    border-width: 0.04em;
     border-color: #76797c;
 }
 
 QPushButton:disabled
 {
     background-color: #31363b;
-    border-width: 0.09em;
+    border-width: 0.04em;
     border-color: #454545;
     border-style: solid;
     padding-top: 0.23em;
     padding-bottom: 0.23em;
     padding-left: 1ex;
     padding-right: 1ex;
-    border-radius: 0.09em;
+    border-radius: 0.04em;
     color: #454545;
 }
 
@@ -673,7 +679,7 @@ QComboBox
 {
     selection-background-color: #3daee9;
     border-style: solid;
-    border: 0.09em solid #76797c;
+    border: 0.04em solid #76797c;
     border-radius: 0.09em;
     padding: 0.23em;
     min-width: 7.5ex;
@@ -688,14 +694,14 @@ QPushButton:checked
 QPushButton:hover
 {
     background-color: qlineargradient(x1: 0.5, y1: 0.5 x2: 0.5, y2: 1, stop: 0 #454a4f, stop: 0.5 #3b4045);
-    border: 0.09em solid #3daee9;
+    border: 0.04em solid #3daee9;
     color: #eff0f1;
 }
 
 QPushButton:checked:hover
 {
     background-color: qlineargradient(x1: 0.5, y1: 0.5 x2: 0.5, y2: 1, stop: 0 #808386, stop: 0.5 #76797c);
-    border: 0.09em solid #3daee9;
+    border: 0.04em solid #3daee9;
     color: #eff0f1;
 }
 
@@ -707,7 +713,7 @@ QPlainTextEdit:hover,
 QAbstractView:hover,
 QTreeView:hover
 {
-    border: 0.09em solid #3daee9;
+    border: 0.04em solid #3daee9;
     color: #eff0f1;
 }
 
@@ -1218,13 +1224,39 @@ QDockWidget::close-button:pressed
 QTreeView,
 QListView
 {
-    border: 0.09em solid #76797c;
     background-color: #232629;
+    border: 0em solid black;
 }
 
-QTreeView::branch
+QTreeView:selected,
+QTreeView:!selected,
+QListView:selected,
+QListView:!selected
+{
+    border: 0em solid black;
+}
+
+QTreeView::branch:has-siblings
+{
+    border-image: url(:/dark/vline.svg);
+    image: none;
+}
+
+/* These branch indicators don't scale */
+TreeView::branch:!has-siblings
 {
     border-image: none;
+    image: none;
+}
+
+QTreeView::branch:has-siblings:adjoins-item
+{
+    border-image: url(:/dark/branch_more.svg);
+}
+
+QTreeView::branch:!has-children:!has-siblings:adjoins-item
+{
+    border-image: url(:/dark/branch_end.svg);
 }
 
 QTreeView::branch:has-children:!has-siblings:closed,
@@ -1233,10 +1265,34 @@ QTreeView::branch:closed:has-children:has-siblings
     image: url(:/dark/branch_closed.svg);
 }
 
+QTreeView::branch:has-children:!has-siblings:closed:hover,
+QTreeView::branch:closed:has-children:has-siblings:hover
+{
+    image: url(:/dark/branch_closed_hover.svg);
+}
+
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:open:has-children:!has-siblings
+{
+    border-image: url(:/dark/branch_end_arrow.svg);
+}
+
+QTreeView::branch:closed:has-children:has-siblings,
+QTreeView::branch:open:has-children:has-siblings
+{
+    border-image: url(:/dark/branch_more_arrow.svg);
+}
+
 QTreeView::branch:open:has-children:!has-siblings,
 QTreeView::branch:open:has-children:has-siblings
 {
     image: url(:/dark/branch_open.svg);
+}
+
+QTreeView::branch:open:has-children:!has-siblings:hover,
+QTreeView::branch:open:has-children:has-siblings:hover
+{
+    image: url(:/dark/branch_open_hover.svg);
 }
 
 QTableView::item,
@@ -1269,14 +1325,14 @@ QSlider::handle:vertical
 
 QSlider:horizontal
 {
-    min-width: 10ex;
-    height: 10ex;
+    min-width: 4.1em;
+    height: 4.1em;
 }
 
 QSlider:vertical
 {
-    min-height: 10ex;
-    width: 10ex;
+    min-height: 4.1em;
+    width: 4.1em;
 }
 
 QSlider::handle:horizontal
@@ -1337,19 +1393,22 @@ QToolButton
     border-radius: 0.09em;
     margin: 0.23em;
     padding: 0.23em;
-    padding-right: 3.5ex;
+    padding-right: 1.5em;
+    min-height: 1.3em;
 }
 
 QToolButton:hover
 {
     background-color: transparent;
-    border: 0.13em solid #3daee9;
+    border: 0.04em solid #3daee9;
 }
 
 QToolButton::menu-indicator
 {
     border-image: none;
     image: url(:/dark/down_arrow.svg);
+    width: 0.8em;
+    height: 0.5em;
     top: -0.7ex;
     left: -0.09em;
     padding-right: 0.09em;
@@ -1359,14 +1418,16 @@ QToolButton::menu-arrow
 {
     border-image: none;
     image: url(:/dark/down_arrow.svg);
+    width: 0.8em;
+    height: 0.5em;
 }
 
 QToolButton::menu-button
 {
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
+    border-top-right-radius: 0.5em;
+    border-bottom-right-radius: 0.5em;
     /* 1ex width + 0.4ex for border + no text = 2ex allocated above */
-    width: 3ex;
+    width: 1.3em;
     padding: 0.23em;
     outline: none;
 }
@@ -1398,9 +1459,15 @@ QToolButton::menu-arrow:open
 
 QTableView
 {
-    border: 0.09em solid #76797c;
+    border: 0em solid black;
     gridline-color: #31363b;
     background-color: #232629;
+}
+
+QTableView:!selected,
+QTableView:selected
+{
+    border: 0em solid black;
 }
 
 QTableView,
@@ -1409,30 +1476,31 @@ QHeaderView
     border-radius: 0em;
 }
 
-QAbstractItemView::item {
+QAbstractItemView::item
+{
     color: #eff0f1;
 }
 
-QAbstractItemView::item:pressed {
+QAbstractItemView::item:pressed
+{
     background: #3daee9;
     color: #eff0f1;
 }
 
-QAbstractItemView::item:selected {
-    border: 0ex transparent black;
-}
-
-QAbstractItemView::item:selected:!active {
+QAbstractItemView::item:selected:!active
+{
     background: rgba(61, 173, 232, 0.3);
 }
 
 /* Use background with qlineargradient to avoid ugly border on widget. */
-QAbstractItemView::item:selected:active {
+QAbstractItemView::item:selected:active
+{
     background: qlineargradient(x1: 0.5, y1: 0.5 x2: 0.5, y2: 1, stop: 0 #2a79a3, stop: 1 #2a79a3);
     color: #eff0f1;
 }
 
-QAbstractItemView::item:selected:hover {
+QAbstractItemView::item:selected:hover
+{
     background: qlineargradient(x1: 0.5, y1: 0.5 x2: 0.5, y2: 1, stop: 0 #369cd1, stop: 1 #369cd1);
     color: #eff0f1;
 }
@@ -1440,7 +1508,7 @@ QAbstractItemView::item:selected:hover {
 QHeaderView
 {
     background-color: #31363b;
-    border: 0.09em transparent;
+    border: 0.04em transparent;
     border-radius: 0em;
     margin: 0em;
     padding: 0em;
@@ -1458,7 +1526,7 @@ QHeaderView::section
 QHeaderView::section::vertical::first,
 QHeaderView::section::vertical::only-one
 {
-    border-top: 0.09em solid #76797c;
+    border-top: 0.04em solid #76797c;
 }
 
 QHeaderView::section::vertical
@@ -1469,7 +1537,7 @@ QHeaderView::section::vertical
 QHeaderView::section::horizontal::first,
 QHeaderView::section::horizontal::only-one
 {
-    border-left: 0.09em solid #76797c;
+    border-left: 0.04em solid #76797c;
 }
 
 QHeaderView::section::horizontal
@@ -1481,6 +1549,16 @@ QHeaderView::section:checked
 {
     color: white;
     background-color: #334e5e;
+}
+
+/* Note that this doesn't work for QTreeView unless the header is clickable */
+QHeaderView::section:hover,
+QHeaderView::section::horizontal::first:hover,
+QHeaderView::section::horizontal::only-one:hover,
+QHeaderView::section::vertical::first:hover,
+QHeaderView::section::vertical::only-one:hover
+{
+    border: 0.04em solid #3daee9;
 }
 
 QHeaderView::down-arrow
@@ -1561,7 +1639,6 @@ QProgressBar:vertical
 
 QProgressBar:horizontal
 {
-
     height: 0.2em;
     text-align: right;
     margin-top: 0.2em;
@@ -1575,7 +1652,7 @@ QProgressBar:vertical
     text-align: bottom;
     margin-left: 0.2em;
     margin-right: 0.2em;
-    margin-bottom: 1ex;
+    margin-bottom: 0.41em;
 }
 
 QProgressBar::chunk:horizontal,
@@ -1584,4 +1661,9 @@ QProgressBar::chunk:vertical
     background-color: #3daee9;
     border: 0.9em transparent;
     border-radius: 0.13em;
+}
+
+QScrollArea
+{
+    border: 0em solid black;
 }
