@@ -85,7 +85,7 @@ assets = {
         'default': ['undock'],
     },
     'undock_hover': {
-        'default': ['undock'],
+        'default': ['undock', 'foreground'],
     },
     # TODO(ahuszagh) Add more widgets here...
 }
