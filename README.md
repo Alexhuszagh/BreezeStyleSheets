@@ -3,6 +3,8 @@ BreezeStyleSheets
 
 Breeze and BreezeDark-like stylesheets for Qt Applications.
 
+This stylesheet aims to be similar across all platforms, and provide a nice UI for different font sizes. This is currently under work for scaling to multiple different DPIs and font sizes.
+
 C++ Installation
 ================
 
@@ -66,7 +68,6 @@ def main():
     # code goes here
 
     app.exec_()
-}
 ```
 
 License
