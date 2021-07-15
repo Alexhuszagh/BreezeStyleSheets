@@ -1,6 +1,6 @@
 <svg width="405" height="290">
   <g transform="scale(5)">
-    <rect fill="^0^" x="36" width="2" height="17"/>
-    <rect fill="^0^" x="66" y="29.75" height="1" width="15"/>
+    <rect fill="^0^" x="36" width="3" height="17"/>
+    <rect fill="^0^" x="66" y="29.75" height="1.75" width="15"/>
   </g>
 </svg>

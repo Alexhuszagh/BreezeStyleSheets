@@ -97,6 +97,9 @@ assets = {
         'default': ['tree'],
         'hover': ['hover'],
     },
+    'branch_end': {
+        'default': ['tree'],
+    },
     'branch_end_arrow': {
         'default': ['tree'],
     },

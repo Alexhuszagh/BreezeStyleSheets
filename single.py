@@ -47,6 +47,14 @@ parser.add_argument(
     help='''stylesheet name''',
     default='native'
 )
+# Know working styles include:
+#   1. Fusion
+#   2. Windows
+parser.add_argument(
+    '--style',
+    help='''application style, which is different than the stylesheet''',
+    default='native'
+)
 parser.add_argument(
     '--font-size',
     help='''font size for the application''',
@@ -136,6 +144,9 @@ def main(argv=None):
 
     args, unknown = parser.parse_known_args(argv)
     os.environ['QT_SCALE_FACTOR'] = str(args.scale)
+    if args.style != 'native':
+        style = QtWidgets.QStyleFactory.create(args.style)
+        QtWidgets.QApplication.setStyle(style)
     app = QtWidgets.QApplication(argv[:1] + unknown)
 
     # setup stylesheet
@@ -173,14 +184,14 @@ def main(argv=None):
         child = QtWidgets.QProgressBar(widget)
         child.setOrientation(QtCore.Qt.Vertical)
         child.setProperty('value', 24)
-    if args.widget == 'slider_horizontal':
+    elif args.widget == 'slider_horizontal':
         child = QtWidgets.QSlider(widget)
         child.setOrientation(QtCore.Qt.Horizontal)
     elif args.widget == 'slider_vertical':
         layout_type = 'horizontal'
         child = QtWidgets.QSlider(widget)
         child.setOrientation(QtCore.Qt.Vertical)
-    if args.widget == 'splitter_horizontal':
+    elif args.widget == 'splitter_horizontal':
         layout_type = 'vertical'
         child = QtWidgets.QSplitter(widget)
         raise NotImplementedError

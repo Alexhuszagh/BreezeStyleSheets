@@ -43,6 +43,14 @@ parser.add_argument(
     help='''stylesheet name''',
     default='native'
 )
+# Know working styles include:
+#   1. Fusion
+#   2. Windows
+parser.add_argument(
+    '--style',
+    help='''application style, which is different than the stylesheet''',
+    default='native'
+)
 parser.add_argument(
     '--font-size',
     help='''font size for the application''',
@@ -443,6 +451,9 @@ def main(argv=None):
 
     args, unknown = parser.parse_known_args(argv)
     os.environ['QT_SCALE_FACTOR'] = str(args.scale)
+    if args.style != 'native':
+        style = QtWidgets.QStyleFactory.create(args.style)
+        QtWidgets.QApplication.setStyle(style)
     logging.basicConfig(level=logging.DEBUG)
     app = QtWidgets.QApplication(argv[:1] + unknown)
     window = QtWidgets.QMainWindow()
