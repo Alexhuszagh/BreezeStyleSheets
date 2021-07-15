@@ -149,9 +149,10 @@ def replace(contents, colors, color_map):
         contents = contents.replace(sub, color_map[color])
     return contents
 
-def configure(style):
-    '''Configure for a given style.'''
+def configure_assets(style):
+    '''Configure assets for a given style.'''
 
+    os.makedirs(f'{home}/{style}', exist_ok=True)
     color_map = colors_map[style]
     for base_image, extensions in assets.items():
         template = f'{home}/assets/{base_image}.svg.in'
@@ -166,5 +167,5 @@ def configure(style):
                 file.write(contents)
 
 if __name__ == '__main__':
-    configure('dark')
+    configure_assets('dark')
     #configure('light')
