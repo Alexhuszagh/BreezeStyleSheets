@@ -150,13 +150,6 @@ def main(argv=None):
         QtWidgets.QApplication.setStyle(style)
     app = QtWidgets.QApplication(argv[:1] + unknown)
 
-    # setup stylesheet
-    if args.stylesheet != 'native':
-        file = QtCore.QFile(f':/{args.stylesheet}.qss')
-        file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text)
-        stream = QtCore.QTextStream(file)
-        app.setStyleSheet(stream.readAll())
-
     # use the default font size
     font = app.font()
     if args.font_size > 0:
@@ -164,6 +157,13 @@ def main(argv=None):
     if args.font_family:
         font.setFamily(args.font_family)
     app.setFont(font)
+
+    # setup stylesheet
+    if args.stylesheet != 'native':
+        file = QtCore.QFile(f':/{args.stylesheet}.qss')
+        file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text)
+        stream = QtCore.QTextStream(file)
+        app.setStyleSheet(stream.readAll())
 
     # Setup the main window.
     window = QtWidgets.QMainWindow()
