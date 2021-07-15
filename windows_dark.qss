@@ -61,22 +61,6 @@ QWidget:disabled
     background-color: #31363b;
 }
 
-QWidget::item:hover
-{
-    background-color: #3daee9;
-    color: #eff0f1;
-}
-
-QWidget::item:selected
-{
-    background-color: #3daee9;
-}
-
-QWidget:focus
-{
-    border: 0.04em solid #3daee9;
-}
-
 QCheckBox
 {
     spacing: 0.23em;
@@ -97,6 +81,13 @@ QGroupBox
     min-height: 1.2em;
     border: 0.04em solid #76797c;
     border-radius: 0.09em;
+    /**
+     * This gives us enough space at the top to ensure we can move the
+     * title to be inside the guidelines, and the padding at the top
+     * ensures we have space below the title.
+     */
+    margin-top: 0.5em;
+    padding-top: 1em;
 }
 
 QGroupBox:focus
@@ -107,10 +98,13 @@ QGroupBox:focus
 
 QGroupBox::title
 {
+    /* We need to move 0.6em up to be inside the lines, +1em for padding. */
+    top: -1.6em;
     subcontrol-origin: content;
-    background: transparent;
     subcontrol-position: top center;
-    padding-right: 1em;
+    background: #31363b;
+    padding-left: 0.2em;
+    padding-right: 0.2em;
 }
 
 QCheckBox::indicator
@@ -288,6 +282,13 @@ QMenu::item
 QMenu::item:selected
 {
     color: #eff0f1;
+    background-color: #3daee9;
+}
+
+QMenu::item:hover
+{
+    color: #eff0f1;
+    background-color: #3daee9;
 }
 
 QMenu::separator
@@ -553,14 +554,6 @@ QPlainTextEdit
     border: 0.04em solid #76797c;
 }
 
-QHeaderView::section
-{
-    background-color: #76797c;
-    color: #eff0f1;
-    padding: 0.23em;
-    border: 0.04em solid #76797c;
-}
-
 QSizeGrip
 {
     border-image: url(:/dark/sizegrip.svg);
@@ -732,9 +725,12 @@ QPushButton:checked:hover
 
 QComboBox:hover,
 QAbstractSpinBox:hover,
+QAbstractSpinBox:focus,
 QLineEdit:hover,
 QTextEdit:hover,
+QTextEdit:focus,
 QPlainTextEdit:hover,
+QPlainTextEdit:focus,
 QAbstractView:hover,
 QTreeView:hover
 {
@@ -1423,7 +1419,7 @@ QToolButton
     margin: 0.23em;
     padding: 0.23em;
     padding-right: 1.2em;
-    min-height: 1.3em;
+    min-height: 1em;
 }
 
 QToolButton::right-arrow,
@@ -1531,8 +1527,7 @@ QTableView:selected
     border: 0em solid black;
 }
 
-QTableView,
-QHeaderView
+QTableView
 {
     border-radius: 0em;
 }
@@ -1578,8 +1573,10 @@ QHeaderView
 QHeaderView::section
 {
     background-color: #31363b;
+    border: 0.04em solid #76797c;
     color: #eff0f1;
     padding: 0.23em;
+    padding-top: 0.3em;
     border-radius: 0em;
     text-align: center;
 }
@@ -1625,6 +1622,9 @@ QHeaderView::section::vertical::only-one:hover
 QHeaderView::down-arrow
 {
     image: url(:/dark/down_arrow.svg);
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    padding-top: 0.2em;
     width: 0.8em;
     height: 0.5em;
 }
@@ -1632,18 +1632,32 @@ QHeaderView::down-arrow
 QHeaderView::up-arrow
 {
     image: url(:/dark/up_arrow.svg);
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    padding-top: 0.2em;
     width: 0.8em;
     height: 0.5em;
 }
 
-QTableCornerButton::section
+QTableView QTableCornerButton::section
 {
     background-color: #31363b;
-    border: 0.09em transparent #76797c;
+    border: 0.04em transparent #76797c;
     border-radius: 0em;
 }
 
-/* TODO(ahuszagh) Need the icon size. */
+QTableCornerButton:hover
+{
+    border: 0.04em transparent #76797c;
+}
+
+/* No hover event */
+QTableView QTableCornerButton::section:pressed
+{
+    border: 0.04em solid #3daee9;
+    border-radius: 0em;
+}
+
 QToolBox
 {
     padding: 0.23em;

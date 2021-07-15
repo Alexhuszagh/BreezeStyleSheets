@@ -445,12 +445,18 @@ class Ui:
         self.actionSub_menu.setToolTip(_translate('MainWindow', 'submenu'))
         self.actionAction_C.setText(_translate('MainWindow', 'Action &C'))
 
+    def about(self):
+        QtWidgets.QMessageBox.about(self.centralwidget, 'About Menu', 'Sample about menu')
+
 
 def main(argv=None):
     'Application entry point'
 
     args, unknown = parser.parse_known_args(argv)
-    os.environ['QT_SCALE_FACTOR'] = str(args.scale)
+    if args.scale != 1:
+        os.environ['QT_SCALE_FACTOR'] = str(args.scale)
+    else:
+        os.environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = '1'
     if args.style != 'native':
         style = QtWidgets.QStyleFactory.create(args.style)
         QtWidgets.QApplication.setStyle(style)
@@ -482,6 +488,9 @@ def main(argv=None):
         ui.actionAction_C
     ])
     window.setWindowTitle('Sample BreezeStyleSheets application.')
+
+    # Add event triggers
+    ui.actionAction.triggered.connect(ui.about)
 
     # tabify dock widgets to show bug #6
     window.tabifyDockWidget(ui.dockWidget1, ui.dockWidget2)

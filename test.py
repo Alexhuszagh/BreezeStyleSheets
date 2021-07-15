@@ -333,8 +333,24 @@ def main(argv=None):
         checkbox_font.setPointSizeF(50.0)
         child[-1].setFont(checkbox_font)
     elif args.widget == 'table':
-        # TODO(ahuszagh) Going to need arrows here...
         child = QtWidgets.QTableWidget(widget)
+        child.setColumnCount(2)
+        child.setRowCount(4)
+        item = QtWidgets.QTableWidgetItem('Row 1')
+        child.setVerticalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem('Row 2')
+        child.setVerticalHeaderItem(1, item)
+        item = QtWidgets.QTableWidgetItem('Row 3')
+        child.setVerticalHeaderItem(2, item)
+        item = QtWidgets.QTableWidgetItem('Row 4')
+        child.setVerticalHeaderItem(3, item)
+        item = QtWidgets.QTableWidgetItem('Column 1')
+        child.setHorizontalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem('Column 2')
+        child.setHorizontalHeaderItem(1, item)
+    elif args.widget == 'sortable_table':
+        child = QtWidgets.QTableWidget(widget)
+        child.setSortingEnabled(True)
         child.setColumnCount(2)
         child.setRowCount(4)
         item = QtWidgets.QTableWidgetItem('Row 1')
@@ -510,6 +526,9 @@ def main(argv=None):
             QtWidgets.QAction('&Action 9', window),
             QtWidgets.QAction('&Action 10', window),
         ])
+    elif args.widget == 'tooltip':
+        child = QtWidgets.QPushButton('Sample Label')
+        child.setToolTip('Sample Tooltip')
     else:
         raise NotImplementedError
 
