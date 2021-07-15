@@ -103,7 +103,7 @@ The limitations of stylesheets include:
 
 - Non-border item underlying, such as seen in Breeze. The box model will not affect the placement of the underline, not even with style on the element itself, the `::title` subcontrol, or any other attempts.
 - Scaling icons with the theme size.
-- QToolButton cannot have center-aligned text.
+- QToolButton cannot control the icon size without also affecting the arrow size.
 - The branch indicators on QTreeViews don't scale.
 
 # Debugging

@@ -388,14 +388,45 @@ def main(argv=None):
         child = [
             QtWidgets.QToolButton(widget),
             QtWidgets.QToolButton(widget),
+            QtWidgets.QToolButton(widget),
+            QtWidgets.QToolButton(widget),
+            QtWidgets.QToolButton(widget),
+            QtWidgets.QToolButton(widget),
+            QtWidgets.QToolButton(widget),
+            QtWidgets.QToolButton(widget),
+            QtWidgets.QToolButton(widget),
         ]
         window.setTabOrder(child[0], child[1])
-        child[0].setText('Toolbutton 1')
-        child[1].setText('Toolbutton 2')
+        window.setTabOrder(child[1], child[2])
+        window.setTabOrder(child[2], child[3])
+        window.setTabOrder(child[3], child[4])
+        window.setTabOrder(child[4], child[5])
+        window.setTabOrder(child[5], child[6])
+        window.setTabOrder(child[6], child[7])
+        child[0].setText('Simple ToolButton')
+        child[1].setText('Action Toolbutton')
+        child[2].setText('Menu Toolbutton')
+        child[3].setText('Instant Toolbutton')
         child[1].addActions([
             QtWidgets.QAction('&Action 5', window),
             QtWidgets.QAction('&Action 6', window),
         ])
+        child[2].setPopupMode(QtWidgets.QToolButton.MenuButtonPopup)
+        child[2].addActions([
+            QtWidgets.QAction('&Action 9', window),
+            QtWidgets.QAction('&Action 10', window),
+        ])
+        child[3].setPopupMode(QtWidgets.QToolButton.InstantPopup)
+        child[3].addActions([
+            QtWidgets.QAction('&Action 11', window),
+            QtWidgets.QAction('&Action 12', window),
+        ])
+        child[4].setArrowType(QtCore.Qt.LeftArrow)
+        child[5].setArrowType(QtCore.Qt.RightArrow)
+        child[6].setArrowType(QtCore.Qt.UpArrow)
+        child[7].setArrowType(QtCore.Qt.DownArrow)
+        icon = QtGui.QIcon(':/dark/close.svg')
+        child[8].setIcon(icon)
     elif args.widget == 'pushbutton':
         layout_type = 'horizontal'
         child = []
@@ -449,7 +480,36 @@ def main(argv=None):
         table.setRowCount(5)
         child.append(table)
     elif args.widget == 'groupbox':
-        child = QtWidgets.QGroupBox('Groupbox', widget)
+        child = []
+        child.append(QtWidgets.QGroupBox('Groupbox 1', widget))
+        checkable = QtWidgets.QGroupBox('Groupbox 2', widget)
+        checkable.setCheckable(True)
+        child.append(checkable)
+        vbox = QtWidgets.QVBoxLayout(checkable)
+        vbox.setAlignment(QtCore.Qt.AlignHCenter)
+        vbox.addWidget(QtWidgets.QLineEdit('Sample Label'))
+    elif args.widget == 'toolbox':
+        # Test alignment with another item, in a vertical layout.
+        child = []
+        child.append(QtWidgets.QGroupBox('Groupbox', widget))
+        child.append(QtWidgets.QGroupBox('Really, really long groupbox', widget))
+        toolbox = QtWidgets.QToolBox(widget)
+        child.append(toolbox)
+        page1 = QtWidgets.QWidget()
+        toolbox.addItem(page1, 'Page 1')
+        page2 = QtWidgets.QWidget()
+        vbox = QtWidgets.QVBoxLayout(page2)
+        vbox.addWidget(QtWidgets.QLabel('Sample Label'))
+        toolbox.addItem(page2, 'Page 2')
+        toolbox.addItem(page2, 'Really, really long page 3')
+    elif args.widget == 'menubutton':
+        child = QtWidgets.QToolButton(widget)
+        child.setText('Menu Toolbutton')
+        child.setPopupMode(QtWidgets.QToolButton.MenuButtonPopup)
+        child.addActions([
+            QtWidgets.QAction('&Action 9', window),
+            QtWidgets.QAction('&Action 10', window),
+        ])
     else:
         raise NotImplementedError
 
