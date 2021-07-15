@@ -32,6 +32,7 @@ colors_map = {
         'close_pressed': '#b33e3e',
         'undock': '#a2a2a2',
         'tree': '#afafaf',
+        'toolbar': '#5f5f5f',
     },
 }
 
@@ -120,6 +121,24 @@ assets = {
         'default': ['foreground'],
         'hover': ['hover'],
     },
+    'transparent': {
+        'default': [],
+    },
+    'hmovetoolbar': {
+        'default': ['disabled'],
+    },
+    'vmovetoolbar': {
+        'default': ['disabled'],
+    },
+    'hseptoolbar': {
+        'default': ['disabled'],
+    },
+    'vseptoolbar': {
+        'default': ['disabled'],
+    },
+    'sizegrip': {
+        'default': ['disabled'],
+    }
 }
 
 def replace(contents, colors, color_map):

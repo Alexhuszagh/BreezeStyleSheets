@@ -400,15 +400,26 @@ def main(argv=None):
             item = QtWidgets.QTableWidgetItem(f'Column {index + 1}')
             child.setHorizontalHeaderItem(index, item)
     elif args.widget == 'toolbar':
-        child = QtWidgets.QToolBar('Toolbar')
-        child.setOrientation(QtCore.Qt.Vertical)
-        child.setGeometry(QtCore.QRect(0, 0, args.width, int(1.5 * font.pointSize())))
-        child.addAction('&Action 1')
-        child.addAction('&Action 2')
-        child.addAction('&Action 3')
+        layout_type = None
+        child = []
+        toolbar1 = QtWidgets.QToolBar('Toolbar')
+        toolbar1.addAction('&Action 1')
+        toolbar1.addAction('&Action 2')
+        toolbar1.addSeparator()
+        toolbar1.addAction('&Action 3')
         icon = QtGui.QIcon(':/dark/close.svg')
-        child.addAction(icon, '&Action 4')
-        window.addToolBar(child)
+        toolbar1.addAction(icon, '&Action 4')
+        window.addToolBar(QtCore.Qt.TopToolBarArea, toolbar1)
+
+        toolbar2 = QtWidgets.QToolBar('Toolbar')
+        toolbar2.setOrientation(QtCore.Qt.Vertical)
+        toolbar2.addAction('&Action 1')
+        toolbar2.addAction('&Action 2')
+        toolbar2.addSeparator()
+        toolbar2.addAction('&Action 3')
+        icon = QtGui.QIcon(':/dark/close.svg')
+        toolbar2.addAction(icon, '&Action 4')
+        window.addToolBar(QtCore.Qt.LeftToolBarArea, toolbar2)
     elif args.widget == 'toolbutton':
         layout_type = 'horizontal'
         child = [
@@ -559,16 +570,17 @@ def main(argv=None):
         raise NotImplementedError
 
     # Add the widgets to the layout.
-    widget_layout = layout[layout_type]()
-    if args.compress:
-        widget_layout.addStretch(1)
-        add_widgets(widget_layout, child)
-        widget_layout.addStretch(1)
-    else:
-        add_widgets(widget_layout, child)
-    if args.alignment is not None:
-        widget_layout.setAlignment(alignment[args.alignment])
-    widget.setLayout(widget_layout)
+    if layout_type is not None:
+        widget_layout = layout[layout_type]()
+        if args.compress:
+            widget_layout.addStretch(1)
+            add_widgets(widget_layout, child)
+            widget_layout.addStretch(1)
+        else:
+            add_widgets(widget_layout, child)
+        if args.alignment is not None:
+            widget_layout.setAlignment(alignment[args.alignment])
+        widget.setLayout(widget_layout)
     scroll.setWidget(widget)
     window.setCentralWidget(scroll)
 
