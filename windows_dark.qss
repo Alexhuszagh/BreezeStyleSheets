@@ -810,6 +810,7 @@ QAbstractSpinBox
     color: #eff0f1;
     border-radius: 0.09em;
     min-width: 2.6em;
+    min-height: 1em;
     margin: 0.9em;
     margin-left: 2.3em;
     /* To deal with the padding of the arrows */
@@ -885,6 +886,46 @@ QAbstractSpinBox::down-arrow:hover
 QDoubleSpinBox
 {
     min-width: 5em;
+}
+
+/**
+ *  `QCalendarWidget QAbstractItemView:enabled` sets the color, background
+ *  color, and selection color for active dates in the view.
+ *  `QCalendarWidget QAbstractItemView:enabled` sets the disabled dates.
+ */
+QCalendarWidget QAbstractItemView:enabled
+{
+    color: #eff0f1;
+    selection-color: #eff0f1;
+    selection-background-color: #3daee9;
+}
+
+/* Won't take hover events. */
+QCalendarWidget QToolButton#qt_calendar_nextmonth
+{
+    border-image: url(:/dark/calendar_next.svg);
+    width: 0.5em;
+    height: 0.8em;
+    icon-size: 0px;
+}
+
+QCalendarWidget QToolButton#qt_calendar_prevmonth
+{
+    border-image: url(:/dark/calendar_previous.svg);
+    width: 0.5em;
+    height: 0.8em;
+    icon-size: 0px;
+}
+
+QCalendarWidget QSpinBox
+{
+    max-height: 1.5em;
+    min-width: 3.5em;
+    margin: 0em;
+    margin-top: 0.2em;
+    padding: 0em;
+    outline: 0em;
+    padding-left: 0.5em;
 }
 
 QLabel

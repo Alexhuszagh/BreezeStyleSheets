@@ -112,6 +112,14 @@ assets = {
     'vline': {
         'default': ['tree'],
     },
+    'calendar_next': {
+        'default': ['foreground'],
+        'hover': ['hover'],
+    },
+    'calendar_previous': {
+        'default': ['foreground'],
+        'hover': ['hover'],
+    },
 }
 
 def replace(contents, colors, color_map):

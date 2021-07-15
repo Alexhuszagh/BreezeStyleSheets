@@ -33,6 +33,7 @@ import argparse
 import os
 import random
 import sys
+import time
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import breeze_resources
@@ -530,6 +531,21 @@ def main(argv=None):
     elif args.widget == 'tooltip':
         child = QtWidgets.QPushButton('Sample Label')
         child.setToolTip('Sample Tooltip')
+    elif args.widget == 'splashscreen':
+        # This doesn't work with a central widget.
+        # Handle the run here.
+        pixmap = QtGui.QPixmap('assets/Yellowstone.jpg')
+        size = app.screens()[0].size()
+        scaled = pixmap.scaled(size, QtCore.Qt.KeepAspectRatio)
+        splash = QtWidgets.QSplashScreen(scaled)
+        splash.show()
+        time.sleep(5)
+        splash.finish(window)
+        window.show()
+        return app.exec()
+    elif args.widget == 'calendar':
+        child = QtWidgets.QCalendarWidget(widget)
+        child.setGridVisible(True)
     else:
         raise NotImplementedError
 
@@ -549,7 +565,7 @@ def main(argv=None):
 
     # run
     window.show()
-    app.exec_()
+    return app.exec_()
 
 if __name__ == '__main__':
-    main(sys.argv)
+    sys.exit(main(sys.argv))

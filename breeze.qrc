@@ -78,6 +78,8 @@
     <file>dark/checkbox_indeterminate_disabled.svg</file>
     <file>dark/checkbox_unchecked.svg</file>
     <file>dark/checkbox_unchecked_disabled.svg</file>
+    <file>dark/calendar_next.svg</file>
+    <file>dark/calendar_previous.svg</file>
     <file>dark/radio_checked.svg</file>
     <file>dark/radio_checked_disabled.svg</file>
     <file>dark/radio_unchecked.svg</file>
