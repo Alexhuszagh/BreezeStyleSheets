@@ -439,6 +439,17 @@ def main(argv=None):
         child = QtWidgets.QProgressBar(widget)
         child.setProperty('value', 24)
         window.resize(30, 30)
+    elif args.widget == 'frame':
+        child = []
+        text = QtWidgets.QTextEdit()
+        text.setPlainText('Hello world\nTesting lines')
+        child.append(text)
+        table = QtWidgets.QTableWidget()
+        table.setColumnCount(5)
+        table.setRowCount(5)
+        child.append(table)
+    elif args.widget == 'groupbox':
+        child = QtWidgets.QGroupBox('Groupbox', widget)
     else:
         raise NotImplementedError
 
