@@ -517,7 +517,8 @@ def main(argv=None):
         vbox = QtWidgets.QVBoxLayout(page2)
         vbox.addWidget(QtWidgets.QLabel('Sample Label'))
         toolbox.addItem(page2, 'Page 2')
-        toolbox.addItem(page2, 'Really, really long page 3')
+        page3 = QtWidgets.QWidget()
+        toolbox.addItem(page3, 'Really, really long page 3')
     elif args.widget == 'menubutton':
         child = QtWidgets.QToolButton(widget)
         child.setText('Menu Toolbutton')

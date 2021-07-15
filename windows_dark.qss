@@ -61,6 +61,12 @@ QWidget:disabled
     background-color: #31363b;
 }
 
+QGroupBox QWidget
+{
+}
+
+/*margin-right: 1em;*/
+
 QCheckBox
 {
     spacing: 0.23em;
@@ -1667,6 +1673,7 @@ QToolBox
 QToolBox::tab
 {
     border-bottom: 0.09em solid #76797c;
+    margin-left: 1.5em;
 }
 
 QToolBox::tab:selected,
