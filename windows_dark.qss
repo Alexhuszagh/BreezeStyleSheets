@@ -1290,6 +1290,12 @@ QTreeView::branch:open:has-children:has-siblings:hover
     image: url(:/dark/branch_open_hover.svg);
 }
 
+QListView
+{
+    /* Give space for elements aligned left or right. */
+    padding: 0.2em;
+}
+
 QTableView::item,
 QListView::item,
 QTreeView::item
@@ -1307,74 +1313,6 @@ QTreeView::item:!selected:hover
     color: #eff0f1;
     padding: 0.13em;
 }
-
-/*
-QSlider::handle:horizontal,
-QSlider::handle:vertical
-{
-    background: #232629;
-    border: 0.09em solid #626568;
-    border-radius: 0.5em;
-}
-
-QSlider::handle:horizontal
-{
-    width: 0.9em;
-    height: 1em;
-    margin-top: -0.25em;
-    margin-bottom: -0.25em;
-}
-
-QSlider::handle:vertical
-{
-    height: 0.9em;
-    width: 1em;
-    margin-left: -0.25em;
-    margin-right: -0.25em;
-}
-
-QSlider::handle:horizontal:hover,
-QSlider::handle:horizontal:focus,
-QSlider::handle:vertical:hover,
-QSlider::handle:vertical:focus
-{
-    border: 0.09em solid #3daee9;
-}
-
-QSlider::sub-page:horizontal,
-QSlider::add-page:vertical
-{
-    background: #3daee9;
-    border-radius: 0.2em;
-}
-
-QSlider::add-page:horizontal,
-QSlider::sub-page:vertical
-{
-    background: #626568;
-    border-radius: 0.2em;
-}
-
-QSlider::groove:horizontal,
-QSlider::groove:vertical
-{
-    background-color: #565a5e;
-    border: 0em solid #31363b;
-    border-radius: 0.2em;
-}
-*/
-
-/* TODO(ahuszagh) This is being ignored
-QSlider::groove:horizontal
-{
-    height: 0.5em;
-}
-
-QSlider::groove:vertical
-{
-    width: 0.5em;
-}
-*/
 
 QSlider::handle:horizontal,
 QSlider::handle:vertical
@@ -1702,9 +1640,11 @@ QProgressBar:horizontal
     height: 0.2em;
     min-width: 6em;
     text-align: right;
+    padding-left: -0.03em;
+    padding-right: -0.03em;
     margin-top: 0.2em;
     margin-bottom: 0.2em;
-    margin-right: 1em;
+    margin-right: 1.5em;
 }
 
 QProgressBar:vertical
@@ -1712,6 +1652,8 @@ QProgressBar:vertical
     width: 0.2em;
     min-height: 6em;
     text-align: bottom;
+    padding-top: -0.03em;
+    padding-bottom: -0.03em;
     margin-left: 0.2em;
     margin-right: 0.2em;
     margin-bottom: 0.41em;
@@ -1722,7 +1664,7 @@ QProgressBar::chunk:vertical
 {
     background-color: #3daee9;
     border: 0.9em transparent;
-    border-radius: 0.13em;
+    border-radius: 0.08em;
 }
 
 QScrollArea,

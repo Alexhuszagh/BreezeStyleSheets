@@ -106,6 +106,13 @@ The limitations of stylesheets include:
 - QToolButton cannot have center-aligned text.
 - The branch indicators on QTreeViews don't scale.
 
+# Debugging
+
+Have an issue with the styles? Here's a few suggestions, prior to filing a bug report:
+
+- Modified the application font? Make sure you do **before** setting the application stylesheet.
+- Modified the application style? Make sure you do **before** you creating a `QApplication instance`.
+
 # Contributing
 
 To configure the assets and the stylesheets, run `configure.py`. To compile the assets and stylesheets for Python, run `pyrcc5 breeze.qrc -o breeze_resources.py`.

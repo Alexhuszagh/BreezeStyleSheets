@@ -458,6 +458,14 @@ def main(argv=None):
     app = QtWidgets.QApplication(argv[:1] + unknown)
     window = QtWidgets.QMainWindow()
 
+     # use the default font size
+    font = app.font()
+    if args.font_size > 0:
+        font.setPointSizeF(args.font_size)
+    if args.font_family:
+        font.setFamily(args.font_family)
+    app.setFont(font)
+
     # setup ui
     ui = Ui()
     ui.setup(window)
@@ -484,14 +492,6 @@ def main(argv=None):
         file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text)
         stream = QtCore.QTextStream(file)
         app.setStyleSheet(stream.readAll())
-
-    # use the default font size
-    font = app.font()
-    if args.font_size > 0:
-        font.setPointSizeF(args.font_size)
-    if args.font_family:
-        font.setFamily(args.font_family)
-    app.setFont(font)
 
     # run
     window.show()

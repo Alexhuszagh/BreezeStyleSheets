@@ -23,14 +23,15 @@
 # THE SOFTWARE.
 
 '''
-    single
-    ======
+    test
+    ====
 
     Test styles of a single widget.
 '''
 
 import argparse
 import os
+import random
 import sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -177,13 +178,38 @@ def main(argv=None):
     # Load the correct widget.
     layout_type = 'vertical'
     if args.widget == 'progress_bar_horizontal':
-        child = QtWidgets.QProgressBar(widget)
-        child.setProperty('value', 24)
+        child = []
+        bar1 = QtWidgets.QProgressBar(widget)
+        bar1.setProperty('value', 0)
+        child.append(bar1)
+        bar2 = QtWidgets.QProgressBar(widget)
+        bar2.setProperty('value', 24)
+        child.append(bar2)
+        bar3 = QtWidgets.QProgressBar(widget)
+        bar3.setProperty('value', 99)
+        child.append(bar3)
+        bar4 = QtWidgets.QProgressBar(widget)
+        bar4.setProperty('value', 100)
+        child.append(bar4)
     elif args.widget == 'progress_bar_vertical':
         layout_type = 'horizontal'
-        child = QtWidgets.QProgressBar(widget)
-        child.setOrientation(QtCore.Qt.Vertical)
-        child.setProperty('value', 24)
+        child = []
+        bar1 = QtWidgets.QProgressBar(widget)
+        bar1.setOrientation(QtCore.Qt.Vertical)
+        bar1.setProperty('value', 0)
+        child.append(bar1)
+        bar2 = QtWidgets.QProgressBar(widget)
+        bar2.setOrientation(QtCore.Qt.Vertical)
+        bar2.setProperty('value', 24)
+        child.append(bar2)
+        bar3 = QtWidgets.QProgressBar(widget)
+        bar3.setOrientation(QtCore.Qt.Vertical)
+        bar3.setProperty('value', 99)
+        child.append(bar3)
+        bar4 = QtWidgets.QProgressBar(widget)
+        bar4.setOrientation(QtCore.Qt.Vertical)
+        bar4.setProperty('value', 100)
+        child.append(bar4)
     elif args.widget == 'slider_horizontal':
         child = QtWidgets.QSlider(widget)
         child.setOrientation(QtCore.Qt.Horizontal)
@@ -324,10 +350,16 @@ def main(argv=None):
         item = QtWidgets.QTableWidgetItem('Column 2')
         child.setHorizontalHeaderItem(1, item)
     elif args.widget == 'list':
-        # TODO(ahuszagh) Need icons?
         child = QtWidgets.QListWidget(widget)
         for index in range(10):
-            child.addItem(QtWidgets.QListWidgetItem(f'Item {index + 1}'))
+            item = QtWidgets.QListWidgetItem(f'Item {index + 1}')
+            item.setTextAlignment(random.choice([QtCore.Qt.AlignLeft, QtCore.Qt.AlignRight, QtCore.Qt.AlignHCenter]))
+            child.addItem(item)
+        icon = QtGui.QIcon(':/dark/close.svg')
+        for index in range(10):
+            item = QtWidgets.QListWidgetItem(icon, f'Item {index + 1}')
+            item.setTextAlignment(random.choice([QtCore.Qt.AlignLeft, QtCore.Qt.AlignRight, QtCore.Qt.AlignHCenter]))
+            child.addItem(item)
     elif args.widget == 'scrollbar_vertical':
         child = QtWidgets.QListWidget(widget)
         for index in range(100):
@@ -407,9 +439,6 @@ def main(argv=None):
         child = QtWidgets.QProgressBar(widget)
         child.setProperty('value', 24)
         window.resize(30, 30)
-    elif args.widget == 'dock_progress':
-        # Bug fix for the dock scroll area issue in example.py.
-        raise NotImplementedError
     else:
         raise NotImplementedError
 
