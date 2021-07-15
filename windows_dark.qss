@@ -556,27 +556,22 @@ QSizeGrip
 
 QMainWindow::separator
 {
-    background-color: #31363b;
-    color: white;
-    padding-left: 0.4ex;
-    spacing: 0.09em;
-    border: 0.09em dashed #76797c;
+    border: 0.15em solid #76797c;
+    border-radius: 0.09em;
+    margin-left: 0.5em;
 }
 
 QMainWindow::separator:hover
 {
-    background-color: #787876;
-    color: white;
-    padding-left: 0.4ex;
-    border: 0.09em solid #76797c;
-    spacing: 0.09em;
+    border: 0.15em solid #8a8d8f;
+    border-radius: 0.09em;
+    margin-left: 0.5em;
 }
 
 QMenu::separator
 {
     height: 0.09em;
     background-color: #76797c;
-    color: white;
     padding-left: 0.4ex;
     margin-left: 1ex;
     margin-right: 0.23em;
@@ -671,8 +666,8 @@ QPushButton:focus
 QPushButton:pressed
 {
     background-color: #31363b;
-    padding-top: -1.5ex;
-    padding-bottom: -1.7ex;
+    padding-top: -0.65em;
+    padding-bottom: -0.74em;
 }
 
 QComboBox
@@ -682,7 +677,7 @@ QComboBox
     border: 0.04em solid #76797c;
     border-radius: 0.09em;
     padding: 0.23em;
-    min-width: 7.5ex;
+    min-width: 2.5em;
 }
 
 QPushButton:checked
@@ -748,7 +743,7 @@ QComboBox::drop-down
 {
     subcontrol-origin: padding;
     subcontrol-position: top right;
-    width: 1.5ex;
+    width: 0.65em;
 
     border-left-width: 0ex;
     border-left-color: darkgray;
@@ -1313,6 +1308,74 @@ QTreeView::item:!selected:hover
     padding: 0.13em;
 }
 
+/*
+QSlider::handle:horizontal,
+QSlider::handle:vertical
+{
+    background: #232629;
+    border: 0.09em solid #626568;
+    border-radius: 0.5em;
+}
+
+QSlider::handle:horizontal
+{
+    width: 0.9em;
+    height: 1em;
+    margin-top: -0.25em;
+    margin-bottom: -0.25em;
+}
+
+QSlider::handle:vertical
+{
+    height: 0.9em;
+    width: 1em;
+    margin-left: -0.25em;
+    margin-right: -0.25em;
+}
+
+QSlider::handle:horizontal:hover,
+QSlider::handle:horizontal:focus,
+QSlider::handle:vertical:hover,
+QSlider::handle:vertical:focus
+{
+    border: 0.09em solid #3daee9;
+}
+
+QSlider::sub-page:horizontal,
+QSlider::add-page:vertical
+{
+    background: #3daee9;
+    border-radius: 0.2em;
+}
+
+QSlider::add-page:horizontal,
+QSlider::sub-page:vertical
+{
+    background: #626568;
+    border-radius: 0.2em;
+}
+
+QSlider::groove:horizontal,
+QSlider::groove:vertical
+{
+    background-color: #565a5e;
+    border: 0em solid #31363b;
+    border-radius: 0.2em;
+}
+*/
+
+/* TODO(ahuszagh) This is being ignored
+QSlider::groove:horizontal
+{
+    height: 0.5em;
+}
+
+QSlider::groove:vertical
+{
+    width: 0.5em;
+}
+*/
+
 QSlider::handle:horizontal,
 QSlider::handle:vertical
 {
@@ -1325,14 +1388,12 @@ QSlider::handle:vertical
 
 QSlider:horizontal
 {
-    min-width: 4.1em;
-    height: 4.1em;
+    height: 2em;
 }
 
 QSlider:vertical
 {
-    min-height: 4.1em;
-    width: 4.1em;
+    width: 2em;
 }
 
 QSlider::handle:horizontal
@@ -1348,10 +1409,9 @@ QSlider::handle:vertical
 QSlider::groove:horizontal,
 QSlider::groove:vertical
 {
-    border: 0.09em solid #31363b;
     background: #565a5e;
-    margin: 0ex;
-    border-radius: 0.15em;
+    border: 0em solid #31363b;
+    border-radius: 0.19em;
 }
 
 QSlider::groove:horizontal
@@ -1376,14 +1436,14 @@ QSlider::sub-page:horizontal,
 QSlider::add-page:vertical
 {
     background: #3daee9;
-    border-radius: 0.12em;
+    border-radius: 0.19em;
 }
 
 QSlider::add-page:horizontal,
 QSlider::sub-page:vertical
 {
     background: #626568;
-    border-radius: 0.12em;
+    border-radius: 0.19em;
 }
 
 QToolButton
@@ -1665,7 +1725,9 @@ QProgressBar::chunk:vertical
     border-radius: 0.13em;
 }
 
-QScrollArea
+QScrollArea,
+QScrollArea:focus,
+QScrollArea:hover
 {
     border: 0em solid black;
 }

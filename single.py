@@ -239,9 +239,15 @@ def main(argv=None):
         child.setValue(10.5);
     elif args.widget == 'combobox':
         layout_type = 'horizontal'
-        child = QtWidgets.QComboBox(widget)
-        child.addItem('Item 1')
-        child.addItem('Item 2')
+        child = []
+        combo1 = QtWidgets.QComboBox(widget)
+        combo1.addItem('Item 1')
+        combo1.addItem('Item 2')
+        child.append(combo1)
+        combo2 = QtWidgets.QComboBox(widget)
+        combo2.addItem('Very Very Long Item 1')
+        combo2.addItem('Very Very Long Item 2')
+        child.append(combo2)
     elif args.widget == 'tab_widget_top':
         child = QtWidgets.QTabWidget(widget)
         child.setTabPosition(QtWidgets.QTabWidget.North)
@@ -387,6 +393,23 @@ def main(argv=None):
         tree2.header().setSectionsClickable(True)
         item12 = QtWidgets.QTreeWidgetItem(tree2, ['Row 1', 'Column 2', 'Column 3'])
         child.append(tree2)
+    elif args.widget == 'view_scrollarea':
+        # For us to have both scrollbars visible.
+        child = QtWidgets.QTableWidget(widget)
+        child.setColumnCount(100)
+        child.setRowCount(100)
+        for index in range(100):
+            row = QtWidgets.QTableWidgetItem(f'Row {index + 1}')
+            child.setVerticalHeaderItem(0, row)
+            column = QtWidgets.QTableWidgetItem(f'Column {index + 1}')
+            child.setHorizontalHeaderItem(index, column)
+    elif args.widget == 'widget_scrollarea':
+        child = QtWidgets.QProgressBar(widget)
+        child.setProperty('value', 24)
+        window.resize(30, 30)
+    elif args.widget == 'dock_progress':
+        # Bug fix for the dock scroll area issue in example.py.
+        raise NotImplementedError
     else:
         raise NotImplementedError
 
