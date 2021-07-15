@@ -221,12 +221,16 @@ def main(argv=None):
     elif args.widget == 'splitter_horizontal':
         layout_type = 'vertical'
         child = QtWidgets.QSplitter(widget)
-        raise NotImplementedError
+        child.addWidget(QtWidgets.QListWidget())
+        child.addWidget(QtWidgets.QTreeWidget())
+        child.addWidget(QtWidgets.QTextEdit())
     elif args.widget == 'splitter_vertical':
         layout_type = 'horizontal'
         child = QtWidgets.QSplitter(widget)
         child.setOrientation(QtCore.Qt.Vertical)
-        raise NotImplementedError
+        child.addWidget(QtWidgets.QListWidget())
+        child.addWidget(QtWidgets.QTreeWidget())
+        child.addWidget(QtWidgets.QTextEdit())
     elif args.widget == 'menu':
         child = QtWidgets.QMenuBar(window)
         child.setGeometry(QtCore.QRect(0, 0, args.width, int(1.5 * font.pointSize())))
@@ -275,6 +279,11 @@ def main(argv=None):
         combo2.addItem('Very Very Long Item 1')
         combo2.addItem('Very Very Long Item 2')
         child.append(combo2)
+        combo3 = QtWidgets.QComboBox(widget)
+        combo3.setEditable(True)
+        combo3.addItem('Edit 1')
+        combo3.addItem('Edit 2')
+        child.append(combo3)
     elif args.widget == 'tab_widget_top':
         child = QtWidgets.QTabWidget(widget)
         child.setTabPosition(QtWidgets.QTabWidget.North)

@@ -297,16 +297,6 @@ QMenu::item:hover
     background-color: #3daee9;
 }
 
-QMenu::separator
-{
-    height: 0.09em;
-    background: lightblue;
-    margin-top: 0.2em;
-    margin-bottom: 0.2em;
-    margin-left: 0.41em;
-    margin-right: 0.23em;
-}
-
 QMenu::indicator
 {
     width: 1em;
@@ -585,9 +575,11 @@ QMenu::separator
 {
     height: 0.09em;
     background-color: #76797c;
-    padding-left: 0.4ex;
-    margin-left: 1ex;
-    margin-right: 0.23em;
+    padding-left: 0.2em;
+    margin-top: 0.2em;
+    margin-bottom: 0.2em;
+    margin-left: 0.41em;
+    margin-right: 0.41em;
 }
 
 QFrame[frameShape="2"], /* QFrame::Panel == 0x0003 */
@@ -701,7 +693,6 @@ QPushButton:pressed
 
 QComboBox
 {
-    selection-background-color: #3daee9;
     border-style: solid;
     border: 0.04em solid #76797c;
     border-radius: 0.09em;
@@ -756,19 +747,12 @@ QTreeView:hover:pressed
     background-color: #31363b;
 }
 
-QComboBox:on
-{
-    padding-top: 0.13em;
-    padding-left: 0.4ex;
-    selection-background-color: #4a4a4a;
-}
-
 QComboBox QAbstractItemView
 {
-    background-color: #232629;
+    background-color: #31363b;
+    selection-background-color: #2a79a3;
+    outline: 0em;
     border-radius: 0.09em;
-    border: 0.09em solid #76797c;
-    selection-background-color: #3daee9;
 }
 
 QComboBox::drop-down
@@ -777,8 +761,7 @@ QComboBox::drop-down
     subcontrol-position: top right;
     width: 0.65em;
 
-    border-left-width: 0ex;
-    border-left-color: darkgray;
+    border-left-width: 0em;
     border-left-style: solid;
     border-top-right-radius: 0.13em;
     border-bottom-right-radius: 0.13em;
@@ -1725,25 +1708,10 @@ QToolBox::tab:hover
 
 QSplitter::handle
 {
-    border: 0.09em dashed #76797c;
-}
-
-QSplitter::handle:hover
-{
-    background-color: #787876;
-    border: 0.09em solid #3daee9;
-}
-
-QSplitter::handle:horizontal
-{
-    min-width: 5em;
-    height: 0.5em;
-}
-
-QSplitter::handle:vertical
-{
-    width: 5em;
-    min-height: 0.5em;
+    border: 0.09em solid #4a4a4a;
+    background: -0.5em solid #4a4a4a;
+    max-width: 0em;
+    max-height: 0em;
 }
 
 QProgressBar:horizontal,
