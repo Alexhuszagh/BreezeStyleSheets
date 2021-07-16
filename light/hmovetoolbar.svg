@@ -1,5 +1,4 @@
-<svg x="0px" y="0px" width="16px" height="64px" viewBox="0 0 16 64" enable-background="new 0 0 16 64" xml:space="preserve">
-  <rect fill="#76797c" x="2" y="1" width="1" height="62.5"/>
-  <rect fill="#76797c" x="9" y="1" width="1" height="62.5"/>
+<svg width="16" height="32">
+    <rect fill="#bab9b8" x="6" y="4" width="1" height="24"/>
+    <rect fill="#bab9b8" x="14" y="4" width="1" height="24"/>
 </svg>
-

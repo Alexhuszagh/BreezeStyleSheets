@@ -30,6 +30,7 @@
 '''
 
 import argparse
+import gc
 import os
 import random
 import sys
@@ -42,7 +43,7 @@ import breeze_resources
 parser = argparse.ArgumentParser(description='Configurations for the Qt5 application.')
 parser.add_argument(
     '--widget',
-    help='''widget to test'''
+    help='''widget to test. can provide `all` to test all'''
 )
 parser.add_argument(
     '--stylesheet',
@@ -147,15 +148,489 @@ def splash_timer(splash, window):
     splash.finish(window)
     window.show()
 
-def main(argv=None):
-    'Application entry point'
+def test_progressbar_horizontal(widget, *_):
+    child = []
+    bar1 = QtWidgets.QProgressBar(widget)
+    bar1.setProperty('value', 0)
+    child.append(bar1)
+    bar2 = QtWidgets.QProgressBar(widget)
+    bar2.setProperty('value', 24)
+    child.append(bar2)
+    bar3 = QtWidgets.QProgressBar(widget)
+    bar3.setProperty('value', 99)
+    child.append(bar3)
+    bar4 = QtWidgets.QProgressBar(widget)
+    bar4.setProperty('value', 100)
+    child.append(bar4)
 
-    args, unknown = parser.parse_known_args(argv)
-    os.environ['QT_SCALE_FACTOR'] = str(args.scale)
-    if args.style != 'native':
-        style = QtWidgets.QStyleFactory.create(args.style)
-        QtWidgets.QApplication.setStyle(style)
-    app = QtWidgets.QApplication(argv[:1] + unknown)
+    return child
+
+def test_progressbar_vertical(widget, *_):
+    layout_type = 'horizontal'
+    child = []
+    bar1 = QtWidgets.QProgressBar(widget)
+    bar1.setOrientation(QtCore.Qt.Vertical)
+    bar1.setProperty('value', 0)
+    child.append(bar1)
+    bar2 = QtWidgets.QProgressBar(widget)
+    bar2.setOrientation(QtCore.Qt.Vertical)
+    bar2.setProperty('value', 24)
+    child.append(bar2)
+    bar3 = QtWidgets.QProgressBar(widget)
+    bar3.setOrientation(QtCore.Qt.Vertical)
+    bar3.setProperty('value', 99)
+    child.append(bar3)
+    bar4 = QtWidgets.QProgressBar(widget)
+    bar4.setOrientation(QtCore.Qt.Vertical)
+    bar4.setProperty('value', 100)
+    child.append(bar4)
+
+    return child, layout_type
+
+def test_slider_horizontal(widget, *_):
+    child = QtWidgets.QSlider(widget)
+    child.setOrientation(QtCore.Qt.Horizontal)
+
+    return child
+
+def test_slider_vertical(widget, *_):
+    layout_type = 'horizontal'
+    child = QtWidgets.QSlider(widget)
+    child.setOrientation(QtCore.Qt.Vertical)
+
+    return child, layout_type
+
+def test_splitter_horizontal(widget, *_):
+    child = QtWidgets.QSplitter(widget)
+    child.addWidget(QtWidgets.QListWidget())
+    child.addWidget(QtWidgets.QTreeWidget())
+    child.addWidget(QtWidgets.QTextEdit())
+
+    return child
+
+def test_splitter_vertical(widget, *_):
+    layout_type = 'horizontal'
+    child = QtWidgets.QSplitter(widget)
+    child.setOrientation(QtCore.Qt.Vertical)
+    child.addWidget(QtWidgets.QListWidget())
+    child.addWidget(QtWidgets.QTreeWidget())
+    child.addWidget(QtWidgets.QTextEdit())
+
+    return child, layout_type
+
+def test_menu(widget, window, font, width, *_):
+    child = QtWidgets.QMenuBar(window)
+    child.setGeometry(QtCore.QRect(0, 0, width, int(1.5 * font.pointSize())))
+    menu = QtWidgets.QMenu('Main Menu', child)
+    menu.addAction(QtWidgets.QAction('&Action 1', window))
+    menu.addAction(QtWidgets.QAction('&Action 2', window))
+    submenu = QtWidgets.QMenu('Sub Menu', menu)
+    submenu.addAction(QtWidgets.QAction('&Action 3', window))
+    action1 = QtWidgets.QAction('&Action 4', window)
+    action1.setCheckable(True)
+    submenu.addAction(action1)
+    menu.addAction(submenu.menuAction())
+    action2 = QtWidgets.QAction('&Action 5', window)
+    action2.setCheckable(True)
+    action2.setChecked(True)
+    menu.addSeparator()
+    menu.addAction(action2)
+    action3 = QtWidgets.QAction('&Action 6', window)
+    action3.setCheckable(True)
+    menu.addAction(action3)
+    icon = QtGui.QIcon(':/dark/close.svg')
+    menu.addAction(QtWidgets.QAction(icon, '&Action 7', window))
+    menu.addAction(QtWidgets.QAction(icon, '&Action 8', window))
+    submenu.addAction(QtWidgets.QAction(icon, '&Action 9', window))
+    child.addAction(menu.menuAction())
+    window.setMenuBar(child)
+
+    return child
+
+def test_statusbar(_, window, *__):
+    child = QtWidgets.QStatusBar(window)
+    window.setStatusBar(child)
+
+    return child
+
+def test_spinbox(widget, *_):
+    layout_type = 'horizontal'
+    child = []
+    spin1 = QtWidgets.QSpinBox(widget)
+    spin1.setValue(10)
+    child.append(spin1)
+    spin2 = QtWidgets.QSpinBox(widget)
+    spin2.setValue(10)
+    spin2.setEnabled(False)
+    child.append(spin2)
+
+    return child, layout_type
+
+def test_double_spinbox(widget, *_):
+    layout_type = 'horizontal'
+    child = []
+    spin1 = QtWidgets.QDoubleSpinBox(widget)
+    spin1.setValue(10.5)
+    child.append(spin1)
+    spin2 = QtWidgets.QDoubleSpinBox(widget)
+    spin2.setValue(10.5)
+    spin2.setEnabled(False)
+    child.append(spin2)
+
+    return child, layout_type
+
+def test_combobox(widget, *_):
+    layout_type = 'horizontal'
+    child = []
+    combo1 = QtWidgets.QComboBox(widget)
+    combo1.addItem('Item 1')
+    combo1.addItem('Item 2')
+    child.append(combo1)
+    combo2 = QtWidgets.QComboBox(widget)
+    combo2.addItem('Very Very Long Item 1')
+    combo2.addItem('Very Very Long Item 2')
+    child.append(combo2)
+    combo3 = QtWidgets.QComboBox(widget)
+    combo3.setEditable(True)
+    combo3.addItem('Edit 1')
+    combo3.addItem('Edit 2')
+    child.append(combo3)
+
+    return child, layout_type
+
+def _test_tabwidget(widget, position):
+    child = QtWidgets.QTabWidget(widget)
+    child.setTabPosition(position)
+    child.addTab(QtWidgets.QWidget(), 'Tab 1')
+    child.addTab(QtWidgets.QWidget(), 'Tab 2')
+    child.addTab(QtWidgets.QWidget(), 'Tab 3')
+
+    return child
+
+def test_tabwidget_top(widget, *_):
+    return _test_tabwidget(widget, QtWidgets.QTabWidget.North)
+
+def test_tabwidget_left(widget, *_):
+    return _test_tabwidget(widget, QtWidgets.QTabWidget.West)
+
+def test_tabwidget_right(widget, *_):
+    return _test_tabwidget(widget, QtWidgets.QTabWidget.East)
+
+def test_tabwidget_bottom(widget, *_):
+    return _test_tabwidget(widget, QtWidgets.QTabWidget.South)
+
+def test_closable_tabwidget(widget, *_):
+    child = _test_tabwidget(widget, QtWidgets.QTabWidget.East)
+    child.setTabsClosable(True)
+
+    return child
+
+def test_dock(_, window, *__):
+    dock1 = QtWidgets.QDockWidget('&Dock widget 1', window)
+    dock2 = QtWidgets.QDockWidget('&Dock widget 2', window)
+    window.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.LeftDockWidgetArea), dock1)
+    window.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.LeftDockWidgetArea), dock2)
+    window.tabifyDockWidget(dock1, dock2)
+
+def test_radio(widget, *_):
+    child = []
+    widget_type = QtWidgets.QRadioButton
+    child.append(abstract_button(widget_type, widget))
+    child.append(abstract_button(widget_type, widget, checked=True))
+    child.append(abstract_button(widget_type, widget, enabled=False))
+    child.append(abstract_button(widget_type, widget, checked=True, enabled=False))
+    child.append(abstract_button(widget_type, widget, 'With Text'))
+
+    return child
+
+def test_checkbox(widget, _, __, ___, ____, app):
+    child = []
+    widget_type = QtWidgets.QCheckBox
+    child.append(abstract_button(widget_type, widget))
+    child.append(abstract_button(widget_type, widget, checked=True))
+    child.append(abstract_button(widget_type, widget, checked=QtCore.Qt.PartiallyChecked))
+    child.append(abstract_button(widget_type, widget, enabled=False))
+    child.append(abstract_button(widget_type, widget, checked=True, enabled=False))
+    child.append(abstract_button(widget_type, widget, checked=QtCore.Qt.PartiallyChecked, enabled=False))
+    child.append(abstract_button(widget_type, widget, 'With Text'))
+    child.append(abstract_button(widget_type, widget, 'With Large Text'))
+    checkbox_font = app.font()
+    checkbox_font.setPointSizeF(50.0)
+    child[-1].setFont(checkbox_font)
+
+    return child
+
+def test_table(widget, *_):
+    child = QtWidgets.QTableWidget(widget)
+    child.setColumnCount(2)
+    child.setRowCount(4)
+    item = QtWidgets.QTableWidgetItem('Row 1')
+    child.setVerticalHeaderItem(0, item)
+    item = QtWidgets.QTableWidgetItem('Row 2')
+    child.setVerticalHeaderItem(1, item)
+    item = QtWidgets.QTableWidgetItem('Row 3')
+    child.setVerticalHeaderItem(2, item)
+    item = QtWidgets.QTableWidgetItem('Row 4')
+    child.setVerticalHeaderItem(3, item)
+    item = QtWidgets.QTableWidgetItem('Column 1')
+    child.setHorizontalHeaderItem(0, item)
+    item = QtWidgets.QTableWidgetItem('Column 2')
+    child.setHorizontalHeaderItem(1, item)
+
+    return child
+
+def test_sortable_table(widget, *_):
+    child = test_table(widget)
+    child.setSortingEnabled(True)
+
+    return child
+
+def test_list(widget, *_):
+    alignments = [QtCore.Qt.AlignLeft, QtCore.Qt.AlignRight, QtCore.Qt.AlignHCenter]
+    child = QtWidgets.QListWidget(widget)
+    for index in range(10):
+        item = QtWidgets.QListWidgetItem(f'Item {index + 1}')
+        item.setTextAlignment(random.choice(alignments))
+        child.addItem(item)
+    icon = QtGui.QIcon(':/dark/close.svg')
+    for index in range(10):
+        item = QtWidgets.QListWidgetItem(icon, f'Item {index + 1}')
+        item.setTextAlignment(random.choice(alignments))
+        child.addItem(item)
+
+    return child
+
+def test_scrollbar_vertical(widget, *_):
+    child = QtWidgets.QListWidget(widget)
+    for index in range(100):
+        child.addItem(QtWidgets.QListWidgetItem(f'Item {index + 1}'))
+
+    return child
+
+def test_scrollbar_horizontal(widget, *_):
+    child = QtWidgets.QTableWidget(widget)
+    child.setColumnCount(100)
+    child.setRowCount(1)
+    item = QtWidgets.QTableWidgetItem(f'Row 1')
+    child.setVerticalHeaderItem(0, item)
+    for index in range(100):
+        item = QtWidgets.QTableWidgetItem(f'Column {index + 1}')
+        child.setHorizontalHeaderItem(index, item)
+
+    return child
+
+def test_toolbar(_, window, *__):
+    toolbar1 = QtWidgets.QToolBar('Toolbar')
+    toolbar1.addAction('&Action 1')
+    toolbar1.addAction('&Action 2')
+    toolbar1.addSeparator()
+    toolbar1.addAction('&Action 3')
+    toolbar1.addAction('&Action 3 Really Long Name')
+    icon = QtGui.QIcon(':/dark/close.svg')
+    toolbar1.addAction(icon, '&Action 4')
+    window.addToolBar(QtCore.Qt.TopToolBarArea, toolbar1)
+
+    toolbar2 = QtWidgets.QToolBar('Toolbar')
+    toolbar2.setOrientation(QtCore.Qt.Vertical)
+    toolbar2.addAction('&Action 1')
+    toolbar2.addAction('&Action 2')
+    toolbar2.addSeparator()
+    toolbar2.addAction('&Action 3')
+    toolbar2.addAction('&Action 3 Really Long Name')
+    icon = QtGui.QIcon(':/dark/close.svg')
+    toolbar2.addAction(icon, '&Action 4')
+    window.addToolBar(QtCore.Qt.LeftToolBarArea, toolbar2)
+
+    return None, None
+
+def test_toolbutton(widget, window, *_):
+    layout_type = 'horizontal'
+    child = [
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+    ]
+    window.setTabOrder(child[0], child[1])
+    window.setTabOrder(child[1], child[2])
+    window.setTabOrder(child[2], child[3])
+    window.setTabOrder(child[3], child[4])
+    window.setTabOrder(child[4], child[5])
+    window.setTabOrder(child[5], child[6])
+    window.setTabOrder(child[6], child[7])
+    child[0].setText('Simple ToolButton')
+    child[1].setText('Action Toolbutton')
+    child[2].setText('Menu Toolbutton')
+    child[3].setText('Instant Toolbutton')
+    child[1].addActions([
+        QtWidgets.QAction('&Action 5', window),
+        QtWidgets.QAction('&Action 6', window),
+    ])
+    child[2].setPopupMode(QtWidgets.QToolButton.MenuButtonPopup)
+    child[2].addActions([
+        QtWidgets.QAction('&Action 9', window),
+        QtWidgets.QAction('&Action 10', window),
+    ])
+    child[3].setPopupMode(QtWidgets.QToolButton.InstantPopup)
+    child[3].addActions([
+        QtWidgets.QAction('&Action 11', window),
+        QtWidgets.QAction('&Action 12', window),
+    ])
+    child[4].setArrowType(QtCore.Qt.LeftArrow)
+    child[5].setArrowType(QtCore.Qt.RightArrow)
+    child[6].setArrowType(QtCore.Qt.UpArrow)
+    child[7].setArrowType(QtCore.Qt.DownArrow)
+    icon = QtGui.QIcon(':/dark/close.svg')
+    child[8].setIcon(icon)
+
+    return child, layout_type
+
+def test_pushbutton(widget, *_):
+    layout_type = 'horizontal'
+    child = []
+    widget_type = QtWidgets.QPushButton
+    child.append(abstract_button(widget_type, widget, 'Button 1', checked=True))
+    child.append(abstract_button(widget_type, widget, 'Button 2', enabled=False))
+    child.append(abstract_button(widget_type, widget, 'Button 3', checkable=False))
+    icon = QtGui.QIcon(':/dark/close.svg')
+    child.append(abstract_button(widget_type, widget, icon, 'Button 4', checkable=False))
+
+    return child, layout_type
+
+def test_tree(widget, *_):
+    child = []
+    tree1 = QtWidgets.QTreeWidget(widget)
+    tree1.setHeaderLabel('Tree 1')
+    item1 = QtWidgets.QTreeWidgetItem(tree1, ['Row 1'])
+    item2 = QtWidgets.QTreeWidgetItem(tree1, ['Row 2'])
+    item3 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.1'])
+    item3.setFlags(item3.flags() | QtCore.Qt.ItemIsUserCheckable)
+    item3.setCheckState(0, QtCore.Qt.Unchecked)
+    item4 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.2'])
+    item5 = QtWidgets.QTreeWidgetItem(item4, ['Row 2.2.1'])
+    item6 = QtWidgets.QTreeWidgetItem(item5, ['Row 2.2.1.1'])
+    item7 = QtWidgets.QTreeWidgetItem(item5, ['Row 2.2.1.2'])
+    item7.setFlags(item7.flags() | QtCore.Qt.ItemIsUserCheckable)
+    item7.setCheckState(0, QtCore.Qt.Checked)
+    item8 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.3'])
+    item8.setFlags(item8.flags() | QtCore.Qt.ItemIsUserTristate)
+    item8.setCheckState(0, QtCore.Qt.PartiallyChecked)
+    item9 = QtWidgets.QTreeWidgetItem(tree1, ['Row 3'])
+    item10 = QtWidgets.QTreeWidgetItem(item9, ['Row 3.1'])
+    item11 = QtWidgets.QTreeWidgetItem(tree1, ['Row 4'])
+    child.append(tree1)
+    tree2 = QtWidgets.QTreeWidget(widget)
+    tree2.setHeaderLabel('Tree 2')
+    tree2.header().setSectionsClickable(True)
+    item12 = QtWidgets.QTreeWidgetItem(tree2, ['Row 1', 'Column 2', 'Column 3'])
+    child.append(tree2)
+
+    return child
+
+def test_view_scrollarea(widget, *_):
+    # For us to have both scrollbars visible.
+    child = QtWidgets.QTableWidget(widget)
+    child.setColumnCount(100)
+    child.setRowCount(100)
+    for index in range(100):
+        row = QtWidgets.QTableWidgetItem(f'Row {index + 1}')
+        child.setVerticalHeaderItem(0, row)
+        column = QtWidgets.QTableWidgetItem(f'Column {index + 1}')
+        child.setHorizontalHeaderItem(index, column)
+
+    return child
+
+def test_widget_scrollarea(widget, window, *_):
+    child = QtWidgets.QProgressBar(widget)
+    child.setProperty('value', 24)
+    window.resize(30, 30)
+
+    return child
+
+def test_frame(widget, *_):
+    child = []
+    text = QtWidgets.QTextEdit()
+    text.setPlainText('Hello world\nTesting lines')
+    child.append(text)
+    table = QtWidgets.QTableWidget()
+    table.setColumnCount(5)
+    table.setRowCount(5)
+    child.append(table)
+
+    return child
+
+def test_groupbox(widget, *_):
+    child = []
+    child.append(QtWidgets.QGroupBox('Groupbox 1', widget))
+    checkable = QtWidgets.QGroupBox('Groupbox 2', widget)
+    checkable.setCheckable(True)
+    child.append(checkable)
+    vbox = QtWidgets.QVBoxLayout(checkable)
+    vbox.setAlignment(QtCore.Qt.AlignHCenter)
+    vbox.addWidget(QtWidgets.QLineEdit('Sample Label'))
+
+    return child
+
+def test_toolbox(widget, *_):
+    # Test alignment with another item, in a vertical layout.
+    child = []
+    child.append(QtWidgets.QGroupBox('Groupbox', widget))
+    child.append(QtWidgets.QGroupBox('Really, really long groupbox', widget))
+    toolbox = QtWidgets.QToolBox(widget)
+    child.append(toolbox)
+    page1 = QtWidgets.QWidget()
+    toolbox.addItem(page1, 'Page 1')
+    page2 = QtWidgets.QWidget()
+    vbox = QtWidgets.QVBoxLayout(page2)
+    vbox.addWidget(QtWidgets.QLabel('Sample Label'))
+    toolbox.addItem(page2, 'Page 2')
+    page3 = QtWidgets.QWidget()
+    toolbox.addItem(page3, 'Really, really long page 3')
+
+    return child
+
+def test_menubutton(widget, window, *_):
+    child = QtWidgets.QToolButton(widget)
+    child.setText('Menu Toolbutton')
+    child.setPopupMode(QtWidgets.QToolButton.MenuButtonPopup)
+    child.addActions([
+        QtWidgets.QAction('&Action 9', window),
+        QtWidgets.QAction('&Action 10', window),
+    ])
+
+    return child
+
+def test_tooltip(widget, *_):
+    child = QtWidgets.QPushButton('Sample Label')
+    child.setToolTip('Sample Tooltip')
+
+    return child
+
+def test_splashscreen(_, window, __, ___, ____, app):
+    pixmap = QtGui.QPixmap('assets/Yellowstone.jpg')
+    size = app.screens()[0].size()
+    scaled = pixmap.scaled(size, QtCore.Qt.KeepAspectRatio)
+    splash = QtWidgets.QSplashScreen(scaled)
+    splash.show()
+    QtCore.QTimer.singleShot(2000, lambda: splash_timer(splash, window))
+
+    return None, None, False
+
+def test_calendar(widget, *_):
+    child = QtWidgets.QCalendarWidget(widget)
+    child.setGridVisible(True)
+
+    return child
+
+def test(args, qtargv, test_widget):
+    '''Test a single widget.'''
+
+    app = QtWidgets.QApplication(qtargv)
 
     # use the default font size
     font = app.font()
@@ -182,419 +657,29 @@ def main(argv=None):
     scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
     scroll.setWidgetResizable(True)
 
-    # Load the correct widget.
+    # Get the correct parameters for our test widget.
+    try:
+        function = globals()[f'test_{test_widget}']
+    except KeyError:
+        raise NotImplementedError(f'test for {test_widget} not implemented')
+    result = function(widget, window, font, args.width, args.height, app)
+    child = []
     layout_type = 'vertical'
-    if args.widget == 'progress_bar_horizontal':
-        child = []
-        bar1 = QtWidgets.QProgressBar(widget)
-        bar1.setProperty('value', 0)
-        child.append(bar1)
-        bar2 = QtWidgets.QProgressBar(widget)
-        bar2.setProperty('value', 24)
-        child.append(bar2)
-        bar3 = QtWidgets.QProgressBar(widget)
-        bar3.setProperty('value', 99)
-        child.append(bar3)
-        bar4 = QtWidgets.QProgressBar(widget)
-        bar4.setProperty('value', 100)
-        child.append(bar4)
-    elif args.widget == 'progress_bar_vertical':
-        layout_type = 'horizontal'
-        child = []
-        bar1 = QtWidgets.QProgressBar(widget)
-        bar1.setOrientation(QtCore.Qt.Vertical)
-        bar1.setProperty('value', 0)
-        child.append(bar1)
-        bar2 = QtWidgets.QProgressBar(widget)
-        bar2.setOrientation(QtCore.Qt.Vertical)
-        bar2.setProperty('value', 24)
-        child.append(bar2)
-        bar3 = QtWidgets.QProgressBar(widget)
-        bar3.setOrientation(QtCore.Qt.Vertical)
-        bar3.setProperty('value', 99)
-        child.append(bar3)
-        bar4 = QtWidgets.QProgressBar(widget)
-        bar4.setOrientation(QtCore.Qt.Vertical)
-        bar4.setProperty('value', 100)
-        child.append(bar4)
-    elif args.widget == 'slider_horizontal':
-        child = QtWidgets.QSlider(widget)
-        child.setOrientation(QtCore.Qt.Horizontal)
-    elif args.widget == 'slider_vertical':
-        layout_type = 'horizontal'
-        child = QtWidgets.QSlider(widget)
-        child.setOrientation(QtCore.Qt.Vertical)
-    elif args.widget == 'splitter_horizontal':
-        layout_type = 'vertical'
-        child = QtWidgets.QSplitter(widget)
-        child.addWidget(QtWidgets.QListWidget())
-        child.addWidget(QtWidgets.QTreeWidget())
-        child.addWidget(QtWidgets.QTextEdit())
-    elif args.widget == 'splitter_vertical':
-        layout_type = 'horizontal'
-        child = QtWidgets.QSplitter(widget)
-        child.setOrientation(QtCore.Qt.Vertical)
-        child.addWidget(QtWidgets.QListWidget())
-        child.addWidget(QtWidgets.QTreeWidget())
-        child.addWidget(QtWidgets.QTextEdit())
-    elif args.widget == 'menu':
-        child = QtWidgets.QMenuBar(window)
-        child.setGeometry(QtCore.QRect(0, 0, args.width, int(1.5 * font.pointSize())))
-        menu = QtWidgets.QMenu('Main Menu', child)
-        menu.addAction(QtWidgets.QAction('&Action 1', window))
-        menu.addAction(QtWidgets.QAction('&Action 2', window))
-        submenu = QtWidgets.QMenu('Sub Menu', menu)
-        submenu.addAction(QtWidgets.QAction('&Action 3', window))
-        action1 = QtWidgets.QAction('&Action 4', window)
-        action1.setCheckable(True)
-        submenu.addAction(action1)
-        menu.addAction(submenu.menuAction())
-        action2 = QtWidgets.QAction('&Action 5', window)
-        action2.setCheckable(True)
-        action2.setChecked(True)
-        menu.addSeparator()
-        menu.addAction(action2)
-        action3 = QtWidgets.QAction('&Action 6', window)
-        action3.setCheckable(True)
-        menu.addAction(action3)
-        icon = QtGui.QIcon(':/dark/close.svg')
-        menu.addAction(QtWidgets.QAction(icon, '&Action 7', window))
-        menu.addAction(QtWidgets.QAction(icon, '&Action 8', window))
-        submenu.addAction(QtWidgets.QAction(icon, '&Action 9', window))
-        child.addAction(menu.menuAction())
-        window.setMenuBar(child)
-    elif args.widget == 'status_bar':
-        child = QtWidgets.QStatusBar(window)
-        window.setStatusBar(child)
-    elif args.widget == 'spinbox':
-        layout_type = 'horizontal'
-        child = []
-        spin1 = QtWidgets.QSpinBox(window)
-        spin1.setValue(10)
-        child.append(spin1)
-        spin2 = QtWidgets.QSpinBox(window)
-        spin2.setValue(10)
-        spin2.setEnabled(False)
-        child.append(spin2)
-    elif args.widget == 'double_spinbox':
-        layout_type = 'horizontal'
-        child = []
-        spin1 = QtWidgets.QDoubleSpinBox(window)
-        spin1.setValue(10.5)
-        child.append(spin1)
-        spin2 = QtWidgets.QDoubleSpinBox(window)
-        spin2.setValue(10.5)
-        spin2.setEnabled(False)
-        child.append(spin2)
-    elif args.widget == 'combobox':
-        layout_type = 'horizontal'
-        child = []
-        combo1 = QtWidgets.QComboBox(widget)
-        combo1.addItem('Item 1')
-        combo1.addItem('Item 2')
-        child.append(combo1)
-        combo2 = QtWidgets.QComboBox(widget)
-        combo2.addItem('Very Very Long Item 1')
-        combo2.addItem('Very Very Long Item 2')
-        child.append(combo2)
-        combo3 = QtWidgets.QComboBox(widget)
-        combo3.setEditable(True)
-        combo3.addItem('Edit 1')
-        combo3.addItem('Edit 2')
-        child.append(combo3)
-    elif args.widget == 'tab_widget_top':
-        child = QtWidgets.QTabWidget(widget)
-        child.setTabPosition(QtWidgets.QTabWidget.North)
-        child.addTab(QtWidgets.QWidget(), 'Tab 1')
-        child.addTab(QtWidgets.QWidget(), 'Tab 2')
-        child.addTab(QtWidgets.QWidget(), 'Tab 3')
-    elif args.widget == 'tab_widget_left':
-        child = QtWidgets.QTabWidget(widget)
-        child.setTabPosition(QtWidgets.QTabWidget.West)
-        child.addTab(QtWidgets.QWidget(), 'Tab 1')
-        child.addTab(QtWidgets.QWidget(), 'Tab 2')
-        child.addTab(QtWidgets.QWidget(), 'Tab 3')
-    elif args.widget == 'tab_widget_right':
-        child = QtWidgets.QTabWidget(widget)
-        child.setTabPosition(QtWidgets.QTabWidget.East)
-        child.addTab(QtWidgets.QWidget(), 'Tab 1')
-        child.addTab(QtWidgets.QWidget(), 'Tab 2')
-        child.addTab(QtWidgets.QWidget(), 'Tab 3')
-    elif args.widget == 'tab_widget_bottom':
-        child = QtWidgets.QTabWidget(widget)
-        child.setTabPosition(QtWidgets.QTabWidget.South)
-        child.addTab(QtWidgets.QWidget(), 'Tab 1')
-        child.addTab(QtWidgets.QWidget(), 'Tab 2')
-        child.addTab(QtWidgets.QWidget(), 'Tab 3')
-    elif args.widget == 'closable_tab_widget':
-        child = QtWidgets.QTabWidget(widget)
-        child.setTabPosition(QtWidgets.QTabWidget.East)
-        child.setTabsClosable(True)
-        child.addTab(QtWidgets.QWidget(), 'Tab 1')
-        child.addTab(QtWidgets.QWidget(), 'Tab 2')
-        child.addTab(QtWidgets.QWidget(), 'Tab 3')
-    elif args.widget == 'dock':
-        child = []
-        dock1 = QtWidgets.QDockWidget('&Dock widget 1', window)
-        dock2 = QtWidgets.QDockWidget('&Dock widget 2', window)
-        window.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.LeftDockWidgetArea), dock1)
-        window.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.LeftDockWidgetArea), dock2)
-        window.tabifyDockWidget(dock1, dock2)
-    elif args.widget == 'radio':
-        child = []
-        child.append(abstract_button(QtWidgets.QRadioButton, widget))
-        child.append(abstract_button(QtWidgets.QRadioButton, widget, checked=True))
-        child.append(abstract_button(QtWidgets.QRadioButton, widget, enabled=False))
-        child.append(abstract_button(QtWidgets.QRadioButton, widget, checked=True, enabled=False))
-        child.append(abstract_button(QtWidgets.QRadioButton, widget, 'With Text'))
-    elif args.widget == 'checkbox':
-        child = []
-        child.append(abstract_button(QtWidgets.QCheckBox, widget))
-        child.append(abstract_button(QtWidgets.QCheckBox, widget, checked=True))
-        child.append(abstract_button(QtWidgets.QCheckBox, widget, checked=QtCore.Qt.PartiallyChecked))
-        child.append(abstract_button(QtWidgets.QCheckBox, widget, enabled=False))
-        child.append(abstract_button(QtWidgets.QCheckBox, widget, checked=True, enabled=False))
-        child.append(abstract_button(QtWidgets.QCheckBox, widget, checked=QtCore.Qt.PartiallyChecked, enabled=False))
-        child.append(abstract_button(QtWidgets.QCheckBox, widget, 'With Text'))
-        child.append(abstract_button(QtWidgets.QCheckBox, widget, 'With Large Text'))
-        checkbox_font = app.font()
-        checkbox_font.setPointSizeF(50.0)
-        child[-1].setFont(checkbox_font)
-    elif args.widget == 'table':
-        child = QtWidgets.QTableWidget(widget)
-        child.setColumnCount(2)
-        child.setRowCount(4)
-        item = QtWidgets.QTableWidgetItem('Row 1')
-        child.setVerticalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem('Row 2')
-        child.setVerticalHeaderItem(1, item)
-        item = QtWidgets.QTableWidgetItem('Row 3')
-        child.setVerticalHeaderItem(2, item)
-        item = QtWidgets.QTableWidgetItem('Row 4')
-        child.setVerticalHeaderItem(3, item)
-        item = QtWidgets.QTableWidgetItem('Column 1')
-        child.setHorizontalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem('Column 2')
-        child.setHorizontalHeaderItem(1, item)
-    elif args.widget == 'sortable_table':
-        child = QtWidgets.QTableWidget(widget)
-        child.setSortingEnabled(True)
-        child.setColumnCount(2)
-        child.setRowCount(4)
-        item = QtWidgets.QTableWidgetItem('Row 1')
-        child.setVerticalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem('Row 2')
-        child.setVerticalHeaderItem(1, item)
-        item = QtWidgets.QTableWidgetItem('Row 3')
-        child.setVerticalHeaderItem(2, item)
-        item = QtWidgets.QTableWidgetItem('Row 4')
-        child.setVerticalHeaderItem(3, item)
-        item = QtWidgets.QTableWidgetItem('Column 1')
-        child.setHorizontalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem('Column 2')
-        child.setHorizontalHeaderItem(1, item)
-    elif args.widget == 'list':
-        child = QtWidgets.QListWidget(widget)
-        for index in range(10):
-            item = QtWidgets.QListWidgetItem(f'Item {index + 1}')
-            item.setTextAlignment(random.choice([QtCore.Qt.AlignLeft, QtCore.Qt.AlignRight, QtCore.Qt.AlignHCenter]))
-            child.addItem(item)
-        icon = QtGui.QIcon(':/dark/close.svg')
-        for index in range(10):
-            item = QtWidgets.QListWidgetItem(icon, f'Item {index + 1}')
-            item.setTextAlignment(random.choice([QtCore.Qt.AlignLeft, QtCore.Qt.AlignRight, QtCore.Qt.AlignHCenter]))
-            child.addItem(item)
-    elif args.widget == 'scrollbar_vertical':
-        child = QtWidgets.QListWidget(widget)
-        for index in range(100):
-            child.addItem(QtWidgets.QListWidgetItem(f'Item {index + 1}'))
-    elif args.widget == 'scrollbar_horizontal':
-        child = QtWidgets.QTableWidget(widget)
-        child.setColumnCount(100)
-        child.setRowCount(1)
-        item = QtWidgets.QTableWidgetItem(f'Row 1')
-        child.setVerticalHeaderItem(0, item)
-        for index in range(100):
-            item = QtWidgets.QTableWidgetItem(f'Column {index + 1}')
-            child.setHorizontalHeaderItem(index, item)
-    elif args.widget == 'toolbar':
-        layout_type = None
-        child = []
-        toolbar1 = QtWidgets.QToolBar('Toolbar')
-        toolbar1.addAction('&Action 1')
-        toolbar1.addAction('&Action 2')
-        toolbar1.addSeparator()
-        toolbar1.addAction('&Action 3')
-        toolbar1.addAction('&Action 3 Really Long Name')
-        icon = QtGui.QIcon(':/dark/close.svg')
-        toolbar1.addAction(icon, '&Action 4')
-        window.addToolBar(QtCore.Qt.TopToolBarArea, toolbar1)
-
-        toolbar2 = QtWidgets.QToolBar('Toolbar')
-        toolbar2.setOrientation(QtCore.Qt.Vertical)
-        toolbar2.addAction('&Action 1')
-        toolbar2.addAction('&Action 2')
-        toolbar2.addSeparator()
-        toolbar2.addAction('&Action 3')
-        toolbar2.addAction('&Action 3 Really Long Name')
-        icon = QtGui.QIcon(':/dark/close.svg')
-        toolbar2.addAction(icon, '&Action 4')
-        window.addToolBar(QtCore.Qt.LeftToolBarArea, toolbar2)
-    elif args.widget == 'toolbutton':
-        layout_type = 'horizontal'
-        child = [
-            QtWidgets.QToolButton(widget),
-            QtWidgets.QToolButton(widget),
-            QtWidgets.QToolButton(widget),
-            QtWidgets.QToolButton(widget),
-            QtWidgets.QToolButton(widget),
-            QtWidgets.QToolButton(widget),
-            QtWidgets.QToolButton(widget),
-            QtWidgets.QToolButton(widget),
-            QtWidgets.QToolButton(widget),
-        ]
-        window.setTabOrder(child[0], child[1])
-        window.setTabOrder(child[1], child[2])
-        window.setTabOrder(child[2], child[3])
-        window.setTabOrder(child[3], child[4])
-        window.setTabOrder(child[4], child[5])
-        window.setTabOrder(child[5], child[6])
-        window.setTabOrder(child[6], child[7])
-        child[0].setText('Simple ToolButton')
-        child[1].setText('Action Toolbutton')
-        child[2].setText('Menu Toolbutton')
-        child[3].setText('Instant Toolbutton')
-        child[1].addActions([
-            QtWidgets.QAction('&Action 5', window),
-            QtWidgets.QAction('&Action 6', window),
-        ])
-        child[2].setPopupMode(QtWidgets.QToolButton.MenuButtonPopup)
-        child[2].addActions([
-            QtWidgets.QAction('&Action 9', window),
-            QtWidgets.QAction('&Action 10', window),
-        ])
-        child[3].setPopupMode(QtWidgets.QToolButton.InstantPopup)
-        child[3].addActions([
-            QtWidgets.QAction('&Action 11', window),
-            QtWidgets.QAction('&Action 12', window),
-        ])
-        child[4].setArrowType(QtCore.Qt.LeftArrow)
-        child[5].setArrowType(QtCore.Qt.RightArrow)
-        child[6].setArrowType(QtCore.Qt.UpArrow)
-        child[7].setArrowType(QtCore.Qt.DownArrow)
-        icon = QtGui.QIcon(':/dark/close.svg')
-        child[8].setIcon(icon)
-    elif args.widget == 'pushbutton':
-        layout_type = 'horizontal'
-        child = []
-        child.append(abstract_button(QtWidgets.QPushButton, widget, 'Button 1', checked=True))
-        child.append(abstract_button(QtWidgets.QPushButton, widget, 'Button 2', enabled=False))
-        child.append(abstract_button(QtWidgets.QPushButton, widget, 'Button 3', checkable=False))
-        icon = QtGui.QIcon(':/dark/close.svg')
-        child.append(abstract_button(QtWidgets.QPushButton, widget, icon, 'Button 4', checkable=False))
-    elif args.widget == 'tree':
-        child = []
-        tree1 = QtWidgets.QTreeWidget(widget)
-        tree1.setHeaderLabel('Tree 1')
-        item1 = QtWidgets.QTreeWidgetItem(tree1, ['Row 1'])
-        item2 = QtWidgets.QTreeWidgetItem(tree1, ['Row 2'])
-        item3 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.1'])
-        item3.setFlags(item3.flags() | QtCore.Qt.ItemIsUserCheckable)
-        item3.setCheckState(0, QtCore.Qt.Unchecked)
-        item4 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.2'])
-        item5 = QtWidgets.QTreeWidgetItem(item4, ['Row 2.2.1'])
-        item6 = QtWidgets.QTreeWidgetItem(item5, ['Row 2.2.1.1'])
-        item7 = QtWidgets.QTreeWidgetItem(item5, ['Row 2.2.1.2'])
-        item7.setFlags(item7.flags() | QtCore.Qt.ItemIsUserCheckable)
-        item7.setCheckState(0, QtCore.Qt.Checked)
-        item8 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.3'])
-        item8.setFlags(item8.flags() | QtCore.Qt.ItemIsUserTristate)
-        item8.setCheckState(0, QtCore.Qt.PartiallyChecked)
-        item9 = QtWidgets.QTreeWidgetItem(tree1, ['Row 3'])
-        item10 = QtWidgets.QTreeWidgetItem(item9, ['Row 3.1'])
-        item11 = QtWidgets.QTreeWidgetItem(tree1, ['Row 4'])
-        child.append(tree1)
-        tree2 = QtWidgets.QTreeWidget(widget)
-        tree2.setHeaderLabel('Tree 2')
-        tree2.header().setSectionsClickable(True)
-        item12 = QtWidgets.QTreeWidgetItem(tree2, ['Row 1', 'Column 2', 'Column 3'])
-        child.append(tree2)
-    elif args.widget == 'view_scrollarea':
-        # For us to have both scrollbars visible.
-        child = QtWidgets.QTableWidget(widget)
-        child.setColumnCount(100)
-        child.setRowCount(100)
-        for index in range(100):
-            row = QtWidgets.QTableWidgetItem(f'Row {index + 1}')
-            child.setVerticalHeaderItem(0, row)
-            column = QtWidgets.QTableWidgetItem(f'Column {index + 1}')
-            child.setHorizontalHeaderItem(index, column)
-    elif args.widget == 'widget_scrollarea':
-        child = QtWidgets.QProgressBar(widget)
-        child.setProperty('value', 24)
-        window.resize(30, 30)
-    elif args.widget == 'frame':
-        child = []
-        text = QtWidgets.QTextEdit()
-        text.setPlainText('Hello world\nTesting lines')
-        child.append(text)
-        table = QtWidgets.QTableWidget()
-        table.setColumnCount(5)
-        table.setRowCount(5)
-        child.append(table)
-    elif args.widget == 'groupbox':
-        child = []
-        child.append(QtWidgets.QGroupBox('Groupbox 1', widget))
-        checkable = QtWidgets.QGroupBox('Groupbox 2', widget)
-        checkable.setCheckable(True)
-        child.append(checkable)
-        vbox = QtWidgets.QVBoxLayout(checkable)
-        vbox.setAlignment(QtCore.Qt.AlignHCenter)
-        vbox.addWidget(QtWidgets.QLineEdit('Sample Label'))
-    elif args.widget == 'toolbox':
-        # Test alignment with another item, in a vertical layout.
-        child = []
-        child.append(QtWidgets.QGroupBox('Groupbox', widget))
-        child.append(QtWidgets.QGroupBox('Really, really long groupbox', widget))
-        toolbox = QtWidgets.QToolBox(widget)
-        child.append(toolbox)
-        page1 = QtWidgets.QWidget()
-        toolbox.addItem(page1, 'Page 1')
-        page2 = QtWidgets.QWidget()
-        vbox = QtWidgets.QVBoxLayout(page2)
-        vbox.addWidget(QtWidgets.QLabel('Sample Label'))
-        toolbox.addItem(page2, 'Page 2')
-        page3 = QtWidgets.QWidget()
-        toolbox.addItem(page3, 'Really, really long page 3')
-    elif args.widget == 'menubutton':
-        child = QtWidgets.QToolButton(widget)
-        child.setText('Menu Toolbutton')
-        child.setPopupMode(QtWidgets.QToolButton.MenuButtonPopup)
-        child.addActions([
-            QtWidgets.QAction('&Action 9', window),
-            QtWidgets.QAction('&Action 10', window),
-        ])
-    elif args.widget == 'tooltip':
-        child = QtWidgets.QPushButton('Sample Label')
-        child.setToolTip('Sample Tooltip')
-    elif args.widget == 'splashscreen':
-        # This doesn't work with a central widget.
-        # Handle the run here.
-        pixmap = QtGui.QPixmap('assets/Yellowstone.jpg')
-        size = app.screens()[0].size()
-        scaled = pixmap.scaled(size, QtCore.Qt.KeepAspectRatio)
-        splash = QtWidgets.QSplashScreen(scaled)
-        splash.show()
-        QtCore.QTimer.singleShot(2000, lambda: splash_timer(splash, window))
-        return app.exec()
-    elif args.widget == 'calendar':
-        child = QtWidgets.QCalendarWidget(widget)
-        child.setGridVisible(True)
+    show_window = True
+    if result and isinstance(result, list):
+        # Have a single value passed as a list
+        child = result
+    elif isinstance(result, tuple):
+        child = result[0]
     else:
-        raise NotImplementedError
+        child = result
+    if isinstance(result, tuple) and len(result) >= 2:
+        layout_type = result[1]
+    if isinstance(result, tuple) and len(result) >= 3:
+        show_window = result[2]
 
     # Add the widgets to the layout.
-    if layout_type is not None:
+    if layout_type is not None and child is not None:
         widget_layout = layout[layout_type]()
         if args.compress:
             widget_layout.addStretch(1)
@@ -609,8 +694,30 @@ def main(argv=None):
     window.setCentralWidget(scroll)
 
     # run
-    window.show()
+    if show_window:
+        window.show()
     return app.exec_()
+
+def main(argv=None):
+    'Application entry point'
+
+    # Disable garbage collection to avoid runtime errors.
+    gc.disable()
+    args, unknown = parser.parse_known_args(argv)
+    os.environ['QT_SCALE_FACTOR'] = str(args.scale)
+    if args.style != 'native':
+        style = QtWidgets.QStyleFactory.create(args.style)
+        QtWidgets.QApplication.setStyle(style)
+    if args.widget == 'all':
+        all_tests = [i for i in globals().keys() if i.startswith('test_')]
+        all_widgets = [i[len('test_'):] for i in all_tests]
+        for widget in all_widgets:
+            test(args, argv[:1] + unknown, widget)
+            gc.collect()
+    else:
+        test(args, argv[:1] + unknown, args.widget)
+
+    return 0
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))

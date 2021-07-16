@@ -35,6 +35,7 @@
     "button:background": "#31363b",
     "button:background:pressed": "#454a4f",
     "button:border": "#76797c",
+    "button:checked": "#626568",
     "button:disabled": "#454545",
     "close:hover": "#b37979",
     "close:pressed": "#b33e3e",

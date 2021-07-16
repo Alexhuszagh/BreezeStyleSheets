@@ -757,7 +757,7 @@ QPushButton:disabled
 
 QPushButton:focus
 {
-    color: white;
+    color: ^foreground^;
 }
 
 QPushButton:pressed
@@ -765,6 +765,7 @@ QPushButton:pressed
     background-color: ^button:background:pressed^;
     padding-top: -0.65em;
     padding-bottom: -0.74em;
+    color: ^foreground^;
 }
 
 QComboBox
@@ -782,8 +783,9 @@ QComboBox:editable
 
 QPushButton:checked
 {
-    background-color: ^midtone:dark^;
+    background-color: ^button:checked^;
     border: 0.04em solid ^button:border^;
+    color: ^foreground^;
 }
 
 QPushButton:hover
@@ -795,7 +797,7 @@ QPushButton:hover
 
 QPushButton:checked:hover
 {
-    background-color: ^midtone:dark^;
+    background-color: ^button:checked^;
     border: 0.04em solid ^highlight^;
     color: ^foreground^;
 }
@@ -939,7 +941,7 @@ QAbstractSpinBox::down-arrow:off
     border-image: url(:/^style^/down_arrow_disabled.svg);
 }
 
-QAbstractSpinBox::down-arrow:hover
+QAbstractSpinBox::down-arrow:!off:!disabled:hover
 {
     border-image: url(:/^style^/down_arrow_hover.svg);
 }

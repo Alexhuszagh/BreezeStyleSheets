@@ -757,7 +757,7 @@ QPushButton:disabled
 
 QPushButton:focus
 {
-    color: white;
+    color: #eff0f1;
 }
 
 QPushButton:pressed
@@ -765,6 +765,7 @@ QPushButton:pressed
     background-color: #454a4f;
     padding-top: -0.65em;
     padding-bottom: -0.74em;
+    color: #eff0f1;
 }
 
 QComboBox
@@ -784,6 +785,7 @@ QPushButton:checked
 {
     background-color: #626568;
     border: 0.04em solid #76797c;
+    color: #eff0f1;
 }
 
 QPushButton:hover
@@ -939,7 +941,7 @@ QAbstractSpinBox::down-arrow:off
     border-image: url(:/dark/down_arrow_disabled.svg);
 }
 
-QAbstractSpinBox::down-arrow:hover
+QAbstractSpinBox::down-arrow:!off:!disabled:hover
 {
     border-image: url(:/dark/down_arrow_hover.svg);
 }

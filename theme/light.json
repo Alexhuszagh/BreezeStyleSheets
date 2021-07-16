@@ -14,7 +14,6 @@
     "midtone:hover": "#787876",
     "view:checked": "#b9dae7",
     "view:hover": "rgba(61, 173, 232, 0.2)",
-
     "toolbar:horizontal:background": "#eff0f1",
     "toolbar:vertical:background": "#eff0f1",
     "view:corner": "#eff0f1",
@@ -36,6 +35,7 @@
     "button:background": "#eaebec",
     "button:background:pressed": "#bedfec",
     "button:border": "#bab9b8",
+    "button:checked": "#c7c7c6",
     "button:disabled": "#b4b4b4",
     "close:hover": "#dc7676",
     "close:pressed": "#b33e3e",
