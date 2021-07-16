@@ -5,64 +5,73 @@
     Configure icons, stylesheets, and resource files.
 '''
 
-import glob
+import argparse
 import json
+import re
 import os
 
 home = os.path.dirname(os.path.realpath(__file__))
-# TODO(ahuszagh) Need a script to generate the qrc
-#   Should be easy: styles.qss + assets.
+
+# Create our arguments.
+parser = argparse.ArgumentParser(description='Styles to configure for a Qt application.')
+parser.add_argument(
+    '--styles',
+    help='''comma-separate list of styles to configure''',
+    default='light,dark',
+)
+parser.add_argument(
+    '--resource',
+    help='''output resource file name''',
+    default='custom.qrc',
+)
 
 # List of all icons to configure.
-# TODO(ahuszagh) Change this to use templates
-#   Should just be a list inside each key.
-#       Replace ^0^ with ^foreground^, etc.
 icons = {
     # Arrows
     'down_arrow': {
-        'default': ['foreground'],
-        'hover': ['highlight'],
-        'disabled': ['midtone-light'],
+        'default': ['foreground:hex', 'foreground:opacity'],
+        'hover': ['highlight:hex', 'highlight:opacity'],
+        'disabled': ['midtone:light:hex', 'midtone:light:opacity'],
     },
     'left_arrow': {
         'default': ['foreground'],
-        'disabled': ['midtone-light'],
+        'disabled': ['midtone:light'],
     },
     'right_arrow': {
         'default': ['foreground'],
-        'disabled': ['midtone-light'],
+        'disabled': ['midtone:light'],
     },
     'up_arrow': {
-        'default': ['foreground'],
-        'hover': ['highlight'],
-        'disabled': ['midtone-light'],
+        'default': ['foreground:hex', 'foreground:opacity'],
+        'hover': ['highlight:hex', 'highlight:opacity'],
+        'disabled': ['midtone:light:hex', 'midtone:light:opacity'],
     },
     # Abstract buttons.
     'checkbox_checked': {
-        'default': ['highlight-light'],
+        'default': ['checkbox:light'],
         'disabled': ['checkbox:disabled'],
     },
     'checkbox_indeterminate': {
-        'default': ['highlight-light'],
+        'default': ['checkbox:light'],
         'disabled': ['checkbox:disabled'],
     },
     'checkbox_unchecked': {
-        'default': ['highlight-light'],
+        'default': ['checkbox:light'],
         'disabled': ['checkbox:disabled'],
     },
     'radio_checked': {
-        'default': ['highlight-light'],
+        'default': ['checkbox:light'],
         'disabled': ['checkbox:disabled'],
     },
     'radio_unchecked': {
-        'default': ['highlight-light'],
+        'default': ['checkbox:light'],
         'disabled': ['checkbox:disabled'],
     },
     # Dock/Tab widgets
     'close': {
-        'default': ['midtone-dark'],
-        'hover': ['close:hover'],
-        'pressed': ['close:pressed'],
+        'default': ['midtone:dark:hex', 'midtone:dark:opacity'],
+        'hover': ['close:hover:hex', 'close:hover:opacity'],
+        'pressed': ['close:pressed:hex', 'close:pressed:opacity'],
     },
     'undock': {
         'default': ['dock:float'],
@@ -72,12 +81,12 @@ icons = {
     },
     # Tree views.
     'branch_open': {
-        'default': ['tree'],
-        'hover': ['highlight'],
+        'default': ['tree:hex', 'tree:opacity'],
+        'hover': ['highlight:hex', 'highlight:opacity'],
     },
     'branch_closed': {
-        'default': ['tree'],
-        'hover': ['highlight'],
+        'default': ['tree:hex', 'tree:opacity'],
+        'hover': ['highlight:hex', 'highlight:opacity'],
     },
     'branch_end': {
         'default': ['tree'],
@@ -96,38 +105,89 @@ icons = {
     },
     'calendar_next': {
         'default': ['foreground'],
-        'hover': ['highlight'],
     },
     'calendar_previous': {
         'default': ['foreground'],
-        'hover': ['highlight'],
     },
     'transparent': {
         'default': [],
     },
     'hmovetoolbar': {
-        'default': ['midtone-light'],
+        'default': ['midtone:light'],
     },
     'vmovetoolbar': {
-        'default': ['midtone-light'],
+        'default': ['midtone:light'],
     },
     'hseptoolbar': {
-        'default': ['midtone-light'],
+        'default': ['midtone:light'],
     },
     'vseptoolbar': {
-        'default': ['midtone-light'],
+        'default': ['midtone:light'],
     },
     'sizegrip': {
-        'default': ['midtone-light'],
+        'default': ['midtone:light'],
     }
 }
+
+def parse_hexcolor(color):
+    '''Parse a hexadecimal color.'''
+
+    # Have a hex color: can be 6 or 8 (non-standard) items.
+    color = color[1:]
+    if len(color) not in (6, 8):
+        raise NotImplementedError
+
+    red = int(color[:2], 16)
+    green = int(color[2:4], 16)
+    blue = int(color[4:6], 16)
+    alpha = 1.0
+    if len(color) == 8:
+        alpha = int(color[6:8], 16) / 100
+    return (red, green, blue, alpha)
+
+def parse_rgba(color):
+    '''Parse an RGBA color.'''
+
+    # Match our rgba character. Note that this is
+    # First split the rgba components to get the inner stuff.
+    # Both rgb() and rgba() can have or omit an alpha layer.
+    rgba = re.match(r'^\s*rgba?\s*\((.*)\)\s*$', color).group(1)
+    split = re.split(r'(?:\s*,\s*)|\s+', rgba)
+    if len(split) not in (3, 4):
+        raise NotImplementedError
+    red = int(split[0])
+    green = int(split[1])
+    blue = int(split[2])
+    alpha = 1.0
+    if len(split) == 4:
+        alpha = float(split[3])
+    return (red, green, blue, alpha)
+
+def parse_color(color):
+    '''Parse a color into the RGBA components.'''
+
+    if color.startswith('#'):
+        return parse_hexcolor(color)
+    elif color.startswith('rgb'):
+        return parse_rgba(color)
+    raise NotImplementedError
 
 def replace(contents, colors, color_map):
     '''Replace all template values.'''
 
-    for index, color in enumerate(colors):
+    for index, key in enumerate(colors):
         sub = f'^{index}^'
-        contents = contents.replace(sub, color_map[color])
+        # Need special handling if we have a hex or non:hex character.
+        if key.endswith(':hex'):
+            color = color_map[key[:-len(':hex')]]
+            rgb = [f"{i:02x}" for i in parse_color(color)[:3]]
+            value = f'#{"".join(rgb)}'
+        elif key.endswith(':opacity'):
+            color = color_map[key[:-len(':opacity')]]
+            value = str(parse_color(color)[3])
+        else:
+            value = color_map[key]
+        contents = contents.replace(sub, value)
     return contents
 
 def configure_icons(style, color_map):
@@ -162,7 +222,22 @@ def configure_style(style, color_map):
     configure_icons(style, color_map)
     configure_stylesheet(style, color_map)
 
-def configure(styles, resource):
+def write_xml(styles, path):
+    '''Simple QRC writer.'''
+
+    resources = []
+    for style in styles:
+        files = os.listdir(f'{home}/{style}')
+        resources += [f'{style}/{i}' for i in files]
+    with open(path, 'w') as file:
+        print('<RCC>', file=file)
+        print('  <qresource>', file=file)
+        for resource in sorted(resources):
+            print(f'    <file>{resource}</file>', file=file)
+        print('  </qresource>', file=file)
+        print('</RCC>', file=file)
+
+def configure(styles, path):
     '''Configure all styles and write the files to a QRC file.'''
 
     for style in styles:
@@ -177,8 +252,8 @@ def configure(styles, resource):
         color_map = json.loads('\n'.join(lines))
         configure_style(style, color_map)
 
+    write_xml(styles, path)
+
 if __name__ == '__main__':
-    # TODO(ahuszagh) Replace with argparse values.
-    # Also need to parse from JSON.
-    configure(['dark'], None)
-    #configure('light')
+    args = parser.parse_args()
+    configure(args.styles.split(','), args.resource)

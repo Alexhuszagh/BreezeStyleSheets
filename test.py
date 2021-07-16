@@ -141,6 +141,12 @@ def abstract_button(
     inst.setEnabled(enabled)
     return inst
 
+def splash_timer(splash, window):
+    '''Non-block timer for a splashscreen.'''
+
+    splash.finish(window)
+    window.show()
+
 def main(argv=None):
     'Application entry point'
 
@@ -419,6 +425,7 @@ def main(argv=None):
         toolbar1.addAction('&Action 2')
         toolbar1.addSeparator()
         toolbar1.addAction('&Action 3')
+        toolbar1.addAction('&Action 3 Really Long Name')
         icon = QtGui.QIcon(':/dark/close.svg')
         toolbar1.addAction(icon, '&Action 4')
         window.addToolBar(QtCore.Qt.TopToolBarArea, toolbar1)
@@ -429,6 +436,7 @@ def main(argv=None):
         toolbar2.addAction('&Action 2')
         toolbar2.addSeparator()
         toolbar2.addAction('&Action 3')
+        toolbar2.addAction('&Action 3 Really Long Name')
         icon = QtGui.QIcon(':/dark/close.svg')
         toolbar2.addAction(icon, '&Action 4')
         window.addToolBar(QtCore.Qt.LeftToolBarArea, toolbar2)
@@ -577,9 +585,7 @@ def main(argv=None):
         scaled = pixmap.scaled(size, QtCore.Qt.KeepAspectRatio)
         splash = QtWidgets.QSplashScreen(scaled)
         splash.show()
-        time.sleep(5)
-        splash.finish(window)
-        window.show()
+        QtCore.QTimer.singleShot(2000, lambda: splash_timer(splash, window))
         return app.exec()
     elif args.widget == 'calendar':
         child = QtWidgets.QCalendarWidget(widget)

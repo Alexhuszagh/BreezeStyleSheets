@@ -37,11 +37,12 @@
 
 QToolTip
 {
-    /* 0.2 is the smallest value that's not ignored on Windows. */
-    border: 0.09em solid ^foreground^;
+    /* 0.2ex is the smallest value that's not ignored on Windows. */
+    border: 0.04em solid ^foreground^;
     background-color: ^background^;
-    alternate-background-color: ^alternate-background^;
+    alternate-background-color: ^background:alternate^;
     color: ^foreground^;
+    padding: 0.1em;
     opacity: 200;
 }
 
@@ -72,7 +73,7 @@ QCheckBox
 
 QCheckBox:disabled
 {
-    color: ^midtone-light^;
+    color: ^midtone:light^;
 }
 
 QGroupBox
@@ -384,7 +385,7 @@ QSlider:focus
 
 QLineEdit
 {
-    background-color: ^view:background^;
+    background-color: ^text:background^;
     padding: 0.23em;
     border-style: solid;
     border: 0.04em solid ^midtone^;
@@ -399,25 +400,48 @@ QAbstractScrollArea
     background-color: transparent;
 }
 
+/**
+ *  This is the background for the box in the bottom-right corner
+ *  whene both scrollbars are active.
+ */
+QAbstractScrollArea::corner
+{
+    background: ^background^;
+}
+
+/**
+ *  Can't do the KDE style of where the scrollbar handle
+ *  becomes light on the hover, and only when the handle
+ *  is hovered does it become stylized. This is because
+ *  both the handle and the background events are treated
+ *  together.
+ */
 QScrollBar:horizontal
 {
+    background-color: ^scrollbar:background^;
     height: 0.65em;
     margin: 0.13em 0.65em 0.13em 0.65em;
-    border: 0.09em transparent ^view:background^;
+    border: 0.04em transparent ^scrollbar:background^;
     border-radius: 0.17em;
-    background-color: ^view:background^;
 }
 
 QScrollBar:horizontal:hover
 {
-    background-color: ^midtone-dark^;
+    background-color: ^scrollbar:background:hover^;
 }
 
 QScrollBar::handle:horizontal
 {
-    background-color: ^highlight^;
+    background-color: ^scrollbar:hover^;
+    border: 0.04em solid ^scrollbar:hover^;
     min-width: 0.5em;
     border-radius: 0.17em;
+}
+
+QScrollBar::handle:horizontal:hover
+{
+    background-color: ^scrollbar:hover^;
+    border: 0.04em solid ^scrollbar:hover^;
 }
 
 QScrollBar::add-line:horizontal
@@ -474,23 +498,30 @@ QScrollBar::sub-page:horizontal
 
 QScrollBar:vertical
 {
-    background-color: ^view:background^;
+    background-color: ^scrollbar:background^;
     width: 0.65em;
     margin: 0.65em 0.13em 0.65em 0.13em;
-    border: 0.04em transparent ^view:background^;
+    border: 0.04em transparent ^scrollbar:background^;
     border-radius: 0.17em;
 }
 
 QScrollBar:vertical:hover
 {
-    background-color: ^midtone-dark^;
+    background-color: ^scrollbar:background:hover^;
 }
 
 QScrollBar::handle:vertical
 {
-    background-color: ^highlight^;
+    background-color: ^scrollbar:hover^;
+    border: 0.04em solid ^scrollbar:hover^;
     min-height: 0.5em;
     border-radius: 0.17em;
+}
+
+QScrollBar::handle:vertical:hover
+{
+    background-color: ^scrollbar:hover^;
+    border: 0.04em solid ^scrollbar:hover^;
 }
 
 QScrollBar::sub-line:vertical
@@ -547,14 +578,14 @@ QScrollBar::sub-page:vertical
 
 QTextEdit
 {
-    background-color: ^view:background^;
+    background-color: ^text:background^;
     color: ^foreground^;
     border: 0.04em solid ^midtone^;
 }
 
 QPlainTextEdit
 {
-    background-color: ^view:background^;
+    background-color: ^text:background^;
     color: ^foreground^;
     border-radius: 0.09em;
     border: 0.04em solid ^midtone^;
@@ -620,11 +651,26 @@ QFrame[frameShape] QAbstractItemView:hover
     border: 0em solid black;
 }
 
+/**
+ *  Note: I can't really change the background of the toolbars
+ *  independently, since KDE Breeze has different colors for the
+ *  window bar and the rest of the UI. The top toolbar uses
+ *  the window style, and the rest use the application style,
+ *  which we can't do.
+ */
 QToolBar
 {
-    background: 0.09em solid ^background^;
     font-weight: bold;
-    spacing: 0.2em;
+}
+
+QToolBar:horizontal
+{
+    background: 0.09em solid ^toolbar:horizontal:background^;
+}
+
+QToolBar:vertical
+{
+    background: 0.09em solid ^toolbar:vertical:background^;
 }
 
 QToolBar::handle:horizontal
@@ -647,54 +693,59 @@ QToolBar::separator:vertical
     border-image: url(:/^style^/vseptoolbar.svg);
 }
 
-QToolBar:vertical QToolButton
+QToolBar QToolButton
 {
-    min-height: 4em;
-    min-width: 1em;
+    font-weight: bold;
+    min-height: 1em;
+    min-width: 2em;
+    border: 0.04em transparent black;
+    padding-left: 0.2em;
+    padding-right: 0.3em;
 }
 
-QToolBar:horizontal QToolButton
+QToolBar QToolButton:hover
 {
-    min-height: 1em;
-    min-width: 4em;
+    border: 0.04em solid ^highlight^;
+}
+
+QToolBar QToolButton:pressed
+{
+    border: 0.04em solid ^highlight^;
+    /* The padding doesn't inherit from `QToolBar QToolButton`, so leave it in. */
+    padding-left: 0.2em;
+    padding-right: 0.3em;
 }
 
 QPushButton
 {
     color: ^foreground^;
-    background-color: qlineargradient(
-        x1: 0.5, y1: 0.5
-        x2: 0.5, y2: 1,
-        stop: 0 ^alternate-background^,
-        stop: 0.5 ^background^
-    );
-    border-width: 0.04em;
-    border-color: ^midtone^;
-    border-style: solid;
+    background-color: ^button:background^;
+    border: 0.04em solid ^midtone^;
     padding: 0.23em;
     border-radius: 0.09em;
     outline: none;
+    min-height: 1.1em;
 }
 
 QComboBox:open,
 QPushButton:open
 {
     border-width: 0.04em;
-    border-color: ^midtone^;
+    border-color: ^button:border^;
 }
 
 QComboBox:closed,
 QPushButton:closed
 {
     border-width: 0.04em;
-    border-color: ^midtone^;
+    border-color: ^button:border^;
 }
 
 QPushButton:disabled
 {
     background-color: ^background^;
     border-width: 0.04em;
-    border-color: ^button:disabled^;
+    border-color: ^button:border^;
     border-style: solid;
     padding-top: 0.23em;
     padding-bottom: 0.23em;
@@ -706,71 +757,68 @@ QPushButton:disabled
 
 QPushButton:focus
 {
-    color: ^foreground-light^;
+    color: white;
 }
 
 QPushButton:pressed
 {
-    background-color: ^background^;
+    background-color: ^button:background:pressed^;
     padding-top: -0.65em;
     padding-bottom: -0.74em;
 }
 
 QComboBox
 {
-    border-style: solid;
     border: 0.04em solid ^midtone^;
     border-radius: 0.09em;
     padding: 0.23em;
     min-width: 2.5em;
 }
 
+QComboBox:editable
+{
+    background-color: ^text:background^;
+}
+
 QPushButton:checked
 {
-    background-color: ^midtone^;
-    border-color: ^midtone-dark^;
+    background-color: ^midtone:dark^;
+    border: 0.04em solid ^button:border^;
 }
 
 QPushButton:hover
 {
-    background-color: qlineargradient(
-        x1: 0.5, y1: 0.5
-        x2: 0.5, y2: 1,
-        stop: 0 ^background-light^,
-        stop: 0.5 ^alternate-background^
-    );
+    background-color: ^button:background^;
     border: 0.04em solid ^highlight^;
     color: ^foreground^;
 }
 
 QPushButton:checked:hover
 {
-    background-color: qlineargradient(
-        x1: 0.5, y1: 0.5
-        x2: 0.5, y2: 1,
-        stop: 0 ^midtone:hover^,
-        stop: 0.5 ^midtone^
-    );
+    background-color: ^midtone:dark^;
     border: 0.04em solid ^highlight^;
     color: ^foreground^;
 }
 
 QComboBox:hover,
+QComboBox:focus,
 QAbstractSpinBox:hover,
 QAbstractSpinBox:focus,
 QLineEdit:hover,
+QLineEdit:focus,
 QTextEdit:hover,
 QTextEdit:focus,
 QPlainTextEdit:hover,
 QPlainTextEdit:focus,
 QAbstractView:hover,
-QTreeView:hover
+QTreeView:hover,
+QTreeView:focus
 {
     border: 0.04em solid ^highlight^;
     color: ^foreground^;
 }
 
-QComboBox:hover:pressed,
+QComboBox:hover:pressed:!editable,
 QPushButton:hover:pressed,
 QAbstractSpinBox:hover:pressed,
 QLineEdit:hover:pressed,
@@ -782,10 +830,16 @@ QTreeView:hover:pressed
     background-color: ^background^;
 }
 
+QComboBox:hover:pressed:editable
+{
+    background-color: ^text:background^;
+}
+
 QComboBox QAbstractItemView
 {
-    background-color: ^background^;
-    selection-background-color: ^highlight-dark^;
+    /* This happens for the drop-down menu always, whether editable or not.*/
+    background-color: ^text:background^;
+    selection-background-color: ^highlight:dark^;
     outline-color: 0em;
     border-radius: 0.09em;
 }
@@ -976,6 +1030,13 @@ QTabBar
     qproperty-drawBase: 0em;
     left: 0.23em;
     border-radius: 0.13em;
+    /**
+     *  Note: this is the underline for each tab title. It's not
+     *  documented, and this took forever to track down. At least
+     *  10 hours have been wasted trying to turn off this line,
+     *  do not deleted this comment.
+     */
+    selection-color: transparent;
 }
 
 QTabBar:focus
@@ -1015,8 +1076,8 @@ QTabBar::tab:top:only-one
     border: 0.04em transparent black;
     border-left: 0.04em solid ^midtone^;
     border-right: 0.04em solid ^midtone^;
-    border-top: 0.04em solid ^highlight^;
-    background-color: ^background^;
+    border-top: 0.09em solid ^highlight^;
+    background-color: ^tab:background:selected^;
     padding: 0.23em;
     min-width: 50px;
     border-radius: 0.09em;
@@ -1070,8 +1131,8 @@ QTabBar::tab:bottom:only-one
     border: 0.04em transparent black;
     border-left: 0.04em solid ^midtone^;
     border-right: 0.04em solid ^midtone^;
-    border-bottom: 0.04em solid ^highlight^;
-    background-color: ^background^;
+    border-bottom: 0.09em solid ^highlight^;
+    background-color: ^tab:background:selected^;
     padding: 0.23em;
     min-width: 50px;
     border-radius: 0.09em;
@@ -1123,10 +1184,10 @@ QTabBar::tab:left:only-one
 {
     color: ^foreground^;
     border: 0.04em transparent black;
-    border-top: 0.04em solid ^highlight^;
+    border-top: 0.09em solid ^highlight^;
     border-bottom: 0.04em solid ^midtone^;
     border-left: 0.04em solid ^midtone^;
-    background-color: ^background^;
+    background-color: ^tab:background:selected^;
     padding: 0.23em;
     min-height: 50px;
     border-radius: 0.09em;
@@ -1178,10 +1239,10 @@ QTabBar::tab:right:only-one
 {
     color: ^foreground^;
     border: 0.04em transparent black;
-    border-top: 0.04em solid ^highlight^;
+    border-top: 0.09em solid ^highlight^;
     border-bottom: 0.04em solid ^midtone^;
     border-right: 0.04em solid ^midtone^;
-    background-color: ^background^;
+    background-color: ^tab:background:selected^;
     padding: 0.23em;
     min-height: 50px;
     border-radius: 0.09em;
@@ -1256,10 +1317,16 @@ QTabBar QToolButton::left-arrow:disabled
 
 QDockWidget
 {
-    background: ^background^;
+    background: ^dock:background^;
     border: 0.09em solid ^tab:background^;
     titlebar-close-icon: url(:/^style^/transparent.svg);
     titlebar-normal-icon: url(:/^style^/transparent.svg);
+}
+
+QDockWidget::title
+{
+    background: ^dock:background^;
+    padding-left: 0.5em;
 }
 
 QDockWidget::close-button,
@@ -1399,7 +1466,7 @@ QSlider::handle:horizontal,
 QSlider::handle:vertical
 {
     background: ^view:background^;
-    border: 0.09em solid ^midtone-dark^;
+    border: 0.04em solid ^midtone:dark^;
     width: 0.7em;
     height: 0.7em;
     border-radius: 0.35em;
@@ -1448,20 +1515,26 @@ QSlider::handle:horizontal:focus,
 QSlider::handle:vertical:hover,
 QSlider::handle:vertical:focus
 {
-    border: 0.09em solid ^highlight^;
+    border: 0.04em solid ^slider:foreground^;
+}
+
+QSlider::handle:horizontal:!focus:!hover,
+QSlider::handle:vertical:!focus:!hover
+{
+    border: 0.04em solid ^midtone:dark^;
 }
 
 QSlider::sub-page:horizontal,
 QSlider::add-page:vertical
 {
-    background: ^highlight^;
+    background: ^slider:foreground^;
     border-radius: 0.19em;
 }
 
 QSlider::add-page:horizontal,
 QSlider::sub-page:vertical
 {
-    background: ^midtone-dark^;
+    background: ^midtone:dark^;
     border-radius: 0.19em;
 }
 
@@ -1472,8 +1545,9 @@ QToolButton
     border-radius: 0.09em;
     margin: 0.23em;
     padding: 0.23em;
+    padding-top: 0.1em;
     padding-right: 1.2em;
-    min-height: 1em;
+    min-height: 1.1em;
 }
 
 QToolButton::right-arrow,
@@ -1571,7 +1645,7 @@ QToolButton::menu-button:pressed
 QTableView
 {
     border: 0em solid black;
-    gridline-color: ^background^;
+    gridline-color: ^view:border^;
     background-color: ^view:background^;
 }
 
@@ -1593,7 +1667,7 @@ QAbstractItemView::item
 
 QAbstractItemView::item:pressed
 {
-    background: ^highlight-dark^;
+    background: ^highlight:dark^;
     color: ^foreground^;
 }
 
@@ -1608,8 +1682,8 @@ QAbstractItemView::item:selected:active
     background: qlineargradient(
         x1: 0.5, y1: 0.5
         x2: 0.5, y2: 1,
-        stop: 0 ^highlight-dark^,
-        stop: 1 ^highlight-dark^
+        stop: 0 ^highlight:dark^,
+        stop: 1 ^highlight:dark^
     );
     color: ^foreground^;
 }
@@ -1619,15 +1693,15 @@ QAbstractItemView::item:selected:hover
     background: qlineargradient(
         x1: 0.5, y1: 0.5
         x2: 0.5, y2: 1,
-        stop: 0 ^alternate-hover^,
-        stop: 1 ^alternate-hover^
+        stop: 0 ^highlight:alternate^,
+        stop: 1 ^highlight:alternate^
     );
     color: ^foreground^;
 }
 
 QHeaderView
 {
-    background-color: ^background^;
+    background-color: ^view:header^;
     border: 0.04em transparent;
     border-radius: 0em;
     margin: 0em;
@@ -1636,7 +1710,7 @@ QHeaderView
 
 QHeaderView::section
 {
-    background-color: ^background^;
+    background-color: ^view:header^;
     border: 0.04em solid ^midtone^;
     color: ^foreground^;
     padding: 0.23em;
@@ -1669,7 +1743,7 @@ QHeaderView::section::horizontal
 
 QHeaderView::section:checked
 {
-    color: ^foreground-light^;
+    color: ^foreground:light^;
     background-color: ^view:checked^;
 }
 
@@ -1705,17 +1779,19 @@ QHeaderView::up-arrow
 
 QTableView QTableCornerButton::section
 {
-    background-color: ^background^;
-    border: 0.04em transparent ^midtone^;
+    background-color: ^view:corner^;
+    border: 0.04em transparent ^view:header:border^;
+    border-top: 0.04em solid ^view:header:border^;
+    border-left: 0.04em solid ^view:header:border^;
     border-radius: 0em;
 }
 
-QTableCornerButton:hover
+/* No hover event */
+QTableView QTableCornerButton:hover
 {
-    border: 0.04em transparent ^midtone^;
+    border: 0.04em transparent ^view:header:border^;
 }
 
-/* No hover event */
 QTableView QTableCornerButton::section:pressed
 {
     border: 0.04em solid ^highlight^;
@@ -1748,10 +1824,16 @@ QSplitter::handle
     max-height: 0em;
 }
 
+/**
+ *  It's not possible to get satisfactory rounded borders here.
+ *  If you set the border to be negative, while adjusting the
+ *  widths, you get an asymmetrical curve which produces an
+ *  unappealing border.
+ */
 QProgressBar:horizontal,
 QProgressBar:vertical
 {
-    background-color: ^midtone-dark^;
+    background-color: ^midtone:dark^;
     border: 0.9em solid ^background^;
     border-radius: 0.13em;
     padding: 0em;
@@ -1784,7 +1866,7 @@ QProgressBar:vertical
 QProgressBar::chunk:horizontal,
 QProgressBar::chunk:vertical
 {
-    background-color: ^highlight^;
+    background-color: ^slider:foreground^;
     border: 0.9em transparent;
     border-radius: 0.08em;
 }

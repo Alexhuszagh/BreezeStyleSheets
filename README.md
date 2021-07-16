@@ -91,6 +91,7 @@ It's easy to design your own themes using `configure.py`. First, add the styles 
 **Template File**
 
 ```jsonc
+# TODO(ahuszagh) Document...
 // NOTE: This is a custom JSON file, where lines leading
 // with `//` are removed. No other comments are valid.
 {
