@@ -86,7 +86,46 @@ For an extensive view of screenshots of the theme, see the [gallery](assets/gall
 
 # Customization
 
-It's easy to design your own themes using `configure.py`. First, add the styles you want into [configure](/configure/), run configure with a list of styles you want to include...
+It's easy to design your own themes using `configure.py`. First, add the styles you want into [configure](/configure/), run configure with a list of styles you want to include.
+
+**Template File**
+
+```jsonc
+// NOTE: This is a custom JSON file, where lines leading
+// with `//` are removed. No other comments are valid.
+{
+    // Main foreground color.
+    "foreground": "#eff0f1",
+    "foreground-light": "#ffffff",
+    // Main background color.
+    "background": "#31363b",
+    "alternate-background": "#3b4045",
+    // Lighter background color.
+    "background-light": "#454a4f",
+    "highlight": "#3daee9",
+    "highlight-light": "#58d3ff",
+    "highlight-dark": "#2a79a3",
+    "alternate-hover": "#369cd1",
+    "midtone": "#76797c",
+    "midtone-light": "#b0b0b0",
+    "midtone-dark": "#626568",
+    "midtone:hover": "#8a8d8f", #9ea0a3
+    "view:border": "#3A3939",
+    // Color for checked widgets in QAbstractItemViews.
+    "view:checked": "#334e5e",
+    // Hover background color in QAbstractItemViews.
+    "view:hover": "rgba(61, 173, 232, 0.1)",
+    // Default background color inQAbstractItemViews.
+    "view:background": "#232629",
+    "tab:background": "#54575B",
+    "tree": "#afafaf",
+    "checkbox:disabled": "#c8c9ca",
+    "button:disabled": "#454545",
+    "close:hover": "#b37979",
+    "close:pressed": "#b33e3e",
+    "dock:float": "#a2a2a2"
+}
+```
 
 # TOOD(ahuszagh) Add documentation.
 

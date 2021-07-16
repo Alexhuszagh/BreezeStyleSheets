@@ -1,0 +1,28 @@
+// NOTE: This is a custom JSON file, where lines leading
+// with `//` are removed. No other comments are valid.
+{
+    "foreground": "#eff0f1",
+    "foreground-light": "#ffffff",
+    "background": "#31363b",
+    "alternate-background": "#3b4045",
+    "background-light": "#454a4f",
+    "highlight": "#3daee9",
+    "highlight-light": "#58d3ff",
+    "highlight-dark": "#2a79a3",
+    "alternate-hover": "#2F88B7",
+    "midtone": "#76797c",
+    "midtone-light": "#b0b0b0",
+    "midtone-dark": "#626568",
+    "midtone:hover": "#8a8d8f",
+    "view:border": "#3A3939",
+    "view:checked": "#334e5e",
+    "view:hover": "rgba(61, 173, 232, 0.1)",
+    "view:background": "#232629",
+    "tab:background": "#54575B",
+    "tree": "#afafaf",
+    "checkbox:disabled": "#c8c9ca",
+    "button:disabled": "#454545",
+    "close:hover": "#b37979",
+    "close:pressed": "#b33e3e",
+    "dock:float": "#a2a2a2"
+}

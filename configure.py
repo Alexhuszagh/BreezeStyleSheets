@@ -6,50 +6,17 @@
 '''
 
 import glob
+import json
 import os
 
 home = os.path.dirname(os.path.realpath(__file__))
 # TODO(ahuszagh) Need a script to generate the qrc
 #   Should be easy: styles.qss + assets.
 
-# Assets should be easy.
-
-colors_map = {
-    'light': {},
-    'dark': {
-        # Might want to change the icon names as well to include the color changes.
-        #   First we need to stabilize the names.
-        # Main theme colors.
-        # -----------------
-        # Note: these colors are inversed for light
-        # themes.
-        'foreground': '#eff0f1',
-        'foreground-light': '#ffffff',
-        'background': '#31363b',
-        'alternate-background': '#3b4045',
-        'background-light': '#454a4f',
-        'highlight': '#3daee9',
-        'highlight-light': '#58d3ff',
-        'highlight-dark': '#2a79a3',
-        'alternate-hover': '#369cd1',
-        'midtone': '#76797c',
-        'midtone-light': '#b0b0b0',
-        'midtone-dark': '#626568',
-        'midtone:hover': '#8a8d8f', #9ea0a3
-        'view:border': '#3A3939',
-        'view:checked': '#334e5e',
-        'view:hover': 'rgba(61, 173, 232, 0.1)',
-        'view:background': '#232629',
-        'tab:background': '#54575B',
-        'tree': '#afafaf',
-        'checkbox:disabled': '#c8c9ca',
-        'button:disabled': '#454545',
-        'close:hover': '#b37979',
-        'close:pressed': '#b33e3e',
-        'dock:float': '#a2a2a2',
-    },
-}
-
+# List of all icons to configure.
+# TODO(ahuszagh) Change this to use templates
+#   Should just be a list inside each key.
+#       Replace ^0^ with ^foreground^, etc.
 icons = {
     # Arrows
     'down_arrow': {
@@ -163,10 +130,9 @@ def replace(contents, colors, color_map):
         contents = contents.replace(sub, color_map[color])
     return contents
 
-def configure_icons(style):
+def configure_icons(style, color_map):
     '''Configure icons for a given style.'''
 
-    color_map = colors_map[style]
     for icon, extensions in icons.items():
         template = f'{home}/template/{icon}.svg.in'
         template_contents = open(template).read()
@@ -179,10 +145,9 @@ def configure_icons(style):
             with open(filename, 'w') as file:
                 file.write(contents)
 
-def configure_stylesheet(style):
+def configure_stylesheet(style, color_map):
     '''Configure the stylesheet for a given style.'''
 
-    color_map = colors_map[style]
     contents = open(f'{home}/template/stylesheet.qss.in').read()
     for key, color in color_map.items():
         contents = contents.replace(f'^{key}^', color)
@@ -190,18 +155,27 @@ def configure_stylesheet(style):
     with open(f'{home}/{style}/stylesheet.qss', 'w') as file:
         file.write(contents)
 
-def configure_style(style):
+def configure_style(style, color_map):
     '''Configure the icons and stylesheet for a given style.'''
 
     os.makedirs(f'{home}/{style}', exist_ok=True)
-    configure_icons(style)
-    configure_stylesheet(style)
+    configure_icons(style, color_map)
+    configure_stylesheet(style, color_map)
 
 def configure(styles, resource):
     '''Configure all styles and write the files to a QRC file.'''
 
     for style in styles:
-        configure_style(style)
+        # Note: we need comments for maintainability, so we
+        # can annotate what works and the rationale, but
+        # we don't want to prevent code from working without
+        # a complex parser, so we do something very simple:
+        # only remove lines starting with '//'.
+        with open(f'{home}/configure/{style}.json') as file:
+            lines = file.read().splitlines()
+        lines = [i for i in lines if not i.strip().startswith('//')]
+        color_map = json.loads('\n'.join(lines))
+        configure_style(style, color_map)
 
 if __name__ == '__main__':
     # TODO(ahuszagh) Replace with argparse values.

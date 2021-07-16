@@ -107,20 +107,25 @@ QGroupBox::title
     padding-right: 0.2em;
 }
 
-QCheckBox::indicator
+QCheckBox::indicator,
+QTreeView::indicator
 {
     width: 1em;
     height: 1em;
 }
 
 QCheckBox::indicator:unchecked,
-QCheckBox::indicator:unchecked:focus
+QCheckBox::indicator:unchecked:focus,
+QTreeView::indicator:unchecked,
+QTreeView::indicator:unchecked:focus
 {
     border-image: url(:/^style^/checkbox_unchecked_disabled.svg);
 }
 
 QCheckBox::indicator:unchecked:hover,
 QCheckBox::indicator:unchecked:pressed,
+QTreeView::indicator:unchecked:hover,
+QTreeView::indicator:unchecked:pressed,
 QGroupBox::indicator:unchecked,
 QGroupBox::indicator:unchecked:hover,
 QGroupBox::indicator:unchecked:focus,
@@ -131,6 +136,7 @@ QGroupBox::indicator:unchecked:pressed
 }
 
 QCheckBox::indicator:checked,
+QTreeView::indicator:checked,
 QGroupBox::indicator:checked
 {
     border-image: url(:/^style^/checkbox_checked.svg);
@@ -139,6 +145,9 @@ QGroupBox::indicator:checked
 QCheckBox::indicator:checked:hover,
 QCheckBox::indicator:checked:focus,
 QCheckBox::indicator:checked:pressed,
+QTreeView::indicator:checked:hover,
+QTreeView::indicator:checked:focus,
+QTreeView::indicator:checked:pressed,
 QGroupBox::indicator:checked:hover,
 QGroupBox::indicator:checked:focus,
 QGroupBox::indicator:checked:pressed
@@ -147,30 +156,37 @@ QGroupBox::indicator:checked:pressed
     border-image: url(:/^style^/checkbox_checked.svg);
 }
 
-QCheckBox::indicator:indeterminate
+QCheckBox::indicator:indeterminate,
+QTreeView::indicator:indeterminate
 {
     border-image: url(:/^style^/checkbox_indeterminate.svg);
 }
 
 QCheckBox::indicator:indeterminate:focus,
 QCheckBox::indicator:indeterminate:hover,
-QCheckBox::indicator:indeterminate:pressed
+QCheckBox::indicator:indeterminate:pressed,
+QTreeView::indicator:indeterminate:focus,
+QTreeView::indicator:indeterminate:hover,
+QTreeView::indicator:indeterminate:pressed
 {
     border-image: url(:/^style^/checkbox_indeterminate.svg);
 }
 
-QCheckBox::indicator:indeterminate:disabled
+QCheckBox::indicator:indeterminate:disabled,
+QTreeView::indicator:indeterminate:disabled
 {
     border-image: url(:/^style^/checkbox_indeterminate_disabled.svg);
 }
 
 QCheckBox::indicator:checked:disabled,
+QTreeView::indicator:checked:disabled,
 QGroupBox::indicator:checked:disabled
 {
     border-image: url(:/^style^/checkbox_checked_disabled.svg);
 }
 
 QCheckBox::indicator:unchecked:disabled,
+QTreeView::indicator:unchecked:disabled,
 QGroupBox::indicator:unchecked:disabled
 {
     border-image: url(:/^style^/checkbox_unchecked_disabled.svg);
@@ -1577,7 +1593,7 @@ QAbstractItemView::item
 
 QAbstractItemView::item:pressed
 {
-    background: ^highlight^;
+    background: ^highlight-dark^;
     color: ^foreground^;
 }
 
