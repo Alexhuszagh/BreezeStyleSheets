@@ -13,7 +13,7 @@ The current status of the migration is:
 
 # C++ Installation
 
-Copy `breeze.qrc`, `dark.qss`, `light.qss` and the `dark` and `light` folders into your project directory and add the qrc file to your project file.
+Copy `breeze.qrc` and the `dark` and `light` folders into your project directory and add the qrc file to your project file.
 
 For example:
 
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     // set stylesheet
-    QFile file(":/dark.qss");
+    QFile file(":/dark/stylesheet.qss");
     file.open(QFile::ReadOnly | QFile::Text);
     QTextStream stream(&file);
     app.setStyleSheet(stream.readAll());
@@ -64,7 +64,7 @@ def main():
     app = QtWidgets.QApplication(sys.argv)
 
     # set stylesheet
-    file = QFile(":/dark.qss")
+    file = QFile(":/dark/stylesheet.qss")
     file.open(QFile.ReadOnly | QFile.Text)
     stream = QTextStream(file)
     app.setStyleSheet(stream.readAll())
@@ -74,17 +74,21 @@ def main():
     app.exec_()
 ```
 
-# License
-
-MIT, see [license](/LICENSE.md).
-
-# Example
+# Gallery
 
 **Breeze/BreezeDark**
 
 Example user interface using the Breeze and BreezeDark stylesheets side-by-side.
 
 ![BreezeDark](/assets/Breeze.gif)
+
+For an extensive view of screenshots of the theme, see the [gallery](assets/gallery.md).
+
+# Customization
+
+It's easy to design your own themes using `configure.py`. First, add the styles you want into [configure](/configure/), run configure with a list of styles you want to include...
+
+# TOOD(ahuszagh) Add documentation.
 
 # Limitations
 
@@ -112,6 +116,10 @@ Have an issue with the styles? Here's a few suggestions, prior to filing a bug r
 
 - Modified the application font? Make sure you do **before** setting the application stylesheet.
 - Modified the application style? Make sure you do **before** you creating a `QApplication instance`.
+
+# License
+
+MIT, see [license](/LICENSE.md).
 
 # Contributing
 

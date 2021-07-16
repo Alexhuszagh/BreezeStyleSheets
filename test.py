@@ -161,7 +161,7 @@ def main(argv=None):
 
     # setup stylesheet
     if args.stylesheet != 'native':
-        file = QtCore.QFile(f':/{args.stylesheet}.qss')
+        file = QtCore.QFile(f':/{args.stylesheet}/stylesheet.qss')
         file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text)
         stream = QtCore.QTextStream(file)
         app.setStyleSheet(stream.readAll())
@@ -262,12 +262,24 @@ def main(argv=None):
         window.setStatusBar(child)
     elif args.widget == 'spinbox':
         layout_type = 'horizontal'
-        child = QtWidgets.QSpinBox(window)
-        child.setValue(10);
+        child = []
+        spin1 = QtWidgets.QSpinBox(window)
+        spin1.setValue(10)
+        child.append(spin1)
+        spin2 = QtWidgets.QSpinBox(window)
+        spin2.setValue(10)
+        spin2.setEnabled(False)
+        child.append(spin2)
     elif args.widget == 'double_spinbox':
         layout_type = 'horizontal'
-        child = QtWidgets.QDoubleSpinBox(window)
-        child.setValue(10.5);
+        child = []
+        spin1 = QtWidgets.QDoubleSpinBox(window)
+        spin1.setValue(10.5)
+        child.append(spin1)
+        spin2 = QtWidgets.QDoubleSpinBox(window)
+        spin2.setValue(10.5)
+        spin2.setEnabled(False)
+        child.append(spin2)
     elif args.widget == 'combobox':
         layout_type = 'horizontal'
         child = []

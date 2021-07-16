@@ -61,12 +61,6 @@ QWidget:disabled
     background-color: #31363b;
 }
 
-QGroupBox QWidget
-{
-}
-
-/*margin-right: 1em;*/
-
 QCheckBox
 {
     spacing: 0.23em;
@@ -78,7 +72,7 @@ QCheckBox
 
 QCheckBox:disabled
 {
-    color: #9ea0a3;
+    color: #b0b0b0;
 }
 
 QGroupBox
@@ -393,9 +387,9 @@ QScrollBar:horizontal
 {
     height: 0.65em;
     margin: 0.13em 0.65em 0.13em 0.65em;
-    border: 0.09em transparent #2A2929;
+    border: 0.09em transparent #232629;
     border-radius: 0.17em;
-    background-color: #2A2929;
+    background-color: #232629;
 }
 
 QScrollBar:horizontal:hover
@@ -464,10 +458,10 @@ QScrollBar::sub-page:horizontal
 
 QScrollBar:vertical
 {
-    background-color: #2A2929;
+    background-color: #232629;
     width: 0.65em;
     margin: 0.65em 0.13em 0.65em 0.13em;
-    border: 0.04em transparent #2A2929;
+    border: 0.04em transparent #232629;
     border-radius: 0.17em;
 }
 
@@ -544,7 +538,7 @@ QTextEdit
 
 QPlainTextEdit
 {
-    background-color: #232629;;
+    background-color: #232629;
     color: #eff0f1;
     border-radius: 0.09em;
     border: 0.04em solid #76797c;
@@ -612,7 +606,6 @@ QFrame[frameShape] QAbstractItemView:hover
 
 QToolBar
 {
-    border: 0.09em transparent #393838;
     background: 0.09em solid #31363b;
     font-weight: bold;
     spacing: 0.2em;
@@ -653,7 +646,12 @@ QToolBar:horizontal QToolButton
 QPushButton
 {
     color: #eff0f1;
-    background-color: qlineargradient(x1: 0.5, y1: 0.5 x2: 0.5, y2: 1, stop: 0 #3b4045, stop: 0.5 #31363b);
+    background-color: qlineargradient(
+        x1: 0.5, y1: 0.5
+        x2: 0.5, y2: 1,
+        stop: 0 #3b4045,
+        stop: 0.5 #31363b
+    );
     border-width: 0.04em;
     border-color: #76797c;
     border-style: solid;
@@ -692,7 +690,7 @@ QPushButton:disabled
 
 QPushButton:focus
 {
-    color: white;
+    color: #ffffff;
 }
 
 QPushButton:pressed
@@ -714,19 +712,29 @@ QComboBox
 QPushButton:checked
 {
     background-color: #76797c;
-    border-color: #6A6969;
+    border-color: #626568;
 }
 
 QPushButton:hover
 {
-    background-color: qlineargradient(x1: 0.5, y1: 0.5 x2: 0.5, y2: 1, stop: 0 #454a4f, stop: 0.5 #3b4045);
+    background-color: qlineargradient(
+        x1: 0.5, y1: 0.5
+        x2: 0.5, y2: 1,
+        stop: 0 #454a4f,
+        stop: 0.5 #3b4045
+    );
     border: 0.04em solid #3daee9;
     color: #eff0f1;
 }
 
 QPushButton:checked:hover
 {
-    background-color: qlineargradient(x1: 0.5, y1: 0.5 x2: 0.5, y2: 1, stop: 0 #808386, stop: 0.5 #76797c);
+    background-color: qlineargradient(
+        x1: 0.5, y1: 0.5
+        x2: 0.5, y2: 1,
+        stop: 0 #8a8d8f,
+        stop: 0.5 #76797c
+    );
     border: 0.04em solid #3daee9;
     color: #eff0f1;
 }
@@ -803,13 +811,8 @@ QAbstractSpinBox
     background-color: #232629;
     color: #eff0f1;
     border-radius: 0.09em;
-    min-width: 2.6em;
+    min-width: 3em;
     min-height: 1em;
-    margin: 0.9em;
-    margin-left: 2.3em;
-    /* To deal with the padding of the arrows */
-    padding-left: 0.8em;
-    padding-right: 0.8em;
 }
 
 QAbstractSpinBox:hover
@@ -821,65 +824,59 @@ QAbstractSpinBox:up-button,
 QAbstractSpinBox:up-button:hover
 {
     background-color: transparent;
+    subcontrol-origin: padding;
     subcontrol-position: center right;
+    padding-right: 0.1em;
+    width: 0.8em;
+    height: 0.5em;
 }
 
 QAbstractSpinBox:down-button,
 QAbstractSpinBox:down-button:hover
 {
     background-color: transparent;
+    subcontrol-origin: padding;
     subcontrol-position: center left;
+    padding-left: 0.1em;
+    width: 0.8em;
+    height: 0.5em;
 }
 
 QAbstractSpinBox::up-arrow
 {
     border-image: url(:/dark/up_arrow.svg);
-    width: 0.8em;
-    height: 0.5em;
-    margin-right: 0.8em;
 }
 
 QAbstractSpinBox::up-arrow:disabled,
 QAbstractSpinBox::up-arrow:off
 {
     border-image: url(:/dark/up_arrow_disabled.svg);
-    width: 0.8em;
-    height: 0.5em;
 }
 
 QAbstractSpinBox::up-arrow:hover
 {
     border-image: url(:/dark/up_arrow_hover.svg);
-    width: 0.8em;
-    height: 0.5em;
 }
 
 QAbstractSpinBox::down-arrow
 {
     border-image: url(:/dark/down_arrow.svg);
-    width: 0.8em;
-    height: 0.5em;
-    margin-left: 0.8em;
 }
 
 QAbstractSpinBox::down-arrow:disabled,
 QAbstractSpinBox::down-arrow:off
 {
     border-image: url(:/dark/down_arrow_disabled.svg);
-    width: 0.8em;
-    height: 0.5em;
 }
 
 QAbstractSpinBox::down-arrow:hover
 {
     border-image: url(:/dark/down_arrow_hover.svg);
-    width: 0.8em;
-    height: 0.5em;
 }
 
 QDoubleSpinBox
 {
-    min-width: 5em;
+    min-width: 4em;
 }
 
 /**
@@ -1244,7 +1241,7 @@ QTabBar QToolButton::left-arrow:disabled
 QDockWidget
 {
     background: #31363b;
-    border: 0.09em solid #403F3F;
+    border: 0.09em solid #54575B;
     titlebar-close-icon: url(:/dark/transparent.svg);
     titlebar-normal-icon: url(:/dark/transparent.svg);
 }
@@ -1415,7 +1412,7 @@ QSlider::handle:vertical
 QSlider::groove:horizontal,
 QSlider::groove:vertical
 {
-    background: #565a5e;
+    background: #54575B;
     border: 0em solid #31363b;
     border-radius: 0.19em;
 }
@@ -1586,19 +1583,29 @@ QAbstractItemView::item:pressed
 
 QAbstractItemView::item:selected:!active
 {
-    background: rgba(61, 173, 232, 0.3);
+    background: rgba(61, 173, 232, 0.1);
 }
 
 /* Use background with qlineargradient to avoid ugly border on widget. */
 QAbstractItemView::item:selected:active
 {
-    background: qlineargradient(x1: 0.5, y1: 0.5 x2: 0.5, y2: 1, stop: 0 #2a79a3, stop: 1 #2a79a3);
+    background: qlineargradient(
+        x1: 0.5, y1: 0.5
+        x2: 0.5, y2: 1,
+        stop: 0 #2a79a3,
+        stop: 1 #2a79a3
+    );
     color: #eff0f1;
 }
 
 QAbstractItemView::item:selected:hover
 {
-    background: qlineargradient(x1: 0.5, y1: 0.5 x2: 0.5, y2: 1, stop: 0 #369cd1, stop: 1 #369cd1);
+    background: qlineargradient(
+        x1: 0.5, y1: 0.5
+        x2: 0.5, y2: 1,
+        stop: 0 #369cd1,
+        stop: 1 #369cd1
+    );
     color: #eff0f1;
 }
 
@@ -1646,7 +1653,7 @@ QHeaderView::section::horizontal
 
 QHeaderView::section:checked
 {
-    color: white;
+    color: #ffffff;
     background-color: #334e5e;
 }
 
@@ -1719,8 +1726,8 @@ QToolBox::tab:hover
 
 QSplitter::handle
 {
-    border: 0.09em solid #4a4a4a;
-    background: -0.5em solid #4a4a4a;
+    border: 0.09em solid #54575B;
+    background: -0.5em solid #54575B;
     max-width: 0em;
     max-height: 0em;
 }

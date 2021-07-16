@@ -506,7 +506,7 @@ def main(argv=None):
 
     # setup stylesheet
     if args.stylesheet != 'native':
-        file = QtCore.QFile(f':/{args.stylesheet}.qss')
+        file = QtCore.QFile(f':/{args.stylesheet}/stylesheet.qss')
         file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text)
         stream = QtCore.QTextStream(file)
         app.setStyleSheet(stream.readAll())
