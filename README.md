@@ -1,15 +1,9 @@
 BreezeStyleSheets
 =================
 
-Breeze and BreezeDark-like stylesheets for Qt Applications.
+Configurable Breeze and BreezeDark-like stylesheets for Qt Applications.
 
 This stylesheet aims to be similar across all platforms, and provide a nice UI for different DPIs (as determined by the default font size, or using the screen scale factor). This is currently under work for scaling to multiple different DPIs and font sizes.
-
-The current status of the migration is:
-
-- Change all `ex` widths to `em` ☐
-- Ensure individual tests for all widgets ☐
-- Port all the changes made to the dark stylesheet to light ☐
 
 # C++ Installation
 
@@ -237,4 +231,3 @@ BreezeStyleSheets is a fork of [QDarkStyleSheet](https://github.com/ColinDuquesn
 
 Email: ahuszagh@gmail.com  
 Twitter: KardOnIce
-
