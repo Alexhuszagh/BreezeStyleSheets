@@ -246,7 +246,7 @@ def configure(styles, path):
         # we don't want to prevent code from working without
         # a complex parser, so we do something very simple:
         # only remove lines starting with '//'.
-        with open(f'{home}/configure/{style}.json') as file:
+        with open(f'{home}/theme/{style}.json') as file:
             lines = file.read().splitlines()
         lines = [i for i in lines if not i.strip().startswith('//')]
         color_map = json.loads('\n'.join(lines))

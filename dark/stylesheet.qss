@@ -1848,7 +1848,7 @@ QProgressBar:horizontal
     padding-right: -0.03em;
     margin-top: 0.2em;
     margin-bottom: 0.2em;
-    margin-right: 1.5em;
+    margin-right: 1.3em;
 }
 
 QProgressBar:vertical

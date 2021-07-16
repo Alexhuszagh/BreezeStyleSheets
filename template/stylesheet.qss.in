@@ -878,7 +878,7 @@ QAbstractSpinBox
 {
     padding: 0.23em;
     border: 0.09em solid ^midtone^;
-    background-color: ^view:background^;
+    background-color: ^text:background^;
     color: ^foreground^;
     border-radius: 0.09em;
     min-width: 3em;
@@ -1465,7 +1465,7 @@ QTreeView::item:!selected:hover
 QSlider::handle:horizontal,
 QSlider::handle:vertical
 {
-    background: ^view:background^;
+    background: ^slider:handle:background^;
     border: 0.04em solid ^midtone:dark^;
     width: 0.7em;
     height: 0.7em;
@@ -1848,7 +1848,7 @@ QProgressBar:horizontal
     padding-right: -0.03em;
     margin-top: 0.2em;
     margin-bottom: 0.2em;
-    margin-right: 1.5em;
+    margin-right: 1.3em;
 }
 
 QProgressBar:vertical
