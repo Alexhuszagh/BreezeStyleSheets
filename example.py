@@ -494,6 +494,9 @@ class Ui:
     def about(self):
         QtWidgets.QMessageBox.aboutQt(self.centralwidget, 'About Menu')
 
+    def critical(self):
+        QtWidgets.QMessageBox.critical(self.centralwidget, 'Error', 'Critical Error')
+
 
 def main(argv=None):
     'Application entry point'
@@ -537,6 +540,7 @@ def main(argv=None):
 
     # Add event triggers
     ui.actionAction.triggered.connect(ui.about)
+    ui.actionAction_C.triggered.connect(ui.critical)
 
     # tabify dock widgets to show bug #6
     window.tabifyDockWidget(ui.dockWidget1, ui.dockWidget2)

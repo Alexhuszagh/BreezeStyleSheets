@@ -40,5 +40,9 @@
     "close:hover": "#dc7676",
     "close:pressed": "#b33e3e",
     "dock:background": "#eaebec",
-    "dock:float": "#a2a2a2"
+    "dock:float": "#a2a2a2",
+    "critical": "#ff8c9f",
+    "information": "#8cd5ff",
+    "question": "#c08cff",
+    "warning": "#ffff8c"
 }

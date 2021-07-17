@@ -627,6 +627,88 @@ def test_calendar(widget, *_):
 
     return child
 
+def _test_standard_button(window, app, button):
+    message = QtWidgets.QMessageBox(window)
+    message.addButton(button)
+    message.exec_()
+
+def test_ok_button(_, window, __, ___, ____, app):
+    _test_standard_button(window, app, QtWidgets.QMessageBox.Ok)
+    return None, None, False, True
+
+def test_cancel_button(_, window, __, ___, ____, app):
+    _test_standard_button(window, app, QtWidgets.QMessageBox.Cancel)
+    return None, None, False, True
+
+def test_close_button(_, window, __, ___, ____, app):
+    _test_standard_button(window, app, QtWidgets.QMessageBox.Close)
+    return None, None, False, True
+
+def test_open_button(_, window, __, ___, ____, app):
+    _test_standard_button(window, app, QtWidgets.QMessageBox.Open)
+    return None, None, False, True
+
+def test_reset_button(_, window, __, ___, ____, app):
+    _test_standard_button(window, app, QtWidgets.QMessageBox.Reset)
+    return None, None, False, True
+
+def test_save_button(_, window, __, ___, ____, app):
+    _test_standard_button(window, app, QtWidgets.QMessageBox.Save)
+    return None, None, False, True
+
+def test_saveall_button(_, window, __, ___, ____, app):
+    _test_standard_button(window, app, QtWidgets.QMessageBox.SaveAll)
+    return None, None, False, True
+
+def test_restoredefaults_button(_, window, __, ___, ____, app):
+    _test_standard_button(window, app, QtWidgets.QMessageBox.RestoreDefaults)
+    return None, None, False, True
+
+def test_yes_button(_, window, __, ___, ____, app):
+    _test_standard_button(window, app, QtWidgets.QMessageBox.Yes)
+    return None, None, False, True
+
+def test_help_button(_, window, __, ___, ____, app):
+    _test_standard_button(window, app, QtWidgets.QMessageBox.Help)
+    return None, None, False, True
+
+def test_no_button(_, window, __, ___, ____, app):
+    _test_standard_button(window, app, QtWidgets.QMessageBox.No)
+    return None, None, False, True
+
+def test_apply_button(_, window, __, ___, ____, app):
+    _test_standard_button(window, app, QtWidgets.QMessageBox.Apply)
+    return None, None, False, True
+
+def test_discard_button(_, window, __, ___, ____, app):
+    _test_standard_button(window, app, QtWidgets.QMessageBox.Discard)
+    return None, None, False, True
+
+def _test_standard_icon(window, app, icon):
+    message = QtWidgets.QMessageBox(window)
+    message.setIcon(icon)
+    message.exec_()
+
+def test_critical_icon(_, window, __, ___, ____, app):
+    _test_standard_icon(window, app, QtWidgets.QMessageBox.Critical)
+    return None, None, False, True
+
+def test_info_icon(_, window, __, ___, ____, app):
+    _test_standard_icon(window, app, QtWidgets.QMessageBox.Information)
+    return None, None, False, True
+
+def test_no_icon(_, window, __, ___, ____, app):
+    _test_standard_icon(window, app, QtWidgets.QMessageBox.NoIcon)
+    return None, None, False, True
+
+def test_question_icon(_, window, __, ___, ____, app):
+    _test_standard_icon(window, app, QtWidgets.QMessageBox.Question)
+    return None, None, False, True
+
+def test_warning_icon(_, window, __, ___, ____, app):
+    _test_standard_icon(window, app, QtWidgets.QMessageBox.Warning)
+    return None, None, False, True
+
 def test(args, qtargv, test_widget):
     '''Test a single widget.'''
 
@@ -666,6 +748,7 @@ def test(args, qtargv, test_widget):
     child = []
     layout_type = 'vertical'
     show_window = True
+    quit = False
     if result and isinstance(result, list):
         # Have a single value passed as a list
         child = result
@@ -677,6 +760,8 @@ def test(args, qtargv, test_widget):
         layout_type = result[1]
     if isinstance(result, tuple) and len(result) >= 3:
         show_window = result[2]
+    if isinstance(result, tuple) and len(result) >= 4:
+        quit = result[3]
 
     # Add the widgets to the layout.
     if layout_type is not None and child is not None:
@@ -696,6 +781,8 @@ def test(args, qtargv, test_widget):
     # run
     if show_window:
         window.show()
+    if quit:
+        return app.quit()
     return app.exec_()
 
 def main(argv=None):

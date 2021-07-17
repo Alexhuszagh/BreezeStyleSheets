@@ -184,6 +184,10 @@ python configure.py --styles=dark,light,<custom> --resource custom.qrc
 
 Then, you can use `custom.qrc`, along with the generated icons and stylesheets in each folder, in place of `breeze.qrc` for any style.
 
+**Generating Colors**
+
+As a reference point, see the pre-generated themes already in [theme](/theme). In general, to create a good theme, modify only the highlight colors (blues, greens, purples) to a new color, such that the saturation and lightness stay the same (only the hue changes). For example, the color `rgba(51, 164, 223, 0.5)` becomes `rgba(164, 51, 223, 0.5)`.
+
 # Limitations
 
 There are some limitations of using Qt stylesheets in general, which cannot be solved by stylesheets. To get more fine-grained style control, you should subclass `QCommonStyle`:
@@ -203,6 +207,12 @@ The limitations of stylesheets include:
 - Scaling icons with the theme size.
 - QToolButton cannot control the icon size without also affecting the arrow size.
 - Close and dock float icon sizes scale poorly with font size.
+
+# Features
+
+- Complete stylesheet for all Qt widgets, including esoteric widgets like `QCalendarWidget`.
+- Customizable, beautiful light and dark themes.
+- Cross-platform icon packs for standard icons.
 
 # Debugging
 
@@ -225,7 +235,7 @@ Unless you explicitly state otherwise, any contribution intentionally submitted 
 
 # Acknowledgements
 
-BreezeStyleSheets is a fork of [QDarkStyleSheet](https://github.com/ColinDuquesnoy/QDarkStyleSheet).
+BreezeStyleSheets is a fork of [QDarkStyleSheet](https://github.com/ColinDuquesnoy/QDarkStyleSheet). Some of the icons come from [Material UI](https://github.com/google/material-design-icons), which are licensed under the Apache 2.0 license and therefore free to use without attribution.
 
 # Contact
 

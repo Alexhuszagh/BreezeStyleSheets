@@ -6,6 +6,7 @@
 '''
 
 import argparse
+import glob
 import json
 import re
 import os
@@ -16,7 +17,7 @@ home = os.path.dirname(os.path.realpath(__file__))
 parser = argparse.ArgumentParser(description='Styles to configure for a Qt application.')
 parser.add_argument(
     '--styles',
-    help='''comma-separate list of styles to configure''',
+    help='''comma-separate list of styles to configure. pass `all` to build all themes''',
     default='light,dark',
 )
 parser.add_argument(
@@ -126,7 +127,48 @@ icons = {
     },
     'sizegrip': {
         'default': ['midtone:light'],
-    }
+    },
+    # Dialog icons
+    'dialog-cancel': {
+        'default': ['foreground'],
+    },
+    'dialog-close': {
+        'default': ['foreground'],
+    },
+    'dialog-ok': {
+        'default': ['foreground'],
+    },
+    'dialog-open': {
+        'default': ['foreground'],
+    },
+    'dialog-save': {
+        'default': ['foreground'],
+    },
+    'dialog-reset': {
+        'default': ['foreground'],
+    },
+    'dialog-help': {
+        'default': ['foreground'],
+    },
+    'dialog-no': {
+        'default': ['foreground'],
+    },
+    'dialog-discard': {
+        'default': ['foreground'],
+    },
+    # Message icons
+    'message-critical': {
+        'default': ['critical', 'foreground'],
+    },
+    'message-information': {
+        'default': ['information', 'foreground'],
+    },
+    'message-question': {
+        'default': ['question', 'foreground'],
+    },
+    'message-warning': {
+        'default': ['warning', 'foreground'],
+    },
 }
 
 def parse_hexcolor(color):
@@ -256,4 +298,8 @@ def configure(styles, path):
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    configure(args.styles.split(','), args.resource)
+    styles = args.styles.split(',')
+    if args.styles == 'all':
+        files = glob.glob(f'{home}/theme/*json')
+        styles = [os.path.splitext(os.path.basename(i))[0] for i in files]
+    configure(styles, args.resource)

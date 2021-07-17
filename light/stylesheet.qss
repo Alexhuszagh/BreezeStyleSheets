@@ -1879,3 +1879,48 @@ QScrollArea:hover
 {
     border: 0em solid black;
 }
+
+/* ICONS */
+/**
+ *  Qt's built-in icons can look pretty bad if the system theme
+ *  is a different color than the current one. For example, when
+ *  using a dark theme, with a light UI, the `Ok` button is greyed
+ *  out for an about dialog.
+ *
+ *  QDialogButtonBox will apply for all standard buttons in all standard
+ *  widgets, such as QMessageBox, etc. However, we do need to override
+ *  standard icons elsewhere.
+ *
+ *  The rest of the icons make little sense to implement:
+ *      Qt uses native window decorations.
+ *      Qt normally uses native file dialogs, which look nicer.
+ *      Media controls are used in custom widgets, which aren't standard.
+ */
+QDialogButtonBox
+{
+    dialogbuttonbox-buttons-have-icons: true;
+
+    dialog-cancel-icon: url(:/light/dialog-cancel.svg);
+    dialog-close-icon: url(:/light/dialog-close.svg);
+    dialog-ok-icon: url(:/light/dialog-ok.svg);
+    dialog-open-icon: url(:/light/dialog-open.svg);
+    dialog-reset-icon: url(:/light/dialog-reset.svg);
+    dialog-save-icon: url(:/light/dialog-save.svg);
+    /**
+     *  No support yet for overriding saveall.
+     *  dialog-saveall-icon: url(:/light/dialog-saveall.svg);
+     */
+    dialog-yes-icon: url(:/light/dialog-ok.svg);
+    dialog-help-icon: url(:/light/dialog-help.svg);
+    dialog-no-icon: url(:/light/dialog-no.svg);
+    dialog-apply-icon: url(:/light/dialog-ok.svg);
+    dialog-discard-icon: url(:/light/dialog-discard.svg);
+}
+
+QMessageBox
+{
+    messagebox-critical-icon: url(:/light/message-critical.svg);
+    messagebox-information-icon: url(:/light/message-information.svg);
+    messagebox-question-icon: url(:/light/message-question.svg);
+    messagebox-warning-icon: url(:/light/message-warning.svg);
+}
