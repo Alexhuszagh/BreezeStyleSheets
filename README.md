@@ -172,7 +172,15 @@ Here is a sample theme, with the color descriptions annotated. Please note that 
     // Default background color for QDockWidget and title.
     "dock:background": "#31363b",
     // Color for the float icon for QDockWidgets.
-    "dock:float": "#a2a2a2"
+    "dock:float": "#a2a2a2",
+    // Background color for the QMessageBox critical icon.
+    "critical": "#80404a",
+    // Background color for the QMessageBox information icon.
+    "information": "#406880",
+    // Background color for the QMessageBox question icon.
+    "question": "#634d80",
+    // Background color for the QMessageBox warning icon.
+    "warning": "#99995C"
 }
 ```
 
@@ -186,7 +194,7 @@ Then, you can use `custom.qrc`, along with the generated icons and stylesheets i
 
 **Generating Colors**
 
-As a reference point, see the pre-generated themes already in [theme](/theme). In general, to create a good theme, modify only the highlight colors (blues, greens, purples) to a new color, such that the saturation and lightness stay the same (only the hue changes). For example, the color `rgba(51, 164, 223, 0.5)` becomes `rgba(164, 51, 223, 0.5)`.
+As a reference point, see the pre-generated [themes](/theme). In general, to create a good theme, modify only the highlight colors (blues, greens, purples) to a new color, such that the saturation and lightness stay the same (only the hue changes). For example, the color `rgba(51, 164, 223, 0.5)` becomes `rgba(164, 51, 223, 0.5)`.
 
 # Limitations
 
