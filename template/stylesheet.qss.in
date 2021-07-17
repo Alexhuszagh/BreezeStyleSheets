@@ -62,6 +62,11 @@ QWidget:disabled
     background-color: ^background^;
 }
 
+QWidget:disabled:hover
+{
+    background-color: ^background^;
+}
+
 QCheckBox
 {
     spacing: 0.23em;
@@ -269,6 +274,11 @@ QMenuBar::item:selected
     background: transparent;
 }
 
+QMenuBar::item:disabled
+{
+    color: ^menu:disabled^;
+}
+
 QMenuBar::item:pressed
 {
     background-color: ^highlight^;
@@ -302,10 +312,14 @@ QMenu::item:selected
     background-color: ^highlight^;
 }
 
-QMenu::item:hover
+QMenu::item:selected:disabled
 {
-    color: ^foreground^;
-    background-color: ^highlight^;
+    background-color: ^background^;
+}
+
+QMenu::item:disabled
+{
+    color: ^menu:disabled^;
 }
 
 QMenu::indicator
@@ -362,6 +376,11 @@ QMenu::right-arrow
     height: 0.8em;
 }
 
+QMenu::right-arrow:disabled
+{
+    border-image: url(:/^style^/right_arrow_disabled.svg);
+}
+
 QAbstractItemView
 {
     alternate-background-color: ^background^;
@@ -370,7 +389,7 @@ QAbstractItemView
     border-radius: 0.09em;
 }
 
-QMenuBar:focus
+QMenuBar::item:focus:!disabled
 {
     border: 0.04em solid ^highlight^;
 }

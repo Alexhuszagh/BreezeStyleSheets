@@ -27,6 +27,7 @@
     "tree": "#4b4b4b",
     "slider:foreground": "#32df33",
     "slider:handle:background": "#eff0f1",
+    "menu:disabled": "#bab9b8",
     "checkbox:light": "#272b2f",
     "checkbox:disabled": "#6a6e71",
     "scrollbar:hover": "rgba(50, 223, 50, 0.8)",

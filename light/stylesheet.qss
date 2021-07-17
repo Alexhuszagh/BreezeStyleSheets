@@ -62,6 +62,11 @@ QWidget:disabled
     background-color: #eff0f1;
 }
 
+QWidget:disabled:hover
+{
+    background-color: #eff0f1;
+}
+
 QCheckBox
 {
     spacing: 0.23em;
@@ -269,6 +274,11 @@ QMenuBar::item:selected
     background: transparent;
 }
 
+QMenuBar::item:disabled
+{
+    color: #bab9b8;
+}
+
 QMenuBar::item:pressed
 {
     background-color: rgba(51, 164, 223, 0.5);
@@ -302,10 +312,14 @@ QMenu::item:selected
     background-color: rgba(51, 164, 223, 0.5);
 }
 
-QMenu::item:hover
+QMenu::item:selected:disabled
 {
-    color: #31363b;
-    background-color: rgba(51, 164, 223, 0.5);
+    background-color: #eff0f1;
+}
+
+QMenu::item:disabled
+{
+    color: #bab9b8;
 }
 
 QMenu::indicator
@@ -362,6 +376,11 @@ QMenu::right-arrow
     height: 0.8em;
 }
 
+QMenu::right-arrow:disabled
+{
+    border-image: url(:/light/right_arrow_disabled.svg);
+}
+
 QAbstractItemView
 {
     alternate-background-color: #eff0f1;
@@ -370,7 +389,7 @@ QAbstractItemView
     border-radius: 0.09em;
 }
 
-QMenuBar:focus
+QMenuBar::item:focus:!disabled
 {
     border: 0.04em solid rgba(51, 164, 223, 0.5);
 }

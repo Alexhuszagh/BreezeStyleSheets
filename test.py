@@ -727,6 +727,47 @@ def test_multiple_buttons(widget, *_):
 
     return child
 
+def test_disabled_menu(widget, window, font, width, *_):
+    child = QtWidgets.QMenuBar(window)
+    child.setGeometry(QtCore.QRect(0, 0, width, int(1.5 * font.pointSize())))
+    menu = QtWidgets.QMenu('Main Menu', child)
+    menu.addAction(QtWidgets.QAction('&Action 1', window))
+    menu.addAction(QtWidgets.QAction('&Action 2', window))
+    submenu = QtWidgets.QMenu('Sub Menu', menu)
+    submenu.addAction(QtWidgets.QAction('&Action 3', window))
+    action1 = QtWidgets.QAction('&Action 4', window)
+    action1.setCheckable(True)
+    action1.setEnabled(False)
+    submenu.addAction(action1)
+    menu.addAction(submenu.menuAction())
+    action2 = QtWidgets.QAction('&Action 5', window)
+    action2.setCheckable(True)
+    action2.setChecked(True)
+    menu.addSeparator()
+    menu.addAction(action2)
+    action3 = QtWidgets.QAction('&Action 6', window)
+    action3.setCheckable(True)
+    menu.addAction(action3)
+    icon = QtGui.QIcon(':/dark/close.svg')
+    menu.addAction(QtWidgets.QAction(icon, '&Action 7', window))
+    menu.addAction(QtWidgets.QAction(icon, '&Action 8', window))
+    menu.actions()[2].setEnabled(False)
+    submenu.addAction(QtWidgets.QAction(icon, '&Action 9', window))
+    child.addAction(menu.menuAction())
+    window.setMenuBar(child)
+
+    return child
+
+def test_disabled_menubar(widget, window, font, width, *_):
+    child = QtWidgets.QMenuBar(window)
+    child.setGeometry(QtCore.QRect(0, 0, width, int(1.5 * font.pointSize())))
+    menu = QtWidgets.QMenu('Main Menu', child)
+    child.addAction(menu.menuAction())
+    window.setMenuBar(child)
+    menu.setEnabled(False)
+
+    return child
+
 def test(args, qtargv, test_widget):
     '''Test a single widget.'''
 

@@ -144,6 +144,8 @@ Here is a sample theme, with the color descriptions annotated. Please note that 
     "slider:foreground": "#3daee9",
     // Background color for the handle of a QSlider.
     "slider:handle:background": "#1d2023",
+    // Color for a disabled menubar/menu item.
+    "menu:disabled": "#76797c",
     // Color for a checked/hovered QCheckBox or QRadioButton.
     "checkbox:light": "#58d3ff",
     // Color for a disabled or unchecked/unhovered QCheckBox or QRadioButton.
