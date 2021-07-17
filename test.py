@@ -709,6 +709,24 @@ def test_warning_icon(_, window, __, ___, ____, app):
     _test_standard_icon(window, app, QtWidgets.QMessageBox.Warning)
     return None, None, False, True
 
+def test_multiple_buttons(widget, *_):
+    child = []
+    child.append(QtWidgets.QTextEdit(widget))
+    container = QtWidgets.QWidget(widget)
+    hbox = QtWidgets.QHBoxLayout(container)
+    hbox.addWidget(QtWidgets.QPushButton('Delete'))
+    hbox.addWidget(QtWidgets.QPushButton('Complete'))
+    child.append(container)
+    child.append(QtWidgets.QLineEdit(widget))
+    dialog = QtWidgets.QDialogButtonBox(QtCore.Qt.Horizontal, widget)
+    dialog.addButton('Yes', QtWidgets.QDialogButtonBox.YesRole)
+    dialog.addButton('Really really really long', QtWidgets.QDialogButtonBox.YesRole)
+    dialog.addButton(QtWidgets.QDialogButtonBox.Ok)
+    dialog.addButton(QtWidgets.QDialogButtonBox.Cancel)
+    child.append(dialog)
+
+    return child
+
 def test(args, qtargv, test_widget):
     '''Test a single widget.'''
 

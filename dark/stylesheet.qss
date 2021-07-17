@@ -1924,3 +1924,11 @@ QMessageBox
     messagebox-question-icon: url(:/dark/message-question.svg);
     messagebox-warning-icon: url(:/dark/message-warning.svg);
 }
+
+/* Set some styles for these custom dialog buttons */
+QDialogButtonBox QPushButton,
+QMessageBox QPushButton
+{
+    min-height: 1.1em;
+    min-width: 5em;
+}
