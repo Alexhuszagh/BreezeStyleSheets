@@ -25,6 +25,11 @@ parser.add_argument(
     help='''output resource file name''',
     default='custom.qrc',
 )
+parser.add_argument(
+    '--pyqt6',
+    help='''use PyQt6 rather than PyQt5.''',
+    action='store_true'
+)
 
 # List of all icons to configure.
 icons = {
@@ -241,9 +246,9 @@ def configure_icons(style, color_map):
         for extension, colors in extensions.items():
             contents = replace(template_contents, colors, color_map)
             if extension == 'default':
-                filename = f'{home}/{style}/{icon}.svg'
+                filename = f'{style_home}/{style}/{icon}.svg'
             else:
-                filename = f'{home}/{style}/{icon}_{extension}.svg'
+                filename = f'{style_home}/{style}/{icon}_{extension}.svg'
             with open(filename, 'w') as file:
                 file.write(contents)
 
@@ -253,23 +258,29 @@ def configure_stylesheet(style, color_map):
     contents = open(f'{home}/template/stylesheet.qss.in').read()
     for key, color in color_map.items():
         contents = contents.replace(f'^{key}^', color)
-    contents = contents.replace('^style^', style)
-    with open(f'{home}/{style}/stylesheet.qss', 'w') as file:
+    if args.pyqt6:
+        contents = contents.replace('^style^', f'{style}:')
+    else:
+        contents = contents.replace('^style^', f':/{style}/')
+
+    with open(f'{style_home}/{style}/stylesheet.qss', 'w') as file:
         file.write(contents)
 
 def configure_style(style, color_map):
     '''Configure the icons and stylesheet for a given style.'''
 
-    os.makedirs(f'{home}/{style}', exist_ok=True)
+    os.makedirs(f'{style_home}/{style}', exist_ok=True)
     configure_icons(style, color_map)
     configure_stylesheet(style, color_map)
 
 def write_xml(styles, path):
     '''Simple QRC writer.'''
 
+    # Can't be used with PyQt6.
+    assert not args.pyqt6
     resources = []
     for style in styles:
-        files = os.listdir(f'{home}/{style}')
+        files = os.listdir(f'{style_home}/{style}')
         resources += [f'{style}/{i}' for i in files]
     with open(path, 'w') as file:
         print('<RCC>', file=file)
@@ -294,11 +305,18 @@ def configure(styles, path):
         color_map = json.loads('\n'.join(lines))
         configure_style(style, color_map)
 
-    write_xml(styles, path)
+    if not args.pyqt6:
+        # No point generating a resource file for PyQt6,
+        # since we can't use rcc6 anyway.
+        write_xml(styles, path)
 
 if __name__ == '__main__':
     args = parser.parse_args()
     styles = args.styles.split(',')
+    if args.pyqt6:
+        style_home = f'{home}/pyqt6'
+    else:
+        style_home = f'{home}'
     if args.styles == 'all':
         files = glob.glob(f'{home}/theme/*json')
         styles = [os.path.splitext(os.path.basename(i))[0] for i in files]

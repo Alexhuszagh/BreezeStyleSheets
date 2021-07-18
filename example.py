@@ -33,8 +33,7 @@ import logging
 import os
 import sys
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-import breeze_resources
+home = os.path.dirname(os.path.realpath(__file__))
 
 # Create our arguments.
 parser = argparse.ArgumentParser(description='Configurations for the Qt5 application.')
@@ -67,6 +66,66 @@ parser.add_argument(
     type=float,
     default=1,
 )
+parser.add_argument(
+    '--pyqt6',
+    help='''use PyQt6 rather than PyQt5.''',
+    action='store_true'
+)
+
+args, unknown = parser.parse_known_args()
+if args.pyqt6:
+    from PyQt6 import QtCore, QtGui, QtWidgets
+    QtCore.QDir.addSearchPath(args.stylesheet, f'{home}/pyqt6/{args.stylesheet}/')
+    stylesheet = f'{args.stylesheet}:stylesheet.qss'
+else:
+    from PyQt5 import QtCore, QtGui, QtWidgets
+    import breeze_resources
+    stylesheet = f':/{args.stylesheet}/stylesheet.qss'
+
+# Compat definitions, between Qt5 and Qt6.
+if args.pyqt6:
+    QAction = QtGui.QAction
+    Horizontal = QtCore.Qt.Orientation.Horizontal
+    Vertical = QtCore.Qt.Orientation.Vertical
+    TopToolBarArea = QtCore.Qt.ToolBarArea.TopToolBarArea
+    StyledPanel = QtWidgets.QFrame.Shape.StyledPanel
+    HLine = QtWidgets.QFrame.Shape.HLine
+    VLine = QtWidgets.QFrame.Shape.VLine
+    Raised = QtWidgets.QFrame.Shadow.Raised
+    Sunken = QtWidgets.QFrame.Shadow.Sunken
+    InstantPopup = QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup
+    MenuButtonPopup = QtWidgets.QToolButton.ToolButtonPopupMode.MenuButtonPopup
+    AlignTop = QtCore.Qt.AlignmentFlag.AlignTop
+    ItemIsUserCheckable = QtCore.Qt.ItemFlag.ItemIsUserCheckable
+    ItemIsUserTristate = QtCore.Qt.ItemFlag.ItemIsUserTristate
+    Checked = QtCore.Qt.CheckState.Checked
+    Unchecked = QtCore.Qt.CheckState.Unchecked
+    PartiallyChecked = QtCore.Qt.CheckState.PartiallyChecked
+    ReadOnly = QtCore.QFile.OpenModeFlag.ReadOnly
+    Text = QtCore.QFile.OpenModeFlag.Text
+    East = QtWidgets.QTabWidget.TabPosition.East
+else:
+    QAction = QtWidgets.QAction
+    Horizontal = QtCore.Qt.Horizontal
+    Vertical = QtCore.Qt.Vertical
+    TopToolBarArea = QtCore.Qt.TopToolBarArea
+    StyledPanel = QtWidgets.QFrame.StyledPanel
+    HLine = QtWidgets.QFrame.HLine
+    VLine = QtWidgets.QFrame.VLine
+    Raised = QtWidgets.QFrame.Raised
+    Sunken = QtWidgets.QFrame.Sunken
+    InstantPopup = QtWidgets.QToolButton.InstantPopup
+    MenuButtonPopup = QtWidgets.QToolButton.MenuButtonPopup
+    AlignTop = QtCore.Qt.AlignTop
+    ItemIsUserCheckable = QtCore.Qt.ItemIsUserCheckable
+    ItemIsUserTristate = QtCore.Qt.ItemIsUserTristate
+    Checked = QtCore.Qt.Checked
+    Unchecked = QtCore.Qt.Unchecked
+    PartiallyChecked = QtCore.Qt.PartiallyChecked
+    ReadOnly = QtCore.QFile.ReadOnly
+    Text = QtCore.QFile.Text
+    East = QtWidgets.QTabWidget.East
+
 
 class Ui:
     '''Main class for the user interface.'''
@@ -79,7 +138,7 @@ class Ui:
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.centralwidget)
         self.verticalLayout_5.setObjectName('verticalLayout_5')
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
-        self.tabWidget.setTabPosition(QtWidgets.QTabWidget.East)
+        self.tabWidget.setTabPosition(East)
         self.tabWidget.setTabsClosable(True)
         self.tabWidget.setObjectName('tabWidget')
         self.tab = QtWidgets.QWidget()
@@ -234,17 +293,17 @@ class Ui:
         item_2 = QtWidgets.QTreeWidgetItem(item_1)
         item_2.setText(0, 'subitem')
         item_3 = QtWidgets.QTreeWidgetItem(item_2, ['Row 2.1'])
-        item_3.setFlags(item_3.flags() | QtCore.Qt.ItemIsUserCheckable)
-        item_3.setCheckState(0, QtCore.Qt.Unchecked)
+        item_3.setFlags(item_3.flags() | ItemIsUserCheckable)
+        item_3.setCheckState(0, Unchecked)
         item_4 = QtWidgets.QTreeWidgetItem(item_2, ['Row 2.2'])
         item_5 = QtWidgets.QTreeWidgetItem(item_4, ['Row 2.2.1'])
         item_6 = QtWidgets.QTreeWidgetItem(item_5, ['Row 2.2.1.1'])
         item_7 = QtWidgets.QTreeWidgetItem(item_5, ['Row 2.2.1.2'])
-        item_7.setFlags(item_7.flags() | QtCore.Qt.ItemIsUserCheckable)
-        item_7.setCheckState(0, QtCore.Qt.Checked)
+        item_3.setFlags(item_7.flags() | ItemIsUserCheckable)
+        item_7.setCheckState(0, Checked)
         item_8 = QtWidgets.QTreeWidgetItem(item_2, ['Row 2.3'])
-        item_8.setFlags(item_8.flags() | QtCore.Qt.ItemIsUserTristate)
-        item_8.setCheckState(0, QtCore.Qt.PartiallyChecked)
+        item_8.setFlags(item_8.flags() | ItemIsUserTristate)
+        item_8.setCheckState(0, PartiallyChecked)
         item_9 = QtWidgets.QTreeWidgetItem(self.treeWidget, ['Row 3'])
         item_10 = QtWidgets.QTreeWidgetItem(item_9, ['Row 3.1'])
         item_11 = QtWidgets.QTreeWidgetItem(self.treeWidget, ['Row 4'])
@@ -263,7 +322,7 @@ class Ui:
         self.tabBar.addTab('TabBar Tab 1')
         self.tabBar.addTab('TabBar Tab 2')
         self.tabBar.addTab('TabBar Tab 3')
-        self.verticalLayout_4v2.addWidget(self.tabBar, 0, QtCore.Qt.AlignTop)
+        self.verticalLayout_4v2.addWidget(self.tabBar, 0, AlignTop)
         self.gridLayout_3v2.addWidget(self.groupBox_3v2, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tab_2, '')
         self.tabWidget.addTab(self.tab_3v2, '')
@@ -278,16 +337,16 @@ class Ui:
         self.bt_delay_popup.setObjectName('bt_delay_popup')
         self.horizontalLayout.addWidget(self.bt_delay_popup)
         self.bt_instant_popup = QtWidgets.QToolButton(self.centralwidget)
-        self.bt_instant_popup.setPopupMode(QtWidgets.QToolButton.InstantPopup)
+        self.bt_instant_popup.setPopupMode(InstantPopup)
         self.bt_instant_popup.setObjectName('bt_instant_popup')
         self.horizontalLayout.addWidget(self.bt_instant_popup)
         self.bt_menu_button_popup = QtWidgets.QToolButton(self.centralwidget)
-        self.bt_menu_button_popup.setPopupMode(QtWidgets.QToolButton.MenuButtonPopup)
+        self.bt_menu_button_popup.setPopupMode(MenuButtonPopup)
         self.bt_menu_button_popup.setObjectName('bt_menu_button_popup')
         self.horizontalLayout.addWidget(self.bt_menu_button_popup)
         self.line_2 = QtWidgets.QFrame(self.centralwidget)
-        self.line_2.setFrameShape(QtWidgets.QFrame.VLine)
-        self.line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line_2.setFrameShape(VLine)
+        self.line_2.setFrameShadow(Sunken)
         self.line_2.setObjectName('line_2')
         self.horizontalLayout.addWidget(self.line_2)
         self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
@@ -299,7 +358,7 @@ class Ui:
         self.doubleSpinBox.setObjectName('doubleSpinBox')
         self.horizontalLayout.addWidget(self.doubleSpinBox)
         self.toolButton = QtWidgets.QToolButton(self.centralwidget)
-        self.toolButton.setPopupMode(QtWidgets.QToolButton.InstantPopup)
+        self.toolButton.setPopupMode(InstantPopup)
         self.toolButton.setObjectName('toolButton')
         self.horizontalLayout.addWidget(self.toolButton)
         self.verticalLayout_5.addLayout(self.horizontalLayout)
@@ -330,15 +389,15 @@ class Ui:
         self.comboBox.addItem('')
         self.verticalLayout.addWidget(self.comboBox)
         self.horizontalSlider = QtWidgets.QSlider(self.dockWidgetContents)
-        self.horizontalSlider.setOrientation(QtCore.Qt.Horizontal)
+        self.horizontalSlider.setOrientation(Horizontal)
         self.horizontalSlider.setObjectName('horizontalSlider')
         self.verticalLayout.addWidget(self.horizontalSlider)
         self.textEdit = QtWidgets.QTextEdit(self.dockWidgetContents)
         self.textEdit.setObjectName('textEdit')
         self.verticalLayout.addWidget(self.textEdit)
         self.line = QtWidgets.QFrame(self.dockWidgetContents)
-        self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line.setFrameShape(HLine)
+        self.line.setFrameShadow(Sunken)
         self.line.setObjectName('line')
         self.verticalLayout.addWidget(self.line)
         self.progressBar = QtWidgets.QProgressBar(self.dockWidgetContents)
@@ -348,8 +407,8 @@ class Ui:
         self.verticalLayout_2.addLayout(self.verticalLayout)
         self.frame = QtWidgets.QFrame(self.dockWidgetContents)
         self.frame.setMinimumSize(QtCore.QSize(0, 100))
-        self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.frame.setFrameShape(StyledPanel)
+        self.frame.setFrameShadow(Raised)
         self.frame.setLineWidth(3)
         self.frame.setObjectName('frame')
         self.verticalLayout_2.addWidget(self.frame)
@@ -357,7 +416,7 @@ class Ui:
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget1)
         self.toolBar = QtWidgets.QToolBar(MainWindow)
         self.toolBar.setObjectName('toolBar')
-        MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
+        MainWindow.addToolBar(TopToolBarArea, self.toolBar)
         self.dockWidget2 = QtWidgets.QDockWidget(MainWindow)
         self.dockWidget2.setObjectName('dockWidget2')
         self.dockWidgetContents_2 = QtWidgets.QWidget()
@@ -365,16 +424,16 @@ class Ui:
         self.gridLayout_3 = QtWidgets.QGridLayout(self.dockWidgetContents_2)
         self.gridLayout_3.setObjectName('gridLayout_3')
         self.verticalSlider = QtWidgets.QSlider(self.dockWidgetContents_2)
-        self.verticalSlider.setOrientation(QtCore.Qt.Vertical)
+        self.verticalSlider.setOrientation(Vertical)
         self.verticalSlider.setObjectName('verticalSlider')
         self.gridLayout_3.addWidget(self.verticalSlider, 0, 0, 1, 1)
         self.dockWidget2.setWidget(self.dockWidgetContents_2)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget2)
-        self.actionAction = QtWidgets.QAction(MainWindow)
+        self.actionAction = QAction(MainWindow)
         self.actionAction.setObjectName('actionAction')
-        self.actionSub_menu = QtWidgets.QAction(MainWindow)
+        self.actionSub_menu = QAction(MainWindow)
         self.actionSub_menu.setObjectName('actionSub_menu')
-        self.actionAction_C = QtWidgets.QAction(MainWindow)
+        self.actionAction_C = QAction(MainWindow)
         self.actionAction_C.setObjectName('actionAction_C')
         self.menuSubmenu_2.addAction(self.actionSub_menu)
         self.menuSubmenu_2.addAction(self.actionAction_C)
@@ -498,10 +557,9 @@ class Ui:
         QtWidgets.QMessageBox.critical(self.centralwidget, 'Error', 'Critical Error')
 
 
-def main(argv=None):
+def main():
     'Application entry point'
 
-    args, unknown = parser.parse_known_args(argv)
     if args.scale != 1:
         os.environ['QT_SCALE_FACTOR'] = str(args.scale)
     else:
@@ -510,7 +568,7 @@ def main(argv=None):
         style = QtWidgets.QStyleFactory.create(args.style)
         QtWidgets.QApplication.setStyle(style)
     logging.basicConfig(level=logging.DEBUG)
-    app = QtWidgets.QApplication(argv[:1] + unknown)
+    app = QtWidgets.QApplication(sys.argv[:1] + unknown)
     window = QtWidgets.QMainWindow()
 
      # use the default font size
@@ -547,15 +605,18 @@ def main(argv=None):
 
     # setup stylesheet
     if args.stylesheet != 'native':
-        file = QtCore.QFile(f':/{args.stylesheet}/stylesheet.qss')
-        file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text)
+        file = QtCore.QFile(stylesheet)
+        file.open(ReadOnly | Text)
         stream = QtCore.QTextStream(file)
         app.setStyleSheet(stream.readAll())
 
     # run
     window.show()
-    return app.exec_()
+    if args.pyqt6:
+        return app.exec()
+    else:
+        return app.exec_()
 
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv))
+    sys.exit(main())

@@ -68,6 +68,55 @@ def main():
     app.exec_()
 ```
 
+# PyQt6 Installation
+
+Since [pyrcc](https://www.riverbankcomputing.com/pipermail/pyqt/2020-September/043209.html) is no longer being maintained, using local Python paths is the preferable solution. For a detailed description on how to package these resources, see this StackOverflow [answer](https://stackoverflow.com/a/20885799/4131059).
+
+First, package your code using setuptools. Make sure `zip_safe` is off, so we can properly load the files from a search path, and include the necessary package directories to your `MANIFEST.in` file.
+
+```python
+from setuptools import setup
+
+setup(
+    # Either option is valid here.
+    #   Either use `package_data` with enumerating the values, or
+    #   set `include_package_data=True`.
+    include_package_data=True,
+    package_data={
+        'breeze_theme.dark': ['dark/*'],
+        'breeze_theme.light': ['light/*'],
+        # Add any more themes here.
+    },
+    zip_safe=False,
+)
+```
+
+Then, you can import the resources as follows:
+
+```python
+import importlib.resources
+from Qt6 import QtWidgets, QtCore
+from Qt6.QtCore import QFile, QTextStream
+
+
+def main():
+    app = QtWidgets.QApplication(sys.argv)
+
+    # set stylesheet
+    # Note that the search path name must be the theme name.
+    #   dark => dark, light => light, dark-purple => dark-purple, ...
+    breeze_theme = importlib_resources.files('breeze_theme.dark')
+    QtCore.QDir.addSearchPath('dark', breeze_theme)
+    file = QFile("dark:stylesheet.qss")
+    file.open(QFile.OpenModeFlag.ReadOnly | QFile.OpenModeFlag.Text)
+    stream = QTextStream(file)
+    app.setStyleSheet(stream.readAll())
+
+    # code goes here
+
+    app.exec()
+```
+
 # Gallery
 
 **Breeze/BreezeDark**

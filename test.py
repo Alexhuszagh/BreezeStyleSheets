@@ -36,8 +36,7 @@ import random
 import sys
 import time
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-import breeze_resources
+home = os.path.dirname(os.path.realpath(__file__))
 
 # Create our arguments.
 parser = argparse.ArgumentParser(description='Configurations for the Qt5 application.')
@@ -95,6 +94,134 @@ parser.add_argument(
     type=float,
     default=1,
 )
+parser.add_argument(
+    '--pyqt6',
+    help='''use PyQt6 rather than PyQt5.''',
+    action='store_true'
+)
+
+args, unknown = parser.parse_known_args()
+if args.pyqt6:
+    from PyQt6 import QtCore, QtGui, QtWidgets
+    import breeze_resources
+    QtCore.QDir.addSearchPath(args.stylesheet, f'{home}/pyqt6/{args.stylesheet}/')
+    style_prefix = f'{args.stylesheet}:'
+    stylesheet = f'{style_prefix}stylesheet.qss'
+else:
+    from PyQt5 import QtCore, QtGui, QtWidgets
+    import breeze_resources
+    style_prefix = f':/{args.stylesheet}/'
+    stylesheet = f'{style_prefix}stylesheet.qss'
+
+# Compat definitions, between Qt5 and Qt6.
+if args.pyqt6:
+    QAction = QtGui.QAction
+    AlignTop = QtCore.Qt.AlignmentFlag.AlignTop
+    AlignVCenter = QtCore.Qt.AlignmentFlag.AlignVCenter
+    AlignBottom = QtCore.Qt.AlignmentFlag.AlignBottom
+    AlignLeft = QtCore.Qt.AlignmentFlag.AlignLeft
+    AlignHCenter = QtCore.Qt.AlignmentFlag.AlignHCenter
+    AlignRight = QtCore.Qt.AlignmentFlag.AlignRight
+    AlignCenter = QtCore.Qt.AlignmentFlag.AlignCenter
+    Horizontal = QtCore.Qt.Orientation.Horizontal
+    Vertical = QtCore.Qt.Orientation.Vertical
+    ScrollBarAsNeeded = QtCore.Qt.ScrollBarPolicy.ScrollBarAsNeeded
+    ReadOnly = QtCore.QFile.OpenModeFlag.ReadOnly
+    Text = QtCore.QFile.OpenModeFlag.Text
+    KeepAspectRatio = QtCore.Qt.AspectRatioMode.KeepAspectRatio
+    MenuButtonPopup = QtWidgets.QToolButton.ToolButtonPopupMode.MenuButtonPopup
+    InstantPopup = QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup
+    Checked = QtCore.Qt.CheckState.Checked
+    Unchecked = QtCore.Qt.CheckState.Unchecked
+    PartiallyChecked = QtCore.Qt.CheckState.PartiallyChecked
+    ItemIsUserCheckable = QtCore.Qt.ItemFlag.ItemIsUserCheckable
+    ItemIsUserTristate = QtCore.Qt.ItemFlag.ItemIsUserTristate
+    LeftArrow = QtCore.Qt.ArrowType.LeftArrow
+    RightArrow = QtCore.Qt.ArrowType.RightArrow
+    UpArrow = QtCore.Qt.ArrowType.UpArrow
+    DownArrow = QtCore.Qt.ArrowType.DownArrow
+    TopToolBarArea = QtCore.Qt.ToolBarArea.TopToolBarArea
+    LeftToolBarArea = QtCore.Qt.ToolBarArea.LeftToolBarArea
+    LeftDockWidgetArea = QtCore.Qt.DockWidgetArea.LeftDockWidgetArea
+    North = QtWidgets.QTabWidget.TabPosition.North
+    West = QtWidgets.QTabWidget.TabPosition.West
+    East = QtWidgets.QTabWidget.TabPosition.East
+    South = QtWidgets.QTabWidget.TabPosition.South
+    Ok = QtWidgets.QMessageBox.StandardButton.Ok
+    Cancel = QtWidgets.QMessageBox.StandardButton.Cancel
+    Close = QtWidgets.QMessageBox.StandardButton.Close
+    Open = QtWidgets.QMessageBox.StandardButton.Open
+    Reset = QtWidgets.QMessageBox.StandardButton.Reset
+    Save = QtWidgets.QMessageBox.StandardButton.Save
+    SaveAll = QtWidgets.QMessageBox.StandardButton.SaveAll
+    RestoreDefaults = QtWidgets.QMessageBox.StandardButton.RestoreDefaults
+    Yes = QtWidgets.QMessageBox.StandardButton.Yes
+    Help = QtWidgets.QMessageBox.StandardButton.Help
+    No = QtWidgets.QMessageBox.StandardButton.No
+    Apply = QtWidgets.QMessageBox.StandardButton.Apply
+    Discard = QtWidgets.QMessageBox.StandardButton.Discard
+    Critical = QtWidgets.QMessageBox.Icon.Critical
+    Information = QtWidgets.QMessageBox.Icon.Information
+    NoIcon = QtWidgets.QMessageBox.Icon.NoIcon
+    Question = QtWidgets.QMessageBox.Icon.Question
+    Warning = QtWidgets.QMessageBox.Icon.Warning
+    YesRole = QtWidgets.QDialogButtonBox.ButtonRole.YesRole
+    DialogOk = QtWidgets.QDialogButtonBox.StandardButton.Ok
+    DialogCancel = QtWidgets.QDialogButtonBox.StandardButton.Cancel
+else:
+    QAction = QtWidgets.QAction
+    AlignTop = QtCore.Qt.AlignTop
+    AlignVCenter = QtCore.Qt.AlignVCenter
+    AlignBottom = QtCore.Qt.AlignBottom
+    AlignLeft = QtCore.Qt.AlignLeft
+    AlignHCenter = QtCore.Qt.AlignHCenter
+    AlignRight = QtCore.Qt.AlignRight
+    AlignCenter = QtCore.Qt.AlignCenter
+    Horizontal = QtCore.Qt.Horizontal
+    Vertical = QtCore.Qt.Vertical
+    ScrollBarAsNeeded = QtCore.Qt.ScrollBarAsNeeded
+    ReadOnly = QtCore.QFile.ReadOnly
+    Text = QtCore.QFile.Text
+    KeepAspectRatio = QtCore.Qt.KeepAspectRatio
+    MenuButtonPopup = QtWidgets.QToolButton.MenuButtonPopup
+    InstantPopup = QtWidgets.QToolButton.InstantPopup
+    Checked = QtCore.Qt.Checked
+    Unchecked = QtCore.Qt.Unchecked
+    PartiallyChecked = QtCore.Qt.PartiallyChecked
+    ItemIsUserCheckable = QtCore.Qt.ItemIsUserCheckable
+    ItemIsUserTristate = QtCore.Qt.ItemIsUserTristate
+    LeftArrow = QtCore.Qt.LeftArrow
+    RightArrow = QtCore.Qt.RightArrow
+    UpArrow = QtCore.Qt.UpArrow
+    DownArrow = QtCore.Qt.DownArrow
+    TopToolBarArea = QtCore.Qt.TopToolBarArea
+    LeftToolBarArea = QtCore.Qt.LeftToolBarArea
+    LeftDockWidgetArea = QtCore.Qt.LeftDockWidgetArea
+    North = QtWidgets.QTabWidget.North
+    West = QtWidgets.QTabWidget.West
+    East = QtWidgets.QTabWidget.East
+    South = QtWidgets.QTabWidget.South
+    Ok = QtWidgets.QMessageBox.Ok
+    Cancel = QtWidgets.QMessageBox.Cancel
+    Close = QtWidgets.QMessageBox.Close
+    Open = QtWidgets.QMessageBox.Open
+    Reset = QtWidgets.QMessageBox.Reset
+    Save = QtWidgets.QMessageBox.Save
+    SaveAll = QtWidgets.QMessageBox.SaveAll
+    RestoreDefaults = QtWidgets.QMessageBox.RestoreDefaults
+    Yes = QtWidgets.QMessageBox.Yes
+    Help = QtWidgets.QMessageBox.Help
+    No = QtWidgets.QMessageBox.No
+    Apply = QtWidgets.QMessageBox.Apply
+    Discard = QtWidgets.QMessageBox.Discard
+    Critical = QtWidgets.QMessageBox.Critical
+    Information = QtWidgets.QMessageBox.Information
+    NoIcon = QtWidgets.QMessageBox.NoIcon
+    Question = QtWidgets.QMessageBox.Question
+    Warning = QtWidgets.QMessageBox.Warning
+    YesRole = QtWidgets.QDialogButtonBox.YesRole
+    DialogOk = QtWidgets.QDialogButtonBox.Ok
+    DialogCancel = QtWidgets.QDialogButtonBox.Cancel
 
 layout = {
     'vertical': QtWidgets.QVBoxLayout,
@@ -102,13 +229,13 @@ layout = {
 }
 
 alignment = {
-    'top': QtCore.Qt.AlignTop,
-    'vcenter': QtCore.Qt.AlignVCenter,
-    'bottom': QtCore.Qt.AlignBottom,
-    'left': QtCore.Qt.AlignLeft,
-    'hcenter': QtCore.Qt.AlignHCenter,
-    'right': QtCore.Qt.AlignRight,
-    'center': QtCore.Qt.AlignCenter,
+    'top': AlignTop,
+    'vcenter': AlignVCenter,
+    'bottom': AlignBottom,
+    'left': AlignLeft,
+    'hcenter': AlignHCenter,
+    'right': AlignRight,
+    'center': AlignCenter,
 }
 
 def add_widgets(layout, children):
@@ -169,19 +296,19 @@ def test_progressbar_vertical(widget, *_):
     layout_type = 'horizontal'
     child = []
     bar1 = QtWidgets.QProgressBar(widget)
-    bar1.setOrientation(QtCore.Qt.Vertical)
+    bar1.setOrientation(Vertical)
     bar1.setProperty('value', 0)
     child.append(bar1)
     bar2 = QtWidgets.QProgressBar(widget)
-    bar2.setOrientation(QtCore.Qt.Vertical)
+    bar2.setOrientation(Vertical)
     bar2.setProperty('value', 24)
     child.append(bar2)
     bar3 = QtWidgets.QProgressBar(widget)
-    bar3.setOrientation(QtCore.Qt.Vertical)
+    bar3.setOrientation(Vertical)
     bar3.setProperty('value', 99)
     child.append(bar3)
     bar4 = QtWidgets.QProgressBar(widget)
-    bar4.setOrientation(QtCore.Qt.Vertical)
+    bar4.setOrientation(Vertical)
     bar4.setProperty('value', 100)
     child.append(bar4)
 
@@ -189,14 +316,14 @@ def test_progressbar_vertical(widget, *_):
 
 def test_slider_horizontal(widget, *_):
     child = QtWidgets.QSlider(widget)
-    child.setOrientation(QtCore.Qt.Horizontal)
+    child.setOrientation(Horizontal)
 
     return child
 
 def test_slider_vertical(widget, *_):
     layout_type = 'horizontal'
     child = QtWidgets.QSlider(widget)
-    child.setOrientation(QtCore.Qt.Vertical)
+    child.setOrientation(Vertical)
 
     return child, layout_type
 
@@ -211,7 +338,7 @@ def test_splitter_horizontal(widget, *_):
 def test_splitter_vertical(widget, *_):
     layout_type = 'horizontal'
     child = QtWidgets.QSplitter(widget)
-    child.setOrientation(QtCore.Qt.Vertical)
+    child.setOrientation(Vertical)
     child.addWidget(QtWidgets.QListWidget())
     child.addWidget(QtWidgets.QTreeWidget())
     child.addWidget(QtWidgets.QTextEdit())
@@ -222,26 +349,26 @@ def test_menu(widget, window, font, width, *_):
     child = QtWidgets.QMenuBar(window)
     child.setGeometry(QtCore.QRect(0, 0, width, int(1.5 * font.pointSize())))
     menu = QtWidgets.QMenu('Main Menu', child)
-    menu.addAction(QtWidgets.QAction('&Action 1', window))
-    menu.addAction(QtWidgets.QAction('&Action 2', window))
+    menu.addAction(QAction('&Action 1', window))
+    menu.addAction(QAction('&Action 2', window))
     submenu = QtWidgets.QMenu('Sub Menu', menu)
-    submenu.addAction(QtWidgets.QAction('&Action 3', window))
-    action1 = QtWidgets.QAction('&Action 4', window)
+    submenu.addAction(QAction('&Action 3', window))
+    action1 = QAction('&Action 4', window)
     action1.setCheckable(True)
     submenu.addAction(action1)
     menu.addAction(submenu.menuAction())
-    action2 = QtWidgets.QAction('&Action 5', window)
+    action2 = QAction('&Action 5', window)
     action2.setCheckable(True)
     action2.setChecked(True)
     menu.addSeparator()
     menu.addAction(action2)
-    action3 = QtWidgets.QAction('&Action 6', window)
+    action3 = QAction('&Action 6', window)
     action3.setCheckable(True)
     menu.addAction(action3)
-    icon = QtGui.QIcon(':/dark/close.svg')
-    menu.addAction(QtWidgets.QAction(icon, '&Action 7', window))
-    menu.addAction(QtWidgets.QAction(icon, '&Action 8', window))
-    submenu.addAction(QtWidgets.QAction(icon, '&Action 9', window))
+    icon = QtGui.QIcon(f'{style_prefix}close.svg')
+    menu.addAction(QAction(icon, '&Action 7', window))
+    menu.addAction(QAction(icon, '&Action 8', window))
+    submenu.addAction(QAction(icon, '&Action 9', window))
     child.addAction(menu.menuAction())
     window.setMenuBar(child)
 
@@ -308,19 +435,19 @@ def _test_tabwidget(widget, position):
     return child
 
 def test_tabwidget_top(widget, *_):
-    return _test_tabwidget(widget, QtWidgets.QTabWidget.North)
+    return _test_tabwidget(widget, North)
 
 def test_tabwidget_left(widget, *_):
-    return _test_tabwidget(widget, QtWidgets.QTabWidget.West)
+    return _test_tabwidget(widget, West)
 
 def test_tabwidget_right(widget, *_):
-    return _test_tabwidget(widget, QtWidgets.QTabWidget.East)
+    return _test_tabwidget(widget, East)
 
 def test_tabwidget_bottom(widget, *_):
-    return _test_tabwidget(widget, QtWidgets.QTabWidget.South)
+    return _test_tabwidget(widget, South)
 
 def test_closable_tabwidget(widget, *_):
-    child = _test_tabwidget(widget, QtWidgets.QTabWidget.East)
+    child = _test_tabwidget(widget, East)
     child.setTabsClosable(True)
 
     return child
@@ -328,8 +455,8 @@ def test_closable_tabwidget(widget, *_):
 def test_dock(_, window, *__):
     dock1 = QtWidgets.QDockWidget('&Dock widget 1', window)
     dock2 = QtWidgets.QDockWidget('&Dock widget 2', window)
-    window.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.LeftDockWidgetArea), dock1)
-    window.addDockWidget(QtCore.Qt.DockWidgetArea(QtCore.Qt.LeftDockWidgetArea), dock2)
+    window.addDockWidget(LeftDockWidgetArea, dock1)
+    window.addDockWidget(LeftDockWidgetArea, dock2)
     window.tabifyDockWidget(dock1, dock2)
 
 def test_radio(widget, *_):
@@ -348,10 +475,10 @@ def test_checkbox(widget, _, __, ___, ____, app):
     widget_type = QtWidgets.QCheckBox
     child.append(abstract_button(widget_type, widget))
     child.append(abstract_button(widget_type, widget, checked=True))
-    child.append(abstract_button(widget_type, widget, checked=QtCore.Qt.PartiallyChecked))
+    child.append(abstract_button(widget_type, widget, checked=PartiallyChecked))
     child.append(abstract_button(widget_type, widget, enabled=False))
     child.append(abstract_button(widget_type, widget, checked=True, enabled=False))
-    child.append(abstract_button(widget_type, widget, checked=QtCore.Qt.PartiallyChecked, enabled=False))
+    child.append(abstract_button(widget_type, widget, checked=PartiallyChecked, enabled=False))
     child.append(abstract_button(widget_type, widget, 'With Text'))
     child.append(abstract_button(widget_type, widget, 'With Large Text'))
     checkbox_font = app.font()
@@ -386,7 +513,7 @@ def test_sortable_table(widget, *_):
     return child
 
 def test_list(widget, *_):
-    alignments = [QtCore.Qt.AlignLeft, QtCore.Qt.AlignRight, QtCore.Qt.AlignHCenter]
+    alignments = [AlignLeft, AlignRight, AlignHCenter]
     child = QtWidgets.QListWidget(widget)
     for index in range(10):
         item = QtWidgets.QListWidgetItem(f'Item {index + 1}')
@@ -428,10 +555,10 @@ def test_toolbar(_, window, *__):
     toolbar1.addAction('&Action 3 Really Long Name')
     icon = QtGui.QIcon(':/dark/close.svg')
     toolbar1.addAction(icon, '&Action 4')
-    window.addToolBar(QtCore.Qt.TopToolBarArea, toolbar1)
+    window.addToolBar(TopToolBarArea, toolbar1)
 
     toolbar2 = QtWidgets.QToolBar('Toolbar')
-    toolbar2.setOrientation(QtCore.Qt.Vertical)
+    toolbar2.setOrientation(Vertical)
     toolbar2.addAction('&Action 1')
     toolbar2.addAction('&Action 2')
     toolbar2.addSeparator()
@@ -439,7 +566,7 @@ def test_toolbar(_, window, *__):
     toolbar2.addAction('&Action 3 Really Long Name')
     icon = QtGui.QIcon(':/dark/close.svg')
     toolbar2.addAction(icon, '&Action 4')
-    window.addToolBar(QtCore.Qt.LeftToolBarArea, toolbar2)
+    window.addToolBar(LeftToolBarArea, toolbar2)
 
     return None, None
 
@@ -468,23 +595,23 @@ def test_toolbutton(widget, window, *_):
     child[2].setText('Menu Toolbutton')
     child[3].setText('Instant Toolbutton')
     child[1].addActions([
-        QtWidgets.QAction('&Action 5', window),
-        QtWidgets.QAction('&Action 6', window),
+        QAction('&Action 5', window),
+        QAction('&Action 6', window),
     ])
-    child[2].setPopupMode(QtWidgets.QToolButton.MenuButtonPopup)
+    child[2].setPopupMode(MenuButtonPopup)
     child[2].addActions([
-        QtWidgets.QAction('&Action 9', window),
-        QtWidgets.QAction('&Action 10', window),
+        QAction('&Action 9', window),
+        QAction('&Action 10', window),
     ])
-    child[3].setPopupMode(QtWidgets.QToolButton.InstantPopup)
+    child[3].setPopupMode(InstantPopup)
     child[3].addActions([
-        QtWidgets.QAction('&Action 11', window),
-        QtWidgets.QAction('&Action 12', window),
+        QAction('&Action 11', window),
+        QAction('&Action 12', window),
     ])
-    child[4].setArrowType(QtCore.Qt.LeftArrow)
-    child[5].setArrowType(QtCore.Qt.RightArrow)
-    child[6].setArrowType(QtCore.Qt.UpArrow)
-    child[7].setArrowType(QtCore.Qt.DownArrow)
+    child[4].setArrowType(LeftArrow)
+    child[5].setArrowType(RightArrow)
+    child[6].setArrowType(UpArrow)
+    child[7].setArrowType(DownArrow)
     icon = QtGui.QIcon(':/dark/close.svg')
     child[8].setIcon(icon)
 
@@ -509,17 +636,17 @@ def test_tree(widget, *_):
     item1 = QtWidgets.QTreeWidgetItem(tree1, ['Row 1'])
     item2 = QtWidgets.QTreeWidgetItem(tree1, ['Row 2'])
     item3 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.1'])
-    item3.setFlags(item3.flags() | QtCore.Qt.ItemIsUserCheckable)
-    item3.setCheckState(0, QtCore.Qt.Unchecked)
+    item3.setFlags(item3.flags() | ItemIsUserCheckable)
+    item3.setCheckState(0, Unchecked)
     item4 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.2'])
     item5 = QtWidgets.QTreeWidgetItem(item4, ['Row 2.2.1'])
     item6 = QtWidgets.QTreeWidgetItem(item5, ['Row 2.2.1.1'])
     item7 = QtWidgets.QTreeWidgetItem(item5, ['Row 2.2.1.2'])
-    item7.setFlags(item7.flags() | QtCore.Qt.ItemIsUserCheckable)
-    item7.setCheckState(0, QtCore.Qt.Checked)
+    item7.setFlags(item7.flags() | ItemIsUserCheckable)
+    item7.setCheckState(0, Checked)
     item8 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.3'])
-    item8.setFlags(item8.flags() | QtCore.Qt.ItemIsUserTristate)
-    item8.setCheckState(0, QtCore.Qt.PartiallyChecked)
+    item8.setFlags(item8.flags() | ItemIsUserTristate)
+    item8.setCheckState(0, PartiallyChecked)
     item9 = QtWidgets.QTreeWidgetItem(tree1, ['Row 3'])
     item10 = QtWidgets.QTreeWidgetItem(item9, ['Row 3.1'])
     item11 = QtWidgets.QTreeWidgetItem(tree1, ['Row 4'])
@@ -571,7 +698,7 @@ def test_groupbox(widget, *_):
     checkable.setCheckable(True)
     child.append(checkable)
     vbox = QtWidgets.QVBoxLayout(checkable)
-    vbox.setAlignment(QtCore.Qt.AlignHCenter)
+    vbox.setAlignment(AlignHCenter)
     vbox.addWidget(QtWidgets.QLineEdit('Sample Label'))
 
     return child
@@ -597,10 +724,10 @@ def test_toolbox(widget, *_):
 def test_menubutton(widget, window, *_):
     child = QtWidgets.QToolButton(widget)
     child.setText('Menu Toolbutton')
-    child.setPopupMode(QtWidgets.QToolButton.MenuButtonPopup)
+    child.setPopupMode(MenuButtonPopup)
     child.addActions([
-        QtWidgets.QAction('&Action 9', window),
-        QtWidgets.QAction('&Action 10', window),
+        QAction('&Action 9', window),
+        QAction('&Action 10', window),
     ])
 
     return child
@@ -614,7 +741,7 @@ def test_tooltip(widget, *_):
 def test_splashscreen(_, window, __, ___, ____, app):
     pixmap = QtGui.QPixmap('assets/Yellowstone.jpg')
     size = app.screens()[0].size()
-    scaled = pixmap.scaled(size, QtCore.Qt.KeepAspectRatio)
+    scaled = pixmap.scaled(size, KeepAspectRatio)
     splash = QtWidgets.QSplashScreen(scaled)
     splash.show()
     QtCore.QTimer.singleShot(2000, lambda: splash_timer(splash, window))
@@ -630,83 +757,89 @@ def test_calendar(widget, *_):
 def _test_standard_button(window, app, button):
     message = QtWidgets.QMessageBox(window)
     message.addButton(button)
-    message.exec_()
+    if args.pyqt6:
+        message.exec()
+    else:
+        message.exec_()
 
 def test_ok_button(_, window, __, ___, ____, app):
-    _test_standard_button(window, app, QtWidgets.QMessageBox.Ok)
+    _test_standard_button(window, app, Ok)
     return None, None, False, True
 
 def test_cancel_button(_, window, __, ___, ____, app):
-    _test_standard_button(window, app, QtWidgets.QMessageBox.Cancel)
+    _test_standard_button(window, app, Cancel)
     return None, None, False, True
 
 def test_close_button(_, window, __, ___, ____, app):
-    _test_standard_button(window, app, QtWidgets.QMessageBox.Close)
+    _test_standard_button(window, app, Close)
     return None, None, False, True
 
 def test_open_button(_, window, __, ___, ____, app):
-    _test_standard_button(window, app, QtWidgets.QMessageBox.Open)
+    _test_standard_button(window, app, Open)
     return None, None, False, True
 
 def test_reset_button(_, window, __, ___, ____, app):
-    _test_standard_button(window, app, QtWidgets.QMessageBox.Reset)
+    _test_standard_button(window, app, Reset)
     return None, None, False, True
 
 def test_save_button(_, window, __, ___, ____, app):
-    _test_standard_button(window, app, QtWidgets.QMessageBox.Save)
+    _test_standard_button(window, app, Save)
     return None, None, False, True
 
 def test_saveall_button(_, window, __, ___, ____, app):
-    _test_standard_button(window, app, QtWidgets.QMessageBox.SaveAll)
+    _test_standard_button(window, app, SaveAll)
     return None, None, False, True
 
 def test_restoredefaults_button(_, window, __, ___, ____, app):
-    _test_standard_button(window, app, QtWidgets.QMessageBox.RestoreDefaults)
+    _test_standard_button(window, app, RestoreDefaults)
     return None, None, False, True
 
 def test_yes_button(_, window, __, ___, ____, app):
-    _test_standard_button(window, app, QtWidgets.QMessageBox.Yes)
+    _test_standard_button(window, app, Yes)
     return None, None, False, True
 
 def test_help_button(_, window, __, ___, ____, app):
-    _test_standard_button(window, app, QtWidgets.QMessageBox.Help)
+    _test_standard_button(window, app, Help)
     return None, None, False, True
 
 def test_no_button(_, window, __, ___, ____, app):
-    _test_standard_button(window, app, QtWidgets.QMessageBox.No)
+    _test_standard_button(window, app, No)
     return None, None, False, True
 
 def test_apply_button(_, window, __, ___, ____, app):
-    _test_standard_button(window, app, QtWidgets.QMessageBox.Apply)
+    _test_standard_button(window, app, Apply)
     return None, None, False, True
 
 def test_discard_button(_, window, __, ___, ____, app):
-    _test_standard_button(window, app, QtWidgets.QMessageBox.Discard)
+    _test_standard_button(window, app, Discard)
     return None, None, False, True
 
 def _test_standard_icon(window, app, icon):
     message = QtWidgets.QMessageBox(window)
     message.setIcon(icon)
-    message.exec_()
+    if args.pyqt6:
+        message.exec()
+    else:
+        message.exec_()
 
 def test_critical_icon(_, window, __, ___, ____, app):
-    _test_standard_icon(window, app, QtWidgets.QMessageBox.Critical)
+    _test_standard_icon(window, app, Critical)
     return None, None, False, True
 
 def test_info_icon(_, window, __, ___, ____, app):
-    _test_standard_icon(window, app, QtWidgets.QMessageBox.Information)
+    _test_standard_icon(window, app, Information)
     return None, None, False, True
 
 def test_no_icon(_, window, __, ___, ____, app):
-    _test_standard_icon(window, app, QtWidgets.QMessageBox.NoIcon)
+    _test_standard_icon(window, app, NoIcon)
     return None, None, False, True
 
 def test_question_icon(_, window, __, ___, ____, app):
-    _test_standard_icon(window, app, QtWidgets.QMessageBox.Question)
+    _test_standard_icon(window, app, Question)
     return None, None, False, True
 
 def test_warning_icon(_, window, __, ___, ____, app):
-    _test_standard_icon(window, app, QtWidgets.QMessageBox.Warning)
+    _test_standard_icon(window, app, Warning)
     return None, None, False, True
 
 def test_multiple_buttons(widget, *_):
@@ -718,11 +851,11 @@ def test_multiple_buttons(widget, *_):
     hbox.addWidget(QtWidgets.QPushButton('Complete'))
     child.append(container)
     child.append(QtWidgets.QLineEdit(widget))
-    dialog = QtWidgets.QDialogButtonBox(QtCore.Qt.Horizontal, widget)
-    dialog.addButton('Yes', QtWidgets.QDialogButtonBox.YesRole)
-    dialog.addButton('Really really really long', QtWidgets.QDialogButtonBox.YesRole)
-    dialog.addButton(QtWidgets.QDialogButtonBox.Ok)
-    dialog.addButton(QtWidgets.QDialogButtonBox.Cancel)
+    dialog = QtWidgets.QDialogButtonBox(Horizontal, widget)
+    dialog.addButton('Yes', YesRole)
+    dialog.addButton('Really really really long', YesRole)
+    dialog.addButton(DialogOk)
+    dialog.addButton(DialogCancel)
     child.append(dialog)
 
     return child
@@ -731,28 +864,28 @@ def test_disabled_menu(widget, window, font, width, *_):
     child = QtWidgets.QMenuBar(window)
     child.setGeometry(QtCore.QRect(0, 0, width, int(1.5 * font.pointSize())))
     menu = QtWidgets.QMenu('Main Menu', child)
-    menu.addAction(QtWidgets.QAction('&Action 1', window))
-    menu.addAction(QtWidgets.QAction('&Action 2', window))
+    menu.addAction(QAction('&Action 1', window))
+    menu.addAction(QAction('&Action 2', window))
     submenu = QtWidgets.QMenu('Sub Menu', menu)
-    submenu.addAction(QtWidgets.QAction('&Action 3', window))
-    action1 = QtWidgets.QAction('&Action 4', window)
+    submenu.addAction(QAction('&Action 3', window))
+    action1 = QAction('&Action 4', window)
     action1.setCheckable(True)
     action1.setEnabled(False)
     submenu.addAction(action1)
     menu.addAction(submenu.menuAction())
-    action2 = QtWidgets.QAction('&Action 5', window)
+    action2 = QAction('&Action 5', window)
     action2.setCheckable(True)
     action2.setChecked(True)
     menu.addSeparator()
     menu.addAction(action2)
-    action3 = QtWidgets.QAction('&Action 6', window)
+    action3 = QAction('&Action 6', window)
     action3.setCheckable(True)
     menu.addAction(action3)
     icon = QtGui.QIcon(':/dark/close.svg')
-    menu.addAction(QtWidgets.QAction(icon, '&Action 7', window))
-    menu.addAction(QtWidgets.QAction(icon, '&Action 8', window))
+    menu.addAction(QAction(icon, '&Action 7', window))
+    menu.addAction(QAction(icon, '&Action 8', window))
     menu.actions()[2].setEnabled(False)
-    submenu.addAction(QtWidgets.QAction(icon, '&Action 9', window))
+    submenu.addAction(QAction(icon, '&Action 9', window))
     child.addAction(menu.menuAction())
     window.setMenuBar(child)
 
@@ -783,8 +916,8 @@ def test(args, qtargv, test_widget):
 
     # setup stylesheet
     if args.stylesheet != 'native':
-        file = QtCore.QFile(f':/{args.stylesheet}/stylesheet.qss')
-        file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text)
+        file = QtCore.QFile(stylesheet)
+        file.open(ReadOnly | Text)
         stream = QtCore.QTextStream(file)
         app.setStyleSheet(stream.readAll())
 
@@ -794,8 +927,8 @@ def test(args, qtargv, test_widget):
     window.resize(args.width, args.height)
     widget = QtWidgets.QWidget()
     scroll = QtWidgets.QScrollArea()
-    scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
-    scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+    scroll.setHorizontalScrollBarPolicy(ScrollBarAsNeeded)
+    scroll.setVerticalScrollBarPolicy(ScrollBarAsNeeded)
     scroll.setWidgetResizable(True)
 
     # Get the correct parameters for our test widget.
@@ -842,14 +975,16 @@ def test(args, qtargv, test_widget):
         window.show()
     if quit:
         return app.quit()
-    return app.exec_()
+    if args.pyqt6:
+        return app.exec()
+    else:
+        return app.exec_()
 
-def main(argv=None):
+def main():
     'Application entry point'
 
     # Disable garbage collection to avoid runtime errors.
     gc.disable()
-    args, unknown = parser.parse_known_args(argv)
     os.environ['QT_SCALE_FACTOR'] = str(args.scale)
     if args.style != 'native':
         style = QtWidgets.QStyleFactory.create(args.style)
@@ -858,12 +993,12 @@ def main(argv=None):
         all_tests = [i for i in globals().keys() if i.startswith('test_')]
         all_widgets = [i[len('test_'):] for i in all_tests]
         for widget in all_widgets:
-            test(args, argv[:1] + unknown, widget)
+            test(args, sys.argv[:1] + unknown, widget)
             gc.collect()
     else:
-        test(args, argv[:1] + unknown, args.widget)
+        test(args, sys.argv[:1] + unknown, args.widget)
 
     return 0
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv))
+    sys.exit(main())
