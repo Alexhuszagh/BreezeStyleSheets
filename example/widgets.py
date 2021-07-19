@@ -24,8 +24,10 @@
 # THE SOFTWARE.
 
 '''
-    example
+    widgets
     =======
+
+    Simple example showing numerous built-in widgets.
 '''
 
 import argparse
@@ -33,7 +35,8 @@ import logging
 import os
 import sys
 
-home = os.path.dirname(os.path.realpath(__file__))
+example_dir = os.path.dirname(os.path.realpath(__file__))
+home = os.path.dirname(example_dir)
 
 # Create our arguments.
 parser = argparse.ArgumentParser(description='Configurations for the Qt5 application.')
@@ -72,12 +75,18 @@ parser.add_argument(
     action='store_true'
 )
 
+# Need to fix an issue on Wayland on Linux:
+#   conda-forge does not support Wayland, for who knows what reason.
+if sys.platform.lower().startswith('linux') and 'CONDA_PREFIX' in os.environ:
+    os.environ['XDG_SESSION_TYPE'] = 'x11'
+
 args, unknown = parser.parse_known_args()
 if args.pyqt6:
     from PyQt6 import QtCore, QtGui, QtWidgets
     QtCore.QDir.addSearchPath(args.stylesheet, f'{home}/pyqt6/{args.stylesheet}/')
     stylesheet = f'{args.stylesheet}:stylesheet.qss'
 else:
+    sys.path.insert(0, home)
     from PyQt5 import QtCore, QtGui, QtWidgets
     import breeze_resources
     stylesheet = f':/{args.stylesheet}/stylesheet.qss'
@@ -571,7 +580,7 @@ def main():
     app = QtWidgets.QApplication(sys.argv[:1] + unknown)
     window = QtWidgets.QMainWindow()
 
-     # use the default font size
+    # use the default font size
     font = app.font()
     if args.font_size > 0:
         font.setPointSizeF(args.font_size)

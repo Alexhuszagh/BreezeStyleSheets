@@ -36,7 +36,8 @@ import random
 import sys
 import time
 
-home = os.path.dirname(os.path.realpath(__file__))
+tests_dir = os.path.dirname(os.path.realpath(__file__))
+home = os.path.dirname(tests_dir)
 
 # Create our arguments.
 parser = argparse.ArgumentParser(description='Configurations for the Qt5 application.')
@@ -108,6 +109,7 @@ if args.pyqt6:
     style_prefix = f'{args.stylesheet}:'
     stylesheet = f'{style_prefix}stylesheet.qss'
 else:
+    sys.path.insert(0, home)
     from PyQt5 import QtCore, QtGui, QtWidgets
     import breeze_resources
     style_prefix = f':/{args.stylesheet}/'
