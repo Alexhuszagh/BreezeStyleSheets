@@ -50,6 +50,7 @@
     <file>dark/transparent.svg</file>
     <file>dark/undock.svg</file>
     <file>dark/undock_hover.svg</file>
+    <file>dark/undock_hover_pressed.svg</file>
     <file>dark/up_arrow.svg</file>
     <file>dark/up_arrow_disabled.svg</file>
     <file>dark/up_arrow_hover.svg</file>
@@ -106,6 +107,7 @@
     <file>light/transparent.svg</file>
     <file>light/undock.svg</file>
     <file>light/undock_hover.svg</file>
+    <file>light/undock_hover_pressed.svg</file>
     <file>light/up_arrow.svg</file>
     <file>light/up_arrow_disabled.svg</file>
     <file>light/up_arrow_hover.svg</file>

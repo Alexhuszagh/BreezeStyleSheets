@@ -465,7 +465,13 @@ def test_tabwidget_right(widget, *_):
 def test_tabwidget_bottom(widget, *_):
     return _test_tabwidget(widget, South)
 
-def test_closable_tabwidget(widget, *_):
+def test_closable_tabwidget_top(widget, *_):
+    child = _test_tabwidget(widget, North)
+    child.setTabsClosable(True)
+
+    return child
+
+def test_closable_tabwidget_right(widget, *_):
     child = _test_tabwidget(widget, East)
     child.setTabsClosable(True)
 

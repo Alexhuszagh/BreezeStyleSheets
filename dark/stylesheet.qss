@@ -1071,18 +1071,19 @@ QTabBar:focus
 QTabBar::close-button
 {
     /* Doesn't seem possible to resize these buttons */
-    border-image: url(:/dark/close.svg);
+    border-image: url(:/dark/transparent.svg);
+    image: url(:/dark/close.svg);
     background: transparent;
 }
 
 QTabBar::close-button:hover
 {
-    border-image: url(:/dark/close_hover.svg);
+    image: url(:/dark/close_hover.svg);
 }
 
 QTabBar::close-button:pressed
 {
-    border-image: url(:/dark/close_pressed.svg);
+    image: url(:/dark/close_pressed.svg);
 }
 
 /* TOP TABS */
@@ -1362,34 +1363,36 @@ QDockWidget::float-button
 
 QDockWidget::float-button
 {
-    border-image: url(:/dark/undock.svg);
+    border-image: url(:/dark/transparent.svg);
+    image: url(:/dark/undock.svg);
 }
 
 QDockWidget::float-button:hover
 {
-    border-image: url(:/dark/undock_hover.svg);
+    image: url(:/dark/undock_hover.svg);
 }
 
 /* The :pressed events don't register, seems to be a Qt bug. */
 QDockWidget::float-button:pressed
 {
-    border-image: url(:/dark/undock_hover.svg);
+    image: url(:/dark/undock_hover.svg);
 }
 
 QDockWidget::close-button
 {
-    border-image: url(:/dark/close.svg);
+    border-image: url(:/dark/transparent.svg);
+    image: url(:/dark/close.svg);
 }
 
 QDockWidget::close-button:hover
 {
-    border-image: url(:/dark/close_hover.svg);
+    image: url(:/dark/close_hover.svg);
 }
 
 /* The :pressed events don't register, seems to be a Qt bug. */
 QDockWidget::close-button:pressed
 {
-    border-image: url(:/dark/close_pressed.svg);
+    image: url(:/dark/close_pressed.svg);
 }
 
 QTreeView,

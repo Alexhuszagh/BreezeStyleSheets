@@ -11,6 +11,11 @@
         "hover": ["close:hover:hex", "close:hover:opacity"],
         "pressed": ["highlight:dark:hex", "highlight:dark:opacity"]
     },
+    "ads_close": {
+        "default": ["dock:float:hex", "dock:float:opacity"],
+        "hover": ["close:hover:hex", "close:hover:opacity"],
+        "pressed": ["highlight:dark:hex", "highlight:dark:opacity"]
+    },
     "ads_detach": {
         "default": ["dock:float:hex", "dock:float:opacity"]
     },

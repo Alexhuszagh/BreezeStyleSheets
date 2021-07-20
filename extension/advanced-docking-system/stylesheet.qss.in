@@ -61,21 +61,21 @@
 #dockAreaCloseButton,
 #floatingTitleCloseButton
 {
-    image: url(^style^close.svg);
+    image: url(^style^ads_close.svg);
 }
 
 #tabCloseButton:hover,
 #dockAreaCloseButton:hover,
 #floatingTitleCloseButton:hover
 {
-    image: url(^style^close_hover.svg);
+    image: url(^style^ads_close_hover.svg);
 }
 
 #tabCloseButton:pressed,
 #dockAreaCloseButton:pressed,
 #floatingTitleCloseButton:pressed
 {
-    image: url(^style^close_pressed.svg);
+    image: url(^style^ads_close_pressed.svg);
 }
 
 #tabsMenuButton
