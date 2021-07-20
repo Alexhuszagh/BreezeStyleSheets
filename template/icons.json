@@ -63,13 +63,14 @@
     "close": {
         "default": ["midtone:dark:hex", "midtone:dark:opacity"],
         "hover": ["close:hover:hex", "close:hover:opacity"],
-        "pressed": ["close:pressed:hex", "close:pressed:opacity"]
+        "pressed": ["highlight:dark:hex", "highlight:dark:opacity"]
     },
     "undock": {
-        "default": ["dock:float"]
+        "default": ["dock:float:hex", "dock:float:opacity"]
     },
     "undock_hover": {
-        "default": ["dock:float", "foreground"]
+        "default": ["close:hover:hex", "close:hover:opacity"],
+        "pressed": ["highlight:dark:hex", "highlight:dark:opacity"]
     },
     // Tree views.
     "branch_open": {

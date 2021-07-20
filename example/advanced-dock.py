@@ -102,11 +102,13 @@ if args.pyqt6:
     AlignLeft = QtCore.Qt.AlignmentFlag.AlignLeft
     ReadOnly = QtCore.QFile.OpenModeFlag.ReadOnly
     Text = QtCore.QFile.OpenModeFlag.Text
+    WindowMaximized = QtCore.Qt.WindowState.WindowMaximized
 else:
     AlignTop = QtCore.Qt.AlignTop
     AlignLeft = QtCore.Qt.AlignLeft
     ReadOnly = QtCore.QFile.ReadOnly
     Text = QtCore.QFile.Text
+    WindowMaximized = QtCore.Qt.WindowMaximized
 
 # Need to fix an issue on Wayland on Linux:
 #   conda-forge does not support Wayland, for who knows what reason.
@@ -169,8 +171,9 @@ def main():
 
     table_widget = QtAds.CDockWidget('Table')
     table = QtWidgets.QTableWidget()
-    table.setColumnCount(5)
-    table.setRowCount(5)
+    # make sure we have both scroll areas active.
+    table.setColumnCount(40)
+    table.setRowCount(40)
     table_widget.setWidget(table)
     table_widget.setMinimumSizeHintMode(QtAds.CDockWidget.MinimumSizeHintFromDockWidget)
     dock_manager.addDockWidget(QtAds.DockWidgetArea.RightDockWidgetArea, table_widget, dock_area)
@@ -179,6 +182,7 @@ def main():
         dock_manager.setStyleSheet('')
 
     # run
+    window.setWindowState(WindowMaximized)
     window.show()
     if args.pyqt6:
         return app.exec()

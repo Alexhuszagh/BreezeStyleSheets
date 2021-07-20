@@ -2,20 +2,20 @@
 // with `//` are removed. No other comments are valid.
 {
     "ads_menu_button": {
-        "default": ["foreground:hex", "foreground:opacity"],
-        "hover": ["highlight:dark:hex", "highlight:dark:opacity"],
-        "pressed": ["highlight:hex", "highlight:opacity"]
+        "default": ["dock:float:hex", "dock:float:opacity"],
+        "hover": ["close:hover:hex", "close:hover:opacity"],
+        "pressed": ["highlight:dark:hex", "highlight:dark:opacity"]
     },
     "ads_maximize": {
-        "default": ["foreground:hex", "foreground:opacity"],
-        "hover": ["highlight:dark:hex", "highlight:dark:opacity"],
-        "pressed": ["highlight:hex", "highlight:opacity"]
+        "default": ["dock:float:hex", "dock:float:opacity"],
+        "hover": ["close:hover:hex", "close:hover:opacity"],
+        "pressed": ["highlight:dark:hex", "highlight:dark:opacity"]
     },
     "ads_detach": {
-        "default": ["dock:float"]
+        "default": ["dock:float:hex", "dock:float:opacity"]
     },
     "ads_detach_hover": {
-        "default": ["dock:float", "foreground"],
-        "pressed": ["highlight:dark", "foreground"]
+        "default": ["close:hover:hex", "close:hover:opacity"],
+        "pressed": ["highlight:dark:hex", "highlight:dark:opacity"]
     }
 }

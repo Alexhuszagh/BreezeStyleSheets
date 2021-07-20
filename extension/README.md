@@ -21,3 +21,7 @@ Document this...
 Adds tooltips to QDockWidget's float and close buttons.
 
 **TODO(ahuszagh)** Add image
+
+# Creating Extensions
+
+**TODO(ahuszagh)** Document...

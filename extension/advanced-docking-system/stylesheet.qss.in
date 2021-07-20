@@ -80,17 +80,17 @@
 
 #tabsMenuButton
 {
-    image: url(^style^menu_button.svg);
+    image: url(^style^ads_menu_button.svg);
 }
 
 #tabsMenuButton:hover
 {
-    image: url(^style^menu_button_hover.svg);
+    image: url(^style^ads_menu_button_hover.svg);
 }
 
 #tabsMenuButton:pressed
 {
-    image: url(^style^menu_button_pressed.svg);
+    image: url(^style^ads_menu_button_pressed.svg);
 }
 
 #tabsMenuButton::menu-indicator
@@ -113,6 +113,14 @@
     image: url(^style^ads_detach_hover_pressed.svg);
 }
 
+/* FLOATING */
+/* Disable the default icons when the dock is floating. */
+ads--CFloatingWidgetTitleBar
+{
+    qproperty-maximizeIcon: url(^style^transparent.svg);
+    qproperty-normalIcon: url(^style^transparent.svg);
+}
+
 #floatingTitleMaximizeButton
 {
     image: url(^style^ads_maximize.svg);
@@ -126,4 +134,61 @@
 #floatingTitleMaximizeButton:pressed
 {
     image: url(^style^ads_maximize_pressed.svg);
+}
+
+/**
+ *  Using the `maximized="true"`, `isMaximized="true"`, or other attribute
+ *  selectors don't work, and since the maximize button and minimize
+ *  button are always the same...
+ *
+ *  To get a nicer looking UI, just use the same maximize and restore
+ *  buttons.
+ */
+
+/* TABS */
+ads--CDockWidgetTab
+{
+    border: 0.04em solid ^midtone^;
+    border-top: 0.09em solid ^midtone^;
+    background-color: ^tab:background^;
+    padding: 0.23em;
+    min-width: 50px;
+    border-radius: 0.09em;
+    border-bottom-left-radius: 0em;
+    border-bottom-right-radius: 0em;
+}
+
+ads--CDockWidgetTab[activeTab="true"]
+{
+    background-color: ^tab:background:selected^;
+    border-top: 0.09em solid ^highlight^;
+    border-left: 0.04em solid ^midtone^;
+    border-right: 0.04em solid ^midtone^;
+    border-bottom: 0.04em tansparent ^midtone^;
+}
+
+ads--CDockWidgetTab QLabel
+{
+    background-color: ^tab:background^;
+}
+
+ads--CDockWidgetTab[activeTab="true"] QLabel
+{
+    background-color: ^tab:background:selected^;
+}
+
+/**
+ *  CDockWidgetTab doesn't seem to have the concept of `::next-selected`
+ *  and `::previous-selected`, so we just draw the borders for everything.
+ *  It's not nearly as pretty, but it's not bad either.
+ */
+
+/* OVERLAY */
+ads--CDockOverlayCross
+{
+    qproperty-iconFrameColor: ^highlight^;
+    qproperty-iconBackgroundColor: ^view:background^;
+    qproperty-iconOverlayColor: ^highlight^;
+    qproperty-iconArrowColor: ^foreground^;
+    qproperty-iconShadowColor: transparent;
 }
