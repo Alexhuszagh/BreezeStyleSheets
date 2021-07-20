@@ -72,11 +72,16 @@ parser.add_argument(
     help='''use PyQt6 rather than PyQt5.''',
     action='store_true'
 )
-
-# Need to fix an issue on Wayland on Linux:
-#   conda-forge does not support Wayland, for who knows what reason.
-if sys.platform.lower().startswith('linux') and 'CONDA_PREFIX' in os.environ:
-    os.environ['XDG_SESSION_TYPE'] = 'x11'
+parser.add_argument(
+    '--use-internal',
+    help='''use the dock manager internal stylesheet.''',
+    action='store_true'
+)
+parser.add_argument(
+    '--use-x11',
+    help='''force the use of x11 on compatible systems.''',
+    action='store_true'
+)
 
 args, unknown = parser.parse_known_args()
 if args.pyqt6:
@@ -103,10 +108,16 @@ else:
     ReadOnly = QtCore.QFile.ReadOnly
     Text = QtCore.QFile.Text
 
+# Need to fix an issue on Wayland on Linux:
+#   conda-forge does not support Wayland, for who knows what reason.
+if sys.platform.lower().startswith('linux') and 'CONDA_PREFIX' in os.environ:
+    args.use_x11 = True
+
+if args.use_x11:
+    os.environ['XDG_SESSION_TYPE'] = 'x11'
 
 def main():
     'Application entry point'
-
 
     if args.scale != 1:
         os.environ['QT_SCALE_FACTOR'] = str(args.scale)
@@ -137,18 +148,35 @@ def main():
     # setup the dock manager
     window.setObjectName('MainWindow')
     window.resize(1068, 824)
-    central_widget = QtWidgets.QWidget(window)
-    central_widget.setObjectName("central_widget")
-    window.setCentralWidget(central_widget)
+    widget = QtWidgets.QWidget(window)
+    window.setCentralWidget(widget)
     dock_manager = QtAds.CDockManager(window)
 
     # add widgets to the dock manager
-    dock1 = QtAds.CDockWidget('Dock 1')
-    dock1_widget = QtWidgets.QWidget()
-    layout1 = QtWidgets.QVBoxLayout(dock1_widget)
-    dock1.setWidget(dock1_widget)
-    layout1.addWidget(QtWidgets.QPushButton('Some Button'))
-    dock_manager.addDockWidget(QtAds.TopDockWidgetArea, dock1)
+    label_widget = QtAds.CDockWidget('Dock')
+    label = QtWidgets.QLabel('Some label')
+    label_widget.setWidget(label)
+    dock_area = dock_manager.setCentralWidget(label_widget)
+    dock_area.setAllowedAreas(QtAds.DockWidgetArea.OuterDockAreas)
+
+    list_widget = QtAds.CDockWidget('List')
+    lst = QtWidgets.QListWidget()
+    for index in range(10):
+        lst.addItem(QtWidgets.QListWidgetItem(f'Item {index + 1}'))
+    list_widget.setWidget(lst)
+    list_widget.setMinimumSizeHintMode(QtAds.CDockWidget.MinimumSizeHintFromDockWidget)
+    dock_manager.addDockWidget(QtAds.DockWidgetArea.LeftDockWidgetArea, list_widget, dock_area)
+
+    table_widget = QtAds.CDockWidget('Table')
+    table = QtWidgets.QTableWidget()
+    table.setColumnCount(5)
+    table.setRowCount(5)
+    table_widget.setWidget(table)
+    table_widget.setMinimumSizeHintMode(QtAds.CDockWidget.MinimumSizeHintFromDockWidget)
+    dock_manager.addDockWidget(QtAds.DockWidgetArea.RightDockWidgetArea, table_widget, dock_area)
+
+    if not args.use_internal:
+        dock_manager.setStyleSheet('')
 
     # run
     window.show()

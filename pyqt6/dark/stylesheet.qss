@@ -12,7 +12,7 @@
  *  The MIT License (MIT)
  *
  * Copyright (c) <2013-2014> <Colin Duquesnoy>
- * Copyright (c) <2015-2016> <Alex Huszagh>
+ * Copyright (c) <2015-2021> <Alex Huszagh>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -1919,29 +1919,29 @@ QDialogButtonBox
 {
     dialogbuttonbox-buttons-have-icons: true;
 
-    dialog-cancel-icon: url(dark:dialog-cancel.svg);
-    dialog-close-icon: url(dark:dialog-close.svg);
-    dialog-ok-icon: url(dark:dialog-ok.svg);
-    dialog-open-icon: url(dark:dialog-open.svg);
-    dialog-reset-icon: url(dark:dialog-reset.svg);
-    dialog-save-icon: url(dark:dialog-save.svg);
+    dialog-cancel-icon: url(dark:dialog_cancel.svg);
+    dialog-close-icon: url(dark:dialog_close.svg);
+    dialog-ok-icon: url(dark:dialog_ok.svg);
+    dialog-open-icon: url(dark:dialog_open.svg);
+    dialog-reset-icon: url(dark:dialog_reset.svg);
+    dialog-save-icon: url(dark:dialog_save.svg);
     /**
      *  No support yet for overriding saveall.
-     *  dialog-saveall-icon: url(dark:dialog-saveall.svg);
+     *  dialog-saveall-icon: url(dark:dialog_saveall.svg);
      */
-    dialog-yes-icon: url(dark:dialog-ok.svg);
-    dialog-help-icon: url(dark:dialog-help.svg);
-    dialog-no-icon: url(dark:dialog-no.svg);
-    dialog-apply-icon: url(dark:dialog-ok.svg);
-    dialog-discard-icon: url(dark:dialog-discard.svg);
+    dialog-yes-icon: url(dark:dialog_ok.svg);
+    dialog-help-icon: url(dark:dialog_help.svg);
+    dialog-no-icon: url(dark:dialog_no.svg);
+    dialog-apply-icon: url(dark:dialog_ok.svg);
+    dialog-discard-icon: url(dark:dialog_discard.svg);
 }
 
 QMessageBox
 {
-    messagebox-critical-icon: url(dark:message-critical.svg);
-    messagebox-information-icon: url(dark:message-information.svg);
-    messagebox-question-icon: url(dark:message-question.svg);
-    messagebox-warning-icon: url(dark:message-warning.svg);
+    messagebox-critical-icon: url(dark:message_critical.svg);
+    messagebox-information-icon: url(dark:message_information.svg);
+    messagebox-question-icon: url(dark:message_question.svg);
+    messagebox-warning-icon: url(dark:message_warning.svg);
 }
 
 /* Set some styles for these custom dialog buttons */
@@ -1950,4 +1950,78 @@ QMessageBox QPushButton
 {
     min-height: 1.1em;
     min-width: 5em;
+}
+
+/*
+ *  Extension stylesheet for the Advanced Docking System.
+ *
+ *  :author: Alex Huszagh
+ *  :license: MIT, see LICENSE.md
+ *
+ * ---------------------------------------------------------------------
+ *  The MIT License (MIT)
+ *
+ * Copyright (c) <2021> <Alex Huszagh>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * ---------------------------------------------------------------------
+ */
+
+/* Color the tab with the nhighlight color */
+ads--CDockWidgetTab[focused="true"]
+{
+    /*
+    background: palette(highlight);
+    border-color: palette(highlight);
+    */
+}
+
+/* Use a different colored close button icon to match the test color */
+ads--CDockWidgetTab[focused="true"] > #tabCloseButton
+{
+    /*qproperty-icon: url(:/ads/images/close-button-focused.svg)*/
+}
+
+/* Make a hovered focused close button a little bit lighter */
+ads--CDockWidgetTab[focused="true"] > #tabCloseButton:hover
+{
+    /*background: rgba(255, 255, 255, 48);*/
+}
+
+/* Make a pressed focused close button even more lighter */
+ads--CDockWidgetTab[focused="true"] > #tabCloseButton:pressed
+{
+    /*background: rgba(255, 255, 255, 92);*/
+}
+
+/* Use a different color for the tab label */
+ads--CDockWidgetTab[focused="true"] QLabel
+{
+    /*color: palette(light);*/
+}
+
+/* Paint a nice solid line for the whole title bar to create the illusion
+   of an active tab */
+ads--CDockAreaWidget[focused="true"] ads--CDockAreaTitleBar
+{
+    /*background: transparent;
+    border-bottom: 2px solid palette(highlight);
+    padding-bottom: 0px;*/
 }

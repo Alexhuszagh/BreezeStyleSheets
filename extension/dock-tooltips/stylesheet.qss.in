@@ -1,0 +1,14 @@
+/**
+ *  QDOCKWIDGET TOOLTIP STYLESHEET
+ *  ------------------------------
+ */
+
+QAbstractButton#qt_dockwidget_closebutton
+{
+    qproperty-toolTip: "Close";
+}
+
+QAbstractButton#qt_dockwidget_floatbutton
+{
+    qproperty-toolTip: "Detach";
+}

@@ -9,3 +9,15 @@ Extensions enable the creation of stylesheets using the same, customizable theme
 - Describe icons.json
 
 Document this...
+
+# Current Extensions
+
+**Advanced Docking System**
+
+**TODO(ahuszagh)** Add description and image
+
+**QDockWidget Tooltips**
+
+Adds tooltips to QDockWidget's float and close buttons.
+
+**TODO(ahuszagh)** Add image

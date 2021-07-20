@@ -100,11 +100,15 @@ parser.add_argument(
     help='''use PyQt6 rather than PyQt5.''',
     action='store_true'
 )
+parser.add_argument(
+    '--use-x11',
+    help='''force the use of x11 on compatible systems.''',
+    action='store_true'
+)
 
 args, unknown = parser.parse_known_args()
 if args.pyqt6:
     from PyQt6 import QtCore, QtGui, QtWidgets
-    import breeze_resources
     QtCore.QDir.addSearchPath(args.stylesheet, f'{home}/pyqt6/{args.stylesheet}/')
     style_prefix = f'{args.stylesheet}:'
     stylesheet = f'{style_prefix}stylesheet.qss'
@@ -170,6 +174,10 @@ if args.pyqt6:
     YesRole = QtWidgets.QDialogButtonBox.ButtonRole.YesRole
     DialogOk = QtWidgets.QDialogButtonBox.StandardButton.Ok
     DialogCancel = QtWidgets.QDialogButtonBox.StandardButton.Cancel
+    DockWidgetClosable = QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetClosable
+    DockWidgetFloatable = QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetFloatable
+    DockWidgetMovable = QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable
+    AllDockWidgetFeatures = DockWidgetClosable | DockWidgetFloatable | DockWidgetMovable
 else:
     QAction = QtWidgets.QAction
     AlignTop = QtCore.Qt.AlignTop
@@ -224,6 +232,15 @@ else:
     YesRole = QtWidgets.QDialogButtonBox.YesRole
     DialogOk = QtWidgets.QDialogButtonBox.Ok
     DialogCancel = QtWidgets.QDialogButtonBox.Cancel
+    AllDockWidgetFeatures = QtWidgets.QDockWidget.AllDockWidgetFeatures
+
+# Need to fix an issue on Wayland on Linux:
+#   conda-forge does not support Wayland, for who knows what reason.
+if sys.platform.lower().startswith('linux') and 'CONDA_PREFIX' in os.environ:
+    args.use_x11 = True
+
+if args.use_x11:
+    os.environ['XDG_SESSION_TYPE'] = 'x11'
 
 layout = {
     'vertical': QtWidgets.QVBoxLayout,
@@ -456,7 +473,9 @@ def test_closable_tabwidget(widget, *_):
 
 def test_dock(_, window, *__):
     dock1 = QtWidgets.QDockWidget('&Dock widget 1', window)
+    dock1.setFeatures(AllDockWidgetFeatures)
     dock2 = QtWidgets.QDockWidget('&Dock widget 2', window)
+    dock2.setFeatures(AllDockWidgetFeatures)
     window.addDockWidget(LeftDockWidgetArea, dock1)
     window.addDockWidget(LeftDockWidgetArea, dock2)
     window.tabifyDockWidget(dock1, dock2)

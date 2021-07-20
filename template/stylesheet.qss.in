@@ -35,6 +35,11 @@
  * ---------------------------------------------------------------------
  */
 
+/**
+ *  MAIN STYLESHEET
+ *  ---------------
+ */
+
 QToolTip
 {
     /* 0.2ex is the smallest value that's not ignored on Windows. */
@@ -617,16 +622,14 @@ QSizeGrip
     height: 0.5em;
 }
 
+/**
+ *  Set the separator to be transparent, since the dock has a border.
+ *  On PyQt6, neither the border nor the background seem to be respected.
+ */
 QMainWindow::separator
 {
-    border: 0.15em solid ^midtone^;
-    margin-left: 0.5em;
-}
-
-QMainWindow::separator:hover
-{
-    border: 0.15em solid ^midtone:hover^;
-    margin-left: 0.5em;
+    border: 0.09em transparent ^midtone^;
+    background: transparent;
 }
 
 QMenu::separator
@@ -1048,7 +1051,7 @@ QTabWidget::pane:right
 
 QTabBar
 {
-    qproperty-drawBase: 0em;
+    qproperty-drawBase: 0;
     left: 0.23em;
     border-radius: 0.13em;
     /**
@@ -1070,12 +1073,6 @@ QTabBar::close-button
     /* Doesn't seem possible to resize these buttons */
     border-image: url(^style^close.svg);
     background: transparent;
-}
-
-QTabBar::close-button:hover,
-QTabBar::close-button:pressed
-{
-    border-image: url(^style^close_hover.svg);
 }
 
 QTabBar::close-button:hover
@@ -1118,9 +1115,9 @@ QTabBar::tab:top:!selected
     border-bottom-right-radius: 0em;
 }
 
-QTabBar::tab:top:previous-selected
+QTabBar::tab:top:next-selected
 {
-    border-left: 0.04em solid ^tab:background^;
+    border-right: 0.04em transparent ^tab:background^;
     border-bottom-left-radius: 0em;
     border-bottom-right-radius: 0em;
 }
@@ -1128,7 +1125,6 @@ QTabBar::tab:top:previous-selected
 QTabBar::tab:top:!selected:hover
 {
     background-color: ^view:hover^;
-    border: 0.04em ^view:hover^;
     border-radius: 0.09em;
     border-bottom-left-radius: 0em;
     border-bottom-right-radius: 0em;
@@ -1137,7 +1133,6 @@ QTabBar::tab:top:!selected:hover
 QTabBar::tab:top:!selected:first:hover
 {
     background-color: ^view:hover^;
-    border: 0.04em ^view:hover^;
     border-radius: 0.09em;
     border-bottom-left-radius: 0em;
     border-bottom-right-radius: 0em;
@@ -1175,7 +1170,7 @@ QTabBar::tab:bottom:!selected
 
 QTabBar::tab:bottom:next-selected
 {
-    border-right: 0.04em solid ^tab:background^;
+    border-right: 0.04em transparent ^tab:background^;
     border-top-left-radius: 0em;
     border-top-right-radius: 0em;
 }
@@ -1183,7 +1178,6 @@ QTabBar::tab:bottom:next-selected
 QTabBar::tab:bottom:!selected:hover
 {
     background-color: ^view:hover^;
-    border: 0.04em ^view:hover^;
     border-radius: 0.09em;
     border-top-left-radius: 0em;
     border-top-right-radius: 0em;
@@ -1192,7 +1186,6 @@ QTabBar::tab:bottom:!selected:hover
 QTabBar::tab:bottom:!selected:first:hover
 {
     background-color: ^view:hover^;
-    border: 0.04em ^view:hover^;
     border-radius: 0.09em;
     border-top-left-radius: 0em;
     border-top-right-radius: 0em;
@@ -1230,7 +1223,7 @@ QTabBar::tab:left:!selected
 
 QTabBar::tab:left:previous-selected
 {
-    border-top: 0.04em solid ^tab:background^;
+    border-top: 0.04em transparent ^tab:background^;
     border-top-right-radius: 0em;
     border-bottom-right-radius: 0em;
 }
@@ -1238,7 +1231,6 @@ QTabBar::tab:left:previous-selected
 QTabBar::tab:left:!selected:hover
 {
     background-color: ^view:hover^;
-    border: 0.04em ^view:hover^;
     border-radius: 0.09em;
     border-top-right-radius: 0em;
     border-bottom-right-radius: 0em;
@@ -1247,7 +1239,6 @@ QTabBar::tab:left:!selected:hover
 QTabBar::tab:left:!selected:first:hover
 {
     background-color: ^view:hover^;
-    border: 0.04em ^view:hover^;
     border-radius: 0.09em;
     border-top-right-radius: 0em;
     border-bottom-right-radius: 0em;
@@ -1285,7 +1276,7 @@ QTabBar::tab:right:!selected
 
 QTabBar::tab:right:previous-selected
 {
-    border-top: 0.04em solid ^tab:background^;
+    border-top: 0.04em transparent ^tab:background^;
     border-top-left-radius: 0em;
     border-bottom-left-radius: 0em;
 }
@@ -1293,7 +1284,6 @@ QTabBar::tab:right:previous-selected
 QTabBar::tab:right:!selected:hover
 {
     background-color: ^view:hover^;
-    border: 0.04em ^view:hover^;
     border-radius: 0.09em;
     border-top-left-radius: 0em;
     border-bottom-left-radius: 0em;
@@ -1302,7 +1292,6 @@ QTabBar::tab:right:!selected:hover
 QTabBar::tab:right:!selected:first:hover
 {
     background-color: ^view:hover^;
-    border: 0.04em ^view:hover^;
     border-radius: 0.09em;
     border-top-left-radius: 0em;
     border-bottom-left-radius: 0em;
@@ -1339,17 +1328,28 @@ QTabBar QToolButton::left-arrow:disabled
 QDockWidget
 {
     background: ^dock:background^;
-    border: 0.09em solid ^tab:background^;
+    /**
+     *  It doesn't seem possible to change the border of the
+     *  QDockWidget without changing the content margins.
+     */
+    /**
+     *  This is a bug fix so we can handle hover, pressed, and other events.
+     *  Reference: https://stackoverflow.com/questions/32145080/qdockwidget-float-close-button-hover-images
+     */
     titlebar-close-icon: url(^style^transparent.svg);
     titlebar-normal-icon: url(^style^transparent.svg);
 }
 
-QDockWidget::title
-{
-    background: ^dock:background^;
-    padding-left: 0.5em;
-}
-
+/**
+ *  Don't style the title, since it gives a weird, missing border
+ *  around the rest of the dock widget, which the remaining border
+ *  cannot be removed.
+ *
+ *  There is a bug in Qt6, where the icons are small. It doesn't
+ *  change if we use `image` instead of `border-image`, nor if we
+ *  use `qproperty-icon`, etc. The icon seem to be half the size
+ *  of our desired values.
+ */
 QDockWidget::close-button,
 QDockWidget::float-button
 {
@@ -1370,6 +1370,12 @@ QDockWidget::float-button:hover
     border-image: url(^style^undock_hover.svg);
 }
 
+/* The :pressed events don't register, seems to be a Qt bug. */
+QDockWidget::float-button:pressed
+{
+    border-image: url(^style^undock_hover.svg);
+}
+
 QDockWidget::close-button
 {
     border-image: url(^style^close.svg);
@@ -1380,6 +1386,7 @@ QDockWidget::close-button:hover
     border-image: url(^style^close_hover.svg);
 }
 
+/* The :pressed events don't register, seems to be a Qt bug. */
 QDockWidget::close-button:pressed
 {
     border-image: url(^style^close_pressed.svg);
@@ -1919,29 +1926,29 @@ QDialogButtonBox
 {
     dialogbuttonbox-buttons-have-icons: true;
 
-    dialog-cancel-icon: url(^style^dialog-cancel.svg);
-    dialog-close-icon: url(^style^dialog-close.svg);
-    dialog-ok-icon: url(^style^dialog-ok.svg);
-    dialog-open-icon: url(^style^dialog-open.svg);
-    dialog-reset-icon: url(^style^dialog-reset.svg);
-    dialog-save-icon: url(^style^dialog-save.svg);
+    dialog-cancel-icon: url(^style^dialog_cancel.svg);
+    dialog-close-icon: url(^style^dialog_close.svg);
+    dialog-ok-icon: url(^style^dialog_ok.svg);
+    dialog-open-icon: url(^style^dialog_open.svg);
+    dialog-reset-icon: url(^style^dialog_reset.svg);
+    dialog-save-icon: url(^style^dialog_save.svg);
     /**
      *  No support yet for overriding saveall.
-     *  dialog-saveall-icon: url(^style^dialog-saveall.svg);
+     *  dialog-saveall-icon: url(^style^dialog_saveall.svg);
      */
-    dialog-yes-icon: url(^style^dialog-ok.svg);
-    dialog-help-icon: url(^style^dialog-help.svg);
-    dialog-no-icon: url(^style^dialog-no.svg);
-    dialog-apply-icon: url(^style^dialog-ok.svg);
-    dialog-discard-icon: url(^style^dialog-discard.svg);
+    dialog-yes-icon: url(^style^dialog_ok.svg);
+    dialog-help-icon: url(^style^dialog_help.svg);
+    dialog-no-icon: url(^style^dialog_no.svg);
+    dialog-apply-icon: url(^style^dialog_ok.svg);
+    dialog-discard-icon: url(^style^dialog_discard.svg);
 }
 
 QMessageBox
 {
-    messagebox-critical-icon: url(^style^message-critical.svg);
-    messagebox-information-icon: url(^style^message-information.svg);
-    messagebox-question-icon: url(^style^message-question.svg);
-    messagebox-warning-icon: url(^style^message-warning.svg);
+    messagebox-critical-icon: url(^style^message_critical.svg);
+    messagebox-information-icon: url(^style^message_information.svg);
+    messagebox-question-icon: url(^style^message_question.svg);
+    messagebox-warning-icon: url(^style^message_warning.svg);
 }
 
 /* Set some styles for these custom dialog buttons */

@@ -1,4 +1,21 @@
 // NOTE: This is a custom JSON file, where lines leading
 // with `//` are removed. No other comments are valid.
 {
+    "ads_menu_button": {
+        "default": ["foreground:hex", "foreground:opacity"],
+        "hover": ["highlight:dark:hex", "highlight:dark:opacity"],
+        "pressed": ["highlight:hex", "highlight:opacity"]
+    },
+    "ads_maximize": {
+        "default": ["foreground:hex", "foreground:opacity"],
+        "hover": ["highlight:dark:hex", "highlight:dark:opacity"],
+        "pressed": ["highlight:hex", "highlight:opacity"]
+    },
+    "ads_detach": {
+        "default": ["dock:float"]
+    },
+    "ads_detach_hover": {
+        "default": ["dock:float", "foreground"],
+        "pressed": ["highlight:dark", "foreground"]
+    }
 }

@@ -19,15 +19,15 @@
     <file>dark/close.svg</file>
     <file>dark/close_hover.svg</file>
     <file>dark/close_pressed.svg</file>
-    <file>dark/dialog-cancel.svg</file>
-    <file>dark/dialog-close.svg</file>
-    <file>dark/dialog-discard.svg</file>
-    <file>dark/dialog-help.svg</file>
-    <file>dark/dialog-no.svg</file>
-    <file>dark/dialog-ok.svg</file>
-    <file>dark/dialog-open.svg</file>
-    <file>dark/dialog-reset.svg</file>
-    <file>dark/dialog-save.svg</file>
+    <file>dark/dialog_cancel.svg</file>
+    <file>dark/dialog_close.svg</file>
+    <file>dark/dialog_discard.svg</file>
+    <file>dark/dialog_help.svg</file>
+    <file>dark/dialog_no.svg</file>
+    <file>dark/dialog_ok.svg</file>
+    <file>dark/dialog_open.svg</file>
+    <file>dark/dialog_reset.svg</file>
+    <file>dark/dialog_save.svg</file>
     <file>dark/down_arrow.svg</file>
     <file>dark/down_arrow_disabled.svg</file>
     <file>dark/down_arrow_hover.svg</file>
@@ -35,10 +35,10 @@
     <file>dark/hseptoolbar.svg</file>
     <file>dark/left_arrow.svg</file>
     <file>dark/left_arrow_disabled.svg</file>
-    <file>dark/message-critical.svg</file>
-    <file>dark/message-information.svg</file>
-    <file>dark/message-question.svg</file>
-    <file>dark/message-warning.svg</file>
+    <file>dark/message_critical.svg</file>
+    <file>dark/message_information.svg</file>
+    <file>dark/message_question.svg</file>
+    <file>dark/message_warning.svg</file>
     <file>dark/radio_checked.svg</file>
     <file>dark/radio_checked_disabled.svg</file>
     <file>dark/radio_unchecked.svg</file>
@@ -75,15 +75,15 @@
     <file>light/close.svg</file>
     <file>light/close_hover.svg</file>
     <file>light/close_pressed.svg</file>
-    <file>light/dialog-cancel.svg</file>
-    <file>light/dialog-close.svg</file>
-    <file>light/dialog-discard.svg</file>
-    <file>light/dialog-help.svg</file>
-    <file>light/dialog-no.svg</file>
-    <file>light/dialog-ok.svg</file>
-    <file>light/dialog-open.svg</file>
-    <file>light/dialog-reset.svg</file>
-    <file>light/dialog-save.svg</file>
+    <file>light/dialog_cancel.svg</file>
+    <file>light/dialog_close.svg</file>
+    <file>light/dialog_discard.svg</file>
+    <file>light/dialog_help.svg</file>
+    <file>light/dialog_no.svg</file>
+    <file>light/dialog_ok.svg</file>
+    <file>light/dialog_open.svg</file>
+    <file>light/dialog_reset.svg</file>
+    <file>light/dialog_save.svg</file>
     <file>light/down_arrow.svg</file>
     <file>light/down_arrow_disabled.svg</file>
     <file>light/down_arrow_hover.svg</file>
@@ -91,10 +91,10 @@
     <file>light/hseptoolbar.svg</file>
     <file>light/left_arrow.svg</file>
     <file>light/left_arrow_disabled.svg</file>
-    <file>light/message-critical.svg</file>
-    <file>light/message-information.svg</file>
-    <file>light/message-question.svg</file>
-    <file>light/message-warning.svg</file>
+    <file>light/message_critical.svg</file>
+    <file>light/message_information.svg</file>
+    <file>light/message_question.svg</file>
+    <file>light/message_warning.svg</file>
     <file>light/radio_checked.svg</file>
     <file>light/radio_checked_disabled.svg</file>
     <file>light/radio_unchecked.svg</file>

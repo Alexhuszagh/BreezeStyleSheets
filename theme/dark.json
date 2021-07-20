@@ -38,7 +38,7 @@
     "button:border": "#76797c",
     "button:checked": "#626568",
     "button:disabled": "#454545",
-    "close:hover": "#b37979",
+    "close:hover": "#eff0f1",
     "close:pressed": "#b33e3e",
     "dock:background": "#31363b",
     "dock:float": "#a2a2a2",

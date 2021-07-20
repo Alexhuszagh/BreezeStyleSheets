@@ -74,11 +74,11 @@ parser.add_argument(
     help='''use PyQt6 rather than PyQt5.''',
     action='store_true'
 )
-
-# Need to fix an issue on Wayland on Linux:
-#   conda-forge does not support Wayland, for who knows what reason.
-if sys.platform.lower().startswith('linux') and 'CONDA_PREFIX' in os.environ:
-    os.environ['XDG_SESSION_TYPE'] = 'x11'
+parser.add_argument(
+    '--use-x11',
+    help='''force the use of x11 on compatible systems.''',
+    action='store_true'
+)
 
 args, unknown = parser.parse_known_args()
 if args.pyqt6:
@@ -135,6 +135,13 @@ else:
     Text = QtCore.QFile.Text
     East = QtWidgets.QTabWidget.East
 
+# Need to fix an issue on Wayland on Linux:
+#   conda-forge does not support Wayland, for who knows what reason.
+if sys.platform.lower().startswith('linux') and 'CONDA_PREFIX' in os.environ:
+    args.use_x11 = True
+
+if args.use_x11:
+    os.environ['XDG_SESSION_TYPE'] = 'x11'
 
 class Ui:
     '''Main class for the user interface.'''

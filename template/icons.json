@@ -120,44 +120,44 @@
         "default": ["midtone:light"]
     },
     // Dialog icons
-    "dialog-cancel": {
+    "dialog_cancel": {
         "default": ["foreground"]
     },
-    "dialog-close": {
+    "dialog_close": {
         "default": ["foreground"]
     },
-    "dialog-ok": {
+    "dialog_ok": {
         "default": ["foreground"]
     },
-    "dialog-open": {
+    "dialog_open": {
         "default": ["foreground"]
     },
-    "dialog-save": {
+    "dialog_save": {
         "default": ["foreground"]
     },
-    "dialog-reset": {
+    "dialog_reset": {
         "default": ["foreground"]
     },
-    "dialog-help": {
+    "dialog_help": {
         "default": ["foreground"]
     },
-    "dialog-no": {
+    "dialog_no": {
         "default": ["foreground"]
     },
-    "dialog-discard": {
+    "dialog_discard": {
         "default": ["foreground"]
     },
     // Message icons
-    "message-critical": {
+    "message_critical": {
         "default": ["critical", "foreground"]
     },
-    "message-information": {
+    "message_information": {
         "default": ["information", "foreground"]
     },
-    "message-question": {
+    "message_question": {
         "default": ["question", "foreground"]
     },
-    "message-warning": {
+    "message_warning": {
         "default": ["warning", "foreground"]
     }
 }
