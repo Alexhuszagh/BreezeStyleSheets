@@ -243,9 +243,23 @@ python configure.py --styles=dark,light,<custom> --resource custom.qrc
 
 Then, you can use `custom.qrc`, along with the generated icons and stylesheets in each folder, in place of `breeze.qrc` for any style.
 
+The `--styles` command flag takes a comma-separated list of values, or `all`, which will configure every theme present in the [themes](/theme) directory.
+
 **Generating Colors**
 
 As a reference point, see the pre-generated [themes](/theme). In general, to create a good theme, modify only the highlight colors (blues, greens, purples) to a new color, such that the saturation and lightness stay the same (only the hue changes). For example, the color `rgba(51, 164, 223, 0.5)` becomes `rgba(164, 51, 223, 0.5)`.
+
+**Extensions**
+
+We also allow customizable extensions to extend the default stylesheets with additional style rules, using the colors defined in your theme. This also enables the integration of third-party Qt plugins/widgets into the generated stylesheets.
+
+For example, to configure with extensions for the [Advanced Docking System](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System), run:
+
+```bash
+python configure.py --extensions=advanced-docking-system --resource custom.qrc
+```
+
+Like with styles, `--extensions` takes a comma-separated list of values, or `all`, which will add every extension present in the [extensions](/extension) directory. For a detailed introduction to creating your own extensions, see the extensions [tutorial](/extensions/README.md).
 
 # Limitations
 
@@ -271,6 +285,7 @@ The limitations of stylesheets include:
 - Complete stylesheet for all Qt widgets, including esoteric widgets like `QCalendarWidget`.
 - Customizable, beautiful light and dark themes.
 - Cross-platform icon packs for standard icons.
+- Extensible stylesheets: add your own plugins or rules and automatically configure them using the same configuration syntax.
 
 # Debugging
 

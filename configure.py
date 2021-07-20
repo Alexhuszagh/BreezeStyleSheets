@@ -8,173 +8,112 @@
 import argparse
 import glob
 import json
-import re
 import os
+import re
+import sys
 
 home = os.path.dirname(os.path.realpath(__file__))
 
-# Create our arguments.
-parser = argparse.ArgumentParser(description='Styles to configure for a Qt application.')
-parser.add_argument(
-    '--styles',
-    help='''comma-separate list of styles to configure. pass `all` to build all themes''',
-    default='light,dark',
-)
-parser.add_argument(
-    '--resource',
-    help='''output resource file name''',
-    default='custom.qrc',
-)
-parser.add_argument(
-    '--pyqt6',
-    help='''use PyQt6 rather than PyQt5.''',
-    action='store_true'
-)
+def parse_args(argv=None):
+    '''Parse the command-line options.'''
 
-# List of all icons to configure.
-icons = {
-    # Arrows
-    'down_arrow': {
-        'default': ['foreground:hex', 'foreground:opacity'],
-        'hover': ['highlight:hex', 'highlight:opacity'],
-        'disabled': ['midtone:light:hex', 'midtone:light:opacity'],
-    },
-    'left_arrow': {
-        'default': ['foreground'],
-        'disabled': ['midtone:light'],
-    },
-    'right_arrow': {
-        'default': ['foreground'],
-        'disabled': ['midtone:light'],
-    },
-    'up_arrow': {
-        'default': ['foreground:hex', 'foreground:opacity'],
-        'hover': ['highlight:hex', 'highlight:opacity'],
-        'disabled': ['midtone:light:hex', 'midtone:light:opacity'],
-    },
-    # Abstract buttons.
-    'checkbox_checked': {
-        'default': ['checkbox:light'],
-        'disabled': ['checkbox:disabled'],
-    },
-    'checkbox_indeterminate': {
-        'default': ['checkbox:light'],
-        'disabled': ['checkbox:disabled'],
-    },
-    'checkbox_unchecked': {
-        'default': ['checkbox:light'],
-        'disabled': ['checkbox:disabled'],
-    },
-    'radio_checked': {
-        'default': ['checkbox:light'],
-        'disabled': ['checkbox:disabled'],
-    },
-    'radio_unchecked': {
-        'default': ['checkbox:light'],
-        'disabled': ['checkbox:disabled'],
-    },
-    # Dock/Tab widgets
-    'close': {
-        'default': ['midtone:dark:hex', 'midtone:dark:opacity'],
-        'hover': ['close:hover:hex', 'close:hover:opacity'],
-        'pressed': ['close:pressed:hex', 'close:pressed:opacity'],
-    },
-    'undock': {
-        'default': ['dock:float'],
-    },
-    'undock_hover': {
-        'default': ['dock:float', 'foreground'],
-    },
-    # Tree views.
-    'branch_open': {
-        'default': ['tree:hex', 'tree:opacity'],
-        'hover': ['highlight:hex', 'highlight:opacity'],
-    },
-    'branch_closed': {
-        'default': ['tree:hex', 'tree:opacity'],
-        'hover': ['highlight:hex', 'highlight:opacity'],
-    },
-    'branch_end': {
-        'default': ['tree'],
-    },
-    'branch_end_arrow': {
-        'default': ['tree'],
-    },
-    'branch_more': {
-        'default': ['tree'],
-    },
-    'branch_more_arrow': {
-        'default': ['tree'],
-    },
-    'vline': {
-        'default': ['tree'],
-    },
-    'calendar_next': {
-        'default': ['foreground'],
-    },
-    'calendar_previous': {
-        'default': ['foreground'],
-    },
-    'transparent': {
-        'default': [],
-    },
-    'hmovetoolbar': {
-        'default': ['midtone:light'],
-    },
-    'vmovetoolbar': {
-        'default': ['midtone:light'],
-    },
-    'hseptoolbar': {
-        'default': ['midtone:light'],
-    },
-    'vseptoolbar': {
-        'default': ['midtone:light'],
-    },
-    'sizegrip': {
-        'default': ['midtone:light'],
-    },
-    # Dialog icons
-    'dialog-cancel': {
-        'default': ['foreground'],
-    },
-    'dialog-close': {
-        'default': ['foreground'],
-    },
-    'dialog-ok': {
-        'default': ['foreground'],
-    },
-    'dialog-open': {
-        'default': ['foreground'],
-    },
-    'dialog-save': {
-        'default': ['foreground'],
-    },
-    'dialog-reset': {
-        'default': ['foreground'],
-    },
-    'dialog-help': {
-        'default': ['foreground'],
-    },
-    'dialog-no': {
-        'default': ['foreground'],
-    },
-    'dialog-discard': {
-        'default': ['foreground'],
-    },
-    # Message icons
-    'message-critical': {
-        'default': ['critical', 'foreground'],
-    },
-    'message-information': {
-        'default': ['information', 'foreground'],
-    },
-    'message-question': {
-        'default': ['question', 'foreground'],
-    },
-    'message-warning': {
-        'default': ['warning', 'foreground'],
-    },
-}
+    parser = argparse.ArgumentParser(description='Styles to configure for a Qt application.')
+    parser.add_argument(
+        '--styles',
+        help='''comma-separate list of styles to configure. pass `all` to build all themes''',
+        default='light,dark',
+    )
+    parser.add_argument(
+        '--extensions',
+        help='''comma-separate list of styles to configure. pass `all` to build all themes''',
+        default='',
+    )
+    parser.add_argument(
+        '--resource',
+        help='''output resource file name''',
+        default='custom.qrc',
+    )
+    parser.add_argument(
+        '--pyqt6',
+        help='''use PyQt6 rather than PyQt5.''',
+        action='store_true'
+    )
+    args = parser.parse_args(argv)
+    parse_styles(args)
+    parse_extensions(args)
+    set_style_home(args)
+
+    return args
+
+def load_json(path):
+    '''Read a JSON file with limited comments support.'''
+
+    # Note: we need comments for maintainability, so we
+    # can annotate what works and the rationale, but
+    # we don't want to prevent code from working without
+    # a complex parser, so we do something very simple:
+    # only remove lines starting with '//'.
+    with open(path) as file:
+        lines = file.read().splitlines()
+    lines = [i for i in lines if not i.strip().startswith('//')]
+    return json.loads('\n'.join(lines))
+
+def read_template_dir(directory):
+    '''Read the template data from a directory'''
+
+    data = {
+        'stylesheet': open(f'{directory}/stylesheet.qss.in').read(),
+        'icons': [],
+    }
+    icon_data = load_json(f'{directory}/icons.json')
+    for file in glob.glob(f'{directory}/*.svg.in'):
+        svg = open(file).read()
+        name = os.path.splitext(os.path.splitext(os.path.basename(file))[0])[0]
+        if name in icon_data:
+            replacements = icon_data[name]
+        else:
+            # Need to find all the values inside the image.
+            keys = re.findall(r'\^[0-9a-zA-Z_-]+\^', svg)
+            replacements = [i[1:-1] for i in keys]
+        data['icons'].append({
+            'name': name,
+            'svg': svg,
+            'replacements': replacements,
+        })
+
+    return data
+
+def split_csv(string):
+    '''Split a list of values provided as comma-separated values.'''
+
+    values = string.split(',')
+    return [i for i in values if i]
+
+def parse_styles(args):
+    '''Parse a list of valid styles.'''
+
+    values = split_csv(args.styles)
+    if 'all' in values:
+        files = glob.glob(f'{home}/theme/*json')
+        values = [os.path.splitext(os.path.basename(i))[0] for i in files]
+    args.styles = values
+
+def parse_extensions(args):
+    '''Parse a list of valid extensions.'''
+
+    values = split_csv(args.extensions)
+    if 'all' in values:
+        files = glob.glob(f'{home}/extension/*/*stylesheet.qss.in')
+        values = [os.path.basename(os.path.dirname(i)) for i in files]
+    args.extensions = values
+
+def set_style_home(args):
+    '''Get the home directory to write the configured styles to.'''
+
+    if args.pyqt6:
+        args.style_home = f'{home}/pyqt6'
+    else:
+        args.style_home = f'{home}'
 
 def parse_hexcolor(color):
     '''Parse a hexadecimal color.'''
@@ -219,70 +158,119 @@ def parse_color(color):
         return parse_rgba(color)
     raise NotImplementedError
 
-def replace(contents, colors, color_map):
-    '''Replace all template values.'''
+def icon_basename(icon, extension):
+    '''Get the basename for an icon.'''
 
+    if extension == 'default':
+        return icon
+    return f'{icon}_{extension}'
+
+def replace_by_name(contents, theme, colors=None):
+    '''Replace values by color name.'''
+
+    # The placeholders have a syntax like `^foreground^`.
+    # To simplify the replacement process, you can specify
+    # a limited subset of colors, rather than use all of them.
+    if colors is None:
+        colors = theme.keys()
+    for key in colors:
+        color = theme[key]
+        contents = contents.replace(f'^{key}^', color)
+    return contents
+
+def replace_by_index(contents, theme, colors):
+    '''Replace values by color name.'''
+
+    # The placeholders have a syntax like `^0^`, where
+    # the is a list of valid colors and the index of
+    # the color is the replacement key.
+    # This is useful since we can want multiple colors
+    # for the same icon (such as hovered arrows).
     for index, key in enumerate(colors):
         sub = f'^{index}^'
-        # Need special handling if we have a hex or non:hex character.
+        # Need special handle values with opacities. Standard
+        # SVG currently does not support `rgba` syntax, with an
+        # opacity, but it does provide `fill-opacity` and `stroke-opacity`.
+        # Therefore, if the replacement specifies `opacity` or `hex`,
+        # parse the color, get the correct value, and use only that
+        # for the replacement.
         if key.endswith(':hex'):
-            color = color_map[key[:-len(':hex')]]
+            color = theme[key[:-len(':hex')]]
             rgb = [f"{i:02x}" for i in parse_color(color)[:3]]
             value = f'#{"".join(rgb)}'
         elif key.endswith(':opacity'):
-            color = color_map[key[:-len(':opacity')]]
+            color = theme[key[:-len(':opacity')]]
             value = str(parse_color(color)[3])
         else:
-            value = color_map[key]
+            value = theme[key]
         contents = contents.replace(sub, value)
     return contents
 
-def configure_icons(style, color_map):
+def configure_icons(config, style):
     '''Configure icons for a given style.'''
 
-    for icon, extensions in icons.items():
-        template = f'{home}/template/{icon}.svg.in'
-        template_contents = open(template).read()
-        for extension, colors in extensions.items():
-            contents = replace(template_contents, colors, color_map)
-            if extension == 'default':
-                filename = f'{style_home}/{style}/{icon}.svg'
+    theme = config['themes'][style]
+    style_home = config['style_home']
+    for template in config['templates']:
+        for icon in template['icons']:
+            replacements = icon['replacements']
+            name = icon['name']
+            if isinstance(replacements, dict):
+                # Then we have the following format:
+                #   The key is the substate of the icon, such
+                #   as default, hover, pressed, etc, and the value
+                #   is an ordered list of replacements.
+                for ext, colors in replacements.items():
+                    contents = replace_by_index(icon['svg'], theme, colors)
+                    filename = f'{style_home}/{style}/{icon_basename(name, ext)}.svg'
+                    with open(filename, 'w') as file:
+                        file.write(contents)
             else:
-                filename = f'{style_home}/{style}/{icon}_{extension}.svg'
-            with open(filename, 'w') as file:
-                file.write(contents)
+                # Then we just have a list of replacements for the
+                # icon, using standard colors. For example,
+                # replacement values might be `^foreground^`.
+                assert isinstance(replacements, list)
+                contents = replace_by_name(icon['svg'], theme, replacements)
+                filename = f'{style_home}/{style}/{name}.svg'
+                with open(filename, 'w') as file:
+                    file.write(contents)
 
-def configure_stylesheet(style, color_map):
+def configure_stylesheet(config, style):
     '''Configure the stylesheet for a given style.'''
 
-    contents = open(f'{home}/template/stylesheet.qss.in').read()
-    for key, color in color_map.items():
-        contents = contents.replace(f'^{key}^', color)
-    if args.pyqt6:
+    contents = '\n'.join([i['stylesheet'] for i in config['templates']])
+    contents = replace_by_name(contents, config['themes'][style])
+    # Need to replace the URL paths for loading icons/
+    # assets. In C++ Qt and PyQt5, this uses the resource
+    # system, AKA, `url(:/dark/path/to/resource)`. In PyQt6, the
+    # resource system has been replaced to use native
+    # Python packaging, so we define a user-friendly name
+    # based on the theme name, so `url(dark:path/to/resource)`.
+    if config['pyqt6']:
         contents = contents.replace('^style^', f'{style}:')
     else:
         contents = contents.replace('^style^', f':/{style}/')
 
-    with open(f'{style_home}/{style}/stylesheet.qss', 'w') as file:
+    with open(f'{config["style_home"]}/{style}/stylesheet.qss', 'w') as file:
         file.write(contents)
 
-def configure_style(style, color_map):
+def configure_style(config, style):
     '''Configure the icons and stylesheet for a given style.'''
 
-    os.makedirs(f'{style_home}/{style}', exist_ok=True)
-    configure_icons(style, color_map)
-    configure_stylesheet(style, color_map)
+    os.makedirs(f'{config["style_home"]}/{style}', exist_ok=True)
+    configure_icons(config, style)
+    configure_stylesheet(config, style)
 
-def write_xml(styles, path):
+def write_xml(config):
     '''Simple QRC writer.'''
 
-    # Can't be used with PyQt6.
-    assert not args.pyqt6
+    # rcc doesn't exist for PyQt6
+    assert not config['pyqt6']
     resources = []
-    for style in styles:
-        files = os.listdir(f'{style_home}/{style}')
+    for style in config['themes'].keys():
+        files = os.listdir(f'{config["style_home"]}/{style}')
         resources += [f'{style}/{i}' for i in files]
-    with open(path, 'w') as file:
+    with open(config['path'], 'w') as file:
         print('<RCC>', file=file)
         print('  <qresource>', file=file)
         for resource in sorted(resources):
@@ -290,34 +278,34 @@ def write_xml(styles, path):
         print('  </qresource>', file=file)
         print('</RCC>', file=file)
 
-def configure(styles, path):
+def configure(args):
     '''Configure all styles and write the files to a QRC file.'''
 
-    for style in styles:
-        # Note: we need comments for maintainability, so we
-        # can annotate what works and the rationale, but
-        # we don't want to prevent code from working without
-        # a complex parser, so we do something very simple:
-        # only remove lines starting with '//'.
-        with open(f'{home}/theme/{style}.json') as file:
-            lines = file.read().splitlines()
-        lines = [i for i in lines if not i.strip().startswith('//')]
-        color_map = json.loads('\n'.join(lines))
-        configure_style(style, color_map)
+    # Need to convert our styles accordingly.
+    config = {
+        'themes': {},
+        'templates': [],
+        'pyqt6': args.pyqt6,
+        'style_home': args.style_home,
+        'path': args.resource
+    }
+    config['templates'].append(read_template_dir(f'{home}/template'))
+    for style in args.styles:
+        config['themes'][style] = load_json(f'{home}/theme/{style}.json')
+    for extension in args.extensions:
+        config['templates'].append(read_template_dir(f'{home}/extension/{extension}'))
+
+    for style in config['themes'].keys():
+        configure_style(config, style)
 
     if not args.pyqt6:
         # No point generating a resource file for PyQt6,
         # since we can't use rcc6 anyway.
-        write_xml(styles, path)
+        write_xml(config)
+
+def main(argv=None):
+    '''Configuration entry point'''
+    configure(parse_args(argv))
 
 if __name__ == '__main__':
-    args = parser.parse_args()
-    styles = args.styles.split(',')
-    if args.pyqt6:
-        style_home = f'{home}/pyqt6'
-    else:
-        style_home = f'{home}'
-    if args.styles == 'all':
-        files = glob.glob(f'{home}/theme/*json')
-        styles = [os.path.splitext(os.path.basename(i))[0] for i in files]
-    configure(styles, args.resource)
+    sys.exit(main())
