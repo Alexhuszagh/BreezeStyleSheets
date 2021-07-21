@@ -65,7 +65,10 @@ def read_template_dir(directory):
         'stylesheet': open(f'{directory}/stylesheet.qss.in').read(),
         'icons': [],
     }
-    icon_data = load_json(f'{directory}/icons.json')
+    if os.path.exists(f'{directory}/icons.json'):
+        icon_data = load_json(f'{directory}/icons.json')
+    else:
+        icon_data = {}
     for file in glob.glob(f'{directory}/*.svg.in'):
         svg = open(file).read()
         name = os.path.splitext(os.path.splitext(os.path.basename(file))[0])[0]
