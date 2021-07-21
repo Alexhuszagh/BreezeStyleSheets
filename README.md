@@ -8,8 +8,12 @@ This stylesheet aims to be similar across all platforms, and provide a nice UI f
 **Table of Contents**
 
 - [Gallery](#gallery)
-- [Installing](#installing)
 - [Customization](#customization)
+- [Installing](#installing)
+  - [CMake Installation](#cmake-installation)
+  - [QMake Installation](#qmake-installation)
+  - [PyQt5 Installation](#pyqt5-installation)
+  - [PyQt6 Installation](#pyqt6-installation)
 - [Features](#features)
 - [Limitations](#limitations)
 - [Debugging](#debugging)
