@@ -259,7 +259,7 @@ For example, to configure with extensions for the [Advanced Docking System](http
 python configure.py --extensions=advanced-docking-system --resource custom.qrc
 ```
 
-Like with styles, `--extensions` takes a comma-separated list of values, or `all`, which will add every extension present in the [extensions](/extension) directory. For a detailed introduction to creating your own extensions, see the extensions [tutorial](/extensions/README.md).
+Like with styles, `--extensions` takes a comma-separated list of values, or `all`, which will add every extension present in the [extensions](/extension) directory. For a detailed introduction to creating your own extensions, see the extensions [tutorial](/extension/README.md).
 
 # Limitations
 

@@ -21,38 +21,34 @@ python configure.py --extensions=advanced-docking-system
 
 And make sure to [disable](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/blob/master/doc/user-guide.md#disabling-the-internal-style-sheet) the internal stylesheet in the dock manager.
 
-<p align="center"><b>Linux</b></p>
 <figure>
     <img 
         alt="Advanced Docking System View 1"
-        src="/assets/advanced-docking-system1.png" 
+        src="/assets/advanced_docking_system1.png" 
         title="AdvancedDockingSystem1" 
     />
 </figure>
 
-<p align="center"><b>Linux</b></p>
 <figure>
     <img 
         alt="Advanced Docking System View 2"
-        src="/assets/advanced-docking-system2.png" 
+        src="/assets/advanced_docking_system2.png" 
         title="AdvancedDockingSystem2" 
     />
 </figure>
 
-<p align="center"><b>Linux</b></p>
 <figure>
     <img 
         alt="Advanced Docking System View 3"
-        src="/assets/advanced-docking-system3.png" 
+        src="/assets/advanced_docking_system3.png" 
         title="AdvancedDockingSystem3" 
     />
 </figure>
 
-<p align="center"><b>Linux</b></p>
 <figure>
     <img 
         alt="Advanced Docking System View 4"
-        src="/assets/advanced-docking-system4.png" 
+        src="/assets/advanced_docking_system4.png" 
         title="AdvancedDockingSystem4" 
     />
 </figure>
@@ -67,11 +63,10 @@ In order to use this extension, configure with:
 python configure.py --extensions=dock-tooltips
 ```
 
-<p align="center"><b>Linux</b></p>
 <figure>
     <img 
         alt="Dock Tooltips"
-        src="/assets/dock-tooltips.png" 
+        src="/assets/dock_tooltips.png" 
         title="DockTooltips" 
     />
 </figure>
