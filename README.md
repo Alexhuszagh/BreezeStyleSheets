@@ -5,117 +5,18 @@ Configurable Breeze and BreezeDark-like stylesheets for Qt Applications.
 
 This stylesheet aims to be similar across all platforms, and provide a nice UI for different DPIs (as determined by the default font size, or using the screen scale factor). This is currently under work for scaling to multiple different DPIs and font sizes.
 
-# C++ Installation
+**Table of Contents**
 
-Copy `breeze.qrc` and the `dark` and `light` folders into your project directory and add the qrc file to your project file.
-
-For example:
-
-```qmake
-TARGET = app
-SOURCES = main.cpp
-RESOURCES = breeze.qrc
-```
-
-To load the stylesheet in C++, load the file using QFile and read the data. For example, to load BreezeDark, run:
-
-```cpp
-
-#include <QApplication>
-#include <QFile>
-#include <QTextStream>
-
-
-int main(int argc, char *argv[])
-{
-    QApplication app(argc, argv);
-
-    // set stylesheet
-    QFile file(":/dark/stylesheet.qss");
-    file.open(QFile::ReadOnly | QFile::Text);
-    QTextStream stream(&file);
-    app.setStyleSheet(stream.readAll());
-
-    // code goes here
-
-    return app.exec();
-}
-```
-
-# PyQt5 Installation
-
-To compile the stylesheet for use with PyQt5, compile with the following command `pyrcc5 breeze.qrc -o breeze_resources.py`, and import the stylesheets. Afterwards, to load the stylesheet in Python, load the file using QFile and read the data. For example, to load BreezeDark, run:
-
-
-```python
-
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import QFile, QTextStream
-import breeze_resources
-
-
-def main():
-    app = QtWidgets.QApplication(sys.argv)
-
-    # set stylesheet
-    file = QFile(":/dark/stylesheet.qss")
-    file.open(QFile.ReadOnly | QFile.Text)
-    stream = QTextStream(file)
-    app.setStyleSheet(stream.readAll())
-
-    # code goes here
-
-    app.exec_()
-```
-
-# PyQt6 Installation
-
-Since [pyrcc](https://www.riverbankcomputing.com/pipermail/pyqt/2020-September/043209.html) is no longer being maintained, using local Python paths is the preferable solution. For a detailed description on how to package these resources, see this StackOverflow [answer](https://stackoverflow.com/a/20885799/4131059).
-
-First, package your code using setuptools. Make sure `zip_safe` is off, so we can properly load the files from a search path, and include the necessary package directories to your `MANIFEST.in` file.
-
-```python
-from setuptools import setup
-
-setup(
-    # Either option is valid here.
-    #   Either use `package_data` with enumerating the values, or
-    #   set `include_package_data=True`.
-    include_package_data=True,
-    package_data={
-        'breeze_theme.dark': ['dark/*'],
-        'breeze_theme.light': ['light/*'],
-        # Add any more themes here.
-    },
-    zip_safe=False,
-)
-```
-
-Then, you can import the resources as follows:
-
-```python
-import importlib.resources
-from Qt6 import QtWidgets, QtCore
-from Qt6.QtCore import QFile, QTextStream
-
-
-def main():
-    app = QtWidgets.QApplication(sys.argv)
-
-    # set stylesheet
-    # Note that the search path name must be the theme name.
-    #   dark => dark, light => light, dark-purple => dark-purple, ...
-    breeze_theme = importlib_resources.files('breeze_theme.dark')
-    QtCore.QDir.addSearchPath('dark', breeze_theme)
-    file = QFile("dark:stylesheet.qss")
-    file.open(QFile.OpenModeFlag.ReadOnly | QFile.OpenModeFlag.Text)
-    stream = QTextStream(file)
-    app.setStyleSheet(stream.readAll())
-
-    # code goes here
-
-    app.exec()
-```
+- [Gallery](#gallery)
+- [Installing](#installing)
+- [Customization](#customization)
+- [Features](#features)
+- [Limitations](#limitations)
+- [Debugging](#debugging)
+- [License](#license)
+- [Contributing](#contributing)
+- [Acknowledgements](#acknowledgements)
+- [Contact](#contact)
 
 # Gallery
 
@@ -261,6 +162,222 @@ python configure.py --extensions=advanced-docking-system --resource custom.qrc
 
 Like with styles, `--extensions` takes a comma-separated list of values, or `all`, which will add every extension present in the [extensions](/extension) directory. For a detailed introduction to creating your own extensions, see the extensions [tutorial](/extension/README.md).
 
+# Installing
+
+Here are detailed instructions on how to install Breeze Style Sheets for a variety of build systems and programming languages.
+
+## Configuring
+
+By default, BreezeStyleSheets comes with the `dark` and `light` themes pre-built. In order to build all pre-packaged themes, run:
+
+
+```bash
+python configure.py --styles=all --extensions=all --resource breeze.qrc
+```
+
+All generated themes will be in the [dist](/dist) subdirectory.
+
+## CMake Installation
+
+Using CMake, you can download, configure, and compile the resources as part part of the build process. The following configurations are provided by @ruilvo. First, save the following as `BreezeThemes.cmake`
+
+```cmake
+# Setup Qt: this works with both Qt5 and Qt6
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+find_package(
+  QT NAMES Qt6 Qt5
+  COMPONENTS Core
+  REQUIRED)
+find_package(
+  Qt${QT_VERSION_MAJOR}
+  COMPONENTS ${AE_REQUIRED_QT_COMPONENTS}
+  REQUIRED)
+# -------------------
+
+# Get Python to compile the stylesheets.
+# Fetch the repository, configure, compile the stylesheets.
+find_package(Python COMPONENTS Interpreter)
+
+include(FetchContent)
+
+set(FETCHCONTENT_QUIET
+    OFF
+    CACHE BOOL "Silence fetch content" FORCE)
+
+FetchContent_Declare(
+  breeze_stylesheets
+  GIT_REPOSITORY https://github.com/Alexhuszagh/BreezeStyleSheets.git
+  GIT_TAG origin/master
+  GIT_PROGRESS ON
+  USES_TERMINAL_DOWNLOAD TRUE)
+
+FetchContent_GetProperties(breeze_stylesheets)
+if(NOT breeze_stylesheets_POPULATED)
+  FetchContent_Populate(breeze_stylesheets)
+
+  add_library(breeze_themes STATIC "${breeze_stylesheets_SOURCE_DIR}/dist/breeze_themes.qrc")
+
+  add_custom_target(
+    run_python_breeze ALL
+    COMMAND ${Python_EXECUTABLE} configure.py --extensions=<EXTENSIONS>
+            --styles=<STYLES> --resource breeze_themes.qrc
+    WORKING_DIRECTORY ${breeze_stylesheets_SOURCE_DIR}
+    BYPRODUCTS "${breeze_stylesheets_SOURCE_DIR}/dist/breeze_themes.qrc"
+    COMMENT "Generating themes")
+
+  add_dependencies(breeze_themes run_python_breeze)
+endif()
+```
+
+Next, make sure the path to `breeze_themes.cmake` is in your module search [path](https://cgold.readthedocs.io/en/latest/tutorials/cmake-sources/includes.html), and add the following to your CMakeLists.txt:
+
+```cmake
+include(BreezeThemes)
+
+add_executable(myapp WIN32 MACOSX_BUNDLE "main.cpp")
+target_link_libraries(myapp PRIVATE Qt${QT_VERSION_MAJOR}::Widgets breeze_themes)
+```
+
+And then in your application start point, add the following:
+
+```cpp
+int main()
+{
+    // ...
+    QApplication app(argc, argv);
+
+    // Need to initialize the resource, since we're using an external
+    // build system and this isn't automatically handled by CMake.
+    Q_INIT_RESOURCE(breeze_themes);
+    QFile file(":/dark-green/stylesheet.qss");
+    file.open(QFile::ReadOnly | QFile::Text);
+    QTextStream stream(&file);
+    app.setStyleSheet(stream.readAll());
+
+    // ...
+}
+```
+
+## QMake Installation
+
+Copy the contents of the `dist` subdirectory into your project directory and add the qrc file to your project file.
+
+For example:
+
+```qmake
+TARGET = app
+SOURCES = main.cpp
+RESOURCES = breeze.qrc
+```
+
+To load the stylesheet in C++, load the file using QFile and read the data. For example, to load BreezeDark, run:
+
+```cpp
+
+#include <QApplication>
+#include <QFile>
+#include <QTextStream>
+
+
+int main(int argc, char *argv[])
+{
+    QApplication app(argc, argv);
+
+    // set stylesheet
+    QFile file(":/dark/stylesheet.qss");
+    file.open(QFile::ReadOnly | QFile::Text);
+    QTextStream stream(&file);
+    app.setStyleSheet(stream.readAll());
+
+    // code goes here
+
+    return app.exec();
+}
+```
+
+## PyQt5 Installation
+
+To compile the stylesheet for use with PyQt5, compile with the following command `pyrcc5 dist/breeze.qrc -o breeze_resources.py`. `breeze_resources.py` now contains all the stylesheet data. To load and set the stylesheet in a PyQt5 application, import `breeze_resources`, load the file using QFile and read the data. For example, to load BreezeDark, run:
+
+
+```python
+
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QFile, QTextStream
+import breeze_resources
+
+
+def main():
+    app = QtWidgets.QApplication(sys.argv)
+
+    # set stylesheet
+    file = QFile(":/dark/stylesheet.qss")
+    file.open(QFile.ReadOnly | QFile.Text)
+    stream = QTextStream(file)
+    app.setStyleSheet(stream.readAll())
+
+    # code goes here
+
+    app.exec_()
+```
+
+## PyQt6 Installation
+
+Since [pyrcc](https://www.riverbankcomputing.com/pipermail/pyqt/2020-September/043209.html) is no longer being maintained, using local Python paths is the preferable solution. For a detailed description on how to package these resources, see this StackOverflow [answer](https://stackoverflow.com/a/20885799/4131059).
+
+First, package your code using setuptools. Make sure `zip_safe` is off, so we can properly load the files from a search path, and include the necessary package directories to your `MANIFEST.in` file.
+
+```python
+from setuptools import setup
+
+setup(
+    # Either option is valid here.
+    #   Either use `package_data` with enumerating the values, or
+    #   set `include_package_data=True`.
+    include_package_data=True,
+    package_data={
+        'breeze_theme': ['dist/*'],
+    },
+    zip_safe=False,
+)
+```
+
+Then, you can import the resources as follows:
+
+```python
+import importlib.resources
+from Qt6 import QtWidgets, QtCore
+from Qt6.QtCore import QFile, QTextStream
+
+
+def main():
+    app = QtWidgets.QApplication(sys.argv)
+
+    # set stylesheet
+    # Note that the search path name must be the theme name.
+    #   dark => dark, light => light, dark-purple => dark-purple, ...
+    breeze_theme = importlib_resources.files('breeze_theme.dark')
+    QtCore.QDir.addSearchPath('dark', breeze_theme)
+    file = QFile("dark:stylesheet.qss")
+    file.open(QFile.OpenModeFlag.ReadOnly | QFile.OpenModeFlag.Text)
+    stream = QTextStream(file)
+    app.setStyleSheet(stream.readAll())
+
+    # code goes here
+
+    app.exec()
+```
+
+# Features
+
+- Complete stylesheet for all Qt widgets, including esoteric widgets like `QCalendarWidget`.
+- Customizable, beautiful light and dark themes.
+- Cross-platform icon packs for standard icons.
+- Extensible stylesheets: add your own plugins or rules and automatically configure them using the same configuration syntax.
+
 # Limitations
 
 There are some limitations of using Qt stylesheets in general, which cannot be solved by stylesheets. To get more fine-grained style control, you should subclass `QCommonStyle`:
@@ -279,13 +396,6 @@ The limitations of stylesheets include:
 - Scaling icons with the theme size.
 - QToolButton cannot control the icon size without also affecting the arrow size.
 - Close and dock float icon sizes scale poorly with font size.
-
-# Features
-
-- Complete stylesheet for all Qt widgets, including esoteric widgets like `QCalendarWidget`.
-- Customizable, beautiful light and dark themes.
-- Cross-platform icon packs for standard icons.
-- Extensible stylesheets: add your own plugins or rules and automatically configure them using the same configuration syntax.
 
 # Debugging
 

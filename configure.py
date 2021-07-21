@@ -41,7 +41,6 @@ def parse_args(argv=None):
     args = parser.parse_args(argv)
     parse_styles(args)
     parse_extensions(args)
-    set_style_home(args)
 
     return args
 
@@ -109,14 +108,6 @@ def parse_extensions(args):
         files = glob.glob(f'{home}/extension/*/*stylesheet.qss.in')
         values = [os.path.basename(os.path.dirname(i)) for i in files]
     args.extensions = values
-
-def set_style_home(args):
-    '''Get the home directory to write the configured styles to.'''
-
-    if args.pyqt6:
-        args.style_home = f'{home}/pyqt6'
-    else:
-        args.style_home = f'{home}'
 
 def parse_hexcolor(color):
     '''Parse a hexadecimal color.'''
@@ -213,7 +204,6 @@ def configure_icons(config, style):
     '''Configure icons for a given style.'''
 
     theme = config['themes'][style]
-    style_home = config['style_home']
     for template in config['templates']:
         for icon in template['icons']:
             replacements = icon['replacements']
@@ -225,7 +215,7 @@ def configure_icons(config, style):
                 #   is an ordered list of replacements.
                 for ext, colors in replacements.items():
                     contents = replace_by_index(icon['svg'], theme, colors)
-                    filename = f'{style_home}/{style}/{icon_basename(name, ext)}.svg'
+                    filename = f'{home}/dist/{style}/{icon_basename(name, ext)}.svg'
                     with open(filename, 'w') as file:
                         file.write(contents)
             else:
@@ -234,7 +224,7 @@ def configure_icons(config, style):
                 # replacement values might be `^foreground^`.
                 assert isinstance(replacements, list)
                 contents = replace_by_name(icon['svg'], theme, replacements)
-                filename = f'{style_home}/{style}/{name}.svg'
+                filename = f'{home}/dist/{style}/{name}.svg'
                 with open(filename, 'w') as file:
                     file.write(contents)
 
@@ -254,13 +244,13 @@ def configure_stylesheet(config, style):
     else:
         contents = contents.replace('^style^', f':/{style}/')
 
-    with open(f'{config["style_home"]}/{style}/stylesheet.qss', 'w') as file:
+    with open(f'{home}/dist/{style}/stylesheet.qss', 'w') as file:
         file.write(contents)
 
 def configure_style(config, style):
     '''Configure the icons and stylesheet for a given style.'''
 
-    os.makedirs(f'{config["style_home"]}/{style}', exist_ok=True)
+    os.makedirs(f'{home}/dist/{style}', exist_ok=True)
     configure_icons(config, style)
     configure_stylesheet(config, style)
 
@@ -271,7 +261,7 @@ def write_xml(config):
     assert not config['pyqt6']
     resources = []
     for style in config['themes'].keys():
-        files = os.listdir(f'{config["style_home"]}/{style}')
+        files = os.listdir(f'{home}/dist/{style}')
         resources += [f'{style}/{i}' for i in files]
     with open(config['path'], 'w') as file:
         print('<RCC>', file=file)
@@ -289,7 +279,6 @@ def configure(args):
         'themes': {},
         'templates': [],
         'pyqt6': args.pyqt6,
-        'style_home': args.style_home,
         'path': args.resource
     }
     config['templates'].append(read_template_dir(f'{home}/template'))
