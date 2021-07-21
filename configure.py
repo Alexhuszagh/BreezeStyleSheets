@@ -263,7 +263,7 @@ def write_xml(config):
     for style in config['themes'].keys():
         files = os.listdir(f'{home}/dist/{style}')
         resources += [f'{style}/{i}' for i in files]
-    with open(config['path'], 'w') as file:
+    with open(f'{home}/dist/{config["resource"]}', 'w') as file:
         print('<RCC>', file=file)
         print('  <qresource>', file=file)
         for resource in sorted(resources):
@@ -279,7 +279,7 @@ def configure(args):
         'themes': {},
         'templates': [],
         'pyqt6': args.pyqt6,
-        'path': args.resource
+        'resource': args.resource
     }
     config['templates'].append(read_template_dir(f'{home}/template'))
     for style in args.styles:
