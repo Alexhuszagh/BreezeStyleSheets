@@ -422,7 +422,7 @@ Unless you explicitly state otherwise, any contribution intentionally submitted 
 
 # Acknowledgements
 
-BreezeStyleSheets is a fork of [QDarkStyleSheet](https://github.com/ColinDuquesnoy/QDarkStyleSheet). Some of the icons are modified from [Material UI](https://github.com/google/material-design-icons), which are licensed under the Apache 2.0 license and therefore free to use without attribution.
+BreezeStyleSheets is a fork of [QDarkStyleSheet](https://github.com/ColinDuquesnoy/QDarkStyleSheet). Some of the icons are modified from [Material UI](https://github.com/google/material-design-icons) (which uses an Apache 2.0 license), and are redistributed under the MIT license.
 
 # Contact
 
