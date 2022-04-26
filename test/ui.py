@@ -385,7 +385,10 @@ def test_menu(widget, window, font, width, *_):
     action3 = QAction('&Action 6', window)
     action3.setCheckable(True)
     menu.addAction(action3)
-    icon = QtGui.QIcon(f'{style_prefix}close.svg')
+    icon_url = f'{style_prefix}close.svg'
+    if args.stylesheet == 'native':
+        icon_url = None
+    icon = QtGui.QIcon(icon_url)
     menu.addAction(QAction(icon, '&Action 7', window))
     menu.addAction(QAction(icon, '&Action 8', window))
     submenu.addAction(QAction(icon, '&Action 9', window))
