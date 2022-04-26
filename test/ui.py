@@ -179,6 +179,10 @@ if args.pyqt6:
     DockWidgetFloatable = QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetFloatable
     DockWidgetMovable = QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable
     AllDockWidgetFeatures = DockWidgetClosable | DockWidgetFloatable | DockWidgetMovable
+    AnyFile = QtWidgets.QFileDialog.FileMode.AnyFile
+    ExistingFile = QtWidgets.QFileDialog.FileMode.ExistingFile
+    Directory = QtWidgets.QFileDialog.FileMode.Directory
+    ExistingFiles = QtWidgets.QFileDialog.FileMode.ExistingFiles
 else:
     QAction = QtWidgets.QAction
     AlignTop = QtCore.Qt.AlignTop
@@ -234,6 +238,10 @@ else:
     DialogOk = QtWidgets.QDialogButtonBox.Ok
     DialogCancel = QtWidgets.QDialogButtonBox.Cancel
     AllDockWidgetFeatures = QtWidgets.QDockWidget.AllDockWidgetFeatures
+    AnyFile = QtWidgets.QFileDialog.AnyFile
+    ExistingFile = QtWidgets.QFileDialog.ExistingFile
+    Directory = QtWidgets.QFileDialog.Directory
+    ExistingFiles = QtWidgets.QFileDialog.ExistingFiles
 
 # Need to fix an issue on Wayland on Linux:
 #   conda-forge does not support Wayland, for who knows what reason.
@@ -294,6 +302,14 @@ def splash_timer(splash, window):
 
     splash.finish(window)
     window.show()
+
+def execute(obj):
+    '''Execute Qt object, wrapper for PyQt5 and PyQt6.'''
+
+    if args.pyqt6:
+        return obj.exec()
+    else:
+        return obj.exec_()
 
 def test_progressbar_horizontal(widget, *_):
     child = []
@@ -848,10 +864,7 @@ def test_discard_button(_, window, __, ___, ____, app):
 def _test_standard_icon(window, app, icon):
     message = QtWidgets.QMessageBox(window)
     message.setIcon(icon)
-    if args.pyqt6:
-        message.exec()
-    else:
-        message.exec_()
+    execute(message)
 
 def test_critical_icon(_, window, __, ___, ____, app):
     _test_standard_icon(window, app, Critical)
@@ -932,6 +945,118 @@ def test_disabled_menubar(widget, window, font, width, *_):
 
     return child
 
+def test_issue25(widget, window, font, width, *_):
+
+    def launch_filedialog(folder):
+        dialog = QtWidgets.QFileDialog()
+        dialog.setFileMode(Directory)
+        if dialog.exec_():
+            folder.setText(dialog.selectedFiles()[0])
+
+    def launch_fontdialog(value):
+        initial = QtGui.QFont()
+        initial.setFamily(value.text())
+        font, ok = QtWidgets.QFontDialog.getFont(initial)
+        if ok:
+            value.setText(font.family())
+
+    # Attempt to recreate the UI present here:
+    #   https://github.com/Alexhuszagh/BreezeStyleSheets/issues/25#issue-1187193418
+    dialog = QtWidgets.QDialog(window)
+    dialog.resize(args.width // 2, args.height // 2)
+
+    # Add the QTabWidget
+    child = QtWidgets.QTabWidget(dialog)
+    child.setTabPosition(North)
+    general = QtWidgets.QWidget()
+    child.addTab(general, 'General')
+    child.addTab(QtWidgets.QWidget(), 'Colors')
+    layout = QtWidgets.QVBoxLayout(general)
+    layout.setAlignment(AlignVCenter)
+
+    # Add the data folder hboxlayout
+    data = QtWidgets.QWidget()
+    layout.addWidget(data)
+    data_layout = QtWidgets.QHBoxLayout(data)
+    data_layout.addWidget(QtWidgets.QLabel('Data Folder'))
+    data_folder = QtWidgets.QLineEdit('Data')
+    data_layout.addWidget(data_folder)
+    file_dialog = QtWidgets.QPushButton('...', checkable=False)
+    data_layout.addWidget(file_dialog)
+    file_dialog.clicked.connect(lambda _: launch_filedialog(data_folder))
+
+    # Add the "Show Grid" QCheckbox.
+    checkbox = QtWidgets.QCheckBox
+    layout.addWidget(abstract_button(checkbox, general, 'Show grid'))
+
+    # Grid square size.
+    grid_size = QtWidgets.QWidget()
+    layout.addWidget(grid_size)
+    grid_size_layout = QtWidgets.QHBoxLayout(grid_size)
+    grid_size_layout.addWidget(QtWidgets.QLabel('Grid Square Size'))
+    spin = QtWidgets.QSpinBox(grid_size)
+    spin.setValue(16)
+    grid_size_layout.addWidget(spin)
+
+    # Add units of measurement
+    units = QtWidgets.QWidget()
+    layout.addWidget(units)
+    units_layout = QtWidgets.QHBoxLayout(units)
+    units_layout.addWidget(QtWidgets.QLabel('Default length unit of measurement'))
+    units_combo = QtWidgets.QComboBox()
+    units_combo.addItem('Inches')
+    units_combo.addItem('Foot')
+    units_combo.addItem('Meter')
+    units_layout.addWidget(units_combo)
+
+    # Add default font.
+    font = QtWidgets.QWidget()
+    layout.addWidget(font)
+    font_layout = QtWidgets.QHBoxLayout(font)
+    font_layout.addWidget(QtWidgets.QLabel('Default Font'))
+    font_value = QtWidgets.QLineEdit('Abcdef')
+    font_layout.addWidget(font_value)
+    font_dialog = QtWidgets.QPushButton('...', checkable=False)
+    font_layout.addWidget(font_dialog)
+    font_dialog.clicked.connect(lambda _: launch_fontdialog(font_value))
+    font_layout.addStretch(1)
+
+    # Add the alignment options
+    alignment = QtWidgets.QWidget()
+    layout.addWidget(alignment)
+    alignment_layout = QtWidgets.QHBoxLayout(alignment)
+    align_combo = QtWidgets.QComboBox()
+    align_combo.addItem('Align Top')
+    align_combo.addItem('Align Bottom')
+    align_combo.addItem('Align Left')
+    align_combo.addItem('Align Right')
+    align_combo.addItem('Align Center')
+    alignment_layout.addWidget(align_combo)
+    alignment_layout.addWidget(abstract_button(checkbox, general, 'Word Wrap'))
+    alignment_layout.addStretch(1)
+
+    # Add item label font
+    item_label = QtWidgets.QWidget()
+    layout.addWidget(item_label)
+    item_label_layout = QtWidgets.QHBoxLayout(item_label)
+    item_label_layout.addWidget(QtWidgets.QLabel('Item Label Font'))
+    item_label_value = QtWidgets.QLineEdit('Abcdef')
+    item_label_layout.addWidget(item_label_value)
+    item_label_dialog = QtWidgets.QPushButton('...', checkable=False)
+    item_label_layout.addWidget(item_label_dialog)
+    item_label_dialog.clicked.connect(lambda _: launch_fontdialog(item_label_value))
+    item_label_layout.addStretch(1)
+
+    # Need to add the Ok/Cancel standard buttons.
+    dialog_box = QtWidgets.QDialogButtonBox(Horizontal, general)
+    layout.addWidget(dialog_box)
+    dialog_box.addButton(DialogOk)
+    dialog_box.addButton(DialogCancel)
+
+    execute(dialog)
+
+    return None, None, False, True
+
 def test(args, qtargv, test_widget):
     '''Test a single widget.'''
 
@@ -1006,10 +1131,7 @@ def test(args, qtargv, test_widget):
         window.show()
     if quit:
         return app.quit()
-    if args.pyqt6:
-        return app.exec()
-    else:
-        return app.exec_()
+    return execute(app)
 
 def main():
     'Application entry point'
