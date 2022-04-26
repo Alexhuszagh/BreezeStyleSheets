@@ -43,11 +43,12 @@ home = os.path.dirname(tests_dir)
 parser = argparse.ArgumentParser(description='Configurations for the Qt5 application.')
 parser.add_argument(
     '--widget',
-    help='''widget to test. can provide `all` to test all'''
+    help='widget to test. can provide `all` to test all',
+    default='all'
 )
 parser.add_argument(
     '--stylesheet',
-    help='''stylesheet name''',
+    help='stylesheet name',
     default='native'
 )
 # Know working styles include:
@@ -55,54 +56,54 @@ parser.add_argument(
 #   2. Windows
 parser.add_argument(
     '--style',
-    help='''application style, which is different than the stylesheet''',
+    help='application style, which is different than the stylesheet',
     default='native'
 )
 parser.add_argument(
     '--font-size',
-    help='''font size for the application''',
+    help='font size for the application',
     type=float,
     default=-1
 )
 parser.add_argument(
     '--font-family',
-    help='''the font family'''
+    help='the font family'
 )
 parser.add_argument(
     '--width',
-    help='''the window width''',
+    help='the window width',
     type=int,
     default=1068,
 )
 parser.add_argument(
     '--height',
-    help='''the window height''',
+    help='the window height',
     type=int,
     default=824,
 )
 parser.add_argument(
     '--alignment',
-    help='''the layout alignment''',
+    help='the layout alignment',
 )
 parser.add_argument(
     '--compress',
-    help='''add stretch on both sides''',
+    help='add stretch on both sides',
     action='store_true',
 )
 parser.add_argument(
     '--scale',
-    help='''scale factor for the UI''',
+    help='scale factor for the UI',
     type=float,
     default=1,
 )
 parser.add_argument(
     '--pyqt6',
-    help='''use PyQt6 rather than PyQt5.''',
+    help='use PyQt6 rather than PyQt5.',
     action='store_true'
 )
 parser.add_argument(
     '--use-x11',
-    help='''force the use of x11 on compatible systems.''',
+    help='force the use of x11 on compatible systems.',
     action='store_true'
 )
 
