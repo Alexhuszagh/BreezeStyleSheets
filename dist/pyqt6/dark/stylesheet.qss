@@ -1796,6 +1796,8 @@ QHeaderView::down-arrow
     padding-top: 0.2em;
     width: 0.8em;
     height: 0.5em;
+    /* Workaround for Qt6. See issue #31 .*/
+    margin-bottom: -0.5em;
 }
 
 QHeaderView::up-arrow
@@ -1806,6 +1808,8 @@ QHeaderView::up-arrow
     padding-top: 0.2em;
     width: 0.8em;
     height: 0.5em;
+    /* Workaround for Qt6. See issue #31 .*/
+    margin-bottom: -0.5em;
 }
 
 QTableView QTableCornerButton::section
