@@ -145,13 +145,23 @@ def main(argv=None):
         gitignore_entries += ['dist/', 'breeze_resources.py']
     write_gitignore(gitignore_entries)
 
-    # Manage any extras here.
-    breeze_qrc = 'dist/qrc/breeze.qrc'
-    breeze_qrc_exists = os.path.exists(f'{home}/{breeze_qrc}')
-    if args.no_track_dist and breeze_qrc_exists:
-        assume_unchanged(git, breeze_qrc)
-    elif args.track_dist and breeze_qrc_exists:
-        no_assume_unchanged(git, breeze_qrc)
+    # Manage any distribution file extras here.
+    def update_dist_index(file):
+        '''Update the index of a file'''
+
+        exists = os.path.exists(f'{home}/{file}')
+        if args.no_track_dist and exists:
+            assume_unchanged(git, file)
+        elif args.track_dist and exists:
+            no_assume_unchanged(git, file)
+
+    dist_files = ['breeze_resources.py']
+    for root, dirs, files in os.walk(f'{home}/dist'):
+        relpath = os.path.relpath(root, home)
+        for file in files:
+            dist_files.append(f'{relpath}/{file}')
+    for file in dist_files:
+        update_dist_index(file)
 
     return 0
 
