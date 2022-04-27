@@ -5,6 +5,8 @@
     Configure icons, stylesheets, and resource files.
 '''
 
+__version__ = '0.1.0'
+
 import argparse
 import glob
 import json
@@ -25,6 +27,12 @@ def parse_args(argv=None):
     '''Parse the command-line options.'''
 
     parser = argparse.ArgumentParser(description='Styles to configure for a Qt application.')
+    parser.add_argument(
+        '-v',
+        '--version',
+        action='version',
+        version=f'%(prog)s {__version__}'
+    )
     parser.add_argument(
         '--styles',
         help='comma-separate list of styles to configure. pass `all` to build all themes',
