@@ -10,9 +10,16 @@ import glob
 import json
 import os
 import re
+import shutil
 import sys
 
 home = os.path.dirname(os.path.realpath(__file__))
+dist = os.path.join(home, 'dist')
+qrc_dist = os.path.join(dist, 'qrc')
+pyqt6_dist = os.path.join(dist, 'pyqt6')
+template_dir = os.path.join(home, 'template')
+theme_dir = os.path.join(home, 'theme')
+extension_dir = os.path.join(home, 'extension')
 
 def parse_args(argv=None):
     '''Parse the command-line options.'''
@@ -20,22 +27,32 @@ def parse_args(argv=None):
     parser = argparse.ArgumentParser(description='Styles to configure for a Qt application.')
     parser.add_argument(
         '--styles',
-        help='''comma-separate list of styles to configure. pass `all` to build all themes''',
+        help='comma-separate list of styles to configure. pass `all` to build all themes',
         default='light,dark',
     )
     parser.add_argument(
         '--extensions',
-        help='''comma-separate list of styles to configure. pass `all` to build all themes''',
+        help='comma-separate list of styles to configure. pass `all` to build all themes',
         default='',
     )
     parser.add_argument(
         '--resource',
-        help='''output resource file name''',
-        default='custom.qrc',
+        help='output resource file name',
+        default='breeze.qrc',
+    )
+    parser.add_argument(
+        '--no-qrc',
+        help='do not build QRC resources.',
+        action='store_true'
     )
     parser.add_argument(
         '--pyqt6',
-        help='''use PyQt6 rather than PyQt5.''',
+        help='build PyQt6 resources.',
+        action='store_true'
+    )
+    parser.add_argument(
+        '--clean',
+        help='clean dist directory prior to configuring themes.',
         action='store_true'
     )
     args = parser.parse_args(argv)
@@ -200,7 +217,7 @@ def replace_by_index(contents, theme, colors):
         contents = contents.replace(sub, value)
     return contents
 
-def configure_icons(config, style):
+def configure_icons(config, style, qt_dist):
     '''Configure icons for a given style.'''
 
     theme = config['themes'][style]
@@ -215,7 +232,7 @@ def configure_icons(config, style):
                 #   is an ordered list of replacements.
                 for ext, colors in replacements.items():
                     contents = replace_by_index(icon['svg'], theme, colors)
-                    filename = f'{home}/dist/{style}/{icon_basename(name, ext)}.svg'
+                    filename = f'{qt_dist}/{style}/{icon_basename(name, ext)}.svg'
                     with open(filename, 'w') as file:
                         file.write(contents)
             else:
@@ -224,46 +241,49 @@ def configure_icons(config, style):
                 # replacement values might be `^foreground^`.
                 assert isinstance(replacements, list)
                 contents = replace_by_name(icon['svg'], theme, replacements)
-                filename = f'{home}/dist/{style}/{name}.svg'
+                filename = f'{qt_dist}/{style}/{name}.svg'
                 with open(filename, 'w') as file:
                     file.write(contents)
 
-def configure_stylesheet(config, style):
+def configure_stylesheet(config, style, qt_dist, style_prefix):
     '''Configure the stylesheet for a given style.'''
 
     contents = '\n'.join([i['stylesheet'] for i in config['templates']])
     contents = replace_by_name(contents, config['themes'][style])
+    contents = contents.replace('^style^', style_prefix)
+
+    with open(f'{qt_dist}/{style}/stylesheet.qss', 'w') as file:
+        file.write(contents)
+
+def configure_style(config, style):
+    '''Configure the icons and stylesheet for a given style.'''
+
+    def configure_qt(qt_dist, style_prefix):
+        os.makedirs(f'{qt_dist}/{style}', exist_ok=True)
+        # Need to pass the qt_dist dir.
+        # also need to set the name scheming: qrc or pyqt6
+        configure_icons(config, style, qt_dist)
+        configure_stylesheet(config, style, qt_dist, style_prefix)
+
     # Need to replace the URL paths for loading icons/
     # assets. In C++ Qt and PyQt5, this uses the resource
     # system, AKA, `url(:/dark/path/to/resource)`. In PyQt6, the
     # resource system has been replaced to use native
     # Python packaging, so we define a user-friendly name
     # based on the theme name, so `url(dark:path/to/resource)`.
+    if not config['no_qrc']:
+        configure_qt(qrc_dist, f':/{style}/')
     if config['pyqt6']:
-        contents = contents.replace('^style^', f'{style}:')
-    else:
-        contents = contents.replace('^style^', f':/{style}/')
+        configure_qt(pyqt6_dist, f'{style}:')
 
-    with open(f'{home}/dist/{style}/stylesheet.qss', 'w') as file:
-        file.write(contents)
-
-def configure_style(config, style):
-    '''Configure the icons and stylesheet for a given style.'''
-
-    os.makedirs(f'{home}/dist/{style}', exist_ok=True)
-    configure_icons(config, style)
-    configure_stylesheet(config, style)
-
-def write_xml(config):
+def write_qrc(config):
     '''Simple QRC writer.'''
 
-    # rcc doesn't exist for PyQt6
-    assert not config['pyqt6']
     resources = []
     for style in config['themes'].keys():
-        files = os.listdir(f'{home}/dist/{style}')
+        files = os.listdir(f'{qrc_dist}/{style}')
         resources += [f'{style}/{i}' for i in files]
-    with open(f'{home}/dist/{config["resource"]}', 'w') as file:
+    with open(f'{qrc_dist}/{config["resource"]}', 'w') as file:
         print('<RCC>', file=file)
         print('  <qresource>', file=file)
         for resource in sorted(resources):
@@ -274,26 +294,29 @@ def write_xml(config):
 def configure(args):
     '''Configure all styles and write the files to a QRC file.'''
 
+    if args.clean:
+        shutil.rmtree(dist, ignore_errors=True)
+
     # Need to convert our styles accordingly.
     config = {
         'themes': {},
         'templates': [],
+        'no_qrc': args.no_qrc,
         'pyqt6': args.pyqt6,
         'resource': args.resource
     }
-    config['templates'].append(read_template_dir(f'{home}/template'))
+    config['templates'].append(read_template_dir(template_dir))
     for style in args.styles:
-        config['themes'][style] = load_json(f'{home}/theme/{style}.json')
+        config['themes'][style] = load_json(f'{theme_dir}/{style}.json')
     for extension in args.extensions:
-        config['templates'].append(read_template_dir(f'{home}/extension/{extension}'))
+        config['templates'].append(read_template_dir(f'{extension_dir}/{extension}'))
 
     for style in config['themes'].keys():
         configure_style(config, style)
 
-    if not args.pyqt6:
-        # No point generating a resource file for PyQt6,
-        # since we can't use rcc6 anyway.
-        write_xml(config)
+    if not args.no_qrc:
+        # resource files aren't used in PyQt6: no rcc6 anyway.
+        write_qrc(config)
 
 def main(argv=None):
     '''Configuration entry point'''

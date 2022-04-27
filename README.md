@@ -174,7 +174,6 @@ Here are detailed instructions on how to install Breeze Style Sheets for a varie
 
 By default, BreezeStyleSheets comes with the `dark` and `light` themes pre-built. In order to build all pre-packaged themes, run:
 
-
 ```bash
 python configure.py --styles=all --extensions=all --resource breeze.qrc
 ```
@@ -222,14 +221,14 @@ FetchContent_GetProperties(breeze_stylesheets)
 if(NOT breeze_stylesheets_POPULATED)
   FetchContent_Populate(breeze_stylesheets)
 
-  add_library(breeze_themes STATIC "${breeze_stylesheets_SOURCE_DIR}/dist/breeze.qrc")
+  add_library(breeze_themes STATIC "${breeze_stylesheets_SOURCE_DIR}/dist/qrc/breeze.qrc")
 
   add_custom_target(
     run_python_breeze ALL
     COMMAND ${Python_EXECUTABLE} configure.py --extensions=<EXTENSIONS>
             --styles=<STYLES> --resource breeze.qrc
     WORKING_DIRECTORY ${breeze_stylesheets_SOURCE_DIR}
-    BYPRODUCTS "${breeze_stylesheets_SOURCE_DIR}/dist/breeze.qrc"
+    BYPRODUCTS "${breeze_stylesheets_SOURCE_DIR}/dist/qrc/breeze.qrc"
     COMMENT "Generating themes")
 
   add_dependencies(breeze_themes run_python_breeze)
@@ -267,7 +266,7 @@ int main()
 
 ## QMake Installation
 
-Copy the contents of the `dist` subdirectory into your project directory and add the qrc file to your project file.
+Copy the contents of the `dist/qrc` subdirectory into your project directory and add the qrc file to your project file.
 
 For example:
 
@@ -304,7 +303,7 @@ int main(int argc, char *argv[])
 
 ## PyQt5 Installation
 
-To compile the stylesheet for use with PyQt5, compile with the following command `pyrcc5 dist/breeze.qrc -o breeze_resources.py`. `breeze_resources.py` now contains all the stylesheet data. To load and set the stylesheet in a PyQt5 application, import `breeze_resources`, load the file using QFile and read the data. For example, to load BreezeDark, run:
+To compile the stylesheet for use with PyQt5, compile with the following command `pyrcc5 dist/qrc/breeze.qrc -o breeze_resources.py`. `breeze_resources.py` now contains all the stylesheet data. To load and set the stylesheet in a PyQt5 application, import `breeze_resources`, load the file using QFile and read the data. For example, to load BreezeDark, run:
 
 
 ```python
@@ -343,7 +342,7 @@ setup(
     #   set `include_package_data=True`.
     include_package_data=True,
     package_data={
-        'breeze_theme': ['dist/*'],
+        'breeze_theme': ['dist/pyqt6/*'],
     },
     zip_safe=False,
 )
@@ -414,9 +413,15 @@ MIT, see [license](/LICENSE.md).
 
 # Contributing
 
-To configure the assets and the stylesheets, run `configure.py`. To compile the assets and stylesheets for Python, run `pyrcc5 breeze.qrc -o breeze_resources.py`.
+To configure the assets and the stylesheets, run `configure.py`. To compile the assets and stylesheets for Python, run `pyrcc5 dist/qrc/breeze.qrc -o breeze_resources.py`.
 
 In order to test your changes, first run the tests using the appropriate widget in `test.py` (see the options for `stylesheet`, `widget`, `font-size`, and `font-family`), and then run the tests with the complete UI in `example.py`. If the widget you fixed the style for does not exist in `example.py`, please add it.
+
+When pushing changes, only the `light` and `dark` themes should be configured, without any extensions. To reset the built resource files to the defaults, run:
+
+```bash
+python configure.py --clean --pyqt6
+```
 
 Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in BreezeStyleSheets by you shall be licensed under the MIT license without any additional terms or conditions.
 

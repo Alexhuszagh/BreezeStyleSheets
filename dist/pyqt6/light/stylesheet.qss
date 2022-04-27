@@ -35,6 +35,11 @@
  * ---------------------------------------------------------------------
  */
 
+/**
+ *  MAIN STYLESHEET
+ *  ---------------
+ */
+
 QToolTip
 {
     /* 0.2ex is the smallest value that's not ignored on Windows. */
@@ -617,16 +622,14 @@ QSizeGrip
     height: 0.5em;
 }
 
+/**
+ *  Set the separator to be transparent, since the dock has a border.
+ *  On PyQt6, neither the border nor the background seem to be respected.
+ */
 QMainWindow::separator
 {
-    border: 0.15em solid #bab9b8;
-    margin-left: 0.5em;
-}
-
-QMainWindow::separator:hover
-{
-    border: 0.15em solid #787876;
-    margin-left: 0.5em;
+    border: 0.09em transparent #bab9b8;
+    background: transparent;
 }
 
 QMenu::separator
@@ -1048,7 +1051,7 @@ QTabWidget::pane:right
 
 QTabBar
 {
-    qproperty-drawBase: 0em;
+    qproperty-drawBase: 0;
     left: 0.23em;
     border-radius: 0.13em;
     /**
@@ -1068,24 +1071,19 @@ QTabBar:focus
 QTabBar::close-button
 {
     /* Doesn't seem possible to resize these buttons */
-    border-image: url(light:close.svg);
+    border-image: url(light:transparent.svg);
+    image: url(light:close.svg);
     background: transparent;
-}
-
-QTabBar::close-button:hover,
-QTabBar::close-button:pressed
-{
-    border-image: url(light:close_hover.svg);
 }
 
 QTabBar::close-button:hover
 {
-    border-image: url(light:close_hover.svg);
+    image: url(light:close_hover.svg);
 }
 
 QTabBar::close-button:pressed
 {
-    border-image: url(light:close_pressed.svg);
+    image: url(light:close_pressed.svg);
 }
 
 /* TOP TABS */
@@ -1118,9 +1116,9 @@ QTabBar::tab:top:!selected
     border-bottom-right-radius: 0em;
 }
 
-QTabBar::tab:top:previous-selected
+QTabBar::tab:top:next-selected
 {
-    border-left: 0.04em solid #d9d8d7;
+    border-right: 0.04em transparent #d9d8d7;
     border-bottom-left-radius: 0em;
     border-bottom-right-radius: 0em;
 }
@@ -1128,7 +1126,6 @@ QTabBar::tab:top:previous-selected
 QTabBar::tab:top:!selected:hover
 {
     background-color: rgba(61, 173, 232, 0.2);
-    border: 0.04em rgba(61, 173, 232, 0.2);
     border-radius: 0.09em;
     border-bottom-left-radius: 0em;
     border-bottom-right-radius: 0em;
@@ -1137,7 +1134,6 @@ QTabBar::tab:top:!selected:hover
 QTabBar::tab:top:!selected:first:hover
 {
     background-color: rgba(61, 173, 232, 0.2);
-    border: 0.04em rgba(61, 173, 232, 0.2);
     border-radius: 0.09em;
     border-bottom-left-radius: 0em;
     border-bottom-right-radius: 0em;
@@ -1175,7 +1171,7 @@ QTabBar::tab:bottom:!selected
 
 QTabBar::tab:bottom:next-selected
 {
-    border-right: 0.04em solid #d9d8d7;
+    border-right: 0.04em transparent #d9d8d7;
     border-top-left-radius: 0em;
     border-top-right-radius: 0em;
 }
@@ -1183,7 +1179,6 @@ QTabBar::tab:bottom:next-selected
 QTabBar::tab:bottom:!selected:hover
 {
     background-color: rgba(61, 173, 232, 0.2);
-    border: 0.04em rgba(61, 173, 232, 0.2);
     border-radius: 0.09em;
     border-top-left-radius: 0em;
     border-top-right-radius: 0em;
@@ -1192,7 +1187,6 @@ QTabBar::tab:bottom:!selected:hover
 QTabBar::tab:bottom:!selected:first:hover
 {
     background-color: rgba(61, 173, 232, 0.2);
-    border: 0.04em rgba(61, 173, 232, 0.2);
     border-radius: 0.09em;
     border-top-left-radius: 0em;
     border-top-right-radius: 0em;
@@ -1230,7 +1224,7 @@ QTabBar::tab:left:!selected
 
 QTabBar::tab:left:previous-selected
 {
-    border-top: 0.04em solid #d9d8d7;
+    border-top: 0.04em transparent #d9d8d7;
     border-top-right-radius: 0em;
     border-bottom-right-radius: 0em;
 }
@@ -1238,7 +1232,6 @@ QTabBar::tab:left:previous-selected
 QTabBar::tab:left:!selected:hover
 {
     background-color: rgba(61, 173, 232, 0.2);
-    border: 0.04em rgba(61, 173, 232, 0.2);
     border-radius: 0.09em;
     border-top-right-radius: 0em;
     border-bottom-right-radius: 0em;
@@ -1247,7 +1240,6 @@ QTabBar::tab:left:!selected:hover
 QTabBar::tab:left:!selected:first:hover
 {
     background-color: rgba(61, 173, 232, 0.2);
-    border: 0.04em rgba(61, 173, 232, 0.2);
     border-radius: 0.09em;
     border-top-right-radius: 0em;
     border-bottom-right-radius: 0em;
@@ -1285,7 +1277,7 @@ QTabBar::tab:right:!selected
 
 QTabBar::tab:right:previous-selected
 {
-    border-top: 0.04em solid #d9d8d7;
+    border-top: 0.04em transparent #d9d8d7;
     border-top-left-radius: 0em;
     border-bottom-left-radius: 0em;
 }
@@ -1293,7 +1285,6 @@ QTabBar::tab:right:previous-selected
 QTabBar::tab:right:!selected:hover
 {
     background-color: rgba(61, 173, 232, 0.2);
-    border: 0.04em rgba(61, 173, 232, 0.2);
     border-radius: 0.09em;
     border-top-left-radius: 0em;
     border-bottom-left-radius: 0em;
@@ -1302,7 +1293,6 @@ QTabBar::tab:right:!selected:hover
 QTabBar::tab:right:!selected:first:hover
 {
     background-color: rgba(61, 173, 232, 0.2);
-    border: 0.04em rgba(61, 173, 232, 0.2);
     border-radius: 0.09em;
     border-top-left-radius: 0em;
     border-bottom-left-radius: 0em;
@@ -1339,17 +1329,28 @@ QTabBar QToolButton::left-arrow:disabled
 QDockWidget
 {
     background: #eaebec;
-    border: 0.09em solid #d9d8d7;
+    /**
+     *  It doesn't seem possible to change the border of the
+     *  QDockWidget without changing the content margins.
+     */
+    /**
+     *  This is a bug fix so we can handle hover, pressed, and other events.
+     *  Reference: https://stackoverflow.com/questions/32145080/qdockwidget-float-close-button-hover-images
+     */
     titlebar-close-icon: url(light:transparent.svg);
     titlebar-normal-icon: url(light:transparent.svg);
 }
 
-QDockWidget::title
-{
-    background: #eaebec;
-    padding-left: 0.5em;
-}
-
+/**
+ *  Don't style the title, since it gives a weird, missing border
+ *  around the rest of the dock widget, which the remaining border
+ *  cannot be removed.
+ *
+ *  There is a bug in Qt6, where the icons are small. It doesn't
+ *  change if we use `image` instead of `border-image`, nor if we
+ *  use `qproperty-icon`, etc. The icon seem to be half the size
+ *  of our desired values.
+ */
 QDockWidget::close-button,
 QDockWidget::float-button
 {
@@ -1362,27 +1363,36 @@ QDockWidget::float-button
 
 QDockWidget::float-button
 {
-    border-image: url(light:undock.svg);
+    border-image: url(light:transparent.svg);
+    image: url(light:undock.svg);
 }
 
 QDockWidget::float-button:hover
 {
-    border-image: url(light:undock_hover.svg);
+    image: url(light:undock_hover.svg);
+}
+
+/* The :pressed events don't register, seems to be a Qt bug. */
+QDockWidget::float-button:pressed
+{
+    image: url(light:undock_hover.svg);
 }
 
 QDockWidget::close-button
 {
-    border-image: url(light:close.svg);
+    border-image: url(light:transparent.svg);
+    image: url(light:close.svg);
 }
 
 QDockWidget::close-button:hover
 {
-    border-image: url(light:close_hover.svg);
+    image: url(light:close_hover.svg);
 }
 
+/* The :pressed events don't register, seems to be a Qt bug. */
 QDockWidget::close-button:pressed
 {
-    border-image: url(light:close_pressed.svg);
+    image: url(light:close_pressed.svg);
 }
 
 QTreeView,
@@ -1950,78 +1960,4 @@ QMessageBox QPushButton
 {
     min-height: 1.1em;
     min-width: 5em;
-}
-
-/*
- *  Extension stylesheet for the Advanced Docking System.
- *
- *  :author: Alex Huszagh
- *  :license: MIT, see LICENSE.md
- *
- * ---------------------------------------------------------------------
- *  The MIT License (MIT)
- *
- * Copyright (c) <2021> <Alex Huszagh>
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
- * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- * ---------------------------------------------------------------------
- */
-
-/* Color the tab with the nhighlight color */
-ads--CDockWidgetTab[focused="true"]
-{
-    /*
-    background: palette(highlight);
-    border-color: palette(highlight);
-    */
-}
-
-/* Use a different colored close button icon to match the test color */
-ads--CDockWidgetTab[focused="true"] > #tabCloseButton
-{
-    /*qproperty-icon: url(:/ads/images/close-button-focused.svg)*/
-}
-
-/* Make a hovered focused close button a little bit lighter */
-ads--CDockWidgetTab[focused="true"] > #tabCloseButton:hover
-{
-    /*background: rgba(255, 255, 255, 48);*/
-}
-
-/* Make a pressed focused close button even more lighter */
-ads--CDockWidgetTab[focused="true"] > #tabCloseButton:pressed
-{
-    /*background: rgba(255, 255, 255, 92);*/
-}
-
-/* Use a different color for the tab label */
-ads--CDockWidgetTab[focused="true"] QLabel
-{
-    /*color: palette(light);*/
-}
-
-/* Paint a nice solid line for the whole title bar to create the illusion
-   of an active tab */
-ads--CDockAreaWidget[focused="true"] ads--CDockAreaTitleBar
-{
-    /*background: transparent;
-    border-bottom: 2px solid palette(highlight);
-    padding-bottom: 0px;*/
 }

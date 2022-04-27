@@ -38,6 +38,7 @@ import time
 
 tests_dir = os.path.dirname(os.path.realpath(__file__))
 home = os.path.dirname(tests_dir)
+dist = os.path.join(home, 'dist')
 
 # Create our arguments.
 parser = argparse.ArgumentParser(description='Configurations for the Qt5 application.')
@@ -110,7 +111,7 @@ parser.add_argument(
 args, unknown = parser.parse_known_args()
 if args.pyqt6:
     from PyQt6 import QtCore, QtGui, QtWidgets
-    QtCore.QDir.addSearchPath(args.stylesheet, f'{home}/pyqt6/{args.stylesheet}/')
+    QtCore.QDir.addSearchPath(args.stylesheet, f'{dist}/pyqt6/{args.stylesheet}/')
     style_prefix = f'{args.stylesheet}:'
     stylesheet = f'{style_prefix}stylesheet.qss'
 else:
