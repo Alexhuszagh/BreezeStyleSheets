@@ -17,6 +17,11 @@ This stylesheet aims to be similar across all platforms, and provide a nice UI f
 - [Features](#features)
 - [Limitations](#limitations)
 - [Debugging](#debugging)
+- [Development Guide](#development-guide)
+  - [Configuring](#configuring)
+  - [Testing](#testing)
+  - [Distribution Files](#distribution-files)
+  - [Git Ignore](#git-ignore)
 - [License](#license)
 - [Contributing](#contributing)
 - [Acknowledgements](#acknowledgements)
@@ -407,21 +412,51 @@ Have an issue with the styles? Here's a few suggestions, prior to filing a bug r
 - Modified the application font? Make sure you do **before** setting the application stylesheet.
 - Modified the application style? Make sure you do **before** you creating a `QApplication instance`.
 
-# License
+# Development Guide
 
-MIT, see [license](/LICENSE.md).
-
-# Contributing
+## Configuring
 
 To configure the assets and the stylesheets, run `configure.py`. To compile the assets and stylesheets for Python, run `pyrcc5 dist/qrc/breeze.qrc -o breeze_resources.py`.
 
+## Testing
+
 In order to test your changes, first run the tests using the appropriate widget in `test.py` (see the options for `stylesheet`, `widget`, `font-size`, and `font-family`), and then run the tests with the complete UI in `example.py`. If the widget you fixed the style for does not exist in `example.py`, please add it.
+
+## Distribution Files
 
 When pushing changes, only the `light` and `dark` themes should be configured, without any extensions. To reset the built resource files to the defaults, run:
 
 ```bash
 python configure.py --clean --pyqt6
 ```
+
+If no changes are being made to the icons or stylesheets, you may want to ensure that the `dist` directory is assumed to be unchanged in git, no longer tracking changes to these files. You can turn tracking distribution files off with:
+
+```bash
+python git.py --no-track-dist
+```
+
+To turn back on tracking, run:
+
+```bash
+python git.py --track-dist
+```
+
+## Git Ignore
+
+Note that the `.gitignore` is auto-generated via `git.py`, and the scripts to track or untrack distribution files turn off `.gitignore` tracking. Any changes should be made in `git.py`, and ensure that `.gitignore` is tracked, and commit any changes:
+
+```bash
+python git.py --track-gitignore
+git add .gitignore
+git commit -m "..."
+```
+
+# License
+
+MIT, see [license](/LICENSE.md).
+
+# Contributing
 
 Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in BreezeStyleSheets by you shall be licensed under the MIT license without any additional terms or conditions.
 
