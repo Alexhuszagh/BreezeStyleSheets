@@ -1,5 +1,5 @@
 '''
-    git
+    vcs
     ===
 
     Track/untrack distribution files.
@@ -8,7 +8,6 @@
 __version__ = '0.1.0'
 
 import argparse
-import contextlib
 import errno
 import os
 import shutil
@@ -66,18 +65,6 @@ def parse_args(argv=None):
     return parser.parse_args(argv)
 
 
-@contextlib.contextmanager
-def cd_root():
-    '''Temporarily go to the root directory.'''
-
-    cwd = os.getcwd()
-    try:
-        os.chdir('/')
-        yield
-    finally:
-        os.chdir(cwd)
-
-
 def call(command):
     '''Call subprocess command (ignoring output but checking code).'''
 
@@ -133,8 +120,7 @@ def main(argv=None):
     # Find our git executable. Go to the in case on
     # Windows `.py` is added to valid suffixes so
     # we don't recursively call this file.
-    with cd_root():
-        git = shutil.which('git')
+    git = shutil.which('git')
     if git is None:
         raise FileNotFoundError(errno.ENOENT, "No such file or directory: 'git'")
 
