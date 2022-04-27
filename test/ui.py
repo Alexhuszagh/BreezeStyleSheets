@@ -805,10 +805,7 @@ def test_calendar(widget, *_):
 def _test_standard_button(window, app, button):
     message = QtWidgets.QMessageBox(window)
     message.addButton(button)
-    if args.pyqt6:
-        message.exec()
-    else:
-        message.exec_()
+    execute(message)
 
 def test_ok_button(_, window, __, ___, ____, app):
     _test_standard_button(window, app, Ok)
@@ -951,7 +948,7 @@ def test_issue25(widget, window, font, width, *_):
     def launch_filedialog(folder):
         dialog = QtWidgets.QFileDialog()
         dialog.setFileMode(Directory)
-        if dialog.exec_():
+        if execute(dialog):
             folder.setText(dialog.selectedFiles()[0])
 
     def launch_fontdialog(value):
