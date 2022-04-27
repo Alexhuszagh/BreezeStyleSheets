@@ -177,13 +177,14 @@ Here are detailed instructions on how to install Breeze Style Sheets for a varie
 
 ## Configuring
 
-By default, BreezeStyleSheets comes with the `dark` and `light` themes pre-built. In order to build all pre-packaged themes, run:
+By default, BreezeStyleSheets comes with the `dark` and `light` themes pre-built. In order to build all pre-packaged themes including PyQt5 and PyQt6 support, run:
 
 ```bash
-python configure.py --styles=all --extensions=all --resource breeze.qrc
+python configure.py --styles=all --extensions=all --pyqt6 \
+    --resource breeze.qrc --compiled-resource breeze_resources.py
 ```
 
-All generated themes will be in the [dist](/dist) subdirectory.
+All generated themes will be in the [dist](/dist) subdirectory, and the compiled Python resource will be in `breeze_resouces.py`. Note that using the `--compiled-resource` flag requires `pyrcc5` to be installed.
 
 ## CMake Installation
 
@@ -308,11 +309,15 @@ int main(int argc, char *argv[])
 
 ## PyQt5 Installation
 
-To compile the stylesheet for use with PyQt5, compile with the following command `pyrcc5 dist/qrc/breeze.qrc -o breeze_resources.py`. `breeze_resources.py` now contains all the stylesheet data. To load and set the stylesheet in a PyQt5 application, import `breeze_resources`, load the file using QFile and read the data. For example, to load BreezeDark, run:
+To compile the stylesheet for use with PyQt5, ensure you configure with the `--compiled-resource` flag (which requires `pyrcc5` installed). The compiled resource Python file now contains all the stylesheet data. To load and set the stylesheet in a PyQt5 application, import that file, load the contents using QFile and read the data. For example, to load BreezeDark, first configure using:
 
+```bash
+python configure.py --compiled-resource breeze_resources.py
+```
+
+Then load the stylesheet and run the application using:
 
 ```python
-
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QFile, QTextStream
 import breeze_resources
@@ -416,7 +421,11 @@ Have an issue with the styles? Here's a few suggestions, prior to filing a bug r
 
 ## Configuring
 
-To configure the assets and the stylesheets, run `configure.py`. To compile the assets and stylesheets for Python, run `pyrcc5 dist/qrc/breeze.qrc -o breeze_resources.py`.
+To configure the assets and the stylesheets, run `python configure.py`. To compile the assets and stylesheets for PyQt5, ensure `pyrcc5` is installed and run:
+
+```bash
+python configure.py --compiled-resource breeze_resources.py
+```
 
 ## Testing
 
@@ -424,10 +433,11 @@ In order to test your changes, first run the tests using the appropriate widget 
 
 ## Distribution Files
 
-When pushing changes, only the `light` and `dark` themes should be configured, without any extensions. To reset the built resource files to the defaults, run:
+When pushing changes, only the `light` and `dark` themes should be configured, without any extensions. To reset the built resource files to the defaults (this requires `pyrcc5` to be installed), run:
 
 ```bash
-python configure.py --clean --pyqt6
+python configure.py --clean --pyqt6 \
+    --compiled-resource breeze_resources.py
 ```
 
 If no changes are being made to the icons or stylesheets, you may want to ensure that the `dist` directory is assumed to be unchanged in git, no longer tracking changes to these files. You can turn tracking distribution files off with:

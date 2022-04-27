@@ -13,6 +13,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 import sys
 
 home = os.path.dirname(os.path.realpath(__file__))
@@ -62,6 +63,15 @@ def parse_args(argv=None):
         '--clean',
         help='clean dist directory prior to configuring themes.',
         action='store_true'
+    )
+    parser.add_argument(
+        '--pyrcc5',
+        help='name of the pyrcc5 executable. Overridden by the `PYRCC5` envvar.',
+        default='pyrcc5',
+    )
+    parser.add_argument(
+        '--compiled-resource',
+        help='output compiled python resource file.',
     )
     args = parser.parse_args(argv)
     parse_styles(args)
@@ -322,9 +332,25 @@ def configure(args):
     for style in config['themes'].keys():
         configure_style(config, style)
 
+    # Create and compile our resource files.
+    # resource files aren't used in PyQt6: no rcc6 anyway.
     if not args.no_qrc:
-        # resource files aren't used in PyQt6: no rcc6 anyway.
         write_qrc(config)
+    if not args.no_qrc and args.compiled_resource is not None:
+        pyrcc5 = os.environ.get('PYRCC5', args.pyrcc5)
+        command = [
+            pyrcc5,
+            f'{qrc_dist}/{args.resource}',
+            '-o',
+            f'{home}/{args.compiled_resource}'
+        ]
+        subprocess.check_call(
+            command,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            shell=False,
+        )
 
 def main(argv=None):
     '''Configuration entry point'''
