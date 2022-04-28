@@ -471,6 +471,13 @@ def execute(obj):
     else:
         return obj.exec_()
 
+def close_icon(widget):
+    '''Get the close icon depending on the stylesheet.'''
+
+    if args.stylesheet == 'native':
+        return widget.style().standardIcon(SP_DockWidgetCloseButton)
+    return QtGui.QIcon(f'{resource_format}close.svg')
+
 def test_progressbar_horizontal(widget, *_):
     child = []
     bar1 = QtWidgets.QProgressBar(widget)
@@ -561,7 +568,7 @@ def test_menu(widget, window, font, width, *_):
     action3 = QAction('&Action 6', window)
     action3.setCheckable(True)
     menu.addAction(action3)
-    icon = menu.style().standardIcon(SP_DockWidgetCloseButton)
+    icon = close_icon(menu)
     menu.addAction(QAction(icon, '&Action 7', window))
     menu.addAction(QAction(icon, '&Action 8', window))
     submenu.addAction(QAction(icon, '&Action 9', window))
@@ -723,7 +730,7 @@ def test_list(widget, *_):
         item = QtWidgets.QListWidgetItem(f'Item {index + 1}')
         item.setTextAlignment(random.choice(alignments))
         child.addItem(item)
-    icon = menu.style().standardIcon(SP_DockWidgetCloseButton)
+    icon = close_icon(child)
     for index in range(10):
         item = QtWidgets.QListWidgetItem(icon, f'Item {index + 1}')
         item.setTextAlignment(random.choice(alignments))
@@ -757,7 +764,7 @@ def test_toolbar(_, window, *__):
     toolbar1.addSeparator()
     toolbar1.addAction('&Action 3')
     toolbar1.addAction('&Action 3 Really Long Name')
-    icon = menu.style().standardIcon(SP_DockWidgetCloseButton)
+    icon = close_icon(toolbar1)
     toolbar1.addAction(icon, '&Action 4')
     window.addToolBar(TopToolBarArea, toolbar1)
 
@@ -768,7 +775,7 @@ def test_toolbar(_, window, *__):
     toolbar2.addSeparator()
     toolbar2.addAction('&Action 3')
     toolbar2.addAction('&Action 3 Really Long Name')
-    icon = menu.style().standardIcon(SP_DockWidgetCloseButton)
+    icon = close_icon(toolbar2)
     toolbar2.addAction(icon, '&Action 4')
     window.addToolBar(LeftToolBarArea, toolbar2)
 
@@ -816,7 +823,7 @@ def test_toolbutton(widget, window, *_):
     child[5].setArrowType(RightArrow)
     child[6].setArrowType(UpArrow)
     child[7].setArrowType(DownArrow)
-    icon = menu.style().standardIcon(SP_DockWidgetCloseButton)
+    icon = close_icon(widget)
     child[8].setIcon(icon)
 
     return child, layout_type
@@ -828,7 +835,7 @@ def test_pushbutton(widget, *_):
     child.append(abstract_button(widget_type, widget, 'Button 1', checked=True))
     child.append(abstract_button(widget_type, widget, 'Button 2', enabled=False))
     child.append(abstract_button(widget_type, widget, 'Button 3', checkable=False))
-    icon = menu.style().standardIcon(SP_DockWidgetCloseButton)
+    icon = close_icon(widget)
     child.append(abstract_button(widget_type, widget, icon, 'Button 4', checkable=False))
 
     return child, layout_type
@@ -1079,7 +1086,7 @@ def test_disabled_menu(widget, window, font, width, *_):
     action3 = QAction('&Action 6', window)
     action3.setCheckable(True)
     menu.addAction(action3)
-    icon = menu.style().standardIcon(SP_DockWidgetCloseButton)
+    icon = close_icon(menu)
     menu.addAction(QAction(icon, '&Action 7', window))
     menu.addAction(QAction(icon, '&Action 8', window))
     menu.actions()[2].setEnabled(False)

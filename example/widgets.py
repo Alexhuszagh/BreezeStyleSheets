@@ -115,7 +115,7 @@ if args.pyqt6:
     ReadOnly = QtCore.QFile.OpenModeFlag.ReadOnly
     Text = QtCore.QFile.OpenModeFlag.Text
     East = QtWidgets.QTabWidget.TabPosition.East
-    SP_DialogResetButton = QtWidgets.QStyle.StandardPixmap.SP_DialogResetButton
+    SP_DockWidgetCloseButton = QtWidgets.QStyle.StandardPixmap.SP_DockWidgetCloseButton
 else:
     QAction = QtWidgets.QAction
     Horizontal = QtCore.Qt.Horizontal
@@ -137,7 +137,7 @@ else:
     ReadOnly = QtCore.QFile.ReadOnly
     Text = QtCore.QFile.Text
     East = QtWidgets.QTabWidget.East
-    SP_DialogResetButton = QtWidgets.QStyle.SP_DialogResetButton
+    SP_DockWidgetCloseButton = QtWidgets.QStyle.SP_DockWidgetCloseButton
 
 # Need to fix an issue on Wayland on Linux:
 #   conda-forge does not support Wayland, for who knows what reason.
@@ -146,6 +146,14 @@ if sys.platform.lower().startswith('linux') and 'CONDA_PREFIX' in os.environ:
 
 if args.use_x11:
     os.environ['XDG_SESSION_TYPE'] = 'x11'
+
+def close_icon(widget):
+    '''Get the close icon depending on the stylesheet.'''
+
+    if args.stylesheet == 'native':
+        return widget.style().standardIcon(SP_DockWidgetCloseButton)
+    return QtGui.QIcon(f'{resource_format}close.svg')
+
 
 class Ui:
     '''Main class for the user interface.'''
@@ -366,8 +374,7 @@ class Ui:
         self.horizontalLayout.addWidget(self.bt_menu_button_popup)
         self.bt_auto_raise = QtWidgets.QToolButton(self.centralwidget)
         self.bt_auto_raise.setAutoRaise(True)
-        auto_raise_icon = self.bt_auto_raise.style().standardIcon(SP_DialogResetButton)
-        self.bt_auto_raise.setIcon(auto_raise_icon)
+        self.bt_auto_raise.setIcon(close_icon(self.bt_auto_raise))
         self.bt_auto_raise.setObjectName('bt_auto_raise')
         self.horizontalLayout.addWidget(self.bt_auto_raise)
         self.line_2 = QtWidgets.QFrame(self.centralwidget)
