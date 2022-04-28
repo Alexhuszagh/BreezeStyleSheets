@@ -219,7 +219,7 @@ set(FETCHCONTENT_QUIET
 FetchContent_Declare(
   breeze_stylesheets
   GIT_REPOSITORY https://github.com/Alexhuszagh/BreezeStyleSheets.git
-  GIT_TAG origin/master
+  GIT_TAG origin/main
   GIT_PROGRESS ON
   USES_TERMINAL_DOWNLOAD TRUE)
 
