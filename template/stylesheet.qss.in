@@ -1586,6 +1586,11 @@ QSlider::sub-page:vertical
  *  The affected issues are #22 and #28.
  *      https://github.com/Alexhuszagh/BreezeStyleSheets/issues/22
  *      https://github.com/Alexhuszagh/BreezeStyleSheets/issues/28
+ *
+ *  The invalid clear text icon in issue #28 still has:
+ *      autoRaise: false
+ *      arrowType: 0
+ *      toolButtonStyle: 0
  */
 QToolButton[autoRaise="false"]
 {
@@ -1596,7 +1601,6 @@ QToolButton[autoRaise="false"]
     padding: 0.23em;
     padding-top: 0.1em;
     padding-right: 1.2em;
-    min-height: 1.1em;
 }
 
 QToolButton[autoRaise="false"]::right-arrow,
@@ -1639,7 +1643,6 @@ QToolButton[autoRaise="false"]:pressed
     background-color: ^highlight^;
     padding: 0.23em;
     padding-right: 1.2em;
-    min-height: 1.3em;
     outline: none;
 }
 
