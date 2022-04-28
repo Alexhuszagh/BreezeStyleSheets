@@ -250,7 +250,6 @@ if args.pyqt6:
     SP_MessageBoxQuestion = QtWidgets.QStyle.StandardPixmap.SP_MessageBoxQuestion
     SP_MessageBoxWarning = QtWidgets.QStyle.StandardPixmap.SP_MessageBoxWarning
     SP_RestoreDefaultsButton = QtWidgets.QStyle.StandardPixmap.SP_RestoreDefaultsButton
-    SP_TabCloseButton = QtWidgets.QStyle.StandardPixmap.SP_TabCloseButton
     SP_TitleBarCloseButton = QtWidgets.QStyle.StandardPixmap.SP_TitleBarCloseButton
     SP_TitleBarContextHelpButton = QtWidgets.QStyle.StandardPixmap.SP_TitleBarContextHelpButton
     SP_TitleBarMaxButton = QtWidgets.QStyle.StandardPixmap.SP_TitleBarMaxButton
@@ -389,7 +388,6 @@ else:
     SP_MessageBoxQuestion = QtWidgets.QStyle.SP_MessageBoxQuestion
     SP_MessageBoxWarning = QtWidgets.QStyle.SP_MessageBoxWarning
     SP_RestoreDefaultsButton = QtWidgets.QStyle.SP_RestoreDefaultsButton
-    SP_TabCloseButton = QtWidgets.QStyle.SP_TabCloseButton
     SP_TitleBarCloseButton = QtWidgets.QStyle.SP_TitleBarCloseButton
     SP_TitleBarContextHelpButton = QtWidgets.QStyle.SP_TitleBarContextHelpButton
     SP_TitleBarMaxButton = QtWidgets.QStyle.SP_TitleBarMaxButton
