@@ -1691,6 +1691,23 @@ QToolButton[autoRaise="false"]::menu-button:pressed
     outline: none;
 }
 
+QToolButton[autoRaise="true"]
+{
+    background-color: transparent;
+    border: 0.04em solid transparent;
+}
+
+QToolButton[autoRaise="true"]:hover
+{
+    border: 0.04em solid #3daee9;
+}
+
+QToolButton[autoRaise="true"]:checked,
+QToolButton[autoRaise="true"]:pressed
+{
+    background-color: #3daee9;
+}
+
 QTableView
 {
     border: 0em solid black;
