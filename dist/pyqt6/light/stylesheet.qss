@@ -1633,15 +1633,33 @@ QToolButton[autoRaise="false"]:hover
     border: 0.04em solid rgba(51, 164, 223, 0.5);
 }
 
+QToolButton[autoRaise="false"]:checked,
+QToolButton[autoRaise="false"]:pressed
+{
+    background-color: rgba(51, 164, 223, 0.5);
+    padding: 0.23em;
+    padding-right: 1.2em;
+    min-height: 1.3em;
+    outline: none;
+}
+
 QToolButton[autoRaise="false"]::menu-indicator
 {
     border-image: none;
     image: url(light:down_arrow.svg);
     width: 0.8em;
     height: 0.5em;
-    top: -0.7ex;
     left: -0.09em;
-    padding-right: 0.09em;
+    /* -1.2em + 0.09em */
+    padding-right: -1.11em;
+    /**
+     *  Qt5 and Qt6 differ if the subcontrol-origin is set to
+     *  the default, AKA, padding. Setting it to the content,
+     *  which we adjust the padding to, makes it uniform between
+     *  both.
+     */
+    subcontrol-origin: content;
+    subcontrol-position: right;
 }
 
 QToolButton[autoRaise="false"]::menu-arrow
@@ -1650,7 +1668,8 @@ QToolButton[autoRaise="false"]::menu-arrow
     image: url(light:down_arrow.svg);
     width: 0.8em;
     height: 0.5em;
-    subcontrol-position: bottom right;
+    padding-right: 0.09em;
+    subcontrol-position: right;
 }
 
 QToolButton[autoRaise="false"]::menu-button
@@ -1666,22 +1685,12 @@ QToolButton[autoRaise="false"]::menu-button
 QToolButton[autoRaise="false"]::menu-button::menu-arrow
 {
     left: -0.09em;
-    subcontrol-position: bottom right;
+    subcontrol-position: right;
 }
 
 QToolButton[autoRaise="false"]::menu-button:hover
 {
     background-color: transparent;
-}
-
-QToolButton[autoRaise="false"]:checked,
-QToolButton[autoRaise="false"]:pressed
-{
-    background-color: rgba(51, 164, 223, 0.5);
-    padding: 0.23em;
-    padding-right: 1.2em;
-    min-height: 1.3em;
-    outline: none;
 }
 
 QToolButton[autoRaise="false"]::menu-button:pressed
