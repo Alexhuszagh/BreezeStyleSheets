@@ -85,12 +85,13 @@ args, unknown = parser.parse_known_args()
 if args.pyqt6:
     from PyQt6 import QtCore, QtGui, QtWidgets
     QtCore.QDir.addSearchPath(args.stylesheet, f'{dist}/pyqt6/{args.stylesheet}/')
-    stylesheet = f'{args.stylesheet}:stylesheet.qss'
+    resource_format = f'{args.stylesheet}:'
 else:
     sys.path.insert(0, home)
     from PyQt5 import QtCore, QtGui, QtWidgets
     import breeze_resources
-    stylesheet = f':/{args.stylesheet}/stylesheet.qss'
+    resource_format = f':/{args.stylesheet}/'
+stylesheet = f'{resource_format}stylesheet.qss'
 
 # Compat definitions, between Qt5 and Qt6.
 if args.pyqt6:
@@ -114,6 +115,7 @@ if args.pyqt6:
     ReadOnly = QtCore.QFile.OpenModeFlag.ReadOnly
     Text = QtCore.QFile.OpenModeFlag.Text
     East = QtWidgets.QTabWidget.TabPosition.East
+    SP_DialogResetButton = QtWidgets.QStyle.StandardPixmap.SP_DialogResetButton
 else:
     QAction = QtWidgets.QAction
     Horizontal = QtCore.Qt.Horizontal
@@ -135,6 +137,7 @@ else:
     ReadOnly = QtCore.QFile.ReadOnly
     Text = QtCore.QFile.Text
     East = QtWidgets.QTabWidget.East
+    SP_DialogResetButton = QtWidgets.QStyle.SP_DialogResetButton
 
 # Need to fix an issue on Wayland on Linux:
 #   conda-forge does not support Wayland, for who knows what reason.
@@ -361,6 +364,12 @@ class Ui:
         self.bt_menu_button_popup.setPopupMode(MenuButtonPopup)
         self.bt_menu_button_popup.setObjectName('bt_menu_button_popup')
         self.horizontalLayout.addWidget(self.bt_menu_button_popup)
+        self.bt_auto_raise = QtWidgets.QToolButton(self.centralwidget)
+        self.bt_auto_raise.setAutoRaise(True)
+        auto_raise_icon = self.bt_auto_raise.style().standardIcon(SP_DialogResetButton)
+        self.bt_auto_raise.setIcon(auto_raise_icon)
+        self.bt_auto_raise.setObjectName('bt_auto_raise')
+        self.horizontalLayout.addWidget(self.bt_auto_raise)
         self.line_2 = QtWidgets.QFrame(self.centralwidget)
         self.line_2.setFrameShape(VLine)
         self.line_2.setFrameShadow(Sunken)

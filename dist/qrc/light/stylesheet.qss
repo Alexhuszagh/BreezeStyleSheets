@@ -1569,7 +1569,25 @@ QSlider::sub-page:vertical
     border-radius: 0.19em;
 }
 
-QToolButton
+/* QToolButton */
+/**
+ *  QToolButton's that have a push button need to be styled differently,
+ *  and auto-raise is automatically disabled if there is a push button,
+ *  IE, there is no arrow attached to the text in the QToolButton.
+ *  Note that this is not affected by the following:
+ *      popupMode: any pop-up mode does not affect the right arrow style.
+ *      arrowType: only replaces the icon.
+ *      toolButtonStyle: this is almost always set to icon only, even with text.
+ *
+ *  This particularly affects QFileDialog, but also affects anything with
+ *  auto-raise set to true. Therefore, our styles should only be set when
+ *  auto-raise is false.
+ *
+ *  The affected issues are #22 and #28.
+ *      https://github.com/Alexhuszagh/BreezeStyleSheets/issues/22
+ *      https://github.com/Alexhuszagh/BreezeStyleSheets/issues/28
+ */
+QToolButton[autoRaise="false"]
 {
     background-color: transparent;
     border: 0.04em solid #bab9b8;
@@ -1581,41 +1599,41 @@ QToolButton
     min-height: 1.1em;
 }
 
-QToolButton::right-arrow,
-QToolButton::left-arrow,
-QToolButton::up-arrow,
-QToolButton::down-arrow
+QToolButton[autoRaise="false"]::right-arrow,
+QToolButton[autoRaise="false"]::left-arrow,
+QToolButton[autoRaise="false"]::up-arrow,
+QToolButton[autoRaise="false"]::down-arrow
 {
     /* Undo the padding when we have an arrow */
     padding-right: -1.2em;
 }
 
-QToolButton::right-arrow
+QToolButton[autoRaise="false"]::right-arrow
 {
     image: url(:/light/right_arrow.svg);
 }
 
-QToolButton::left-arrow
+QToolButton[autoRaise="false"]::left-arrow
 {
     image: url(:/light/left_arrow.svg);
 }
 
-QToolButton::up-arrow
+QToolButton[autoRaise="false"]::up-arrow
 {
     image: url(:/light/up_arrow.svg);
 }
 
-QToolButton::down-arrow
+QToolButton[autoRaise="false"]::down-arrow
 {
     image: url(:/light/down_arrow.svg);
 }
 
-QToolButton:hover
+QToolButton[autoRaise="false"]:hover
 {
     border: 0.04em solid rgba(51, 164, 223, 0.5);
 }
 
-QToolButton::menu-indicator
+QToolButton[autoRaise="false"]::menu-indicator
 {
     border-image: none;
     image: url(:/light/down_arrow.svg);
@@ -1626,7 +1644,7 @@ QToolButton::menu-indicator
     padding-right: 0.09em;
 }
 
-QToolButton::menu-arrow
+QToolButton[autoRaise="false"]::menu-arrow
 {
     border-image: none;
     image: url(:/light/down_arrow.svg);
@@ -1635,7 +1653,7 @@ QToolButton::menu-arrow
     subcontrol-position: bottom right;
 }
 
-QToolButton::menu-button
+QToolButton[autoRaise="false"]::menu-button
 {
     border-top-right-radius: 0.5em;
     border-bottom-right-radius: 0.5em;
@@ -1645,19 +1663,19 @@ QToolButton::menu-button
     outline: none;
 }
 
-QToolButton::menu-button::menu-arrow
+QToolButton[autoRaise="false"]::menu-button::menu-arrow
 {
     left: -0.09em;
     subcontrol-position: bottom right;
 }
 
-QToolButton::menu-button:hover
+QToolButton[autoRaise="false"]::menu-button:hover
 {
     background-color: transparent;
 }
 
-QToolButton:checked,
-QToolButton:pressed
+QToolButton[autoRaise="false"]:checked,
+QToolButton[autoRaise="false"]:pressed
 {
     background-color: rgba(51, 164, 223, 0.5);
     padding: 0.23em;
@@ -1666,7 +1684,7 @@ QToolButton:pressed
     outline: none;
 }
 
-QToolButton::menu-button:pressed
+QToolButton[autoRaise="false"]::menu-button:pressed
 {
     background-color: transparent;
     padding: 0.23em;

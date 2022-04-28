@@ -88,12 +88,13 @@ args, unknown = parser.parse_known_args()
 if args.pyqt6:
     from PyQt6 import QtCore, QtGui, QtWidgets
     QtCore.QDir.addSearchPath(args.stylesheet, f'{dist}/pyqt6/{args.stylesheet}/')
-    stylesheet = f'{args.stylesheet}:stylesheet.qss'
+    resource_format = f'{args.stylesheet}:'
 else:
     sys.path.insert(0, home)
     from PyQt5 import QtCore, QtGui, QtWidgets
     import breeze_resources
-    stylesheet = f':/{args.stylesheet}/stylesheet.qss'
+    resource_format = f':/{args.stylesheet}/'
+stylesheet = f'{resource_format}stylesheet.qss'
 
 from PyQtAds import QtAds
 

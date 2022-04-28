@@ -112,14 +112,13 @@ args, unknown = parser.parse_known_args()
 if args.pyqt6:
     from PyQt6 import QtCore, QtGui, QtWidgets
     QtCore.QDir.addSearchPath(args.stylesheet, f'{dist}/pyqt6/{args.stylesheet}/')
-    style_prefix = f'{args.stylesheet}:'
-    stylesheet = f'{style_prefix}stylesheet.qss'
+    resource_format = f'{args.stylesheet}:'
 else:
     sys.path.insert(0, home)
     from PyQt5 import QtCore, QtGui, QtWidgets
     import breeze_resources
-    style_prefix = f':/{args.stylesheet}/'
-    stylesheet = f'{style_prefix}stylesheet.qss'
+    resource_format = f':/{args.stylesheet}/'
+stylesheet = f'{resource_format}stylesheet.qss'
 
 # Compat definitions, between Qt5 and Qt6.
 if args.pyqt6:
@@ -184,6 +183,86 @@ if args.pyqt6:
     ExistingFile = QtWidgets.QFileDialog.FileMode.ExistingFile
     Directory = QtWidgets.QFileDialog.FileMode.Directory
     ExistingFiles = QtWidgets.QFileDialog.FileMode.ExistingFiles
+    SP_ArrowBack = QtWidgets.QStyle.StandardPixmap.SP_ArrowBack
+    SP_ArrowDown = QtWidgets.QStyle.StandardPixmap.SP_ArrowDown
+    SP_ArrowForward = QtWidgets.QStyle.StandardPixmap.SP_ArrowForward
+    SP_ArrowLeft = QtWidgets.QStyle.StandardPixmap.SP_ArrowLeft
+    SP_ArrowRight = QtWidgets.QStyle.StandardPixmap.SP_ArrowRight
+    SP_ArrowUp = QtWidgets.QStyle.StandardPixmap.SP_ArrowUp
+    SP_BrowserReload = QtWidgets.QStyle.StandardPixmap.SP_BrowserReload
+    SP_BrowserStop = QtWidgets.QStyle.StandardPixmap.SP_BrowserStop
+    SP_CommandLink = QtWidgets.QStyle.StandardPixmap.SP_CommandLink
+    SP_ComputerIcon = QtWidgets.QStyle.StandardPixmap.SP_ComputerIcon
+    SP_CustomBase = QtWidgets.QStyle.StandardPixmap.SP_CustomBase
+    SP_DesktopIcon = QtWidgets.QStyle.StandardPixmap.SP_DesktopIcon
+    SP_DialogAbortButton = QtWidgets.QStyle.StandardPixmap.SP_DialogAbortButton
+    SP_DialogApplyButton = QtWidgets.QStyle.StandardPixmap.SP_DialogApplyButton
+    SP_DialogCancelButton = QtWidgets.QStyle.StandardPixmap.SP_DialogCancelButton
+    SP_DialogCloseButton = QtWidgets.QStyle.StandardPixmap.SP_DialogCloseButton
+    SP_DialogDiscardButton = QtWidgets.QStyle.StandardPixmap.SP_DialogDiscardButton
+    SP_DialogHelpButton = QtWidgets.QStyle.StandardPixmap.SP_DialogHelpButton
+    SP_DialogIgnoreButton = QtWidgets.QStyle.StandardPixmap.SP_DialogIgnoreButton
+    SP_DialogNoButton = QtWidgets.QStyle.StandardPixmap.SP_DialogNoButton
+    SP_DialogNoToAllButton = QtWidgets.QStyle.StandardPixmap.SP_DialogNoToAllButton
+    SP_DialogOkButton = QtWidgets.QStyle.StandardPixmap.SP_DialogOkButton
+    SP_DialogOpenButton = QtWidgets.QStyle.StandardPixmap.SP_DialogOpenButton
+    SP_DialogResetButton = QtWidgets.QStyle.StandardPixmap.SP_DialogResetButton
+    SP_DialogRetryButton = QtWidgets.QStyle.StandardPixmap.SP_DialogRetryButton
+    SP_DialogSaveAllButton = QtWidgets.QStyle.StandardPixmap.SP_DialogSaveAllButton
+    SP_DialogSaveButton = QtWidgets.QStyle.StandardPixmap.SP_DialogSaveButton
+    SP_DialogYesButton = QtWidgets.QStyle.StandardPixmap.SP_DialogYesButton
+    SP_DialogYesToAllButton = QtWidgets.QStyle.StandardPixmap.SP_DialogYesToAllButton
+    SP_DirClosedIcon = QtWidgets.QStyle.StandardPixmap.SP_DirClosedIcon
+    SP_DirHomeIcon = QtWidgets.QStyle.StandardPixmap.SP_DirHomeIcon
+    SP_DirIcon = QtWidgets.QStyle.StandardPixmap.SP_DirIcon
+    SP_DirLinkIcon = QtWidgets.QStyle.StandardPixmap.SP_DirLinkIcon
+    SP_DirLinkOpenIcon = QtWidgets.QStyle.StandardPixmap.SP_DirLinkOpenIcon
+    SP_DirOpenIcon = QtWidgets.QStyle.StandardPixmap.SP_DirOpenIcon
+    SP_DockWidgetCloseButton = QtWidgets.QStyle.StandardPixmap.SP_DockWidgetCloseButton
+    SP_DriveCDIcon = QtWidgets.QStyle.StandardPixmap.SP_DriveCDIcon
+    SP_DriveDVDIcon = QtWidgets.QStyle.StandardPixmap.SP_DriveDVDIcon
+    SP_DriveFDIcon = QtWidgets.QStyle.StandardPixmap.SP_DriveFDIcon
+    SP_DriveHDIcon = QtWidgets.QStyle.StandardPixmap.SP_DriveHDIcon
+    SP_DriveNetIcon = QtWidgets.QStyle.StandardPixmap.SP_DriveNetIcon
+    SP_FileDialogBack = QtWidgets.QStyle.StandardPixmap.SP_FileDialogBack
+    SP_FileDialogContentsView = QtWidgets.QStyle.StandardPixmap.SP_FileDialogContentsView
+    SP_FileDialogDetailedView = QtWidgets.QStyle.StandardPixmap.SP_FileDialogDetailedView
+    SP_FileDialogEnd = QtWidgets.QStyle.StandardPixmap.SP_FileDialogEnd
+    SP_FileDialogInfoView = QtWidgets.QStyle.StandardPixmap.SP_FileDialogInfoView
+    SP_FileDialogListView = QtWidgets.QStyle.StandardPixmap.SP_FileDialogListView
+    SP_FileDialogNewFolder = QtWidgets.QStyle.StandardPixmap.SP_FileDialogNewFolder
+    SP_FileDialogStart = QtWidgets.QStyle.StandardPixmap.SP_FileDialogStart
+    SP_FileDialogToParent = QtWidgets.QStyle.StandardPixmap.SP_FileDialogToParent
+    SP_FileIcon = QtWidgets.QStyle.StandardPixmap.SP_FileIcon
+    SP_FileLinkIcon = QtWidgets.QStyle.StandardPixmap.SP_FileLinkIcon
+    SP_LineEditClearButton = QtWidgets.QStyle.StandardPixmap.SP_LineEditClearButton
+    SP_MediaPause = QtWidgets.QStyle.StandardPixmap.SP_MediaPause
+    SP_MediaPlay = QtWidgets.QStyle.StandardPixmap.SP_MediaPlay
+    SP_MediaSeekBackward = QtWidgets.QStyle.StandardPixmap.SP_MediaSeekBackward
+    SP_MediaSeekForward = QtWidgets.QStyle.StandardPixmap.SP_MediaSeekForward
+    SP_MediaSkipBackward = QtWidgets.QStyle.StandardPixmap.SP_MediaSkipBackward
+    SP_MediaSkipForward = QtWidgets.QStyle.StandardPixmap.SP_MediaSkipForward
+    SP_MediaStop = QtWidgets.QStyle.StandardPixmap.SP_MediaStop
+    SP_MediaVolume = QtWidgets.QStyle.StandardPixmap.SP_MediaVolume
+    SP_MediaVolumeMuted = QtWidgets.QStyle.StandardPixmap.SP_MediaVolumeMuted
+    SP_MessageBoxCritical = QtWidgets.QStyle.StandardPixmap.SP_MessageBoxCritical
+    SP_MessageBoxInformation = QtWidgets.QStyle.StandardPixmap.SP_MessageBoxInformation
+    SP_MessageBoxQuestion = QtWidgets.QStyle.StandardPixmap.SP_MessageBoxQuestion
+    SP_MessageBoxWarning = QtWidgets.QStyle.StandardPixmap.SP_MessageBoxWarning
+    SP_RestoreDefaultsButton = QtWidgets.QStyle.StandardPixmap.SP_RestoreDefaultsButton
+    SP_TabCloseButton = QtWidgets.QStyle.StandardPixmap.SP_TabCloseButton
+    SP_TitleBarCloseButton = QtWidgets.QStyle.StandardPixmap.SP_TitleBarCloseButton
+    SP_TitleBarContextHelpButton = QtWidgets.QStyle.StandardPixmap.SP_TitleBarContextHelpButton
+    SP_TitleBarMaxButton = QtWidgets.QStyle.StandardPixmap.SP_TitleBarMaxButton
+    SP_TitleBarMenuButton = QtWidgets.QStyle.StandardPixmap.SP_TitleBarMenuButton
+    SP_TitleBarMinButton = QtWidgets.QStyle.StandardPixmap.SP_TitleBarMinButton
+    SP_TitleBarNormalButton = QtWidgets.QStyle.StandardPixmap.SP_TitleBarNormalButton
+    SP_TitleBarShadeButton = QtWidgets.QStyle.StandardPixmap.SP_TitleBarShadeButton
+    SP_TitleBarUnshadeButton = QtWidgets.QStyle.StandardPixmap.SP_TitleBarUnshadeButton
+    SP_ToolBarHorizontalExtensionButton = QtWidgets.QStyle.StandardPixmap.SP_ToolBarHorizontalExtensionButton
+    SP_ToolBarVerticalExtensionButton = QtWidgets.QStyle.StandardPixmap.SP_ToolBarVerticalExtensionButton
+    SP_TrashIcon = QtWidgets.QStyle.StandardPixmap.SP_TrashIcon
+    SP_VistaShield = QtWidgets.QStyle.StandardPixmap.SP_VistaShield
 else:
     QAction = QtWidgets.QAction
     AlignTop = QtCore.Qt.AlignTop
@@ -243,6 +322,86 @@ else:
     ExistingFile = QtWidgets.QFileDialog.ExistingFile
     Directory = QtWidgets.QFileDialog.Directory
     ExistingFiles = QtWidgets.QFileDialog.ExistingFiles
+    SP_ArrowBack = QtWidgets.QStyle.SP_ArrowBack
+    SP_ArrowDown = QtWidgets.QStyle.SP_ArrowDown
+    SP_ArrowForward = QtWidgets.QStyle.SP_ArrowForward
+    SP_ArrowLeft = QtWidgets.QStyle.SP_ArrowLeft
+    SP_ArrowRight = QtWidgets.QStyle.SP_ArrowRight
+    SP_ArrowUp = QtWidgets.QStyle.SP_ArrowUp
+    SP_BrowserReload = QtWidgets.QStyle.SP_BrowserReload
+    SP_BrowserStop = QtWidgets.QStyle.SP_BrowserStop
+    SP_CommandLink = QtWidgets.QStyle.SP_CommandLink
+    SP_ComputerIcon = QtWidgets.QStyle.SP_ComputerIcon
+    SP_CustomBase = QtWidgets.QStyle.SP_CustomBase
+    SP_DesktopIcon = QtWidgets.QStyle.SP_DesktopIcon
+    SP_DialogAbortButton = QtWidgets.QStyle.SP_DialogAbortButton
+    SP_DialogApplyButton = QtWidgets.QStyle.SP_DialogApplyButton
+    SP_DialogCancelButton = QtWidgets.QStyle.SP_DialogCancelButton
+    SP_DialogCloseButton = QtWidgets.QStyle.SP_DialogCloseButton
+    SP_DialogDiscardButton = QtWidgets.QStyle.SP_DialogDiscardButton
+    SP_DialogHelpButton = QtWidgets.QStyle.SP_DialogHelpButton
+    SP_DialogIgnoreButton = QtWidgets.QStyle.SP_DialogIgnoreButton
+    SP_DialogNoButton = QtWidgets.QStyle.SP_DialogNoButton
+    SP_DialogNoToAllButton = QtWidgets.QStyle.SP_DialogNoToAllButton
+    SP_DialogOkButton = QtWidgets.QStyle.SP_DialogOkButton
+    SP_DialogOpenButton = QtWidgets.QStyle.SP_DialogOpenButton
+    SP_DialogResetButton = QtWidgets.QStyle.SP_DialogResetButton
+    SP_DialogRetryButton = QtWidgets.QStyle.SP_DialogRetryButton
+    SP_DialogSaveAllButton = QtWidgets.QStyle.SP_DialogSaveAllButton
+    SP_DialogSaveButton = QtWidgets.QStyle.SP_DialogSaveButton
+    SP_DialogYesButton = QtWidgets.QStyle.SP_DialogYesButton
+    SP_DialogYesToAllButton = QtWidgets.QStyle.SP_DialogYesToAllButton
+    SP_DirClosedIcon = QtWidgets.QStyle.SP_DirClosedIcon
+    SP_DirHomeIcon = QtWidgets.QStyle.SP_DirHomeIcon
+    SP_DirIcon = QtWidgets.QStyle.SP_DirIcon
+    SP_DirLinkIcon = QtWidgets.QStyle.SP_DirLinkIcon
+    SP_DirLinkOpenIcon = QtWidgets.QStyle.SP_DirLinkOpenIcon
+    SP_DirOpenIcon = QtWidgets.QStyle.SP_DirOpenIcon
+    SP_DockWidgetCloseButton = QtWidgets.QStyle.SP_DockWidgetCloseButton
+    SP_DriveCDIcon = QtWidgets.QStyle.SP_DriveCDIcon
+    SP_DriveDVDIcon = QtWidgets.QStyle.SP_DriveDVDIcon
+    SP_DriveFDIcon = QtWidgets.QStyle.SP_DriveFDIcon
+    SP_DriveHDIcon = QtWidgets.QStyle.SP_DriveHDIcon
+    SP_DriveNetIcon = QtWidgets.QStyle.SP_DriveNetIcon
+    SP_FileDialogBack = QtWidgets.QStyle.SP_FileDialogBack
+    SP_FileDialogContentsView = QtWidgets.QStyle.SP_FileDialogContentsView
+    SP_FileDialogDetailedView = QtWidgets.QStyle.SP_FileDialogDetailedView
+    SP_FileDialogEnd = QtWidgets.QStyle.SP_FileDialogEnd
+    SP_FileDialogInfoView = QtWidgets.QStyle.SP_FileDialogInfoView
+    SP_FileDialogListView = QtWidgets.QStyle.SP_FileDialogListView
+    SP_FileDialogNewFolder = QtWidgets.QStyle.SP_FileDialogNewFolder
+    SP_FileDialogStart = QtWidgets.QStyle.SP_FileDialogStart
+    SP_FileDialogToParent = QtWidgets.QStyle.SP_FileDialogToParent
+    SP_FileIcon = QtWidgets.QStyle.SP_FileIcon
+    SP_FileLinkIcon = QtWidgets.QStyle.SP_FileLinkIcon
+    SP_LineEditClearButton = QtWidgets.QStyle.SP_LineEditClearButton
+    SP_MediaPause = QtWidgets.QStyle.SP_MediaPause
+    SP_MediaPlay = QtWidgets.QStyle.SP_MediaPlay
+    SP_MediaSeekBackward = QtWidgets.QStyle.SP_MediaSeekBackward
+    SP_MediaSeekForward = QtWidgets.QStyle.SP_MediaSeekForward
+    SP_MediaSkipBackward = QtWidgets.QStyle.SP_MediaSkipBackward
+    SP_MediaSkipForward = QtWidgets.QStyle.SP_MediaSkipForward
+    SP_MediaStop = QtWidgets.QStyle.SP_MediaStop
+    SP_MediaVolume = QtWidgets.QStyle.SP_MediaVolume
+    SP_MediaVolumeMuted = QtWidgets.QStyle.SP_MediaVolumeMuted
+    SP_MessageBoxCritical = QtWidgets.QStyle.SP_MessageBoxCritical
+    SP_MessageBoxInformation = QtWidgets.QStyle.SP_MessageBoxInformation
+    SP_MessageBoxQuestion = QtWidgets.QStyle.SP_MessageBoxQuestion
+    SP_MessageBoxWarning = QtWidgets.QStyle.SP_MessageBoxWarning
+    SP_RestoreDefaultsButton = QtWidgets.QStyle.SP_RestoreDefaultsButton
+    SP_TabCloseButton = QtWidgets.QStyle.SP_TabCloseButton
+    SP_TitleBarCloseButton = QtWidgets.QStyle.SP_TitleBarCloseButton
+    SP_TitleBarContextHelpButton = QtWidgets.QStyle.SP_TitleBarContextHelpButton
+    SP_TitleBarMaxButton = QtWidgets.QStyle.SP_TitleBarMaxButton
+    SP_TitleBarMenuButton = QtWidgets.QStyle.SP_TitleBarMenuButton
+    SP_TitleBarMinButton = QtWidgets.QStyle.SP_TitleBarMinButton
+    SP_TitleBarNormalButton = QtWidgets.QStyle.SP_TitleBarNormalButton
+    SP_TitleBarShadeButton = QtWidgets.QStyle.SP_TitleBarShadeButton
+    SP_TitleBarUnshadeButton = QtWidgets.QStyle.SP_TitleBarUnshadeButton
+    SP_ToolBarHorizontalExtensionButton = QtWidgets.QStyle.SP_ToolBarHorizontalExtensionButton
+    SP_ToolBarVerticalExtensionButton = QtWidgets.QStyle.SP_ToolBarVerticalExtensionButton
+    SP_TrashIcon = QtWidgets.QStyle.SP_TrashIcon
+    SP_VistaShield = QtWidgets.QStyle.SP_VistaShield
 
 # Need to fix an issue on Wayland on Linux:
 #   conda-forge does not support Wayland, for who knows what reason.
@@ -402,10 +561,7 @@ def test_menu(widget, window, font, width, *_):
     action3 = QAction('&Action 6', window)
     action3.setCheckable(True)
     menu.addAction(action3)
-    icon_url = f'{style_prefix}close.svg'
-    if args.stylesheet == 'native':
-        icon_url = None
-    icon = QtGui.QIcon(icon_url)
+    icon = menu.style().standardIcon(SP_DockWidgetCloseButton)
     menu.addAction(QAction(icon, '&Action 7', window))
     menu.addAction(QAction(icon, '&Action 8', window))
     submenu.addAction(QAction(icon, '&Action 9', window))
@@ -567,7 +723,7 @@ def test_list(widget, *_):
         item = QtWidgets.QListWidgetItem(f'Item {index + 1}')
         item.setTextAlignment(random.choice(alignments))
         child.addItem(item)
-    icon = QtGui.QIcon(':/dark/close.svg')
+    icon = menu.style().standardIcon(SP_DockWidgetCloseButton)
     for index in range(10):
         item = QtWidgets.QListWidgetItem(icon, f'Item {index + 1}')
         item.setTextAlignment(random.choice(alignments))
@@ -601,7 +757,7 @@ def test_toolbar(_, window, *__):
     toolbar1.addSeparator()
     toolbar1.addAction('&Action 3')
     toolbar1.addAction('&Action 3 Really Long Name')
-    icon = QtGui.QIcon(':/dark/close.svg')
+    icon = menu.style().standardIcon(SP_DockWidgetCloseButton)
     toolbar1.addAction(icon, '&Action 4')
     window.addToolBar(TopToolBarArea, toolbar1)
 
@@ -612,7 +768,7 @@ def test_toolbar(_, window, *__):
     toolbar2.addSeparator()
     toolbar2.addAction('&Action 3')
     toolbar2.addAction('&Action 3 Really Long Name')
-    icon = QtGui.QIcon(':/dark/close.svg')
+    icon = menu.style().standardIcon(SP_DockWidgetCloseButton)
     toolbar2.addAction(icon, '&Action 4')
     window.addToolBar(LeftToolBarArea, toolbar2)
 
@@ -660,7 +816,7 @@ def test_toolbutton(widget, window, *_):
     child[5].setArrowType(RightArrow)
     child[6].setArrowType(UpArrow)
     child[7].setArrowType(DownArrow)
-    icon = QtGui.QIcon(':/dark/close.svg')
+    icon = menu.style().standardIcon(SP_DockWidgetCloseButton)
     child[8].setIcon(icon)
 
     return child, layout_type
@@ -672,7 +828,7 @@ def test_pushbutton(widget, *_):
     child.append(abstract_button(widget_type, widget, 'Button 1', checked=True))
     child.append(abstract_button(widget_type, widget, 'Button 2', enabled=False))
     child.append(abstract_button(widget_type, widget, 'Button 3', checkable=False))
-    icon = QtGui.QIcon(':/dark/close.svg')
+    icon = menu.style().standardIcon(SP_DockWidgetCloseButton)
     child.append(abstract_button(widget_type, widget, icon, 'Button 4', checkable=False))
 
     return child, layout_type
@@ -923,7 +1079,7 @@ def test_disabled_menu(widget, window, font, width, *_):
     action3 = QAction('&Action 6', window)
     action3.setCheckable(True)
     menu.addAction(action3)
-    icon = QtGui.QIcon(':/dark/close.svg')
+    icon = menu.style().standardIcon(SP_DockWidgetCloseButton)
     menu.addAction(QAction(icon, '&Action 7', window))
     menu.addAction(QAction(icon, '&Action 8', window))
     menu.actions()[2].setEnabled(False)
@@ -1054,6 +1210,14 @@ def test_issue25(widget, window, font, width, *_):
     execute(dialog)
 
     return None, None, False, True
+
+def test_issue28(_, window, *__):
+    dialog = QtWidgets.QFileDialog(window)
+    dialog.setFileMode(Directory)
+    execute(dialog)
+
+    return None, None, False, True
+
 
 def test(args, qtargv, test_widget):
     '''Test a single widget.'''
