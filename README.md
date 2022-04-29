@@ -402,6 +402,8 @@ class ApplicationStyle: public QCommonStyle
 }
 ```
 
+For an example of using QCommonStyle to override standard icons in a PyQt application, see [standard_icons.py](/example/standard_icons.py).
+
 An extensive reference can be found [here](https://doc.qt.io/qt-5/style-reference.html). A reference of QStyle, and the default styles Qt provides can be found [here](https://doc.qt.io/qt-5/qstyle.html).
 
 The limitations of stylesheets include:
