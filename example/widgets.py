@@ -116,6 +116,7 @@ if args.pyqt6:
     Text = QtCore.QFile.OpenModeFlag.Text
     East = QtWidgets.QTabWidget.TabPosition.East
     SP_DockWidgetCloseButton = QtWidgets.QStyle.StandardPixmap.SP_DockWidgetCloseButton
+    UpArrow = QtCore.Qt.ArrowType.UpArrow
 else:
     QAction = QtWidgets.QAction
     Horizontal = QtCore.Qt.Horizontal
@@ -138,6 +139,7 @@ else:
     Text = QtCore.QFile.Text
     East = QtWidgets.QTabWidget.East
     SP_DockWidgetCloseButton = QtWidgets.QStyle.SP_DockWidgetCloseButton
+    UpArrow = QtCore.Qt.UpArrow
 
 # Need to fix an issue on Wayland on Linux:
 #   conda-forge does not support Wayland, for who knows what reason.
@@ -377,6 +379,11 @@ class Ui:
         self.bt_auto_raise.setIcon(close_icon(self.bt_auto_raise))
         self.bt_auto_raise.setObjectName('bt_auto_raise')
         self.horizontalLayout.addWidget(self.bt_auto_raise)
+        self.bt_arrow = QtWidgets.QToolButton(self.centralwidget)
+        self.bt_arrow.setAutoRaise(True)
+        self.bt_arrow.setArrowType(UpArrow)
+        self.bt_arrow.setObjectName('bt_arrow')
+        self.horizontalLayout.addWidget(self.bt_arrow)
         self.line_2 = QtWidgets.QFrame(self.centralwidget)
         self.line_2.setFrameShape(VLine)
         self.line_2.setFrameShadow(Sunken)
