@@ -986,20 +986,84 @@ QCalendarWidget QAbstractItemView:enabled
 }
 
 /* Won't take hover events. */
-QCalendarWidget QToolButton#qt_calendar_nextmonth
+QPrevNextCalButton#qt_calendar_nextmonth
 {
-    border-image: url(^style^calendar_next.svg);
-    width: 0.5em;
-    height: 0.8em;
-    icon-size: 0px;
+    image: none;
+    subcontrol-origin: content;
+    subcontrol-position: right;
 }
 
-QCalendarWidget QToolButton#qt_calendar_prevmonth
+QPrevNextCalButton#qt_calendar_prevmonth
 {
-    border-image: url(^style^calendar_previous.svg);
-    width: 0.5em;
-    height: 0.8em;
-    icon-size: 0px;
+    image: none;
+    subcontrol-origin: content;
+    subcontrol-position: left;
+}
+
+/**
+ *  Setting for the month and year displays and drop-down menu for the
+ *  month select. We style this separately because we want a drop-down
+ *  indicator in the bottom right, unlike the normal QToolButton.
+ */
+QCalendarWidget QToolButton
+{
+    background-color: transparent;
+    border: 0.04em solid ^midtone^;
+    border-radius: 0.09em;
+    margin: 0.23em;
+    padding: 0.23em;
+    padding-top: 0.1em;
+    padding-right: 1.2em;
+    min-height: 1.1em;
+}
+
+QCalendarWidget QToolButton:hover
+{
+    border: 0.04em solid ^highlight^;
+}
+
+QCalendarWidget QToolButton:checked,
+QCalendarWidget QToolButton:pressed
+{
+    background-color: ^highlight^;
+    padding: 0.23em;
+    padding-right: 1.2em;
+    min-height: 1.3em;
+    outline: none;
+}
+
+QCalendarWidget QToolButton::menu-indicator
+{
+    border-image: none;
+    image: url(^style^down_arrow.svg);
+    width: 0.8em;
+    height: 0.5em;
+    top: -0.7ex;
+    left: -0.09em;
+    padding-right: -1.11em;
+    subcontrol-origin: content;
+    subcontrol-position: bottom right;
+}
+
+QCalendarWidget QToolButton::menu-arrow
+{
+    border-image: none;
+    image: url(^style^down_arrow.svg);
+    width: 0.8em;
+    height: 0.5em;
+    padding-right: 0.09em;
+    subcontrol-origin: content;
+    subcontrol-position: bottom right;
+}
+
+/**
+ *  Setting for the year button. Both the month select and the year
+ *  select are QToolButtons, and both are auto-raised. The year
+ *  button however has the popup mode set to `DelayedPopup`.
+ */
+QCalendarWidget QToolButton[autoRaise="true"][popupMode="0"]
+{
+    padding: 0.23em;
 }
 
 QCalendarWidget QSpinBox
