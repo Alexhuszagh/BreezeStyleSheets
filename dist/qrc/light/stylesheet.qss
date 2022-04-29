@@ -1791,9 +1791,8 @@ QHeaderView::section
     background-color: #eff0f1;
     border: 0.04em solid #bab9b8;
     color: #31363b;
-    padding: 0.23em;
-    padding-top: 0.3em;
     border-radius: 0em;
+    padding: 0em 0.23em 0em 0.23em;
     text-align: center;
 }
 
@@ -1835,32 +1834,30 @@ QHeaderView::section::vertical::only-one:hover
     border: 0.04em solid rgba(51, 164, 223, 0.5);
 }
 
-QHeaderView::down-arrow
+QHeaderView[showSortIndicator="true"]::down-arrow
 {
     image: url(:/light/down_arrow.svg);
-    subcontrol-origin: margin;
-    subcontrol-position: top center;
-    padding-top: 0.2em;
+    /**
+     *  Qt5 and Qt6 differ if the subcontrol-origin is set to
+     *  the default, AKA, padding. Setting it to the content,
+     *  which we adjust the padding to, makes it uniform between
+     *  both.
+     */
+    subcontrol-origin: content;
+    subcontrol-position: center right;
     width: 0.8em;
     height: 0.5em;
-    /* Workaround for Qt6. See issue #31 .*/
-    margin-left: -5em;
-    margin-right: -5em;
-    margin-bottom: -0.5em;
+    padding-right: 0.09em;
 }
 
-QHeaderView::up-arrow
+QHeaderView[showSortIndicator="true"]::up-arrow
 {
     image: url(:/light/up_arrow.svg);
-    subcontrol-origin: margin;
-    subcontrol-position: top center;
-    padding-top: 0.2em;
+    subcontrol-origin: content;
+    subcontrol-position: center right;
     width: 0.8em;
     height: 0.5em;
-    /* Workaround for Qt6. See issue #31 .*/
-    margin-left: -5em;
-    margin-right: -5em;
-    margin-bottom: -0.5em;
+    padding-right: 0.09em;
 }
 
 QTableView QTableCornerButton::section
