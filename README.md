@@ -15,7 +15,7 @@ This stylesheet aims to be similar across all platforms, and provide a nice UI f
   - [PyQt5 Installation](#pyqt5-installation)
   - [PyQt6 Installation](#pyqt6-installation)
 - [Features](#features)
-- [Limitations](#limitations)
+- [Extending Stylesheets](#extending-stylesheets)
 - [Debugging](#debugging)
 - [Development Guide](#development-guide)
   - [Configuring](#configuring)
@@ -391,7 +391,7 @@ def main():
 - Cross-platform icon packs for standard icons.
 - Extensible stylesheets: add your own plugins or rules and automatically configure them using the same configuration syntax.
 
-# Limitations
+# Extending Stylesheets
 
 There are some limitations of using Qt stylesheets in general, which cannot be solved by stylesheets. To get more fine-grained style control, you should subclass `QCommonStyle`:
 
@@ -402,15 +402,14 @@ class ApplicationStyle: public QCommonStyle
 }
 ```
 
-For an example of using QCommonStyle to override standard icons in a PyQt application, see [standard_icons.py](/example/standard_icons.py).
-
-An extensive reference can be found [here](https://doc.qt.io/qt-5/style-reference.html). A reference of QStyle, and the default styles Qt provides can be found [here](https://doc.qt.io/qt-5/qstyle.html).
-
 The limitations of stylesheets include:
 
+- Using custom standard icons.
 - Scaling icons with the theme size.
 - QToolButton cannot control the icon size without also affecting the arrow size.
 - Close and dock float icon sizes scale poorly with font size.
+
+For an example of using QCommonStyle to override standard icons in a PyQt application, see [standard_icons.py](/example/standard_icons.py). An extensive reference can be found [here](https://doc.qt.io/qt-5/style-reference.html). A reference of QStyle, and the default styles Qt provides can be found [here](https://doc.qt.io/qt-5/qstyle.html).
 
 # Debugging
 
