@@ -826,6 +826,26 @@ def test_toolbutton(widget, window, *_):
 
     return child, layout_type
 
+def test_raised_toolbutton(widget, window, *_):
+    layout_type = 'horizontal'
+    child = [
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+    ]
+    window.setTabOrder(child[0], child[1])
+    window.setTabOrder(child[1], child[2])
+    window.setTabOrder(child[2], child[3])
+    child[0].setArrowType(LeftArrow)
+    child[1].setArrowType(RightArrow)
+    child[2].setArrowType(UpArrow)
+    child[3].setArrowType(DownArrow)
+    for item in child:
+        item.setAutoRaise(True)
+
+    return child, layout_type
+
 def test_pushbutton(widget, *_):
     layout_type = 'horizontal'
     child = []
