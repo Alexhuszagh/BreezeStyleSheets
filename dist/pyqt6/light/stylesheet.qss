@@ -1818,6 +1818,12 @@ QHeaderView::section::horizontal
     border-left: transparent;
 }
 
+QHeaderView[showSortIndicator="true"]::section::horizontal
+{
+    /* Same as the width of the arrow subcontrols below. */
+    padding-right: 0.8em;
+}
+
 QHeaderView::section:checked
 {
     color: #272b2f;
@@ -1847,7 +1853,14 @@ QHeaderView[showSortIndicator="true"]::down-arrow
     subcontrol-position: center right;
     width: 0.8em;
     height: 0.5em;
+    /**
+     *  Qt5 and Qt6 have different ideas of the padding of the
+     *  arrow subcontrols: using `padding-left` to ensure that
+     *  the width is undone fixes the padding of the content by
+     *  an extra `0.8em` in Qt6, but doesn't affect Qt5.
+     */
     padding-right: 0.09em;
+    padding-left: -0.8em;
 }
 
 QHeaderView[showSortIndicator="true"]::up-arrow
@@ -1858,6 +1871,7 @@ QHeaderView[showSortIndicator="true"]::up-arrow
     width: 0.8em;
     height: 0.5em;
     padding-right: 0.09em;
+    padding-left: -0.8em;
 }
 
 QTableView QTableCornerButton::section
