@@ -147,6 +147,11 @@ if args.pyqt6:
     RightArrow = QtCore.Qt.ArrowType.RightArrow
     UpArrow = QtCore.Qt.ArrowType.UpArrow
     DownArrow = QtCore.Qt.ArrowType.DownArrow
+    ToolButtonIconOnly = QtCore.Qt.ToolButtonStyle.ToolButtonIconOnly
+    ToolButtonTextOnly = QtCore.Qt.ToolButtonStyle.ToolButtonTextOnly
+    ToolButtonTextBesideIcon = QtCore.Qt.ToolButtonStyle.ToolButtonTextBesideIcon
+    ToolButtonTextUnderIcon = QtCore.Qt.ToolButtonStyle.ToolButtonTextUnderIcon
+    ToolButtonFollowStyle = QtCore.Qt.ToolButtonStyle.ToolButtonFollowStyle
     TopToolBarArea = QtCore.Qt.ToolBarArea.TopToolBarArea
     LeftToolBarArea = QtCore.Qt.ToolBarArea.LeftToolBarArea
     LeftDockWidgetArea = QtCore.Qt.DockWidgetArea.LeftDockWidgetArea
@@ -288,6 +293,11 @@ else:
     RightArrow = QtCore.Qt.RightArrow
     UpArrow = QtCore.Qt.UpArrow
     DownArrow = QtCore.Qt.DownArrow
+    ToolButtonIconOnly = QtCore.Qt.ToolButtonIconOnly
+    ToolButtonTextOnly = QtCore.Qt.ToolButtonTextOnly
+    ToolButtonTextBesideIcon = QtCore.Qt.ToolButtonTextBesideIcon
+    ToolButtonTextUnderIcon = QtCore.Qt.ToolButtonTextUnderIcon
+    ToolButtonFollowStyle = QtCore.Qt.ToolButtonFollowStyle
     TopToolBarArea = QtCore.Qt.TopToolBarArea
     LeftToolBarArea = QtCore.Qt.LeftToolBarArea
     LeftDockWidgetArea = QtCore.Qt.LeftDockWidgetArea
@@ -842,6 +852,57 @@ def test_raised_toolbutton(widget, window, *_):
     child[2].setArrowType(UpArrow)
     child[3].setArrowType(DownArrow)
     for item in child:
+        item.setAutoRaise(True)
+
+    return child, layout_type
+
+def test_toolbutton_style(widget, window, *_):
+    layout_type = 'horizontal'
+    child = [
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+    ]
+    window.setTabOrder(child[0], child[1])
+    window.setTabOrder(child[1], child[2])
+    window.setTabOrder(child[2], child[3])
+    window.setTabOrder(child[3], child[4])
+    window.setTabOrder(child[4], child[5])
+    window.setTabOrder(child[5], child[6])
+    window.setTabOrder(child[6], child[7])
+    window.setTabOrder(child[7], child[8])
+    window.setTabOrder(child[8], child[9])
+    child[0].setText('Button 1')
+    child[1].setText('Button 2')
+    child[2].setText('Button 3')
+    child[3].setText('Button 4')
+    child[4].setText('Button 5')
+    child[5].setText('Button 6')
+    child[6].setText('Button 7')
+    child[7].setText('Button 8')
+    child[8].setText('Button 9')
+    child[9].setText('Button 10')
+    child[0].setToolButtonStyle(ToolButtonIconOnly)
+    child[1].setToolButtonStyle(ToolButtonTextOnly)
+    child[2].setToolButtonStyle(ToolButtonTextBesideIcon)
+    child[3].setToolButtonStyle(ToolButtonTextUnderIcon)
+    child[4].setToolButtonStyle(ToolButtonFollowStyle)
+    child[5].setToolButtonStyle(ToolButtonIconOnly)
+    child[6].setToolButtonStyle(ToolButtonTextOnly)
+    child[7].setToolButtonStyle(ToolButtonTextBesideIcon)
+    child[8].setToolButtonStyle(ToolButtonTextUnderIcon)
+    child[9].setToolButtonStyle(ToolButtonFollowStyle)
+    icon = close_icon(widget)
+    for item in child:
+        item.setIcon(icon)
+    for item in child[5:]:
         item.setAutoRaise(True)
 
     return child, layout_type
