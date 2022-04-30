@@ -23,14 +23,12 @@
 # THE SOFTWARE.
 
 '''
-    placeholder_text
-    ================
+    slider
+    ======
 
-    Example showing how to style the placeholder text for QLineEdit,
-    QTextEdit, and QPlainTextEdit, since in Qt6 is can be styled as
-    the default text color. This seems to be an issue with palettes for
-    Qt6 in `QPalette::PlaceholderText`, since both the stylesheets
-    and palette edits correctly affect styles in Qt5, but not Qt6.
+    Example showing how to add ticks to a QSlider. Note that this does
+    not work with stylesheets, so it's merely an example of how to
+    get customized styling behavior with a QSlider.
 '''
 
 import argparse
@@ -82,11 +80,6 @@ parser.add_argument(
     help='''force the use of x11 on compatible systems.''',
     action='store_true'
 )
-parser.add_argument(
-    '--set-palette',
-    help='''set the placeholder text palette.''',
-    action='store_true'
-)
 
 args, unknown = parser.parse_known_args()
 if args.pyqt6:
@@ -105,29 +98,68 @@ if args.pyqt6:
     AlignHCenter = QtCore.Qt.AlignmentFlag.AlignHCenter
     ReadOnly = QtCore.QFile.OpenModeFlag.ReadOnly
     Text = QtCore.QFile.OpenModeFlag.Text
-    PlaceholderText = QtGui.QPalette.ColorRole.PlaceholderText
-    WindowText = QtGui.QPalette.ColorRole.WindowText
+    Horizontal = QtCore.Qt.Orientation.Horizontal
+    NoTicks = QtWidgets.QSlider.TickPosition.NoTicks
+    TicksAbove = QtWidgets.QSlider.TickPosition.TicksAbove
+    TicksBelow = QtWidgets.QSlider.TickPosition.TicksBelow
+    TicksBothSides = QtWidgets.QSlider.TickPosition.TicksBothSides
+    CC_Slider = QtWidgets.QStyle.ComplexControl.CC_Slider
+    SC_SliderHandle = QtWidgets.QStyle.SubControl.SC_SliderHandle
+    SC_SliderGroove = QtWidgets.QStyle.SubControl.SC_SliderGroove
 else:
     AlignHCenter = QtCore.Qt.AlignHCenter
     ReadOnly = QtCore.QFile.ReadOnly
     Text = QtCore.QFile.Text
-    PlaceholderText = QtGui.QPalette.PlaceholderText
-    WindowText = QtGui.QPalette.WindowText
+    Horizontal = QtCore.Qt.Horizontal
+    NoTicks = QtWidgets.QSlider.NoTicks
+    TicksAbove = QtWidgets.QSlider.TicksAbove
+    TicksBelow = QtWidgets.QSlider.TicksBelow
+    TicksBothSides = QtWidgets.QSlider.TicksBothSides
+    CC_Slider = QtWidgets.QStyle.CC_Slider
+    SC_SliderHandle = QtWidgets.QStyle.SC_SliderHandle
+    SC_SliderGroove = QtWidgets.QStyle.SC_SliderGroove
 
-if 'dark' in args.stylesheet:
-    PLACEHOLDER_COLOR = QtGui.QColor(118, 121, 124)
-elif 'light' in args.stylesheet:
-    PLACEHOLDER_COLOR = QtGui.QColor(186, 185, 184)
 
-def set_palette(widget, role, color):
-    '''Set the palette for the placeholder text. This only works in Qt5.'''
+class Slider(QtWidgets.QSlider):
+    '''QSlider with a custom paint event.'''
 
-    palette = widget.palette();
-    palette.setColor(role, color)
-    widget.setPalette(palette);
+    def __init__(self, *args, **kwds):
+        super().__init__(*args, **kwds)
 
-def set_placeholder_palette(widget):
-    set_palette(widget, PlaceholderText, PLACEHOLDER_COLOR)
+    def paintEvent(self, event):
+        '''Override the paint event to ensure the ticks are painted.'''
+
+        painter = QtWidgets.QStylePainter(self)
+        options = QtWidgets.QStyleOptionSlider()
+        self.initStyleOption(options)
+
+        style = self.style()
+        handle = style.subControlRect(CC_Slider, options, SC_SliderHandle, self)
+
+        interval = self.tickInterval() or self.pageStep()
+        position = self.tickPosition()
+        if position != NoTicks and interval != 0:
+            minimum = self.minimum()
+            maximum = self.maximum()
+            color = self.palette().color(self.foregroundRole())
+            painter.setPen(color)
+            for i in range(minimum, maximum + interval, interval):
+                percent = (i - minimum) / (maximum - minimum + 1) + 0.005
+                width = (self.width() - handle.width()) + handle.width() / 2
+                x = int(percent * width)
+                h = 4
+                if position == TicksBothSides or position == TicksAbove:
+                    y = self.rect().top()
+                    painter.drawLine(x, y, x, y + h)
+                if position == TicksBothSides or position == TicksBelow:
+                    y = self.rect().bottom()
+                    painter.drawLine(x, y, x, y - h)
+
+        options.subControls = SC_SliderGroove
+        painter.drawComplexControl(CC_Slider, options)
+
+        options.subControls = SC_SliderHandle
+        painter.drawComplexControl(CC_Slider, options)
 
 
 class Ui:
@@ -143,32 +175,12 @@ class Ui:
         self.layout.setAlignment(AlignHCenter)
         MainWindow.setCentralWidget(self.centralwidget)
 
-        self.textEdit = QtWidgets.QTextEdit(self.centralwidget)
-        self.textEdit.setObjectName('textEdit')
-        self.textEdit.setPlaceholderText('Placeholder Text')
-        self.layout.addWidget(self.textEdit)
-
-        self.plainTextEdit = QtWidgets.QPlainTextEdit(self.centralwidget)
-        self.plainTextEdit.setObjectName('plainTextEdit')
-        self.plainTextEdit.setPlaceholderText('Placeholder Text')
-        self.layout.addWidget(self.plainTextEdit)
-
-        self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit.setObjectName('lineEdit')
-        self.lineEdit.setPlaceholderText('Placeholder Text')
-        self.layout.addWidget(self.lineEdit)
-
-        # Set the palettes.
-        if args.set_palette:
-            set_placeholder_palette(self.textEdit)
-            set_placeholder_palette(self.plainTextEdit)
-            set_placeholder_palette(self.lineEdit)
-
-    def style_text(self, widget, text):
-        if text:
-            set_text_palette(widget)
-        else:
-            set_notext_palette(widget)
+        self.slider = Slider(self.centralwidget)
+        self.slider.setOrientation(Horizontal)
+        self.slider.setTickInterval(5)
+        self.slider.setTickPosition(TicksAbove)
+        self.slider.setObjectName('slider')
+        self.layout.addWidget(self.slider)
 
 
 def main():
@@ -189,7 +201,7 @@ def main():
     # setup ui
     ui = Ui()
     ui.setup(window)
-    window.setWindowTitle('Stylized Placeholder Text.')
+    window.setWindowTitle('QSlider with Ticks.')
 
     # use the default font size
     font = app.font()
