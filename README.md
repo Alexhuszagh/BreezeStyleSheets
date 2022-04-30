@@ -430,7 +430,16 @@ python configure.py --compiled-resource breeze_resources.py
 
 ## Testing
 
-In order to test your changes, first run the tests using the appropriate widget in `test.py` (see the options for `stylesheet`, `widget`, `font-size`, and `font-family`), and then run the tests with the complete UI in `example.py`. If the widget you fixed the style for does not exist in `example.py`, please add it.
+In order to test your changes, first run the tests using the appropriate widget in [ui.py](test/ui.py) (see the options for `stylesheet`, `widget`, `font-size`, and `font-family`), and then run the tests with the complete UI in `example.py`. If the widget you fixed the style for does not exist in `example.py`, please add it.
+
+```bash
+# Test all widgets
+python test/ui.py --stylesheet $theme
+# Test only a single widget.
+python test/ui.py --widget $widget --stylesheet $theme
+```
+
+To see the complete list of Qt widgets covered by the unittests, see [Test Coverage](Test%20Coverage.md).
 
 ## Distribution Files
 

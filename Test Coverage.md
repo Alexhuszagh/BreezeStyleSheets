@@ -1,0 +1,268 @@
+# Test Coverage
+
+A list of the widgets and properties covered in [ui.py](test/ui.py).
+
+- QCalendarWidget
+  - No Grid
+  - No Navigation Bar
+- QCheckBox
+  - Tristate
+- QColorDialog
+  - Show Alpha Channel
+  - No Buttons
+  - Native Dialog
+  - Qt Dialog
+- QColumnView
+  - No Size Grips
+- QComboBox
+  - Editable
+  - Placeholder Text
+  - Max Visible Items
+- QCommandLinkButton
+  - Text Only
+  - Description
+  - Icon
+- QCompleter
+- QDateEdit
+- QDateTimeEdit
+  - Calendar Popup
+  - Date Formats
+- QDial
+  - Notches
+- QDialog
+  - Modal
+  - Size Grip
+- QDialogButtonBox
+  - Horizontal
+  - Vertical
+  - Center Buttons
+- QDockWidget
+  - Closable
+  - Movable
+  - Floatable
+  - Vertical Title Bar
+- QDoubleSpinBox
+  - Prefix
+  - Suffix
+- QErrorMessage
+- QFileDialog
+  - Native Dialog
+  - Qt Dialog
+- QFileIconProvider
+- QFontComboBox
+- QFontDialog
+  - No Buttons
+  - Native Dialog
+  - Qt Dialog
+- QFrame
+  - No Frame
+  - Box
+  - Panel
+  - Styled Panel
+  - Horizontal Line
+  - Vertical Line
+  - Windows Panel
+  - Shadow Mask
+  - Shape Mask
+  - Plain
+  - Raised
+  - Sunken
+- QGroupBox
+  - Checkable
+  - Flat
+- QHeaderView
+  - No Highlight Sections
+  - Highlight Sections
+  - Movable
+  - Clickable
+  - Not Clickable
+- QInputDialog
+  - Text Input
+  - Int Input
+  - Double Input
+  - Combobox
+  - List
+  - No Buttons
+- QKeySequenceEdit
+- QLabel
+  - Indented
+  - MarkdownText
+  - Editable
+  - Selectable
+- QLCDNumber
+  - Outline
+  - Filled
+  - Flat
+- QLineEdit
+  - Placeholder
+  - Read Only
+  - No Frame
+  - No Echo
+  - Password
+  - Password On Edit
+  - Clear Button
+- QListWidget
+  - Sortable
+  - Icons
+- QListWidgetItem
+- QMainWindow
+- QMdiArea
+- QMdiSubWindow
+- QMenu
+  - Separator
+  - Disabled
+  - Tear Off
+  - Icon
+  - Separators Collapsible
+  - Title
+  - ToolTips Visible
+- QMenuBar
+  - Popup Up
+  - Popup Down
+  - Native Menu Bar
+  - Qt Menu Bar
+  - Disabled
+- QMessageBox
+  - Standard Button
+    - Ok
+    - Cancel
+    - Close
+    - Open
+    - Reset
+    - Save
+    - SaveAll
+    - RestoreDefaults
+    - Yes
+    - Help
+    - No
+    - Apply
+    - Discard
+  - Standard Icon
+    - Critical
+    - Information
+    - NoIcon
+    - Question
+    - Warning
+- QPlainTextEdit
+  - Background Visible
+  - Center on Scroll
+  - Cursor Width
+  - Placeholder Text
+  - Read Only
+- QProgressBar
+  - Horizontal
+  - Vertical
+  - Inverted
+  - TopToBottom
+  - BottomToTop
+- QProgressDialog
+- QPushButton
+  - Disabled
+  - Enabled
+  - Checkable
+  - Icon
+  - Auto Default
+  - Flat
+- QRadioButton
+- QRubberBand
+- QSpacerItem
+- QScrollArea
+- QScrollBar
+  - Vertical
+  - Horizontal
+- QSlider 
+  - Vertical
+  - Horizontal
+  - Ticks Above
+- QSpinBox
+  - Prefix
+  - Suffix
+- QSplashScreen
+- QSplitter
+  - Vertical
+  - Horizontal
+  - Non-Collapsible Children 
+  - Handle Width
+- QSplitterHandle
+- QStackedWidget
+- QStatusBar
+  - No Size Grip
+- QSystemTrayIcon
+- QTableView
+  - Sortable
+  - Corner Button Disabled
+  - No Grid
+  - Grid Style
+  - Word Wrap
+- QTableWidget
+- QTableWidgetItem
+- QTabBar
+  - Auto Hide
+  - Closable
+  - Non-Expanding
+  - Movable
+  - RoundedNorth
+  - RoundedSouth
+  - RoundedWest
+  - RoundedEast
+  - TriangularNorth
+  - TriangularSouth
+  - TriangularWest
+  - TriangularEast
+  - LeftSide
+  - RightSide
+  - Use Scroll Buttons
+  - No Scroll Buttons
+- QTabWidget
+  - Top
+  - Left
+  - Right
+  - Bottom
+- QTextBrowser
+- QTimeEdit
+- QToolBar
+  - Vertical
+  - Horizontal
+  - Floatable
+  - Movable
+- QToolButton
+  - DelayedPopup
+  - MenuButtonPopup
+  - InstantPopup
+  - LeftArrow
+  - RightArrow
+  - UpArrow
+  - DownArrow
+  - Icon
+  - Auto Raise
+  - ToolButtonIconOnly
+  - ToolButtonTextOnly
+  - ToolButtonTextBesideIcon
+  - ToolButtonTextUnderIcon
+  - ToolButtonFollowStyle
+- QToolBox
+- QToolTip
+- QTreeView
+  - Sortable
+  - Sections Clickable
+  - Hidden Header
+  - Indented
+  - All Focus
+  - Non-Expandable
+  - Undecorated Root
+- QTreeWidget
+- QUndoView
+- QUndoGroup
+- QUndoStack
+- QWhatsThis
+- QWizard
+  - Classic Style
+  - Modern Style
+  - Mac Style
+  - Aero Style
+  - HaveHelpButton
+  - WatermarkPixmap
+  - LogoPixmap
+  - BannerPixmap
+  - BackgroundPixmap
+- QWizardPage

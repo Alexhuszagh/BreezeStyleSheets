@@ -122,6 +122,9 @@ stylesheet = f'{resource_format}stylesheet.qss'
 
 # Compat definitions, between Qt5 and Qt6.
 if args.pyqt6:
+    QUndoGroup = QtGui.QUndoGroup
+    QUndoStack = QtGui.QUndoStack
+    QUndoCommand = QtGui.QUndoCommand
     QAction = QtGui.QAction
     AlignTop = QtCore.Qt.AlignmentFlag.AlignTop
     AlignVCenter = QtCore.Qt.AlignmentFlag.AlignVCenter
@@ -184,9 +187,16 @@ if args.pyqt6:
     DockWidgetFloatable = QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetFloatable
     DockWidgetMovable = QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable
     AllDockWidgetFeatures = DockWidgetClosable | DockWidgetFloatable | DockWidgetMovable
+    DockWidgetVerticalTitleBar = QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetVerticalTitleBar
     AnyFile = QtWidgets.QFileDialog.FileMode.AnyFile
     ExistingFile = QtWidgets.QFileDialog.FileMode.ExistingFile
     Directory = QtWidgets.QFileDialog.FileMode.Directory
+    DontUseNativeDialog = QtWidgets.QFileDialog.Option.DontUseNativeDialog
+    NoButtons = QtWidgets.QFontDialog.FontDialogOption.NoButtons
+    ShowAlphaChannel = QtWidgets.QColorDialog.ColorDialogOption.ShowAlphaChannel
+    ColorNoButtons = QtWidgets.QColorDialog.ColorDialogOption.NoButtons
+    ColorDontUseNativeDialog = QtWidgets.QColorDialog.ColorDialogOption.DontUseNativeDialog
+    FontDontUseNativeDialog = QtWidgets.QFontDialog.FontDialogOption.DontUseNativeDialog
     ExistingFiles = QtWidgets.QFileDialog.FileMode.ExistingFiles
     SP_ArrowBack = QtWidgets.QStyle.StandardPixmap.SP_ArrowBack
     SP_ArrowDown = QtWidgets.QStyle.StandardPixmap.SP_ArrowDown
@@ -267,7 +277,63 @@ if args.pyqt6:
     SP_ToolBarVerticalExtensionButton = QtWidgets.QStyle.StandardPixmap.SP_ToolBarVerticalExtensionButton
     SP_TrashIcon = QtWidgets.QStyle.StandardPixmap.SP_TrashIcon
     SP_VistaShield = QtWidgets.QStyle.StandardPixmap.SP_VistaShield
+    Network = QtWidgets.QFileIconProvider.IconType.Network
+    TopToBottom = QtWidgets.QProgressBar.Direction.TopToBottom
+    BottomToTop = QtWidgets.QProgressBar.Direction.BottomToTop
+    DotLine = QtCore.Qt.PenStyle.DotLine
+    NoEcho = QtWidgets.QLineEdit.EchoMode.NoEcho
+    Password = QtWidgets.QLineEdit.EchoMode.Password
+    PasswordEchoOnEdit = QtWidgets.QLineEdit.EchoMode.PasswordEchoOnEdit
+    LCDOutline = QtWidgets.QLCDNumber.SegmentStyle.Outline
+    LCDFlat = QtWidgets.QLCDNumber.SegmentStyle.Flat
+    PlainText = QtCore.Qt.TextFormat.PlainText
+    RichText = QtCore.Qt.TextFormat.RichText
+    AutoText = QtCore.Qt.TextFormat.AutoText
+    MarkdownText = QtCore.Qt.TextFormat.MarkdownText
+    TextSelectableByMouse = QtCore.Qt.TextInteractionFlag.TextSelectableByMouse
+    TextEditorInteraction = QtCore.Qt.TextInteractionFlag.TextEditorInteraction
+    RubberBandLine = QtWidgets.QRubberBand.Shape.Line
+    RubberBandRectangle = QtWidgets.QRubberBand.Shape.Rectangle
+    NoTicks = QtWidgets.QSlider.TickPosition.NoTicks
+    TicksBothSides = QtWidgets.QSlider.TickPosition.TicksBothSides
+    TicksAbove = QtWidgets.QSlider.TickPosition.TicksAbove
+    TicksBelow = QtWidgets.QSlider.TickPosition.TicksBelow
+    TicksLeft = QtWidgets.QSlider.TickPosition.TicksLeft
+    TicksRight = QtWidgets.QSlider.TickPosition.TicksRight
+    IntInput = QtWidgets.QInputDialog.InputMode.IntInput
+    DoubleInput = QtWidgets.QInputDialog.InputMode.DoubleInput
+    UseListViewForComboBoxItems = QtWidgets.QInputDialog.InputDialogOption.UseListViewForComboBoxItems
+    InputNoButtons = QtWidgets.QInputDialog.InputDialogOption.NoButtons
+    QFileSystemModel = QtGui.QFileSystemModel
+    NoFrame = QtWidgets.QFrame.Shape.NoFrame
+    Box = QtWidgets.QFrame.Shape.Box
+    Panel = QtWidgets.QFrame.Shape.Panel
+    StyledPanel = QtWidgets.QFrame.Shape.StyledPanel
+    HLine = QtWidgets.QFrame.Shape.HLine
+    VLine = QtWidgets.QFrame.Shape.VLine
+    WinPanel = QtWidgets.QFrame.Shape.WinPanel
+    Shadow_Mask = QtWidgets.QFrame.StyleMask.Shadow_Mask
+    Shape_Mask = QtWidgets.QFrame.StyleMask.Shape_Mask
+    Plain = QtWidgets.QFrame.Shadow.Plain
+    Raised = QtWidgets.QFrame.Shadow.Raised
+    Sunken = QtWidgets.QFrame.Shadow.Sunken
+    Rounded = QtWidgets.QTabWidget.TabShape.Rounded
+    Triangular = QtWidgets.QTabWidget.TabShape.Triangular
+    LeftSide = QtWidgets.QTabBar.ButtonPosition.LeftSide
+    RightSide = QtWidgets.QTabBar.ButtonPosition.RightSide
+    ClassicStyle = QtWidgets.QWizard.WizardStyle.ClassicStyle
+    ModernStyle = QtWidgets.QWizard.WizardStyle.ModernStyle
+    MacStyle = QtWidgets.QWizard.WizardStyle.MacStyle
+    AeroStyle = QtWidgets.QWizard.WizardStyle.AeroStyle
+    HaveHelpButton = QtWidgets.QWizard.WizardOption.HaveHelpButton
+    WatermarkPixmap = QtWidgets.QWizard.WizardPixmap.WatermarkPixmap
+    LogoPixmap = QtWidgets.QWizard.WizardPixmap.LogoPixmap
+    BannerPixmap = QtWidgets.QWizard.WizardPixmap.BannerPixmap
+    BackgroundPixmap = QtWidgets.QWizard.WizardPixmap.BackgroundPixmap
 else:
+    QUndoGroup = QtWidgets.QUndoGroup
+    QUndoStack = QtWidgets.QUndoStack
+    QUndoCommand = QtWidgets.QUndoCommand
     QAction = QtWidgets.QAction
     AlignTop = QtCore.Qt.AlignTop
     AlignVCenter = QtCore.Qt.AlignVCenter
@@ -327,9 +393,16 @@ else:
     DialogOk = QtWidgets.QDialogButtonBox.Ok
     DialogCancel = QtWidgets.QDialogButtonBox.Cancel
     AllDockWidgetFeatures = QtWidgets.QDockWidget.AllDockWidgetFeatures
+    DockWidgetVerticalTitleBar = QtWidgets.QDockWidget.DockWidgetVerticalTitleBar
     AnyFile = QtWidgets.QFileDialog.AnyFile
     ExistingFile = QtWidgets.QFileDialog.ExistingFile
     Directory = QtWidgets.QFileDialog.Directory
+    DontUseNativeDialog = QtWidgets.QFileDialog.DontUseNativeDialog
+    NoButtons = QtWidgets.QFontDialog.NoButtons
+    ShowAlphaChannel = QtWidgets.QColorDialog.ShowAlphaChannel
+    ColorNoButtons = QtWidgets.QColorDialog.NoButtons
+    ColorDontUseNativeDialog = QtWidgets.QColorDialog.DontUseNativeDialog
+    FontDontUseNativeDialog = QtWidgets.QFontDialog.DontUseNativeDialog
     ExistingFiles = QtWidgets.QFileDialog.ExistingFiles
     SP_ArrowBack = QtWidgets.QStyle.SP_ArrowBack
     SP_ArrowDown = QtWidgets.QStyle.SP_ArrowDown
@@ -410,6 +483,59 @@ else:
     SP_ToolBarVerticalExtensionButton = QtWidgets.QStyle.SP_ToolBarVerticalExtensionButton
     SP_TrashIcon = QtWidgets.QStyle.SP_TrashIcon
     SP_VistaShield = QtWidgets.QStyle.SP_VistaShield
+    Network = QtWidgets.QFileIconProvider.Network
+    TopToBottom = QtWidgets.QProgressBar.TopToBottom
+    BottomToTop = QtWidgets.QProgressBar.BottomToTop
+    DotLine = QtCore.Qt.DotLine
+    NoEcho = QtWidgets.QLineEdit.NoEcho
+    Password = QtWidgets.QLineEdit.Password
+    PasswordEchoOnEdit = QtWidgets.QLineEdit.PasswordEchoOnEdit
+    LCDOutline = QtWidgets.QLCDNumber.Outline
+    LCDFlat = QtWidgets.QLCDNumber.Flat
+    PlainText = QtCore.Qt.PlainText
+    RichText = QtCore.Qt.RichText
+    AutoText = QtCore.Qt.AutoText
+    MarkdownText = QtCore.Qt.MarkdownText
+    TextSelectableByMouse = QtCore.Qt.TextSelectableByMouse
+    TextEditorInteraction = QtCore.Qt.TextEditorInteraction
+    RubberBandLine = QtWidgets.QRubberBand.Line
+    RubberBandRectangle = QtWidgets.QRubberBand.Rectangle
+    NoTicks = QtWidgets.QSlider.NoTicks
+    TicksBothSides = QtWidgets.QSlider.TicksBothSides
+    TicksAbove = QtWidgets.QSlider.TicksAbove
+    TicksBelow = QtWidgets.QSlider.TicksBelow
+    TicksLeft = QtWidgets.QSlider.TicksLeft
+    TicksRight = QtWidgets.QSlider.TicksRight
+    IntInput = QtWidgets.QInputDialog.IntInput
+    DoubleInput = QtWidgets.QInputDialog.DoubleInput
+    UseListViewForComboBoxItems = QtWidgets.QInputDialog.UseListViewForComboBoxItems
+    InputNoButtons = QtWidgets.QInputDialog.NoButtons
+    QFileSystemModel = QtWidgets.QFileSystemModel
+    NoFrame = QtWidgets.QFrame.NoFrame
+    Box = QtWidgets.QFrame.Box
+    Panel = QtWidgets.QFrame.Panel
+    StyledPanel = QtWidgets.QFrame.StyledPanel
+    HLine = QtWidgets.QFrame.HLine
+    VLine = QtWidgets.QFrame.VLine
+    WinPanel = QtWidgets.QFrame.WinPanel
+    Shadow_Mask = QtWidgets.QFrame.Shadow_Mask
+    Shape_Mask = QtWidgets.QFrame.Shape_Mask
+    Plain = QtWidgets.QFrame.Plain
+    Raised = QtWidgets.QFrame.Raised
+    Sunken = QtWidgets.QFrame.Sunken
+    Rounded = QtWidgets.QTabWidget.Rounded
+    Triangular = QtWidgets.QTabWidget.Triangular
+    LeftSide = QtWidgets.QTabBar.LeftSide
+    RightSide = QtWidgets.QTabBar.RightSide
+    ClassicStyle = QtWidgets.QWizard.ClassicStyle
+    ModernStyle = QtWidgets.QWizard.ModernStyle
+    MacStyle = QtWidgets.QWizard.MacStyle
+    AeroStyle = QtWidgets.QWizard.AeroStyle
+    HaveHelpButton = QtWidgets.QWizard.HaveHelpButton
+    WatermarkPixmap = QtWidgets.QWizard.WatermarkPixmap
+    LogoPixmap = QtWidgets.QWizard.LogoPixmap
+    BannerPixmap = QtWidgets.QWizard.BannerPixmap
+    BackgroundPixmap = QtWidgets.QWizard.BackgroundPixmap
 
 # Need to fix an issue on Wayland on Linux:
 #   conda-forge does not support Wayland, for who knows what reason.
@@ -479,12 +605,28 @@ def execute(obj):
     else:
         return obj.exec_()
 
-def close_icon(widget):
-    '''Get the close icon depending on the stylesheet.'''
+def get_standard_icon(widget, pixmap, name):
+    '''Get a standard icon depending on the stylesheet.'''
 
     if args.stylesheet == 'native':
-        return widget.style().standardIcon(SP_DockWidgetCloseButton)
-    return QtGui.QIcon(f'{resource_format}close.svg')
+        return widget.style().standardIcon(pixmap)
+    return QtGui.QIcon(f'{resource_format}{name}.svg')
+
+def close_icon(widget):
+    '''Get the close icon depending on the stylesheet.'''
+    return get_standard_icon(widget, SP_DockWidgetCloseButton, 'close')
+
+def reset_icon(widget):
+    '''Get the reset icon depending on the stylesheet.'''
+    return get_standard_icon(widget, SP_DialogResetButton, 'dialog_reset')
+
+def next_icon(widget):
+    '''Get the next icon depending on the stylesheet.'''
+    return get_standard_icon(widget, SP_ArrowRight, 'right_arrow')
+
+def previous_icon(widget):
+    '''Get the previous icon depending on the stylesheet.'''
+    return get_standard_icon(widget, SP_ArrowLeft, 'left_arrow')
 
 def test_progressbar_horizontal(widget, *_):
     child = []
@@ -525,6 +667,46 @@ def test_progressbar_vertical(widget, *_):
 
     return child, layout_type
 
+def test_progressbar_inverted(widget, *_):
+    child = []
+    bar1 = QtWidgets.QProgressBar(widget)
+    bar1.setProperty('value', 0)
+    child.append(bar1)
+    bar2 = QtWidgets.QProgressBar(widget)
+    bar2.setProperty('value', 24)
+    child.append(bar2)
+    bar3 = QtWidgets.QProgressBar(widget)
+    bar3.setProperty('value', 99)
+    child.append(bar3)
+    bar4 = QtWidgets.QProgressBar(widget)
+    bar4.setProperty('value', 100)
+    child.append(bar4)
+    for bar in child:
+        bar.setInvertedAppearance(True)
+
+    return child
+
+def test_progressbar_text(widget, *_):
+    layout_type = 'horizontal'
+    child = []
+    bar1 = QtWidgets.QProgressBar(widget)
+    bar1.setProperty('value', 0)
+    child.append(bar1)
+    bar2 = QtWidgets.QProgressBar(widget)
+    bar2.setProperty('value', 24)
+    child.append(bar2)
+    bar3 = QtWidgets.QProgressBar(widget)
+    bar3.setProperty('value', 99)
+    child.append(bar3)
+    bar4 = QtWidgets.QProgressBar(widget)
+    bar4.setProperty('value', 100)
+    child.append(bar4)
+    for bar in child:
+        bar.setTextDirection(TopToBottom)
+        bar.setOrientation(Vertical)
+
+    return child, layout_type
+
 def test_slider_horizontal(widget, *_):
     child = QtWidgets.QSlider(widget)
     child.setOrientation(Horizontal)
@@ -537,6 +719,14 @@ def test_slider_vertical(widget, *_):
     child.setOrientation(Vertical)
 
     return child, layout_type
+
+def test_tick_slider(widget, *_):
+    child = QtWidgets.QSlider(widget)
+    child.setOrientation(Horizontal)
+    child.setTickInterval(5)
+    child.setTickPosition(TicksAbove)
+
+    return child
 
 def test_splitter_horizontal(widget, *_):
     child = QtWidgets.QSplitter(widget)
@@ -555,6 +745,46 @@ def test_splitter_vertical(widget, *_):
     child.addWidget(QtWidgets.QTextEdit())
 
     return child, layout_type
+
+def test_large_handle_splitter(widget, *_):
+    child = QtWidgets.QSplitter(widget)
+    child.addWidget(QtWidgets.QListWidget())
+    child.addWidget(QtWidgets.QTreeWidget())
+    child.addWidget(QtWidgets.QTextEdit())
+    child.setHandleWidth(child.handleWidth() * 5)
+
+    return child
+
+def test_nocollapsible_splitter(widget, *_):
+    child = QtWidgets.QSplitter(widget)
+    child.addWidget(QtWidgets.QListWidget())
+    child.addWidget(QtWidgets.QTreeWidget())
+    child.addWidget(QtWidgets.QTextEdit())
+    child.setChildrenCollapsible(False)
+
+    return child
+
+def test_rubber_band(widget, *_):
+    return [
+        QtWidgets.QRubberBand(RubberBandLine, widget),
+        QtWidgets.QRubberBand(RubberBandRectangle, widget),
+    ]
+
+def test_plain_text_edit(widget, *_):
+    child = [
+        QtWidgets.QPlainTextEdit('Edit 1', widget),
+        QtWidgets.QPlainTextEdit('Edit 2', widget),
+        QtWidgets.QPlainTextEdit('Edit 3', widget),
+        QtWidgets.QPlainTextEdit('Edit 4', widget),
+        QtWidgets.QPlainTextEdit('Edit 5', widget),
+    ]
+    child[1].setBackgroundVisible(True)
+    child[2].setCenterOnScroll(True)
+    child[3].setCursorWidth(5)
+    child[3].setPlaceholderText('Placeholder Text')
+    child[4].setReadOnly(True)
+
+    return child
 
 def test_menu(widget, window, font, width, *_):
     child = QtWidgets.QMenuBar(window)
@@ -585,8 +815,89 @@ def test_menu(widget, window, font, width, *_):
 
     return child
 
+def _menu(window, font, width):
+    child = QtWidgets.QMenuBar(window)
+    child.setGeometry(QtCore.QRect(0, 0, width, int(1.5 * font.pointSize())))
+    menu = QtWidgets.QMenu('Main Menu', child)
+    menu.addAction(QAction('&Action 1', window))
+    menu.addAction(QAction('&Action 2', window))
+    child.addAction(menu.menuAction())
+    window.setMenuBar(child)
+
+    return child, menu
+
+def test_native_menu(_, window, font, width, *__):
+    child, _ = _menu(window, font, width)
+    child.setNativeMenuBar(True)
+
+    return child
+
+def test_popup_menu(_, window, font, width, *__):
+    child, _ = _menu(window, font, width)
+    child.setDefaultUp(True)
+
+    return child
+
+def test_tearoff_menu(_, window, font, width, *__):
+    child, menu = _menu(window, font, width)
+    menu.setTearOffEnabled(True)
+
+    return child
+
+def test_icon_menu(widget, window, font, width, *_):
+    child, menu = _menu(window, font, width)
+    menu.setIcon(close_icon(widget))
+
+    return child
+
+def test_collapsible_separators_menu(_, window, font, width, *__):
+    child = QtWidgets.QMenuBar(window)
+    child.setGeometry(QtCore.QRect(0, 0, width, int(1.5 * font.pointSize())))
+    menu = QtWidgets.QMenu('Main Menu', child)
+    menu.addSeparator()
+    menu.addAction(QAction('&Action 1', window))
+    menu.addSeparator()
+    menu.addSeparator()
+    menu.addAction(QAction('&Action 2', window))
+    menu.addSeparator()
+    child.addAction(menu.menuAction())
+    window.setMenuBar(child)
+    menu.setSeparatorsCollapsible(True)
+
+    return child
+
+def test_tooltips_menu(widget, window, font, width, *_):
+    child = QtWidgets.QMenuBar(window)
+    child.setGeometry(QtCore.QRect(0, 0, width, int(1.5 * font.pointSize())))
+    menu = QtWidgets.QMenu('Main Menu', child)
+    action1 = QAction('&Action 1', window)
+    action1.setToolTip('Action 1')
+    menu.addAction(action1)
+    action2 = QAction('&Action 2', window)
+    action2.setToolTip('Action 1')
+    menu.addAction(action2)
+    child.addAction(menu.menuAction())
+    window.setMenuBar(child)
+    menu.setToolTipsVisible(True)
+
+    return child
+
+def test_mdi_area(widget, *_):
+    child = QtWidgets.QMdiArea(widget)
+    child.addSubWindow(QtWidgets.QMdiSubWindow())
+    child.addSubWindow(QtWidgets.QMdiSubWindow())
+
+    return child
+
 def test_statusbar(_, window, *__):
     child = QtWidgets.QStatusBar(window)
+    window.setStatusBar(child)
+
+    return child
+
+def test_no_sizegrip_statusbar(_, window, *__):
+    child = QtWidgets.QStatusBar(window)
+    child.setSizeGripEnabled(False)
     window.setStatusBar(child)
 
     return child
@@ -599,6 +910,8 @@ def test_spinbox(widget, *_):
     child.append(spin1)
     spin2 = QtWidgets.QSpinBox(widget)
     spin2.setValue(10)
+    spin2.setPrefix('$')
+    spin2.setSuffix('%')
     spin2.setEnabled(False)
     child.append(spin2)
 
@@ -613,6 +926,8 @@ def test_double_spinbox(widget, *_):
     spin2 = QtWidgets.QDoubleSpinBox(widget)
     spin2.setValue(10.5)
     spin2.setEnabled(False)
+    spin2.setPrefix('$')
+    spin2.setSuffix('%')
     child.append(spin2)
 
     return child, layout_type
@@ -632,7 +947,17 @@ def test_combobox(widget, *_):
     combo3.setEditable(True)
     combo3.addItem('Edit 1')
     combo3.addItem('Edit 2')
+    combo3.lineEdit().setPlaceholderText('Placeholder')
     child.append(combo3)
+    combo4 = QtWidgets.QComboBox(widget)
+    combo4.addItem('Item 1')
+    combo4.addItem('Item 2')
+    combo4.addItem('Item 3')
+    combo4.addItem('Item 4')
+    combo4.addItem('Item 5')
+    combo4.addItem('Item 6')
+    combo4.setMaxVisibleItems(5)
+    child.append(combo4)
 
     return child, layout_type
 
@@ -657,6 +982,33 @@ def test_tabwidget_right(widget, *_):
 def test_tabwidget_bottom(widget, *_):
     return _test_tabwidget(widget, South)
 
+def test_autohide_tabwidget(widget, *_):
+    child = []
+
+    item1 = QtWidgets.QTabWidget(widget)
+    item1.setTabPosition(North)
+    item1.addTab(QtWidgets.QWidget(), 'Tab 1')
+    item1.setTabBarAutoHide(True)
+    child.append(item1)
+
+    item2 = _test_tabwidget(widget, East)
+    item2.setTabBarAutoHide(True)
+    child.append(item2)
+
+    return child
+
+def test_nonexpanding_tabwidget(widget, *_):
+    child = _test_tabwidget(widget, North)
+    child.tabBar().setExpanding(False)
+
+    return child
+
+def test_movable_tabwidget(widget, *_):
+    child = _test_tabwidget(widget, North)
+    child.tabBar().setMovable(True)
+
+    return child
+
 def test_closable_tabwidget_top(widget, *_):
     child = _test_tabwidget(widget, North)
     child.setTabsClosable(True)
@@ -669,13 +1021,103 @@ def test_closable_tabwidget_right(widget, *_):
 
     return child
 
+def test_use_scroll_tabwidget(widget, *_):
+    child = QtWidgets.QTabWidget(widget)
+    child.setTabPosition(North)
+    for i in range(1, 100):
+        child.addTab(QtWidgets.QWidget(), f'Tab {i}')
+    child.setUsesScrollButtons(True)
+
+    return child
+
+def test_no_scroll_tabwidget(widget, *_):
+    child = QtWidgets.QTabWidget(widget)
+    child.setTabPosition(North)
+    for i in range(1, 100):
+        child.addTab(QtWidgets.QWidget(), f'Tab {i}')
+    child.setUsesScrollButtons(False)
+
+    return child
+
+def test_rounded_tabwidget_north(widget, *_):
+    child = _test_tabwidget(widget, North)
+    child.setTabShape(Rounded)
+
+    return child
+
+def test_triangle_tabwidget_north(widget, *_):
+    child = _test_tabwidget(widget, North)
+    child.setTabShape(Triangular)
+
+    return child
+
+def test_rounded_tabwidget_east(widget, *_):
+    child = _test_tabwidget(widget, East)
+    child.setTabShape(Rounded)
+
+    return child
+
+def test_triangle_tabwidget_east(widget, *_):
+    child = _test_tabwidget(widget, East)
+    child.setTabShape(Triangular)
+
+    return child
+
+def test_rounded_tabwidget_west(widget, *_):
+    child = _test_tabwidget(widget, West)
+    child.setTabShape(Rounded)
+
+    return child
+
+def test_triangle_tabwidget_west(widget, *_):
+    child = _test_tabwidget(widget, West)
+    child.setTabShape(Triangular)
+
+    return child
+
+def test_rounded_tabwidget_south(widget, *_):
+    child = _test_tabwidget(widget, South)
+    child.setTabShape(Rounded)
+
+    return child
+
+def test_triangle_tabwidget_south(widget, *_):
+    child = _test_tabwidget(widget, South)
+    child.setTabShape(Triangular)
+
+    return child
+
+def test_button_position_tabwidget(widget, *_):
+    child = QtWidgets.QTabWidget(widget)
+    child.setTabPosition(North)
+    for i in range(1, 10):
+        child.addTab(QtWidgets.QWidget(), f'Tab {i}')
+        if i % 2 == 0:
+            side = LeftSide
+        else:
+            side = RightSide
+        child.tabBar().setTabButton(i - 1, side, QtWidgets.QWidget(widget))
+    child.setUsesScrollButtons(True)
+
+    return child
+
+def test_text_browser(widget, *_):
+    child = QtWidgets.QTextBrowser(widget)
+    child.setOpenExternalLinks(True)
+    child.setMarkdown('[QTextBrowser](https://doc.qt.io/qt-5/qtextbrowser.html)')
+
+    return child
+
 def test_dock(_, window, *__):
     dock1 = QtWidgets.QDockWidget('&Dock widget 1', window)
     dock1.setFeatures(AllDockWidgetFeatures)
     dock2 = QtWidgets.QDockWidget('&Dock widget 2', window)
     dock2.setFeatures(AllDockWidgetFeatures)
+    dock3 = QtWidgets.QDockWidget('&Dock widget 3', window)
+    dock3.setFeatures(DockWidgetVerticalTitleBar)
     window.addDockWidget(LeftDockWidgetArea, dock1)
     window.addDockWidget(LeftDockWidgetArea, dock2)
+    window.addDockWidget(LeftDockWidgetArea, dock3)
     window.tabifyDockWidget(dock1, dock2)
 
 def test_radio(widget, *_):
@@ -731,6 +1173,45 @@ def test_sortable_table(widget, *_):
 
     return child
 
+def test_nocorner_table(widget, *_):
+    child = test_table(widget)
+    child.setCornerButtonEnabled(False)
+
+    return child
+
+def test_nogrid_table(widget, *_):
+    child = test_table(widget)
+    child.setShowGrid(False)
+
+    return child
+
+def test_gridstyle_table(widget, *_):
+    child = test_table(widget)
+    child.setGridStyle(DotLine)
+
+    return child
+
+def test_nohighlight_header_view(widget, *_):
+    child = test_table(widget)
+    header = child.horizontalHeader()
+    header.setHighlightSections(False)
+
+    return child
+
+def test_movable_header_view(widget, *_):
+    child = test_table(widget)
+    header = child.horizontalHeader()
+    header.setSectionsMovable(True)
+
+    return child
+
+def test_noclick_header_view(widget, *_):
+    child = test_table(widget)
+    header = child.horizontalHeader()
+    header.setSectionsClickable(False)
+
+    return child
+
 def test_list(widget, *_):
     alignments = [AlignLeft, AlignRight, AlignHCenter]
     child = QtWidgets.QListWidget(widget)
@@ -743,6 +1224,25 @@ def test_list(widget, *_):
         item = QtWidgets.QListWidgetItem(icon, f'Item {index + 1}')
         item.setTextAlignment(random.choice(alignments))
         child.addItem(item)
+
+    return child
+
+def test_sortable_list(widget, *_):
+    child = QtWidgets.QListWidget(widget)
+    child.setSortingEnabled(True)
+    for index in range(10):
+        item = QtWidgets.QListWidgetItem(f'Item {index + 1}')
+        child.addItem(item)
+
+    return child
+
+def test_key_sequence_edit(widget, *_):
+    return QtWidgets.QKeySequenceEdit(widget)
+
+def test_completer(widget, *_):
+    child = QtWidgets.QLineEdit(widget)
+    completer = QtWidgets.QCompleter(['Fruit', 'Fruits Basket', 'Fruba'])
+    child.setCompleter(completer)
 
     return child
 
@@ -774,18 +1274,28 @@ def test_toolbar(_, window, *__):
     toolbar1.addAction('&Action 3 Really Long Name')
     icon = close_icon(toolbar1)
     toolbar1.addAction(icon, '&Action 4')
+    toolbar1.setMovable(False)
     window.addToolBar(TopToolBarArea, toolbar1)
 
     toolbar2 = QtWidgets.QToolBar('Toolbar')
     toolbar2.setOrientation(Vertical)
     toolbar2.addAction('&Action 1')
-    toolbar2.addAction('&Action 2')
+    action2 = QAction('&Action 2', window)
+    action2.setStatusTip('Status tip')
+    action2.setWhatsThis('Example action')
+    toolbar2.addAction(action2)
     toolbar2.addSeparator()
     toolbar2.addAction('&Action 3')
     toolbar2.addAction('&Action 3 Really Long Name')
+    toolbar2.addAction(QtWidgets.QWhatsThis.createAction(toolbar2))
     icon = close_icon(toolbar2)
     toolbar2.addAction(icon, '&Action 4')
+    toolbar2.setFloatable(True)
+    toolbar2.setMovable(True)
     window.addToolBar(LeftToolBarArea, toolbar2)
+
+    statusbar = QtWidgets.QStatusBar(window)
+    window.setStatusBar(statusbar)
 
     return None, None
 
@@ -916,8 +1426,64 @@ def test_pushbutton(widget, *_):
     child.append(abstract_button(widget_type, widget, 'Button 3', checkable=False))
     icon = close_icon(widget)
     child.append(abstract_button(widget_type, widget, icon, 'Button 4', checkable=False))
+    flat = QtWidgets.QPushButton('Flat')
+    flat.setFlat(True)
+    child.append(flat)
+    auto_default = QtWidgets.QPushButton('Auto Default')
+    auto_default.setAutoDefault(True)
+    child.append(auto_default)
 
     return child, layout_type
+
+def test_column_view(widget, *_):
+    child = QtWidgets.QColumnView(widget)
+    model = QFileSystemModel(widget)
+    model.setRootPath('/')
+    child.setModel(model)
+    child.setResizeGripsVisible(True)
+
+    return child
+
+def test_nosizegrip_column_view(widget, *_):
+    child = QtWidgets.QColumnView(widget)
+    model = QFileSystemModel(widget)
+    model.setRootPath('/')
+    child.setModel(model)
+    child.setResizeGripsVisible(False)
+
+    return child
+
+def test_comprehensive_frame(widget, *_):
+    child = [
+        QtWidgets.QFrame(widget),
+        QtWidgets.QFrame(widget),
+        QtWidgets.QFrame(widget),
+        QtWidgets.QFrame(widget),
+        QtWidgets.QFrame(widget),
+        QtWidgets.QFrame(widget),
+        QtWidgets.QFrame(widget),
+        QtWidgets.QFrame(widget),
+        QtWidgets.QFrame(widget),
+        QtWidgets.QFrame(widget),
+        QtWidgets.QFrame(widget),
+        QtWidgets.QFrame(widget),
+    ]
+    child[0].setFrameShape(NoFrame)
+    child[1].setFrameShape(Box)
+    child[2].setFrameShape(Panel)
+    child[3].setFrameShape(StyledPanel)
+    child[4].setFrameShape(HLine)
+    child[5].setFrameShape(VLine)
+    child[6].setFrameShape(WinPanel)
+    child[7].setFrameStyle(Shadow_Mask)
+    child[8].setFrameStyle(Shape_Mask)
+    child[9].setFrameShadow(Plain)
+    child[10].setFrameShadow(Raised)
+    child[11].setFrameShadow(Sunken)
+    for item in child[7:]:
+        item.setFrameShape(StyledPanel)
+
+    return child
 
 def test_tree(widget, *_):
     child = []
@@ -948,6 +1514,96 @@ def test_tree(widget, *_):
     child.append(tree2)
 
     return child
+
+def test_sortable_tree(widget, *_):
+    tree = QtWidgets.QTreeWidget(widget)
+    tree.setObjectName('treeWidget')
+    item_0 = QtWidgets.QTreeWidgetItem(tree)
+    item_1 = QtWidgets.QTreeWidgetItem(tree)
+    item_2 = QtWidgets.QTreeWidgetItem(item_1)
+    item_2.setText(0, 'subitem')
+    item_3 = QtWidgets.QTreeWidgetItem(item_2, ['Row 2.1'])
+    item_3.setFlags(item_3.flags() | ItemIsUserCheckable)
+    item_3.setCheckState(0, Unchecked)
+    item_4 = QtWidgets.QTreeWidgetItem(item_2, ['Row 2.2'])
+    item_5 = QtWidgets.QTreeWidgetItem(item_4, ['Row 2.2.1'])
+    item_6 = QtWidgets.QTreeWidgetItem(item_5, ['Row 2.2.1.1'])
+    item_7 = QtWidgets.QTreeWidgetItem(item_5, ['Row 2.2.1.2'])
+    item_3.setFlags(item_7.flags() | ItemIsUserCheckable)
+    item_7.setCheckState(0, Checked)
+    item_8 = QtWidgets.QTreeWidgetItem(item_2, ['Row 2.3'])
+    item_8.setFlags(item_8.flags() | ItemIsUserTristate)
+    item_8.setCheckState(0, PartiallyChecked)
+    item_9 = QtWidgets.QTreeWidgetItem(tree, ['Row 3'])
+    item_10 = QtWidgets.QTreeWidgetItem(item_9, ['Row 3.1'])
+    item_11 = QtWidgets.QTreeWidgetItem(tree, ['Row 4'])
+
+    tree.headerItem().setText(0, 'qdz')
+    tree.setSortingEnabled(False)
+    tree.topLevelItem(0).setText(0, 'qzd')
+    tree.topLevelItem(1).setText(0, 'effefe')
+    tree.setSortingEnabled(True)
+
+    return tree
+
+def test_hidden_header_tree(widget, *_):
+    tree = QtWidgets.QTreeWidget(widget)
+    tree.setHeaderLabel('Tree 1')
+    item1 = QtWidgets.QTreeWidgetItem(tree, ['Row 1'])
+    item2 = QtWidgets.QTreeWidgetItem(tree, ['Row 2'])
+    item3 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.1'])
+
+    tree.setHeaderHidden(True)
+
+    return tree
+
+def test_indented_tree(widget, *_):
+    tree = QtWidgets.QTreeWidget(widget)
+    tree.setHeaderLabel('Tree 1')
+    item1 = QtWidgets.QTreeWidgetItem(tree, ['Row 1'])
+    item2 = QtWidgets.QTreeWidgetItem(tree, ['Row 2'])
+    item3 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.1', 'Row 2.2'])
+
+    tree.setIndentation(tree.indentation() * 2)
+    tree.setColumnCount(2)
+    tree.setColumnWidth(0, tree.columnWidth(0) * 2)
+    tree.setColumnWidth(1, tree.columnWidth(1) * 2)
+
+    return tree3
+
+def test_all_focus_tree(widget, *_):
+    tree = QtWidgets.QTreeWidget(widget)
+    tree.setHeaderLabel('Tree 1')
+    item1 = QtWidgets.QTreeWidgetItem(tree, ['Row 1'])
+    item2 = QtWidgets.QTreeWidgetItem(tree, ['Row 2'])
+    item3 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.1', 'Row 2.2'])
+
+    tree.setAllColumnsShowFocus(True)
+    tree.setColumnCount(2)
+
+    return tree
+
+def test_nonexpandable_tree(widget, *_):
+    tree = QtWidgets.QTreeWidget(widget)
+    tree.setHeaderLabel('Tree 1')
+    item1 = QtWidgets.QTreeWidgetItem(tree, ['Row 1'])
+    item2 = QtWidgets.QTreeWidgetItem(tree, ['Row 2'])
+    item3 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.1'])
+
+    tree.setItemsExpandable(False)
+
+    return tree
+
+def test_undecorated_tree(widget, *_):
+    tree = QtWidgets.QTreeWidget(widget)
+    tree.setHeaderLabel('Tree 1')
+    item1 = QtWidgets.QTreeWidgetItem(tree, ['Row 1'])
+    item2 = QtWidgets.QTreeWidgetItem(tree, ['Row 2'])
+    item3 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.1'])
+
+    tree.setRootIsDecorated(False)
+
+    return tree
 
 def test_view_scrollarea(widget, *_):
     # For us to have both scrollbars visible.
@@ -990,8 +1646,125 @@ def test_groupbox(widget, *_):
     vbox = QtWidgets.QVBoxLayout(checkable)
     vbox.setAlignment(AlignHCenter)
     vbox.addWidget(QtWidgets.QLineEdit('Sample Label'))
+    flat = QtWidgets.QGroupBox('Groupbox 3', widget)
+    flat.setFlat(True)
+    child.append(flat)
 
     return child
+
+def test_dial(widget, *_):
+    child = [
+        QtWidgets.QDial(widget),
+        QtWidgets.QDial(widget)
+    ]
+    child[1].setNotchesVisible(True)
+    for item in child:
+        item.setMinimum(0)
+        item.setMaximum(100)
+        item.setValue(30)
+
+    return child
+
+def test_command_link(widget, *_):
+    child = QtWidgets.QWidget(widget)
+    layout = QtWidgets.QVBoxLayout()
+    layout.addStretch(1)
+    next = QtWidgets.QCommandLinkButton('Next', 'Go next', widget)
+    next.setIcon(next_icon(next))
+    layout.addWidget(next)
+    previous = QtWidgets.QCommandLinkButton('Previous', 'Go previous', widget)
+    previous.setFlat(True)
+    previous.setIcon(previous_icon(previous))
+    layout.addWidget(previous)
+    layout.addWidget(QtWidgets.QCommandLinkButton('Text Only', widget))
+    layout.addStretch(1)
+
+    child.setLayout(layout)
+
+    return child
+
+def test_lineedit(widget, *_):
+    return QtWidgets.QLineEdit('Sample label', widget)
+
+def test_placeholder_lineedit(widget, *_):
+    child = QtWidgets.QLineEdit('Sample label', widget)
+    child.setPlaceholderText('Placeholder')
+
+    return child
+
+def test_readonly_lineedit(widget, *_):
+    child = QtWidgets.QLineEdit('Sample label', widget)
+    child.setReadOnly(True)
+
+    return child
+
+def test_noframe_lineedit(widget, *_):
+    child = QtWidgets.QLineEdit('Sample label', widget)
+    child.setFrame(False)
+
+    return child
+
+def test_noecho_lineedit(widget, *_):
+    child = QtWidgets.QLineEdit('Sample label', widget)
+    child.setEchoMode(NoEcho)
+
+    return child
+
+def test_password_lineedit(widget, *_):
+    child = QtWidgets.QLineEdit('Sample label', widget)
+    child.setEchoMode(Password)
+
+    return child
+
+def test_password_edit_lineedit(widget, *_):
+    child = QtWidgets.QLineEdit('Sample label', widget)
+    child.setEchoMode(PasswordEchoOnEdit)
+
+    return child
+
+def test_clear_lineedit(widget, *_):
+    child = QtWidgets.QLineEdit('Sample label', widget)
+    child.setClearButtonEnabled(True)
+
+    return child
+
+def test_label(widget, *_):
+    return QtWidgets.QLabel('Sample label')
+
+def test_indented_label(widget, *_):
+    child = QtWidgets.QLabel('Sample label')
+    child.setIndent(50)
+
+    return child
+
+def test_markdown_label(widget, *_):
+    child = [
+        QtWidgets.QLabel(),
+        QtWidgets.QLabel(),
+    ]
+    child[0].setText('[BreezeStyleSheets](https://github.com/Alexhuszagh/BreezeStyleSheets)')
+    child[0].setOpenExternalLinks(True)
+    child[1].setText('# Sample Header\n- Bullet 1\n- Bullet 2')
+
+    for item in child:
+        item.setTextFormat(MarkdownText)
+
+    return child
+
+def test_selectable_label(widget, *_):
+    child = QtWidgets.QLabel('Selectable label')
+    child.setTextInteractionFlags(TextSelectableByMouse)
+
+    return child
+
+def test_editable_label(widget, *_):
+    child = QtWidgets.QLabel('Editable label')
+    child.setTextInteractionFlags(TextEditorInteraction)
+
+    return child
+
+def test_font_combobox(widget, *_):
+    return QtWidgets.QFontComboBox(widget)
 
 def test_toolbox(widget, *_):
     # Test alignment with another item, in a vertical layout.
@@ -1043,6 +1816,335 @@ def test_calendar(widget, *_):
     child.setGridVisible(True)
 
     return child
+
+def test_nogrid_calendar(widget, *_):
+    child = QtWidgets.QCalendarWidget(widget)
+    child.setGridVisible(False)
+
+    return child
+
+def test_nonavigation_calendar(widget, *_):
+    child = QtWidgets.QCalendarWidget(widget)
+    child.setGridVisible(True)
+    child.setNavigationBarVisible(False)
+
+    return child
+
+def test_time_edit(widget, *_):
+    return QtWidgets.QTimeEdit(widget)
+
+def test_date_edit(widget, *_):
+    return QtWidgets.QDateEdit(widget)
+
+def test_datetime_edit(widget, *_):
+    return QtWidgets.QDateTimeEdit(widget)
+
+def test_popup_datetime_edit(widget, *_):
+    child = QtWidgets.QDateTimeEdit(widget)
+    child.setCalendarPopup(True)
+
+    return child
+
+def test_formats_datetime_edit(widget, *_):
+    child = [
+        QtWidgets.QDateTimeEdit(widget),
+        QtWidgets.QDateTimeEdit(widget),
+    ]
+    child[0].setDisplayFormat('dd.MM.yyyy')
+    child[1].setDisplayFormat('MMM d yy')
+
+    return child
+
+def test_undo_group(widget, *_):
+    group = QUndoGroup(widget)
+    child = QtWidgets.QUndoView(group, widget)
+    child.setEmptyLabel('New')
+    child.setCleanIcon(reset_icon(widget))
+
+    stack1 = QUndoStack(widget)
+    stack1.push(QUndoCommand('Action 1'))
+    stack1.push(QUndoCommand('Action 2'))
+    group.addStack(stack1)
+
+    stack2 = QUndoStack(widget)
+    stack2.push(QUndoCommand('Action 3'))
+    stack2.push(QUndoCommand('Action 4'))
+    group.addStack(stack2)
+
+    group.setActiveStack(stack1)
+
+    return child
+
+def test_undo_stack(widget, *_):
+    stack = QUndoStack(widget)
+    child = QtWidgets.QUndoView(stack, widget)
+    child.setEmptyLabel('New')
+    child.setCleanIcon(reset_icon(widget))
+    stack.push(QUndoCommand('Action 1'))
+    stack.push(QUndoCommand('Action 2'))
+    stack.push(QUndoCommand('Action 3'))
+    stack.push(QUndoCommand('Action 4'))
+    stack.push(QUndoCommand('Action 5'))
+
+    return child
+
+def test_lcd_number(widget, *_):
+    child = QtWidgets.QLCDNumber(3, widget)
+    child.display(15)
+    return child
+
+def test_hex_lcd_number(widget, *_):
+    child = QtWidgets.QLCDNumber(3, widget)
+    child.display(15)
+    child.setHexMode()
+    return child
+
+def test_outline_lcd_number(widget, *_):
+    child = QtWidgets.QLCDNumber(3, widget)
+    child.display(15)
+    child.setSegmentStyle(LCDOutline)
+    return child
+
+def test_flat_lcd_number(widget, *_):
+    child = QtWidgets.QLCDNumber(3, widget)
+    child.display(15)
+    child.setSegmentStyle(LCDFlat)
+    return child
+
+def test_file_icon_provider(widget, *_):
+    child = QtWidgets.QPushButton()
+    provider = QtWidgets.QFileIconProvider()
+    child.setIcon(provider.icon(Network))
+
+    return child
+
+def test_dialog(_, window, *__):
+    dialog = QtWidgets.QDialog(window)
+    execute(dialog)
+
+    return None, None, False, True
+
+def test_modal_dialog(_, window, *__):
+    dialog = QtWidgets.QDialog(window)
+    dialog.setModal(True)
+    execute(dialog)
+
+    return None, None, False, True
+
+def test_sizegrip_dialog(_, window, *__):
+    dialog = QtWidgets.QDialog(window)
+    dialog.setSizeGripEnabled(True)
+    execute(dialog)
+
+    return None, None, False, True
+
+def test_colordialog(*_):
+    initial = QtGui.QColor()
+    QtWidgets.QColorDialog.getColor(initial)
+
+    return None, None, False, True
+
+def test_alpha_colordialog(*_):
+    initial = QtGui.QColor()
+    QtWidgets.QColorDialog.getColor(initial, options=ShowAlphaChannel)
+
+    return None, None, False, True
+
+def test_nobuttons_colordialog(*_):
+    initial = QtGui.QColor()
+    QtWidgets.QColorDialog.getColor(initial, options=ColorNoButtons)
+
+    return None, None, False, True
+
+def test_qt_colordialog(*_):
+    initial = QtGui.QColor()
+    QtWidgets.QColorDialog.getColor(initial, options=ColorDontUseNativeDialog)
+
+    return None, None, False, True
+
+def test_fontdialog(*_):
+    initial = QtGui.QFont()
+    QtWidgets.QFontDialog.getColor(initial)
+
+    return None, None, False, True
+
+def test_nobuttons_fontdialog(*_):
+    initial = QtGui.QFont()
+    QtWidgets.QFontDialog.getFont(initial, options=NoButtons)
+
+    return None, None, False, True
+
+def test_qt_fontdialog(*_):
+    initial = QtGui.QFont()
+    QtWidgets.QFontDialog.getFont(initial, options=FontDontUseNativeDialog)
+
+    return None, None, False, True
+
+def test_filedialog(_, window, *__):
+    dialog = QtWidgets.QFileDialog(window)
+    dialog.setFileMode(Directory)
+    execute(dialog)
+
+    return None, None, False, True
+
+def test_qt_filedialog(_, window, *__):
+    dialog = QtWidgets.QFileDialog(window)
+    dialog.setOption(DontUseNativeDialog)
+    execute(dialog)
+
+    return None, None, False, True
+
+def test_error_message(widget, *_):
+    dialog = QtWidgets.QErrorMessage(widget)
+    dialog.showMessage('Error message')
+    execute(dialog)
+
+    return None, None, False, True
+
+def test_progress_dialog(_, window, __, ___, ____, app):
+    dialog = QtWidgets.QProgressDialog('Text', 'Cancel', 0, 100, window)
+    dialog.setMinimumDuration(0)
+    dialog.show()
+    for i in range(1, 101):
+        dialog.setValue(i)
+        app.processEvents()
+        time.sleep(0.02)
+        if dialog.wasCanceled():
+            break
+    dialog.close()
+
+    return None, None, False, True
+
+def test_input_dialog(_, window, *__):
+    dialog = QtWidgets.QInputDialog(window)
+    execute(dialog)
+
+    return None, None, False, True
+
+def test_int_input_dialog(_, window, *__):
+    dialog = QtWidgets.QInputDialog(window)
+    dialog.setInputMode(IntInput)
+    execute(dialog)
+
+    return None, None, False, True
+
+def test_double_input_dialog(_, window, *__):
+    dialog = QtWidgets.QInputDialog(window)
+    dialog.setInputMode(DoubleInput)
+    execute(dialog)
+
+    return None, None, False, True
+
+def test_combobox_input_dialog(_, window, *__):
+    dialog = QtWidgets.QInputDialog(window)
+    dialog.setComboBoxItems(['Item 1', 'Item 2'])
+    execute(dialog)
+
+    return None, None, False, True
+
+def test_list_input_dialog(_, window, *__):
+    dialog = QtWidgets.QInputDialog(window)
+    dialog.setComboBoxItems(['Item 1', 'Item 2'])
+    dialog.setOption(UseListViewForComboBoxItems)
+    execute(dialog)
+
+    return None, None, False, True
+
+def test_nobuttons_input_dialog(_, window, *__):
+    dialog = QtWidgets.QInputDialog(window)
+    dialog.setComboBoxItems(['Item 1', 'Item 2'])
+    dialog.setOption(InputNoButtons)
+    execute(dialog)
+
+    return None, None, False, True
+
+def _wizard(widget):
+    wizard = QtWidgets.QWizard()
+
+    intro = QtWidgets.QWizardPage()
+    intro.setTitle('Introduction')
+    intro_label = QtWidgets.QLabel('Some very long text to simulate wrapping of the UI when displayed, because this needs to be done.')
+    intro_label.setWordWrap(True)
+    intro_layout = QtWidgets.QVBoxLayout()
+    intro_layout.addWidget(intro_label)
+    intro.setLayout(intro_layout)
+    intro.setPixmap(WatermarkPixmap, close_icon(widget).pixmap(50, 50))
+    wizard.addPage(intro)
+
+    registration = QtWidgets.QWizardPage()
+    registration.setTitle('Registration')
+    registration_label = QtWidgets.QLabel('Please register your copy.')
+    registration_label.setWordWrap(True)
+    registration_layout = QtWidgets.QVBoxLayout()
+    registration_layout.addWidget(registration_label)
+    registration.setLayout(registration_layout)
+    registration.setPixmap(LogoPixmap, close_icon(widget).pixmap(200, 200))
+    wizard.addPage(registration)
+
+    conclusion = QtWidgets.QWizardPage()
+    conclusion.setTitle('Conclusion')
+    conclusion_label = QtWidgets.QLabel('Congratulations on your purchase.')
+    conclusion_label.setWordWrap(True)
+    conclusion_layout = QtWidgets.QVBoxLayout()
+    conclusion_layout.addWidget(conclusion_label)
+    conclusion.setLayout(conclusion_layout)
+    conclusion.setPixmap(BannerPixmap, close_icon(widget).pixmap(50, 50))
+    conclusion.setPixmap(BackgroundPixmap, close_icon(widget).pixmap(50, 50))
+    wizard.addPage(conclusion)
+
+    wizard.setOption(HaveHelpButton)
+
+    wizard.setWindowTitle('Simple Wizard Example')
+
+    return wizard
+
+def test_wizard(widget, *_):
+    wizard = _wizard(widget)
+    execute(wizard)
+
+    return None, None, False, True
+
+def test_classic_wizard(widget, *_):
+    wizard = _wizard(widget)
+    wizard.setWizardStyle(ClassicStyle)
+    execute(wizard)
+
+    return None, None, False, True
+
+def test_modern_wizard(widget, *_):
+    wizard = _wizard(widget)
+    wizard.setWizardStyle(ModernStyle)
+    execute(wizard)
+
+    return None, None, False, True
+
+def test_mac_wizard(widget, *_):
+    wizard = _wizard(widget)
+    wizard.setWizardStyle(MacStyle)
+    execute(wizard)
+
+    return None, None, False, True
+
+def test_aero_wizard(widget, *_):
+    wizard = _wizard(widget)
+    wizard.setWizardStyle(AeroStyle)
+    execute(wizard)
+
+    return None, None, False, True
+
+def test_system_tray(widget, window, *_):
+    dialog = QtWidgets.QErrorMessage(widget)
+    dialog.showMessage('Error message')
+
+    tray = QtWidgets.QSystemTrayIcon()
+    icon = close_icon(widget)
+    tray.setIcon(icon)
+    tray.show()
+    tray.setToolTip('Sample tray icon')
+
+    execute(dialog)
+
+    return None, None, False, True
 
 def _test_standard_button(window, app, button):
     message = QtWidgets.QMessageBox(window)
@@ -1126,7 +2228,7 @@ def test_warning_icon(_, window, __, ___, ____, app):
     _test_standard_icon(window, app, Warning)
     return None, None, False, True
 
-def test_multiple_buttons(widget, *_):
+def test_horizontal_buttons(widget, *_):
     child = []
     child.append(QtWidgets.QTextEdit(widget))
     container = QtWidgets.QWidget(widget)
@@ -1141,6 +2243,35 @@ def test_multiple_buttons(widget, *_):
     dialog.addButton(DialogOk)
     dialog.addButton(DialogCancel)
     child.append(dialog)
+
+    return child
+
+def test_vertical_buttons(widget, *_):
+    child = []
+    child.append(QtWidgets.QTextEdit(widget))
+    container = QtWidgets.QWidget(widget)
+    hbox = QtWidgets.QHBoxLayout(container)
+    hbox.addWidget(QtWidgets.QPushButton('Delete'))
+    hbox.addWidget(QtWidgets.QPushButton('Complete'))
+    child.append(container)
+    child.append(QtWidgets.QLineEdit(widget))
+    dialog = QtWidgets.QDialogButtonBox(Vertical, widget)
+    dialog.addButton('Yes', YesRole)
+    dialog.addButton('Really really really long', YesRole)
+    dialog.addButton(DialogOk)
+    dialog.addButton(DialogCancel)
+    dialog.setCenterButtons(True)
+    child.append(dialog)
+
+    return child
+
+def test_stacked_widget(widget, *_):
+    child = QtWidgets.QStackedWidget(widget)
+    child.addWidget(QtWidgets.QLabel('Label 1'))
+    child.addWidget(QtWidgets.QLabel('Label 2'))
+    child.addWidget(QtWidgets.QLabel('Label 3'))
+    child.addWidget(QtWidgets.QLabel('Label 4'))
+    child.setCurrentIndex(2)
 
     return child
 
@@ -1304,11 +2435,15 @@ def test_issue28(_, window, *__):
 
     return None, None, False, True
 
-
 def test(args, qtargv, test_widget):
     '''Test a single widget.'''
 
     app = QtWidgets.QApplication(qtargv)
+
+    # Set the app style.
+    if args.style != 'native':
+        style = QtWidgets.QStyleFactory.create(args.style)
+        app.setStyle(style)
 
     # use the default font size
     font = app.font()
@@ -1387,9 +2522,6 @@ def main():
     # Disable garbage collection to avoid runtime errors.
     gc.disable()
     os.environ['QT_SCALE_FACTOR'] = str(args.scale)
-    if args.style != 'native':
-        style = QtWidgets.QStyleFactory.create(args.style)
-        QtWidgets.QApplication.setStyle(style)
     if args.widget == 'all':
         all_tests = [i for i in globals().keys() if i.startswith('test_')]
         all_widgets = [i[len('test_'):] for i in all_tests]
