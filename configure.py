@@ -95,8 +95,13 @@ def load_json(path):
 def read_template_dir(directory):
     '''Read the template data from a directory'''
 
+    # Make the stylesheet template optional.
+    stylesheet = ''
+    stylesheet_path = f'{directory}/stylesheet.qss.in'
+    if os.path.exists(stylesheet_path):
+        stylesheet = open(f'{directory}/stylesheet.qss.in').read()
     data = {
-        'stylesheet': open(f'{directory}/stylesheet.qss.in').read(),
+        'stylesheet': stylesheet,
         'icons': [],
     }
     if os.path.exists(f'{directory}/icons.json'):
