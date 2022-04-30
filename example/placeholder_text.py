@@ -2,7 +2,8 @@
 #
 # The MIT License (MIT)
 #
-# Copyright (c) <2021> <Alex Huszagh>
+# Copyright (c) <2013-2014> <Colin Duquesnoy>
+# Modified by Alex Huszagh
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the 'Software'), to deal
@@ -23,10 +24,14 @@
 # THE SOFTWARE.
 
 '''
-    advanced-dock
-    =============
+    placeholder_text
+    ================
 
-    Simple PyQt application using the advanced-docking-system.
+    Example showing how to style the placeholder text for QLineEdit,
+    QTextEdit, and QPlainTextEdit, since in Qt6 is can be styled as
+    the default text color. This seems to be an issue with palettes for
+    Qt6 in `QPalette::PlaceholderText`, since both the stylesheets
+    and palette edits correctly affect styles in Qt5, but not Qt6.
 '''
 
 import argparse
@@ -74,13 +79,13 @@ parser.add_argument(
     action='store_true'
 )
 parser.add_argument(
-    '--use-internal',
-    help='''use the dock manager internal stylesheet.''',
+    '--use-x11',
+    help='''force the use of x11 on compatible systems.''',
     action='store_true'
 )
 parser.add_argument(
-    '--use-x11',
-    help='''force the use of x11 on compatible systems.''',
+    '--set-palette',
+    help='''set the placeholder text palette.''',
     action='store_true'
 )
 
@@ -96,29 +101,73 @@ else:
     resource_format = f':/{args.stylesheet}/'
 stylesheet = f'{resource_format}stylesheet.qss'
 
-from PyQtAds import QtAds
-
 # Compat definitions, between Qt5 and Qt6.
 if args.pyqt6:
-    AlignTop = QtCore.Qt.AlignmentFlag.AlignTop
-    AlignLeft = QtCore.Qt.AlignmentFlag.AlignLeft
+    AlignHCenter = QtCore.Qt.AlignmentFlag.AlignHCenter
     ReadOnly = QtCore.QFile.OpenModeFlag.ReadOnly
     Text = QtCore.QFile.OpenModeFlag.Text
-    WindowMaximized = QtCore.Qt.WindowState.WindowMaximized
+    PlaceholderText = QtGui.QPalette.ColorRole.PlaceholderText
+    WindowText = QtGui.QPalette.ColorRole.WindowText
 else:
-    AlignTop = QtCore.Qt.AlignTop
-    AlignLeft = QtCore.Qt.AlignLeft
+    AlignHCenter = QtCore.Qt.AlignHCenter
     ReadOnly = QtCore.QFile.ReadOnly
     Text = QtCore.QFile.Text
-    WindowMaximized = QtCore.Qt.WindowMaximized
+    PlaceholderText = QtGui.QPalette.PlaceholderText
+    WindowText = QtGui.QPalette.WindowText
 
-# Need to fix an issue on Wayland on Linux:
-#   conda-forge does not support Wayland, for who knows what reason.
-if sys.platform.lower().startswith('linux') and 'CONDA_PREFIX' in os.environ:
-    args.use_x11 = True
+PLACEHOLDER = QtGui.QColor(78, 79, 79, 100)
 
-if args.use_x11:
-    os.environ['XDG_SESSION_TYPE'] = 'x11'
+def set_palette(widget, role, color):
+    '''Set the palette for the placeholder text. This only works in Qt5.'''
+
+    palette = widget.palette();
+    palette.setColor(role, color)
+    widget.setPalette(palette);
+
+def set_placeholder_palette(widget):
+    set_palette(widget, PlaceholderText, PLACEHOLDER)
+
+
+class Ui:
+    '''Main class for the user interface.'''
+
+    def setup(self, MainWindow):
+        MainWindow.setObjectName('MainWindow')
+        MainWindow.resize(1068, 824)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName('centralwidget')
+        self.layout = QtWidgets.QVBoxLayout(self.centralwidget)
+        self.layout.setObjectName('layout')
+        self.layout.setAlignment(AlignHCenter)
+        MainWindow.setCentralWidget(self.centralwidget)
+
+        self.textEdit = QtWidgets.QTextEdit(self.centralwidget)
+        self.textEdit.setObjectName('textEdit')
+        self.textEdit.setPlaceholderText('Placeholder Text')
+        self.layout.addWidget(self.textEdit)
+
+        self.plainTextEdit = QtWidgets.QPlainTextEdit(self.centralwidget)
+        self.plainTextEdit.setObjectName('plainTextEdit')
+        self.plainTextEdit.setPlaceholderText('Placeholder Text')
+        self.layout.addWidget(self.plainTextEdit)
+
+        self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit.setObjectName('lineEdit')
+        self.lineEdit.setPlaceholderText('Placeholder Text')
+        self.layout.addWidget(self.lineEdit)
+
+        # Set the palettes.
+        if args.set_palette:
+            set_placeholder_palette(self.textEdit)
+            set_placeholder_palette(self.plainTextEdit)
+            set_placeholder_palette(self.lineEdit)
+
+    def style_text(self, widget, text):
+        if text:
+            set_text_palette(widget)
+        else:
+            set_notext_palette(widget)
+
 
 def main():
     'Application entry point'
@@ -127,12 +176,18 @@ def main():
         os.environ['QT_SCALE_FACTOR'] = str(args.scale)
     else:
         os.environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = '1'
+
     app = QtWidgets.QApplication(sys.argv[:1] + unknown)
     if args.style != 'native':
         style = QtWidgets.QStyleFactory.create(args.style)
         app.setStyle(style)
 
     window = QtWidgets.QMainWindow()
+
+    # setup ui
+    ui = Ui()
+    ui.setup(window)
+    window.setWindowTitle('Stylized Placeholder Text.')
 
     # use the default font size
     font = app.font()
@@ -149,42 +204,7 @@ def main():
         stream = QtCore.QTextStream(file)
         app.setStyleSheet(stream.readAll())
 
-    # setup the dock manager
-    window.setObjectName('MainWindow')
-    window.resize(1068, 824)
-    widget = QtWidgets.QWidget(window)
-    window.setCentralWidget(widget)
-    dock_manager = QtAds.CDockManager(window)
-
-    # add widgets to the dock manager
-    label_widget = QtAds.CDockWidget('Dock')
-    label = QtWidgets.QLabel('Some label')
-    label_widget.setWidget(label)
-    dock_area = dock_manager.setCentralWidget(label_widget)
-    dock_area.setAllowedAreas(QtAds.DockWidgetArea.OuterDockAreas)
-
-    list_widget = QtAds.CDockWidget('List')
-    lst = QtWidgets.QListWidget()
-    for index in range(10):
-        lst.addItem(QtWidgets.QListWidgetItem(f'Item {index + 1}'))
-    list_widget.setWidget(lst)
-    list_widget.setMinimumSizeHintMode(QtAds.CDockWidget.MinimumSizeHintFromDockWidget)
-    dock_manager.addDockWidget(QtAds.DockWidgetArea.LeftDockWidgetArea, list_widget, dock_area)
-
-    table_widget = QtAds.CDockWidget('Table')
-    table = QtWidgets.QTableWidget()
-    # make sure we have both scroll areas active.
-    table.setColumnCount(40)
-    table.setRowCount(40)
-    table_widget.setWidget(table)
-    table_widget.setMinimumSizeHintMode(QtAds.CDockWidget.MinimumSizeHintFromDockWidget)
-    dock_manager.addDockWidget(QtAds.DockWidgetArea.RightDockWidgetArea, table_widget, dock_area)
-
-    if not args.use_internal:
-        dock_manager.setStyleSheet('')
-
     # run
-    window.setWindowState(WindowMaximized)
     window.show()
     if args.pyqt6:
         return app.exec()

@@ -16,6 +16,7 @@ This stylesheet aims to be similar across all platforms, and provide a nice UI f
   - [PyQt6 Installation](#pyqt6-installation)
 - [Features](#features)
 - [Extending Stylesheets](#extending-stylesheets)
+- [Known Issues](#known-issues)
 - [Debugging](#debugging)
 - [Development Guide](#development-guide)
   - [Configuring](#configuring)
@@ -411,12 +412,18 @@ The limitations of stylesheets include:
 
 For an example of using QCommonStyle to override standard icons in a PyQt application, see [standard_icons.py](/example/standard_icons.py). An extensive reference can be found [here](https://doc.qt.io/qt-5/style-reference.html). A reference of QStyle, and the default styles Qt provides can be found [here](https://doc.qt.io/qt-5/qstyle.html).
 
+# Known Issues
+
+Some issues cannot be fixed with stylesheets alone, or there are bugs in Qt itself that prevent these issues from being fixed.
+
+- Placeholder Text color: for the widgets `QTextEdit`, `QPlainTextEdit`, and `QLineEdit`, you can set placeholder text for when no text is present. In Qt5, this is correctly grayed out when the placeholder text is present, which is not respected in Qt6 (as of Qt version 6.3.0). An example of a workaround [placeholder_text.py](/example/placeholder_text.py), which only works currently for Qt5. Using the native stylesheet shows it uses hard-coded colors for Qt6, so this is almost certainly a Qt bug.
+
 # Debugging
 
 Have an issue with the styles? Here's a few suggestions, prior to filing a bug report:
 
 - Modified the application font? Make sure you do **before** setting the application stylesheet.
-- Modified the application style? Make sure you do **before** you creating a `QApplication instance`.
+- Modified the application style? Make sure you do **after** you creating a `QApplication instance` but **before** you show the window or add widgets.
 
 # Development Guide
 

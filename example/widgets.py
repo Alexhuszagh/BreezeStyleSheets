@@ -31,7 +31,6 @@
 '''
 
 import argparse
-import logging
 import os
 import sys
 
@@ -604,11 +603,12 @@ def main():
         os.environ['QT_SCALE_FACTOR'] = str(args.scale)
     else:
         os.environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = '1'
+
+    app = QtWidgets.QApplication(sys.argv[:1] + unknown)
     if args.style != 'native':
         style = QtWidgets.QStyleFactory.create(args.style)
-        QtWidgets.QApplication.setStyle(style)
-    logging.basicConfig(level=logging.DEBUG)
-    app = QtWidgets.QApplication(sys.argv[:1] + unknown)
+        app.setStyle(style)
+
     window = QtWidgets.QMainWindow()
 
     # use the default font size
