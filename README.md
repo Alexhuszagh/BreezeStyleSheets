@@ -392,6 +392,12 @@ def main():
 - Cross-platform icon packs for standard icons.
 - Extensible stylesheets: add your own plugins or rules and automatically configure them using the same configuration syntax.
 
+**Plugins**
+
+The supported plugins can be found in the [extensions](/extensions) directory and include theme support for:
+- Advanced Docking System
+- QDockWidget Tooltips
+
 # Extending Stylesheets
 
 There are some limitations of using Qt stylesheets in general, which cannot be solved by stylesheets. To get more fine-grained style control, you should subclass `QCommonStyle`:
