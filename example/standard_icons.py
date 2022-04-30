@@ -128,6 +128,7 @@ if args.pyqt6:
     SP_DirHomeIcon = QtWidgets.QStyle.StandardPixmap.SP_DirHomeIcon
     SP_DirIcon = QtWidgets.QStyle.StandardPixmap.SP_DirIcon
     SP_DirLinkIcon = QtWidgets.QStyle.StandardPixmap.SP_DirLinkIcon
+    SP_DirLinkOpenIcon = QtWidgets.QStyle.StandardPixmap.SP_DirLinkOpenIcon
     SP_DirOpenIcon = QtWidgets.QStyle.StandardPixmap.SP_DirOpenIcon
     SP_DockWidgetCloseButton = QtWidgets.QStyle.StandardPixmap.SP_DockWidgetCloseButton
     SP_DriveCDIcon = QtWidgets.QStyle.StandardPixmap.SP_DriveCDIcon
@@ -155,6 +156,16 @@ if args.pyqt6:
     SP_MediaStop = QtWidgets.QStyle.StandardPixmap.SP_MediaStop
     SP_MediaVolume = QtWidgets.QStyle.StandardPixmap.SP_MediaVolume
     SP_MediaVolumeMuted = QtWidgets.QStyle.StandardPixmap.SP_MediaVolumeMuted
+    SP_LineEditClearButton = QtWidgets.QStyle.StandardPixmap.SP_LineEditClearButton
+    SP_DialogYesToAllButton = QtWidgets.QStyle.StandardPixmap.SP_DialogYesToAllButton
+    SP_DialogNoToAllButton = QtWidgets.QStyle.StandardPixmap.SP_DialogNoToAllButton
+    SP_DialogSaveAllButton = QtWidgets.QStyle.StandardPixmap.SP_DialogSaveAllButton
+    SP_DialogAbortButton = QtWidgets.QStyle.StandardPixmap.SP_DialogAbortButton
+    SP_DialogRetryButton = QtWidgets.QStyle.StandardPixmap.SP_DialogRetryButton
+    SP_DialogIgnoreButton = QtWidgets.QStyle.StandardPixmap.SP_DialogIgnoreButton
+    SP_RestoreDefaultsButton = QtWidgets.QStyle.StandardPixmap.SP_RestoreDefaultsButton
+    if QtCore.QT_VERSION >= 393984:
+        SP_TabCloseButton = QtWidgets.QStyle.StandardPixmap.SP_TabCloseButton
     SP_MessageBoxCritical = QtWidgets.QStyle.StandardPixmap.SP_MessageBoxCritical
     SP_MessageBoxInformation = QtWidgets.QStyle.StandardPixmap.SP_MessageBoxInformation
     SP_MessageBoxQuestion = QtWidgets.QStyle.StandardPixmap.SP_MessageBoxQuestion
@@ -206,6 +217,7 @@ else:
     SP_DirHomeIcon = QtWidgets.QStyle.SP_DirHomeIcon
     SP_DirIcon = QtWidgets.QStyle.SP_DirIcon
     SP_DirLinkIcon = QtWidgets.QStyle.SP_DirLinkIcon
+    SP_DirLinkOpenIcon = QtWidgets.QStyle.SP_DirLinkOpenIcon
     SP_DirOpenIcon = QtWidgets.QStyle.SP_DirOpenIcon
     SP_DockWidgetCloseButton = QtWidgets.QStyle.SP_DockWidgetCloseButton
     SP_DriveCDIcon = QtWidgets.QStyle.SP_DriveCDIcon
@@ -233,6 +245,14 @@ else:
     SP_MediaStop = QtWidgets.QStyle.SP_MediaStop
     SP_MediaVolume = QtWidgets.QStyle.SP_MediaVolume
     SP_MediaVolumeMuted = QtWidgets.QStyle.SP_MediaVolumeMuted
+    SP_LineEditClearButton = QtWidgets.QStyle.SP_LineEditClearButton
+    SP_DialogYesToAllButton = QtWidgets.QStyle.SP_DialogYesToAllButton
+    SP_DialogNoToAllButton = QtWidgets.QStyle.SP_DialogNoToAllButton
+    SP_DialogSaveAllButton = QtWidgets.QStyle.SP_DialogSaveAllButton
+    SP_DialogAbortButton = QtWidgets.QStyle.SP_DialogAbortButton
+    SP_DialogRetryButton = QtWidgets.QStyle.SP_DialogRetryButton
+    SP_DialogIgnoreButton = QtWidgets.QStyle.SP_DialogIgnoreButton
+    SP_RestoreDefaultsButton = QtWidgets.QStyle.SP_RestoreDefaultsButton
     SP_MessageBoxCritical = QtWidgets.QStyle.SP_MessageBoxCritical
     SP_MessageBoxInformation = QtWidgets.QStyle.SP_MessageBoxInformation
     SP_MessageBoxQuestion = QtWidgets.QStyle.SP_MessageBoxQuestion
@@ -306,7 +326,7 @@ def stylesheet_icon(style, icon, option=None, widget=None):
         return QtGui.QIcon(f'{resource_format}dialog_reset.svg')
     elif icon == SP_DialogSaveButton:
         return QtGui.QIcon(f'{resource_format}dialog_save.svg')
-    return style.standardIcon(icon, option, widget)
+    return QtWidgets.QCommonStyle.standardIcon(style, icon, option, widget)
 
 
 class ApplicationStyle(QtWidgets.QCommonStyle):
@@ -326,15 +346,24 @@ class ApplicationStyle(QtWidgets.QCommonStyle):
         return getattr(self.style, item)
 
 
-def standard_button(ui, icon, index):
-    '''Create a QToolButton with a standard icon.'''
+def add_standard_button(ui, layout, icon, index):
+    '''Create and add a QToolButton with a standard icon.'''
 
     button = QtWidgets.QToolButton(ui.centralwidget)
     setattr(ui, f'button{index}', button)
     button.setAutoRaise(True)
     button.setIcon(standard_icon(button, icon))
     button.setObjectName(f'button{index}')
-    ui.layout.addWidget(button)
+    layout.addWidget(button)
+
+
+def add_standard_buttons(ui, page, icons):
+    '''Create and add QToolButtons with standard icons to the UI.'''
+
+    for icon_name in icons:
+        icon = standard_icon(page, globals()[icon_name])
+        item = QtWidgets.QListWidgetItem(icon, icon_name)
+        page.addItem(item)
 
 
 class Ui:
@@ -350,20 +379,104 @@ class Ui:
         self.layout.setAlignment(AlignHCenter)
         MainWindow.setCentralWidget(self.centralwidget)
 
-        standard_button(self, SP_ArrowLeft, 0)
-        standard_button(self, SP_ArrowDown, 1)
-        standard_button(self, SP_ArrowRight, 2)
-        standard_button(self, SP_ArrowUp, 3)
-        standard_button(self, SP_DockWidgetCloseButton, 4)
-        standard_button(self, SP_DialogCancelButton, 5)
-        standard_button(self, SP_DialogCloseButton, 6)
-        standard_button(self, SP_DialogDiscardButton, 7)
-        standard_button(self, SP_DialogHelpButton, 8)
-        standard_button(self, SP_DialogNoButton, 9)
-        standard_button(self, SP_DialogOkButton, 10)
-        standard_button(self, SP_DialogOpenButton, 11)
-        standard_button(self, SP_DialogResetButton, 12)
-        standard_button(self, SP_DialogSaveButton, 13)
+        self.tool_box = QtWidgets.QToolBox(self.centralwidget)
+        self.page1 = QtWidgets.QListWidget()
+        self.tool_box.addItem(self.page1, 'Overwritten Icons')
+        self.layout.addWidget(self.tool_box)
+
+        add_standard_buttons(self, self.page1, [
+            'SP_ArrowLeft',
+            'SP_ArrowDown',
+            'SP_ArrowRight',
+            'SP_ArrowUp',
+            'SP_DockWidgetCloseButton',
+            'SP_DialogCancelButton',
+            'SP_DialogCloseButton',
+            'SP_DialogDiscardButton',
+            'SP_DialogHelpButton',
+            'SP_DialogNoButton',
+            'SP_DialogOkButton',
+            'SP_DialogOpenButton',
+            'SP_DialogResetButton',
+            'SP_DialogSaveButton',
+        ])
+
+        self.page2 = QtWidgets.QListWidget()
+        self.tool_box.addItem(self.page2, 'Default Icons')
+        self.layout.addWidget(self.tool_box)
+
+        default_icons = [
+            'SP_TitleBarMinButton',
+            'SP_TitleBarMenuButton',
+            'SP_TitleBarMaxButton',
+            'SP_TitleBarCloseButton',
+            'SP_TitleBarNormalButton',
+            'SP_TitleBarShadeButton',
+            'SP_TitleBarUnshadeButton',
+            'SP_TitleBarContextHelpButton',
+            'SP_MessageBoxInformation',
+            'SP_MessageBoxWarning',
+            'SP_MessageBoxCritical',
+            'SP_MessageBoxQuestion',
+            'SP_DesktopIcon',
+            'SP_TrashIcon',
+            'SP_ComputerIcon',
+            'SP_DriveFDIcon',
+            'SP_DriveHDIcon',
+            'SP_DriveCDIcon',
+            'SP_DriveDVDIcon',
+            'SP_DriveNetIcon',
+            'SP_DirHomeIcon',
+            'SP_DirOpenIcon',
+            'SP_DirClosedIcon',
+            'SP_DirIcon',
+            'SP_DirLinkIcon',
+            'SP_DirLinkOpenIcon',
+            'SP_FileIcon',
+            'SP_FileLinkIcon',
+            'SP_FileDialogStart',
+            'SP_FileDialogEnd',
+            'SP_FileDialogToParent',
+            'SP_FileDialogNewFolder',
+            'SP_FileDialogDetailedView',
+            'SP_FileDialogInfoView',
+            'SP_FileDialogContentsView',
+            'SP_FileDialogListView',
+            'SP_FileDialogBack',
+            'SP_ToolBarHorizontalExtensionButton',
+            'SP_ToolBarVerticalExtensionButton',
+            'SP_DialogApplyButton',
+            'SP_DialogYesButton',
+            'SP_DialogNoButton',
+            'SP_ArrowBack',
+            'SP_ArrowForward',
+            'SP_CommandLink',
+            'SP_VistaShield',
+            'SP_BrowserReload',
+            'SP_BrowserStop',
+            'SP_MediaPlay',
+            'SP_MediaStop',
+            'SP_MediaPause',
+            'SP_MediaSkipForward',
+            'SP_MediaSkipBackward',
+            'SP_MediaSeekForward',
+            'SP_MediaSeekBackward',
+            'SP_MediaVolume',
+            'SP_MediaVolumeMuted',
+            'SP_LineEditClearButton',
+            'SP_DialogYesToAllButton',
+            'SP_DialogNoToAllButton',
+            'SP_DialogSaveAllButton',
+            'SP_DialogAbortButton',
+            'SP_DialogRetryButton',
+            'SP_DialogIgnoreButton',
+            'SP_RestoreDefaultsButton',
+        ]
+        # QT_VERSION is stored in 0xMMmmpp, each in 16 bit pairs.
+        # Goes major, minor, patch. 393984 is "6.3.0"
+        if QtCore.QT_VERSION >= 393984:
+            default_icons.append('SP_TabCloseButton')
+        add_standard_buttons(self, self.page2, default_icons)
 
         self.dockWidget1 = QtWidgets.QDockWidget(MainWindow)
         self.dockWidget1.setObjectName('dockWidget1')
