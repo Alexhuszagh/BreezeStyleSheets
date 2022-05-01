@@ -278,6 +278,89 @@ if sys.platform.lower().startswith('linux') and 'CONDA_PREFIX' in os.environ:
 if args.use_x11:
     os.environ['XDG_SESSION_TYPE'] = 'x11'
 
+ICON_MAP = {
+    SP_TitleBarMinButton: 'minimize.svg',
+    SP_TitleBarMenuButton: 'menu.svg',
+    SP_TitleBarMaxButton: 'maximize.svg',
+    SP_TitleBarCloseButton: 'dialog_close.svg',
+    SP_TitleBarNormalButton: 'restore.svg',
+    SP_TitleBarShadeButton: 'shade.svg',
+    SP_TitleBarUnshadeButton: 'unshade.svg',
+    SP_TitleBarContextHelpButton: 'help.svg',
+    SP_MessageBoxInformation: 'message_information.svg',
+    SP_MessageBoxWarning: 'message_warning.svg',
+    SP_MessageBoxCritical: 'message_critical.svg',
+    SP_MessageBoxQuestion: 'message_question.svg',
+    SP_DesktopIcon: 'desktop.svg',
+    SP_TrashIcon: 'trash.svg',
+    SP_ComputerIcon: 'computer.svg',
+    SP_DriveFDIcon: 'floppy_drive.svg',
+    SP_DriveHDIcon: 'hard_drive.svg',
+    SP_DriveCDIcon: 'disc_drive.svg',
+    SP_DriveDVDIcon: 'disc_drive.svg',
+    SP_DriveNetIcon: 'network_drive.svg',
+    SP_DirHomeIcon: 'home_directory.svg',
+    SP_DirOpenIcon: 'folder_open.svg',
+    SP_DirClosedIcon: 'folder.svg',
+    SP_DirIcon: 'folder.svg',
+    SP_DirLinkIcon: 'folder_link.svg',
+    SP_DirLinkOpenIcon: 'folder_open_link.svg',
+    SP_FileIcon: 'file.svg',
+    SP_FileLinkIcon: 'file_link.svg',
+    SP_FileDialogStart: 'file_dialog_start.svg',
+    SP_FileDialogEnd: 'file_dialog_end.svg',
+    SP_FileDialogToParent: 'up_arrow.svg',
+    SP_FileDialogNewFolder: 'folder.svg',
+    SP_FileDialogDetailedView: 'file_dialog_detailed.svg',
+    SP_FileDialogInfoView: 'file_dialog_info.svg',
+    SP_FileDialogContentsView: 'file_dialog_contents.svg',
+    SP_FileDialogListView: 'file_dialog_list.svg',
+    SP_FileDialogBack: 'left_arrow.svg',
+    SP_DockWidgetCloseButton: 'close.svg',
+    SP_ToolBarHorizontalExtensionButton: 'horizontal_extension.svg',
+    SP_ToolBarVerticalExtensionButton: 'vertical_extension.svg',
+    SP_DialogOkButton: 'dialog_ok.svg',
+    SP_DialogCancelButton: 'dialog_cancel.svg',
+    SP_DialogHelpButton: 'dialog_help.svg',
+    SP_DialogOpenButton: 'dialog_open.svg',
+    SP_DialogSaveButton: 'dialog_save.svg',
+    SP_DialogCloseButton: 'dialog_close.svg',
+    SP_DialogApplyButton: 'dialog_apply.svg',
+    SP_DialogResetButton: 'dialog_reset.svg',
+    SP_DialogDiscardButton: 'dialog_discard.svg',
+    SP_DialogYesButton: 'dialog_apply.svg',
+    SP_DialogNoButton: 'dialog_no.svg',
+    SP_ArrowUp: 'up_arrow.svg',
+    SP_ArrowDown: 'down_arrow.svg',
+    SP_ArrowLeft: 'left_arrow.svg',
+    SP_ArrowRight: 'right_arrow.svg',
+    SP_ArrowBack: 'left_arrow.svg',
+    SP_ArrowForward: 'right_arrow.svg',
+    SP_CommandLink: 'right_arrow.svg',
+    SP_VistaShield: 'vista_shield.svg',
+    SP_BrowserReload: 'browser_refresh.svg',
+    SP_BrowserStop: 'browser_refresh_stop.svg',
+    SP_MediaPlay: 'play.svg',
+    SP_MediaStop: 'stop.svg',
+    SP_MediaPause: 'pause.svg',
+    SP_MediaSkipForward: 'skip_backward.svg',
+    SP_MediaSkipBackward: 'skip_forward.svg',
+    SP_MediaSeekForward: 'seek_forward.svg',
+    SP_MediaSeekBackward: 'seek_backward.svg',
+    SP_MediaVolume: 'volume.svg',
+    SP_MediaVolumeMuted: 'volume_muted.svg',
+    SP_LineEditClearButton: 'clear_text.svg',
+    SP_DialogYesToAllButton: 'dialog_yes_to_all.svg',
+    SP_DialogNoToAllButton: 'dialog_no.svg',
+    SP_DialogSaveAllButton: 'dialog_save_all.svg',
+    SP_DialogAbortButton: 'dialog_cancel.svg',
+    SP_DialogRetryButton: 'dialog_retry.svg',
+    SP_DialogIgnoreButton: 'dialog_ignore.svg',
+    SP_RestoreDefaultsButton: 'restore_defaults.svg',
+}
+if QtCore.QT_VERSION >= 393984:
+    ICON_MAP[SP_TabCloseButton] = 'tab_close.svg'
+
 
 def standard_icon(widget, name):
     '''Get the close icon depending on the stylesheet.'''
@@ -298,34 +381,10 @@ def style_icon(style, icon, option=None, widget=None):
 def stylesheet_icon(style, icon, option=None, widget=None):
     '''Get a standard icon for the stylesheet style'''
 
-    if icon == SP_ArrowLeft:
-        return QtGui.QIcon(f'{resource_format}left_arrow.svg')
-    elif icon == SP_ArrowDown:
-        return QtGui.QIcon(f'{resource_format}down_arrow.svg')
-    elif icon == SP_ArrowRight:
-        return QtGui.QIcon(f'{resource_format}right_arrow.svg')
-    elif icon == SP_ArrowUp:
-        return QtGui.QIcon(f'{resource_format}up_arrow.svg')
-    elif icon == SP_DockWidgetCloseButton:
-        return QtGui.QIcon(f'{resource_format}close.svg')
-    elif icon == SP_DialogCancelButton:
-        return QtGui.QIcon(f'{resource_format}dialog_cancel.svg')
-    elif icon == SP_DialogCloseButton:
-        return QtGui.QIcon(f'{resource_format}dialog_close.svg')
-    elif icon == SP_DialogDiscardButton:
-        return QtGui.QIcon(f'{resource_format}dialog_discard.svg')
-    elif icon == SP_DialogHelpButton:
-        return QtGui.QIcon(f'{resource_format}dialog_help.svg')
-    elif icon == SP_DialogNoButton:
-        return QtGui.QIcon(f'{resource_format}dialog_no.svg')
-    elif icon == SP_DialogOkButton:
-        return QtGui.QIcon(f'{resource_format}dialog_ok.svg')
-    elif icon == SP_DialogOpenButton:
-        return QtGui.QIcon(f'{resource_format}dialog_open.svg')
-    elif icon == SP_DialogResetButton:
-        return QtGui.QIcon(f'{resource_format}dialog_reset.svg')
-    elif icon == SP_DialogSaveButton:
-        return QtGui.QIcon(f'{resource_format}dialog_save.svg')
+    path = ICON_MAP[icon]
+    resource = f'{resource_format}{path}'
+    if QtCore.QFile.exists(resource):
+        return QtGui.QIcon(resource)
     return QtWidgets.QCommonStyle.standardIcon(style, icon, option, widget)
 
 

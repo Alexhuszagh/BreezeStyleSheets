@@ -38,7 +38,7 @@
         "default": ["foreground"]
     },
     "file_dialog_contents": {
-        "default": ["foreground", "highlight:alternate"]
+        "default": ["foreground", "highlight:alternate", "midtone"]
     },
     "file_dialog_detailed": {
         "default": ["foreground", "midtone:light"]
