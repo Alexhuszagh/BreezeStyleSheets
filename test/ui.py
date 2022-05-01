@@ -41,15 +41,15 @@ home = os.path.dirname(tests_dir)
 dist = os.path.join(home, 'dist')
 
 # Create our arguments.
-parser = argparse.ArgumentParser(description='Configurations for the Qt5 application.')
+parser = argparse.ArgumentParser(description='Configurations for the Qt application.')
 parser.add_argument(
     '--widget',
-    help='widget to test. can provide `all` to test all',
+    help='widget to test. can provide `all` to test all widgets',
     default='all'
 )
 parser.add_argument(
     '--stylesheet',
-    help='stylesheet name',
+    help='stylesheet name (`dark`, `light`, `native`, ...)',
     default='native'
 )
 # Know working styles include:
@@ -57,7 +57,7 @@ parser.add_argument(
 #   2. Windows
 parser.add_argument(
     '--style',
-    help='application style, which is different than the stylesheet',
+    help='application style (`Fusion`, `Windows`, `native`, ...)',
     default='native'
 )
 parser.add_argument(

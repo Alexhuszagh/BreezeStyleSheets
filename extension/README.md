@@ -9,7 +9,7 @@ Furthermore, this simplifies making local, application-specific changes, without
 
 # Pre-Packaged Extensions
 
-**Advanced Docking System**
+### Advanced Docking System
 
 This extension adds support for the [Advanced Docking System](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System). This comes with styles for the dock manager to create a consistent theme between the main stylesheet and the docking system.
 
@@ -53,7 +53,7 @@ And make sure to [disable](https://github.com/githubuser0xFFFF/Qt-Advanced-Docki
     />
 </figure>
 
-**QDockWidget Tooltips**
+### QDockWidget Tooltips
 
 This extension adds tooltips to QDockWidget's float and close buttons.
 
@@ -71,7 +71,7 @@ python configure.py --extensions=dock-tooltips
     />
 </figure>
 
-**Standard Icons**
+### Standard Icons
 
 This extension adds a complete set of standard icons to override the Qt defaults. Please reference [standard_icons.py](/example/standard_icons.py) for an example of how to override these icons. These cannot be overwritten solely using a stylesheet, so you must provide your own subclass of `QCommonStyle` and override the `standardIcon` method.
 

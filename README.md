@@ -3,7 +3,7 @@ BreezeStyleSheets
 
 Configurable Breeze and BreezeDark-like stylesheets for Qt Applications.
 
-This stylesheet aims to be similar across all platforms, and provide a nice UI for different DPIs (as determined by the default font size, or using the screen scale factor). This is currently under work for scaling to multiple different DPIs and font sizes.
+BreezeStyleSheets is a set of beautiful light and dark stylesheets that render consistently across platforms, including high DPI screens. Each stylesheet is generated from a theme file and can be extended with a plugin system, simplifying the generation custom stylesheets for your application. The stylesheets are comprehensively tested with most Qt widgets and widget properties, providing a consistent, stylish feel on any platform, including different operating systems, desktop environments, and Qt versions.
 
 **Table of Contents**
 
@@ -15,6 +15,7 @@ This stylesheet aims to be similar across all platforms, and provide a nice UI f
   - [PyQt5 Installation](#pyqt5-installation)
   - [PyQt6 Installation](#pyqt6-installation)
 - [Features](#features)
+  - [Plugins](#plugins)
 - [Extending Stylesheets](#extending-stylesheets)
 - [Known Issues](#known-issues)
 - [Debugging](#debugging)
@@ -392,12 +393,12 @@ def main():
 - Cross-platform icon packs for standard icons.
 - Extensible stylesheets: add your own plugins or rules and automatically configure them using the same configuration syntax.
 
-**Plugins**
+## Plugins
 
 The supported plugins can be found in the [extensions](/extension/README.md) directory and include theme support for:
-- Advanced Docking System
-- QDockWidget Tooltips
-- Complete Standard Icon Set
+- [Advanced Docking System](/extension/README.md#advanced-docking-system)
+- [QDockWidget Tooltips](/extension/README.md#qdockwidget-tooltips)
+- [Complete Standard Icon Set](/extension/README.md#standard-icons)
 
 # Extending Stylesheets
 
@@ -445,13 +446,40 @@ python configure.py --compiled-resource breeze_resources.py
 
 ## Testing
 
-In order to test your changes, first run the tests using the appropriate widget in [ui.py](test/ui.py) (see the options for `stylesheet`, `widget`, `font-size`, and `font-family`), and then run the tests with the complete UI in `example.py`. If the widget you fixed the style for does not exist in `example.py`, please add it.
+The unittest suite is [ui.py](test/ui.py). By default, the suite runs every test, so to test changes to a specific widget, pass the `--widget $widget` flag. To test other configurations, see the options for `--stylesheet`, `--widget`, `--font-size`, and `--font-family`, and then run the tests with the complete UI in [widgets.py](/example/widgets.py). If the widget you fixed the style for does not exist in the test suite or [widgets.py](/example/widgets.py), please add it.
 
 ```bash
 # Test all widgets
-python test/ui.py --stylesheet $theme
+$ python test/ui.py --stylesheet $theme
 # Test only a single widget.
-python test/ui.py --widget $widget --stylesheet $theme
+$ python test/ui.py --widget $widget --stylesheet $theme
+# Get the help options.
+$ python test/ui.py --help
+usage: ui.py [-h] [--widget WIDGET] [--stylesheet STYLESHEET] [--style STYLE]
+             [--font-size FONT_SIZE] [--font-family FONT_FAMILY] [--width WIDTH]
+             [--height HEIGHT] [--alignment ALIGNMENT] [--compress] [--scale SCALE] [--pyqt6]
+             [--use-x11]
+
+Configurations for the Qt application.
+
+options:
+  -h, --help            show this help message and exit
+  --widget WIDGET       widget to test. can provide `all` to test all widgets
+  --stylesheet STYLESHEET
+                        stylesheet name (`dark`, `light`, `native`, ...)
+  --style STYLE         application style (`Fusion`, `Windows`, `native`, ...)
+  --font-size FONT_SIZE
+                        font size for the application
+  --font-family FONT_FAMILY
+                        the font family
+  --width WIDTH         the window width
+  --height HEIGHT       the window height
+  --alignment ALIGNMENT
+                        the layout alignment
+  --compress            add stretch on both sides
+  --scale SCALE         scale factor for the UI
+  --pyqt6               use PyQt6 rather than PyQt5.
+  --use-x11             force the use of x11 on compatible systems
 ```
 
 To see the complete list of Qt widgets covered by the unittests, see [Test Coverage](Test%20Coverage.md).
