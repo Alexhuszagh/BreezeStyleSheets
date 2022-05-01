@@ -1697,8 +1697,8 @@ QTreeView::item:!selected:hover
     padding: 0.13em;
 }
 
-QSlider::handle:horizontal,
-QSlider::handle:vertical
+QAbstractSlider::handle:horizontal,
+QAbstractSlider::handle:vertical
 {
     background: #1d2023;
     border: 0.04em solid #626568;
@@ -1707,67 +1707,67 @@ QSlider::handle:vertical
     border-radius: 0.35em;
 }
 
-QSlider:horizontal
+QAbstractSlider:horizontal
 {
     height: 2em;
 }
 
-QSlider:vertical
+QAbstractSlider:vertical
 {
     width: 2em;
 }
 
-QSlider::handle:horizontal
+QAbstractSlider::handle:horizontal
 {
     margin: -0.23em 0;
 }
 
-QSlider::handle:vertical
+QAbstractSlider::handle:vertical
 {
     margin: 0 -0.23em;
 }
 
-QSlider::groove:horizontal,
-QSlider::groove:vertical
+QAbstractSlider::groove:horizontal,
+QAbstractSlider::groove:vertical
 {
     background: #2c3034;
     border: 0em solid #31363b;
     border-radius: 0.19em;
 }
 
-QSlider::groove:horizontal
+QAbstractSlider::groove:horizontal
 {
     height: 0.4em;
 }
 
-QSlider::groove:vertical
+QAbstractSlider::groove:vertical
 {
     width: 0.4em;
 }
 
-QSlider::handle:horizontal:hover,
-QSlider::handle:horizontal:focus,
-QSlider::handle:vertical:hover,
-QSlider::handle:vertical:focus
+QAbstractSlider::handle:horizontal:hover,
+QAbstractSlider::handle:horizontal:focus,
+QAbstractSlider::handle:vertical:hover,
+QAbstractSlider::handle:vertical:focus
 {
     border: 0.04em solid #3daee9;
 }
 
-QSlider::handle:horizontal:!focus:!hover,
-QSlider::handle:vertical:!focus:!hover
+QAbstractSlider::handle:horizontal:!focus:!hover,
+QAbstractSlider::handle:vertical:!focus:!hover
 {
     border: 0.04em solid #626568;
 }
 
-QSlider::sub-page:horizontal,
-QSlider::add-page:vertical
+QAbstractSlider::sub-page:horizontal,
+QAbstractSlider::add-page:vertical
 {
     background: #3daee9;
     border-radius: 0.19em;
 }
 
-QSlider::add-page:horizontal,
-QSlider::sub-page:vertical
+QAbstractSlider::add-page:horizontal,
+QAbstractSlider::sub-page:vertical
 {
     background: #626568;
     border-radius: 0.19em;
