@@ -107,6 +107,11 @@ parser.add_argument(
     help='force the use of x11 on compatible systems.',
     action='store_true'
 )
+parser.add_argument(
+    '--print-tests',
+    help='print all available tests (widget names).',
+    action='store_true'
+)
 
 args, unknown = parser.parse_known_args()
 if args.pyqt6:
@@ -2519,13 +2524,21 @@ def test(args, qtargv, test_widget):
 def main():
     'Application entry point'
 
+    def test_names():
+        return [i for i in globals().keys() if i.startswith('test_')]
+
+    def widget_names():
+        return [i[len('test_'):] for i in test_names()]
+
+    if args.print_tests:
+        print('\n'.join(sorted(widget_names())))
+        return 0
+
     # Disable garbage collection to avoid runtime errors.
     gc.disable()
     os.environ['QT_SCALE_FACTOR'] = str(args.scale)
     if args.widget == 'all':
-        all_tests = [i for i in globals().keys() if i.startswith('test_')]
-        all_widgets = [i[len('test_'):] for i in all_tests]
-        for widget in all_widgets:
+        for widget in widget_names():
             test(args, sys.argv[:1] + unknown, widget)
             gc.collect()
     else:

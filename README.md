@@ -480,6 +480,15 @@ options:
   --scale SCALE         scale factor for the UI
   --pyqt6               use PyQt6 rather than PyQt5.
   --use-x11             force the use of x11 on compatible systems
+  --print-tests         print all available tests (widget names).
+# Get a complete list of available tests.
+$ python test/ui.py --print-tests
+aero_wizard                                                                                     
+all_focus_tree                                                                                  
+alpha_colordialog
+...
+wizard
+yes_button
 ```
 
 To see the complete list of Qt widgets covered by the unittests, see [Test Coverage](Test%20Coverage.md).
