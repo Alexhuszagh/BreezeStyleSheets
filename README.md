@@ -394,9 +394,10 @@ def main():
 
 **Plugins**
 
-The supported plugins can be found in the [extensions](/extensions) directory and include theme support for:
+The supported plugins can be found in the [extensions](/extension/README.md) directory and include theme support for:
 - Advanced Docking System
 - QDockWidget Tooltips
+- Complete Standard Icon Set
 
 # Extending Stylesheets
 
@@ -496,7 +497,7 @@ Unless you explicitly state otherwise, any contribution intentionally submitted 
 
 # Acknowledgements
 
-BreezeStyleSheets is a fork of [QDarkStyleSheet](https://github.com/ColinDuquesnoy/QDarkStyleSheet). Some of the icons are modified from [Material UI](https://github.com/google/material-design-icons) (which uses an Apache 2.0 license), and are redistributed under the MIT license.
+BreezeStyleSheets is a fork of [QDarkStyleSheet](https://github.com/ColinDuquesnoy/QDarkStyleSheet). Some of the icons are modified from [Material UI](https://github.com/google/material-design-icons) and [Material Design Icons](https://materialdesignicons.com/) (both of which use an Apache 2.0 license), and are redistributed under the MIT license.
 
 # Contact
 
