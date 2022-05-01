@@ -1032,7 +1032,13 @@ QCalendarWidget QToolButton:pressed
     outline: none;
 }
 
-QCalendarWidget QToolButton::menu-indicator
+/**
+ *  The QCalendarWidget for QDateTimeEdit seems to improperly
+ *  style the year QToolButton, which has an object name
+ *  `qt_datetimedit_calendar`, so ensure we style it as well.
+ */
+QCalendarWidget QToolButton::menu-indicator,
+#qt_datetimedit_calendar QCalendarWidget QToolButton::menu-indicator
 {
     border-image: none;
     image: url(^style^down_arrow.svg);
@@ -1045,7 +1051,8 @@ QCalendarWidget QToolButton::menu-indicator
     subcontrol-position: bottom right;
 }
 
-QCalendarWidget QToolButton::menu-arrow
+QCalendarWidget QToolButton::menu-arrow,
+#qt_datetimedit_calendar QCalendarWidget QToolButton::menu-arrow
 {
     border-image: none;
     image: url(^style^down_arrow.svg);
@@ -1785,21 +1792,29 @@ QToolButton[autoRaise="false"]::down-arrow
 QToolButton::right-arrow
 {
     image: url(^style^right_arrow.svg);
+    width: 0.8em;
+    height: 0.5em;
 }
 
 QToolButton::left-arrow
 {
     image: url(^style^left_arrow.svg);
+    width: 0.8em;
+    height: 0.5em;
 }
 
 QToolButton::up-arrow
 {
     image: url(^style^up_arrow.svg);
+    height: 0.8em;
+    width: 0.5em;
 }
 
 QToolButton::down-arrow
 {
     image: url(^style^down_arrow.svg);
+    height: 0.8em;
+    width: 0.5em;
 }
 
 QToolButton[autoRaise="false"]:hover

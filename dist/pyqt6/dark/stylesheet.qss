@@ -1032,7 +1032,13 @@ QCalendarWidget QToolButton:pressed
     outline: none;
 }
 
-QCalendarWidget QToolButton::menu-indicator
+/**
+ *  The QCalendarWidget for QDateTimeEdit seems to improperly
+ *  style the year QToolButton, which has an object name
+ *  `qt_datetimedit_calendar`, so ensure we style it as well.
+ */
+QCalendarWidget QToolButton::menu-indicator,
+#qt_datetimedit_calendar QCalendarWidget QToolButton::menu-indicator
 {
     border-image: none;
     image: url(dark:down_arrow.svg);
@@ -1045,7 +1051,8 @@ QCalendarWidget QToolButton::menu-indicator
     subcontrol-position: bottom right;
 }
 
-QCalendarWidget QToolButton::menu-arrow
+QCalendarWidget QToolButton::menu-arrow,
+#qt_datetimedit_calendar QCalendarWidget QToolButton::menu-arrow
 {
     border-image: none;
     image: url(dark:down_arrow.svg);
@@ -1453,8 +1460,8 @@ QTabBar[shape="7"]::tab:!selected
 /**
  *  Increase padding on the opposite side of the icon to avoid text clipping.
  *
- *  BUG: The padding works for North in Qt5, South does not work.
- *  Both work in Qt6.
+ *  BUG: The padding works for North, West, and East in Qt5, South does not
+ *  work. All tab positions work for triangular tabs in Qt6.
  */
 QTabBar[shape="4"][tabsClosable="true"]::tab,
 QTabBar[shape="5"][tabsClosable="true"]::tab
@@ -1785,21 +1792,29 @@ QToolButton[autoRaise="false"]::down-arrow
 QToolButton::right-arrow
 {
     image: url(dark:right_arrow.svg);
+    width: 0.8em;
+    height: 0.5em;
 }
 
 QToolButton::left-arrow
 {
     image: url(dark:left_arrow.svg);
+    width: 0.8em;
+    height: 0.5em;
 }
 
 QToolButton::up-arrow
 {
     image: url(dark:up_arrow.svg);
+    height: 0.8em;
+    width: 0.5em;
 }
 
 QToolButton::down-arrow
 {
     image: url(dark:down_arrow.svg);
+    height: 0.8em;
+    width: 0.5em;
 }
 
 QToolButton[autoRaise="false"]:hover
