@@ -426,6 +426,9 @@ Some issues cannot be fixed with stylesheets alone, or there are bugs in Qt itse
 
 - Placeholder Text color: for the widgets `QTextEdit`, `QPlainTextEdit`, and `QLineEdit`, you can set placeholder text for when no text is present. In Qt5, this is correctly grayed out when the placeholder text is present, which is not respected in Qt6 (as of Qt version 6.3.0). An example of a workaround [placeholder_text.py](/example/placeholder_text.py), which only works currently for Qt5. Using the native stylesheet shows it uses hard-coded colors for Qt6, so this is almost certainly a Qt bug. This is likely referenced in [QTBUG-92947](https://bugreports.qt.io/browse/QTBUG-92947) and [QTCREATORBUG-25444](https://bugreports.qt.io/browse/QTCREATORBUG-25444).
 - `QSlider` ticks disappear when using stylesheets, which is a known bug referenced in [QTBUG-3304](https://bugreports.qt.io/browse/QTBUG-3304) and [QTBUG-3564](https://bugreports.qt.io/browse/QTBUG-3564). An example of how to style a `QSlider` is available here [slider.py](/example/slider.py), however, this does not work with a stylesheet applied to a `QSlider`.
+- Triangular QTabBar text and border colors must be the same.
+- Triangular QTabBars do not have hover events for non-selected widgets.
+- Custom padding for triangular QTabBars on the bottom is ignored. All other tab positions work.
 
 # Debugging
 

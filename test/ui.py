@@ -1092,6 +1092,34 @@ def test_triangle_tabwidget_south(widget, *_):
 
     return child
 
+def test_closable_triangle_tabwidget_north(widget, *_):
+    child = _test_tabwidget(widget, North)
+    child.setTabShape(Triangular)
+    child.setTabsClosable(True)
+
+    return child
+
+def test_closable_triangle_tabwidget_south(widget, *_):
+    child = _test_tabwidget(widget, South)
+    child.setTabShape(Triangular)
+    child.setTabsClosable(True)
+
+    return child
+
+def test_closable_triangle_tabwidget_east(widget, *_):
+    child = _test_tabwidget(widget, East)
+    child.setTabShape(Triangular)
+    child.setTabsClosable(True)
+
+    return child
+
+def test_closable_triangle_tabwidget_west(widget, *_):
+    child = _test_tabwidget(widget, West)
+    child.setTabShape(Triangular)
+    child.setTabsClosable(True)
+
+    return child
+
 def test_button_position_tabwidget(widget, *_):
     child = QtWidgets.QTabWidget(widget)
     child.setTabPosition(North)

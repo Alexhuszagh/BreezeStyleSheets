@@ -1390,6 +1390,112 @@ QTabBar QToolButton::left-arrow:disabled
     height: 0.8em;
 }
 
+/**
+ *  Special styles for triangular QTabWidgets.
+ *  These ignore the border attributes, and the border and
+ *  text color seems to be set via the `QTabBar::tab` color
+ *  property. This seemingly cannot be changed.
+ *
+ *  The rounded shapes are 0-3, and the triangular ones are 4-7.
+ *
+ *  The QTabBar outline doesn't respect on QTabBar::tab:
+ *      border-color
+ *      outline-color
+ */
+QTabBar[shape="4"]::tab,
+QTabBar[shape="5"]::tab,
+QTabBar[shape="6"]::tab,
+QTabBar[shape="7"]::tab,
+QTabBar[shape="4"]::tab:last,
+QTabBar[shape="5"]::tab:last,
+QTabBar[shape="6"]::tab:last,
+QTabBar[shape="7"]::tab:last,
+QTabBar[shape="4"]::tab:only-one,
+QTabBar[shape="5"]::tab:only-one,
+QTabBar[shape="6"]::tab:only-one,
+QTabBar[shape="7"]::tab:only-one
+{
+    /* Need a dark color without alpha channel since it affects the text. */
+    color: #3daef3;
+    background-color: #eff0f1;
+    padding: 0.23em;
+}
+
+QTabBar[shape="4"]::tab,
+QTabBar[shape="5"]::tab,
+QTabBar[shape="4"]::tab:last,
+QTabBar[shape="5"]::tab:last,
+QTabBar[shape="4"]::tab:only-one,
+QTabBar[shape="5"]::tab:only-one
+{
+    min-width: 50px;
+}
+
+QTabBar[shape="6"]::tab,
+QTabBar[shape="7"]::tab,
+QTabBar[shape="6"]::tab:last,
+QTabBar[shape="7"]::tab:last,
+QTabBar[shape="6"]::tab:only-one,
+QTabBar[shape="7"]::tab:only-one
+{
+    min-height: 50px;
+}
+
+QTabBar[shape="4"]::tab:!selected,
+QTabBar[shape="5"]::tab:!selected,
+QTabBar[shape="6"]::tab:!selected,
+QTabBar[shape="7"]::tab:!selected
+{
+    color: #31363b;
+    background-color: #d9d8d7;
+}
+
+/**
+ *  Increase padding on the opposite side of the icon to avoid text clipping.
+ *
+ *  BUG: The padding works for North in Qt5, South does not work.
+ *  Both work in Qt6.
+ */
+QTabBar[shape="4"][tabsClosable="true"]::tab,
+QTabBar[shape="5"][tabsClosable="true"]::tab
+{
+    padding-left: 0.5em;
+}
+
+QTabBar[shape="6"][tabsClosable="true"]::tab
+{
+    padding-bottom: 0.5em;
+}
+
+QTabBar[shape="7"][tabsClosable="true"]::tab
+{
+    padding-top: 0.5em;
+}
+
+/**
+*   Undo the padding for the tab.
+*
+*   Enumerated values are North, South, West, East in that order,
+*   from 4-7.
+*
+*   NOTE: Any higher padding will clip the icon.
+*/
+QTabBar[shape="4"]::close-button,
+QTabBar[shape="5"]::close-button
+{
+    padding-left: -0.12em;
+}
+
+QTabBar[shape="6"]::close-button
+{
+    padding-bottom: -0.18em;
+}
+
+QTabBar[shape="7"]::close-button
+{
+    padding-top: -0.18em;
+}
+
 QDockWidget
 {
     background: #eaebec;
