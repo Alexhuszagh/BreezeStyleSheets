@@ -447,7 +447,6 @@ class Ui:
             'SP_ToolBarVerticalExtensionButton',
             'SP_DialogApplyButton',
             'SP_DialogYesButton',
-            'SP_DialogNoButton',
             'SP_ArrowBack',
             'SP_ArrowForward',
             'SP_CommandLink',
