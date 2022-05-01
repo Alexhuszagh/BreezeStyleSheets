@@ -936,36 +936,63 @@ QAbstractSpinBox:down-button:hover
     height: 0.5em;
 }
 
+/**
+ *  Bug fixes for elongated items in QSpinBoxes.
+ *  By default, the items are bounded by `down-button`
+ *  and `up-button`, so this doesn't actually affect the styling.
+ *
+ *  This does however affect some custom styling using
+ *  QStyle.CC_ComboBox, which affects QDateEdit. This cannot
+ *  be selected using QDateEdit, since it uses a global style.
+ *  This sounds nonsensical, because CC_ComboBox isn't a spin box,
+ *  but through trial and error, this is in fact the case.
+ *
+ *  Affects #40.
+ */
+QAbstractSpinBox::up-arrow,
+QAbstractSpinBox::up-arrow:disabled,
+QAbstractSpinBox::up-arrow:off,
+QAbstractSpinBox::up-arrow:!off:!disabled:hover,
+QAbstractSpinBox::down-arrow,
+QAbstractSpinBox::down-arrow:disabled,
+QAbstractSpinBox::down-arrow:off,
+QAbstractSpinBox::down-arrow:!off:!disabled:hover
+{
+    border-image: none;
+    width: 0.8em;
+    height: 0.5em;
+}
+
 QAbstractSpinBox::up-arrow
 {
-    border-image: url(:/dark/up_arrow.svg);
+    image: url(:/dark/up_arrow.svg);
 }
 
 QAbstractSpinBox::up-arrow:disabled,
 QAbstractSpinBox::up-arrow:off
 {
-    border-image: url(:/dark/up_arrow_disabled.svg);
+    image: url(:/dark/up_arrow_disabled.svg);
 }
 
 QAbstractSpinBox::up-arrow:hover
 {
-    border-image: url(:/dark/up_arrow_hover.svg);
+    image: url(:/dark/up_arrow_hover.svg);
 }
 
 QAbstractSpinBox::down-arrow
 {
-    border-image: url(:/dark/down_arrow.svg);
+    image: url(:/dark/down_arrow.svg);
 }
 
 QAbstractSpinBox::down-arrow:disabled,
 QAbstractSpinBox::down-arrow:off
 {
-    border-image: url(:/dark/down_arrow_disabled.svg);
+    image: url(:/dark/down_arrow_disabled.svg);
 }
 
 QAbstractSpinBox::down-arrow:!off:!disabled:hover
 {
-    border-image: url(:/dark/down_arrow_hover.svg);
+    image: url(:/dark/down_arrow_hover.svg);
 }
 
 QDoubleSpinBox
