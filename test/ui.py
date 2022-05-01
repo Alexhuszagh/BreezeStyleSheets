@@ -112,6 +112,10 @@ parser.add_argument(
     help='print all available tests (widget names).',
     action='store_true'
 )
+parser.add_argument(
+    '--start',
+    help='test widget to start at.',
+)
 
 args, unknown = parser.parse_known_args()
 if args.pyqt6:
@@ -1602,7 +1606,7 @@ def test_indented_tree(widget, *_):
     tree.setColumnWidth(0, tree.columnWidth(0) * 2)
     tree.setColumnWidth(1, tree.columnWidth(1) * 2)
 
-    return tree3
+    return tree
 
 def test_all_focus_tree(widget, *_):
     tree = QtWidgets.QTreeWidget(widget)
@@ -1997,7 +2001,7 @@ def test_qt_colordialog(*_):
 
 def test_fontdialog(*_):
     initial = QtGui.QFont()
-    QtWidgets.QFontDialog.getColor(initial)
+    QtWidgets.QFontDialog.getFont(initial)
 
     return None, None, False, True
 
@@ -2566,7 +2570,14 @@ def main():
     gc.disable()
     os.environ['QT_SCALE_FACTOR'] = str(args.scale)
     if args.widget == 'all':
-        for widget in widget_names():
+        widgets = widget_names()
+        if args.start != None:
+            try:
+                index = widgets.index(args.start)
+                widgets = widgets[index:]
+            except IndexError:
+                pass
+        for widget in widgets:
             test(args, sys.argv[:1] + unknown, widget)
             gc.collect()
     else:
