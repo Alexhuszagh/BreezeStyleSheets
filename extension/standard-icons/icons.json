@@ -147,5 +147,8 @@
     },
     "volume_muted": {
         "default": ["foreground"]
+    },
+    "window_close": {
+        "default": ["foreground"]
     }
 }

@@ -88,7 +88,7 @@ The following is a 1:1 mapping of the standard icon enumerated name and the icon
     "SP_TitleBarMinButton": "minimize.svg",
     "SP_TitleBarMenuButton": "menu.svg",
     "SP_TitleBarMaxButton": "maximize.svg",
-    "SP_TitleBarCloseButton": "dialog_close.svg",
+    "SP_TitleBarCloseButton": "window_close.svg",
     "SP_TitleBarNormalButton": "restore.svg",
     "SP_TitleBarShadeButton": "shade.svg",
     "SP_TitleBarUnshadeButton": "unshade.svg",

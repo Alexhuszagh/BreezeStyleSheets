@@ -282,7 +282,7 @@ ICON_MAP = {
     SP_TitleBarMinButton: 'minimize.svg',
     SP_TitleBarMenuButton: 'menu.svg',
     SP_TitleBarMaxButton: 'maximize.svg',
-    SP_TitleBarCloseButton: 'dialog_close.svg',
+    SP_TitleBarCloseButton: 'window_close.svg',
     SP_TitleBarNormalButton: 'restore.svg',
     SP_TitleBarShadeButton: 'shade.svg',
     SP_TitleBarUnshadeButton: 'unshade.svg',
