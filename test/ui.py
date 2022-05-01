@@ -2495,7 +2495,7 @@ def test(args, qtargv, test_widget):
 
     # Setup the main window.
     window = QtWidgets.QMainWindow()
-    window.setWindowTitle('Sample single widget application.')
+    window.setWindowTitle(f'Unittest for {test_widget}.')
     window.resize(args.width, args.height)
     widget = QtWidgets.QWidget()
     scroll = QtWidgets.QScrollArea()
