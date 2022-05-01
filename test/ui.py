@@ -321,8 +321,9 @@ if args.pyqt6:
     HLine = QtWidgets.QFrame.Shape.HLine
     VLine = QtWidgets.QFrame.Shape.VLine
     WinPanel = QtWidgets.QFrame.Shape.WinPanel
-    Shadow_Mask = QtWidgets.QFrame.StyleMask.Shadow_Mask
-    Shape_Mask = QtWidgets.QFrame.StyleMask.Shape_Mask
+    # Qt6 expects an int value, not enumerated value for the StyleMask.
+    Shadow_Mask = QtWidgets.QFrame.StyleMask.Shadow_Mask.value
+    Shape_Mask = QtWidgets.QFrame.StyleMask.Shape_Mask.value
     Plain = QtWidgets.QFrame.Shadow.Plain
     Raised = QtWidgets.QFrame.Shadow.Raised
     Sunken = QtWidgets.QFrame.Shadow.Sunken
