@@ -145,8 +145,14 @@ def parse_extensions(args):
 
     values = split_csv(args.extensions)
     if 'all' in values:
-        files = glob.glob(f'{home}/extension/*/*stylesheet.qss.in')
-        values = [os.path.basename(os.path.dirname(i)) for i in files]
+        values = []
+        for dirname in os.listdir(f'{home}/extension'):
+            ext = f'{home}/extension/{dirname}'
+            ext_files = ('stylesheet.qss.in', 'icons.json')
+            paths = [f'{ext}/{i}' for i in ext_files]
+            if os.path.isdir(ext) and any(os.path.exists(i) for i in paths):
+                values.append(dirname)
+
     args.extensions = values
 
 def parse_hexcolor(color):
