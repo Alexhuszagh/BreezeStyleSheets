@@ -1677,7 +1677,11 @@ def test_frame(widget, *_):
 
 def test_groupbox(widget, *_):
     child = []
-    child.append(QtWidgets.QGroupBox('Groupbox 1', widget))
+    groupbox = QtWidgets.QGroupBox('Groupbox 1', widget)
+    vbox1 = QtWidgets.QVBoxLayout(groupbox)
+    vbox1.setAlignment(AlignHCenter)
+    vbox1.addWidget(QtWidgets.QLineEdit('Sample Label'))
+    child.append(groupbox)
     checkable = QtWidgets.QGroupBox('Groupbox 2', widget)
     checkable.setCheckable(True)
     child.append(checkable)

@@ -114,12 +114,15 @@ QGroupBox::title
 }
 
 QCheckBox::indicator,
-QTreeView::indicator
+QTreeView::indicator,
+QGroupBox::indicator
 {
     width: 1em;
     height: 1em;
 }
 
+QGroupBox::indicator:unchecked,
+QGroupBox::indicator:unchecked:focus,
 QCheckBox::indicator:unchecked,
 QCheckBox::indicator:unchecked:focus,
 QTreeView::indicator:unchecked,
@@ -128,13 +131,12 @@ QTreeView::indicator:unchecked:focus
     border-image: url(light:checkbox_unchecked_disabled.svg);
 }
 
+QGroupBox::indicator:unchecked,
 QCheckBox::indicator:unchecked:hover,
 QCheckBox::indicator:unchecked:pressed,
 QTreeView::indicator:unchecked:hover,
 QTreeView::indicator:unchecked:pressed,
-QGroupBox::indicator:unchecked,
 QGroupBox::indicator:unchecked:hover,
-QGroupBox::indicator:unchecked:focus,
 QGroupBox::indicator:unchecked:pressed
 {
     border: none;
