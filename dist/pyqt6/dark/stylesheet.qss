@@ -1679,7 +1679,7 @@ QTreeView::branch:has-siblings
 }
 
 /* These branch indicators don't scale */
-TreeView::branch:!has-siblings
+QTreeView::branch:!has-siblings
 {
     border-image: none;
     image: none;
@@ -1745,8 +1745,22 @@ QTreeView::item
     color: #eff0f1;
 }
 
+QTreeView::item
+{
+    /**
+     *  Need to set the background color in Qt6, or else
+     *  the QTreeView indicators use the style defaults,
+     *  along with the box model, which conflicts with our
+     *  theme (except with hover/focus/selected pseudostates).
+     *
+     *  Affects issue #51.
+     */
+    background-color: #1d2023;
+    outline: 0;
+}
+
 QTableView::item:!selected:hover,
-QListView::item:!selected:hover,
+QListView::item:!selected:hover
 QTreeView::item:!selected:hover
 {
     background-color: rgba(61, 173, 232, 0.1);
