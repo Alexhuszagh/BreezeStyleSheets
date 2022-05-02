@@ -854,6 +854,16 @@ QTreeView:hover:pressed
     background-color: #31363b;
 }
 
+QColumnView
+{
+    border: 0.04em transparent #31363b;
+}
+
+QColumnView:hover
+{
+    border: 0.04em transparent #3daee9;
+}
+
 QComboBox:hover:pressed:editable
 {
     background-color: #1d2023;
@@ -1697,8 +1707,8 @@ QTreeView::item:!selected:hover
     padding: 0.13em;
 }
 
-QAbstractSlider::handle:horizontal,
-QAbstractSlider::handle:vertical
+QSlider::handle:horizontal,
+QSlider::handle:vertical
 {
     background: #1d2023;
     border: 0.04em solid #626568;
@@ -1707,67 +1717,67 @@ QAbstractSlider::handle:vertical
     border-radius: 0.35em;
 }
 
-QAbstractSlider:horizontal
+QSlider:horizontal
 {
     height: 2em;
 }
 
-QAbstractSlider:vertical
+QSlider:vertical
 {
     width: 2em;
 }
 
-QAbstractSlider::handle:horizontal
+QSlider::handle:horizontal
 {
     margin: -0.23em 0;
 }
 
-QAbstractSlider::handle:vertical
+QSlider::handle:vertical
 {
     margin: 0 -0.23em;
 }
 
-QAbstractSlider::groove:horizontal,
-QAbstractSlider::groove:vertical
+QSlider::groove:horizontal,
+QSlider::groove:vertical
 {
     background: #2c3034;
     border: 0em solid #31363b;
     border-radius: 0.19em;
 }
 
-QAbstractSlider::groove:horizontal
+QSlider::groove:horizontal
 {
     height: 0.4em;
 }
 
-QAbstractSlider::groove:vertical
+QSlider::groove:vertical
 {
     width: 0.4em;
 }
 
-QAbstractSlider::handle:horizontal:hover,
-QAbstractSlider::handle:horizontal:focus,
-QAbstractSlider::handle:vertical:hover,
-QAbstractSlider::handle:vertical:focus
+QSlider::handle:horizontal:hover,
+QSlider::handle:horizontal:focus,
+QSlider::handle:vertical:hover,
+QSlider::handle:vertical:focus
 {
     border: 0.04em solid #3daee9;
 }
 
-QAbstractSlider::handle:horizontal:!focus:!hover,
-QAbstractSlider::handle:vertical:!focus:!hover
+QSlider::handle:horizontal:!focus:!hover,
+QSlider::handle:vertical:!focus:!hover
 {
     border: 0.04em solid #626568;
 }
 
-QAbstractSlider::sub-page:horizontal,
-QAbstractSlider::add-page:vertical
+QSlider::sub-page:horizontal,
+QSlider::add-page:vertical
 {
     background: #3daee9;
     border-radius: 0.19em;
 }
 
-QAbstractSlider::add-page:horizontal,
-QAbstractSlider::sub-page:vertical
+QSlider::add-page:horizontal,
+QSlider::sub-page:vertical
 {
     background: #626568;
     border-radius: 0.19em;
