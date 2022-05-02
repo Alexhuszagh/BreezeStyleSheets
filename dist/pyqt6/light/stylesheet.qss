@@ -865,12 +865,31 @@ QColumnView QAbstractItemView
     border: 0.04em transparent rgba(51, 164, 223, 0.5);
 }
 
+/**
+ *  In order to set consistency between Qt5 and Qt6, we need
+ *  to ensure that we do the following steps:
+ *      1. Set a consistent `max-height` in the item. Anything
+ *         below `0.8em` will cause clipping, so set that value
+ *         to ensure the icon isn't larger.
+ *      2. Set padding to ensure the item is properly padded.
+ *      3. Set `0.2em` margins on the top and bottom of the arrows,
+ *         and `0.1em` on the left and right to ensure the arrows
+ *         are properly padded and have the same size.
+ *
+ *  The size consistency only works if both the `::item` subcontrol
+ *  `max-height` and the `::*-arrow` subcontrol `margin` is set.
+ */
+QColumnView QAbstractItemView::item
+{
+    padding: 0.23em;
+    max-width: 0.5em;
+    max-height: 0.8em;
+}
+
 QColumnView QAbstractItemView::right-arrow
 {
     image: url(light:right_arrow.svg);
-    margin: 0.1em;
-    width: 0.5em;
-    height: 0.8em;
+    margin: 0.2em 0.1em 0.2em 0.1em;
 }
 
 QColumnView QAbstractItemView::right-arrow:selected,
@@ -882,9 +901,7 @@ QColumnView QAbstractItemView::right-arrow:hover
 QColumnView QAbstractItemView::left-arrow
 {
     image: url(light:left_arrow.svg);
-    margin: 0.1em;
-    width: 0.5em;
-    height: 0.8em;
+    margin: 0.2em 0.1em 0.2em 0.1em;
 }
 
 QColumnView QAbstractItemView::left-arrow:selected,
