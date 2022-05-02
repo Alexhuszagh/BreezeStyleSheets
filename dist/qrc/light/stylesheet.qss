@@ -859,9 +859,43 @@ QColumnView
     border: 0.04em transparent #eff0f1;
 }
 
-QColumnView:hover
+QColumnViewGrip
+{
+    border-image: url(:/light/sizegrip.svg);
+}
+
+/* Each column in the view is a QAbstractItemView. */
+QColumnView QAbstractItemView
 {
     border: 0.04em transparent rgba(51, 164, 223, 0.5);
+}
+
+QColumnView QAbstractItemView::right-arrow
+{
+    image: url(:/light/right_arrow.svg);
+    margin: 0.1em;
+    width: 0.5em;
+    height: 0.8em;
+}
+
+QColumnView QAbstractItemView::right-arrow:selected,
+QColumnView QAbstractItemView::right-arrow:hover
+{
+    image: url(:/light/right_arrow_hover.svg);
+}
+
+QColumnView QAbstractItemView::left-arrow
+{
+    image: url(:/light/left_arrow.svg);
+    margin: 0.1em;
+    width: 0.5em;
+    height: 0.8em;
+}
+
+QColumnView QAbstractItemView::left-arrow:selected,
+QColumnView QAbstractItemView::left-arrow:hover
+{
+    image: url(:/light/left_arrow_hover.svg);
 }
 
 QComboBox:hover:pressed:editable

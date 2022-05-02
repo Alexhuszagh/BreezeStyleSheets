@@ -26,12 +26,14 @@
         "disabled": ["midtone:light:hex", "midtone:light:opacity"]
     },
     "left_arrow": {
-        "default": ["foreground"],
-        "disabled": ["midtone:light"]
+        "default": ["foreground:hex", "foreground:opacity"],
+        "hover": ["highlight:hex", "highlight:opacity"],
+        "disabled": ["midtone:light:hex", "midtone:light:opacity"]
     },
     "right_arrow": {
-        "default": ["foreground"],
-        "disabled": ["midtone:light"]
+        "default": ["foreground:hex", "foreground:opacity"],
+        "hover": ["highlight:hex", "highlight:opacity"],
+        "disabled": ["midtone:light:hex", "midtone:light:opacity"]
     },
     "up_arrow": {
         "default": ["foreground:hex", "foreground:opacity"],
