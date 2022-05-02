@@ -217,6 +217,7 @@ Some issues cannot be fixed with stylesheets alone, or there are bugs in Qt itse
 - Triangular QTabBars do not have hover events for non-selected widgets.
 - Custom padding for triangular QTabBars on the bottom is ignored. All other tab positions work.
 - `QDial` cannot be customized via a stylesheet, which is a known bug in [QTBUG-1160](https://bugreports.qt.io/browse/QTBUG-1160). An example of how to style a `QDial` is available in [dial.py](/example/dial.py). This works out-of-the-box, and can be a drop-in replacement for `QDial`.
+- `QCompleter` doesn't have a hover event in Qt5 on the drop-down menu. This works fine in Qt6, and changing rules for `QListView` (the drop-down menu) changes the drop-down menu in Qt6, but not Qt5.
 
 # Installing
 
