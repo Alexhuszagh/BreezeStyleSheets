@@ -67,11 +67,6 @@ QWidget:disabled
     background-color: #eff0f1;
 }
 
-QWidget:disabled:hover
-{
-    background-color: #eff0f1;
-}
-
 QCheckBox
 {
     spacing: 0.23em;
