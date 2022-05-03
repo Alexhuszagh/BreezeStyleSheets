@@ -16,6 +16,7 @@
     <file>dark/checkbox_indeterminate_disabled.svg</file>
     <file>dark/checkbox_unchecked.svg</file>
     <file>dark/checkbox_unchecked_disabled.svg</file>
+    <file>dark/clear_text.svg</file>
     <file>dark/close.svg</file>
     <file>dark/close_hover.svg</file>
     <file>dark/close_pressed.svg</file>
@@ -102,6 +103,7 @@
     <file>light/checkbox_indeterminate_disabled.svg</file>
     <file>light/checkbox_unchecked.svg</file>
     <file>light/checkbox_unchecked_disabled.svg</file>
+    <file>light/clear_text.svg</file>
     <file>light/close.svg</file>
     <file>light/close_hover.svg</file>
     <file>light/close_pressed.svg</file>
