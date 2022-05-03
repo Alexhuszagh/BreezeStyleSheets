@@ -1089,18 +1089,21 @@ QCalendarWidget QAbstractItemView:enabled
 }
 
 /* Won't take hover events. */
+QPrevNextCalButton
+{
+    min-width: 0.8em;
+    min-height: 1.2em;
+    qproperty-iconSize: 0px 0px;
+}
+
 QPrevNextCalButton#qt_calendar_nextmonth
 {
-    image: none;
-    subcontrol-origin: content;
-    subcontrol-position: right;
+    image: url(light:right_arrow.svg);
 }
 
 QPrevNextCalButton#qt_calendar_prevmonth
 {
-    image: none;
-    subcontrol-origin: content;
-    subcontrol-position: left;
+    image: url(light:left_arrow.svg);
 }
 
 /**
