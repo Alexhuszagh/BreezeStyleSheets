@@ -22,6 +22,8 @@ There are limitations to what can be styled with stylesheets, as well as rare bu
   - [Tooltip Colors](#tooltip-colors)
 - [QWidget](#qwidget)
   - [Standard Icons](#standard-icons)
+- [QWizard](#qwizard)
+  - [Aero Style Background Color](#aero-style-background-color)
 
 # QCompleter
 
@@ -359,3 +361,11 @@ def main():
 
     return app.exec()
 ```
+
+# QWizard
+
+### Aero Style Background Color
+
+The background color at the top and bottom of a `QWizard` using `QWizard::AeroStyle` uses hard-coded colors for the values above and below the page. These cannot be modified, even with `QPalette`, and the solution is quite simple: use any other style other than `QWizard::AeroStyle`. Other available options include `QWizard::ModernStyle` and `QWizard::MacStyle`.
+
+![QWizard Aero Windows](/assets/wizard-aero-windows.png)
