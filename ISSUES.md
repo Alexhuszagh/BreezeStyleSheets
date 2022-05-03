@@ -18,9 +18,9 @@ There are limitations to what can be styled with stylesheets, as well as rare bu
   - [Links](#links)
 - [QToolButton](#qtoolbutton)
   - [Menu Button Padding](#menu-button-padding)
-- [QWhatsThis]
+- [QWhatsThis](#qwhatsthis)
   - [Tooltip Colors](#tooltip-colors)
-- [QWidget]
+- [QWidget](#qwidget)
   - [Standard Icons](#standard-icons)
 
 # QCompleter
