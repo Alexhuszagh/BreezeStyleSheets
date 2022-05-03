@@ -12,7 +12,6 @@ BreezeStyleSheets is a set of beautiful light and dark stylesheets that render c
 - [Features](#features)
   - [Plugins](#plugins)
 - [Extending Stylesheets](#extending-stylesheets)
-- [Known Issues](#known-issues)
 - [Installing](#installing)
   - [CMake Installation](#cmake-installation)
   - [QMake Installation](#qmake-installation)
@@ -24,6 +23,7 @@ BreezeStyleSheets is a set of beautiful light and dark stylesheets that render c
   - [Testing](#testing)
   - [Distribution Files](#distribution-files)
   - [Git Ignore](#git-ignore)
+- [Known Issues](#known-issues)
 - [License](#license)
 - [Contributing](#contributing)
 - [Acknowledgements](#acknowledgements)
@@ -206,18 +206,6 @@ The limitations of stylesheets include:
 - Close and dock float icon sizes scale poorly with font size.
 
 For an example of using QCommonStyle to override standard icons in a PyQt application, see [standard_icons.py](/example/standard_icons.py). An extensive reference can be found [here](https://doc.qt.io/qt-5/style-reference.html). A reference of QStyle, and the default styles Qt provides can be found [here](https://doc.qt.io/qt-5/qstyle.html).
-
-# Known Issues
-
-Some issues cannot be fixed with stylesheets alone, or there are bugs in Qt itself that prevent these issues from being fixed.
-
-- Placeholder Text color: for the widgets `QTextEdit`, `QPlainTextEdit`, and `QLineEdit`, you can set placeholder text for when no text is present. In Qt5, this is correctly grayed out when the placeholder text is present, which is not respected in Qt6 (as of Qt version 6.3.0). An example of a workaround [placeholder_text.py](/example/placeholder_text.py), which only works currently for Qt5. Using the native stylesheet shows it uses hard-coded colors for Qt6, so this is almost certainly a Qt bug. This is likely referenced in [QTBUG-92947](https://bugreports.qt.io/browse/QTBUG-92947) and [QTCREATORBUG-25444](https://bugreports.qt.io/browse/QTCREATORBUG-25444).
-- `QSlider` ticks disappear when using stylesheets, which is a known bug referenced in [QTBUG-3304](https://bugreports.qt.io/browse/QTBUG-3304) and [QTBUG-3564](https://bugreports.qt.io/browse/QTBUG-3564). An example of how to style a `QSlider` is available in [slider.py](/example/slider.py), however, this does not work with a stylesheet applied to a `QSlider`.
-- Triangular QTabBar text and border colors must be the same.
-- Triangular QTabBars do not have hover events for non-selected widgets.
-- Custom padding for triangular QTabBars on the bottom is ignored. All other tab positions work.
-- `QDial` cannot be customized via a stylesheet, which is a known bug in [QTBUG-1160](https://bugreports.qt.io/browse/QTBUG-1160). An example of how to style a `QDial` is available in [dial.py](/example/dial.py). This works out-of-the-box, and can be a drop-in replacement for `QDial`.
-- `QCompleter` doesn't have a hover event in Qt5 on the drop-down menu. This works fine in Qt6, and changing rules for `QListView` (the drop-down menu) changes the drop-down menu in Qt6, but not Qt5.
 
 # Installing
 
@@ -528,6 +516,19 @@ python vcs.py --track-gitignore
 git add .gitignore
 git commit -m "..."
 ```
+
+# Known Issues
+
+Some issues cannot be fixed with stylesheets alone, or there are bugs in Qt itself that prevent these issues from being fixed.
+
+- Placeholder Text color: for the widgets `QTextEdit`, `QPlainTextEdit`, and `QLineEdit`, you can set placeholder text for when no text is present. In Qt5, this is correctly grayed out when the placeholder text is present, which is not respected in Qt6 (as of Qt version 6.3.0). An example of a workaround [placeholder_text.py](/example/placeholder_text.py), which only works currently for Qt5. Using the native stylesheet shows it uses hard-coded colors for Qt6, so this is almost certainly a Qt bug. This is likely referenced in [QTBUG-92947](https://bugreports.qt.io/browse/QTBUG-92947) and [QTCREATORBUG-25444](https://bugreports.qt.io/browse/QTCREATORBUG-25444).
+- `QSlider` ticks disappear when using stylesheets, which is a known bug referenced in [QTBUG-3304](https://bugreports.qt.io/browse/QTBUG-3304) and [QTBUG-3564](https://bugreports.qt.io/browse/QTBUG-3564). An example of how to style a `QSlider` is available in [slider.py](/example/slider.py), however, this does not work with a stylesheet applied to a `QSlider`.
+- Triangular QTabBar text and border colors must be the same.
+- Triangular QTabBars do not have hover events for non-selected widgets.
+- Custom padding for triangular QTabBars on the bottom is ignored. All other tab positions work.
+- `QDial` cannot be customized via a stylesheet, which is a known bug in [QTBUG-1160](https://bugreports.qt.io/browse/QTBUG-1160). An example of how to style a `QDial` is available in [dial.py](/example/dial.py). This works out-of-the-box, and can be a drop-in replacement for `QDial`.
+- `QCompleter` doesn't have a hover event in Qt5 on the drop-down menu. This works fine in Qt6, and changing rules for `QListView` (the drop-down menu) changes the drop-down menu in Qt6, but not Qt5.
+- `QToolButton` may have extra padding or clip the menu indicator in some cases. Auto-raised QToolButtons will clip the menu indicator, as will QToolButtons without text. Other cases will always add padding, whether there is a menu indicator or not. In order to force padding or no-padding for the menu indicator, set the Qt property of `hasMenu` to `true` or `false`. For example, to force additional padding for a menu indicator, use `button->setProperty("hasMenu", true);`.
 
 # License
 

@@ -1455,6 +1455,42 @@ def test_toolbutton_style(widget, window, *_):
 
     return child, layout_type
 
+def test_toolbutton_menu(widget, window, *_):
+    layout_type = 'horizontal'
+    child = [
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+        QtWidgets.QToolButton(widget),
+    ]
+    window.setTabOrder(child[0], child[1])
+    window.setTabOrder(child[1], child[2])
+    window.setTabOrder(child[2], child[3])
+    child[0].setText('Button 1')
+    child[1].setText('Button 2')
+    child[2].setText('Button 3')
+    child[3].setText('Button 4')
+    child[1].addActions([
+        QAction('&Action 5', window),
+        QAction('&Action 6', window),
+    ])
+    child[2].setPopupMode(MenuButtonPopup)
+    child[2].addActions([
+        QAction('&Action 9', window),
+        QAction('&Action 10', window),
+    ])
+    child[3].setPopupMode(InstantPopup)
+    child[3].addActions([
+        QAction('&Action 11', window),
+        QAction('&Action 12', window),
+    ])
+    child[0].setProperty('hasMenu', False)
+    # Incorrectly trims this normally... but set hasMenu true
+    child[1].setAutoRaise(True)
+    child[1].setProperty('hasMenu', True)
+
+    return child, layout_type
+
 def test_pushbutton(widget, *_):
     layout_type = 'horizontal'
     child = []

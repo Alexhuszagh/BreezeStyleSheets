@@ -715,8 +715,6 @@ QToolBar::separator:vertical
 QToolBar QToolButton
 {
     font-weight: bold;
-    min-height: 1em;
-    min-width: 2em;
     border: 0.04em transparent black;
     padding-left: 0.2em;
     padding-right: 0.3em;
@@ -733,6 +731,26 @@ QToolBar QToolButton:pressed
     /* The padding doesn't inherit from `QToolBar QToolButton`, so leave it in. */
     padding-left: 0.2em;
     padding-right: 0.3em;
+}
+
+/**
+ *  Special rules for a QFileDialog.
+ *
+ *  Due to the widgets, we get rid of the min sizes to allow them
+ *  to pack closer together, and ensure we have enough padding for
+ *  the drop-down menu in the popup.
+ */
+QDialog QToolBar QToolButton[popupMode="0"],
+QDialog QToolBar QToolButton[popupMode="1"]
+{
+    padding-left: 0.1em;
+    padding-right: 0.1em;
+}
+
+QDialog QToolBar QToolButton[popupMode="2"]
+{
+    padding-left: 0.1em;
+    padding-right: 0.7em;
 }
 
 QPushButton
@@ -1848,31 +1866,63 @@ QSlider::sub-page:vertical
 /* QToolButton */
 /**
  *  QToolButton's that have a push button need to be styled differently,
- *  and auto-raise is automatically disabled if there is a push button,
- *  IE, there is no arrow attached to the text in the QToolButton.
- *  Note that this is not affected by the following:
+ *  depending on whether there are actions (a menu) associated with it.
+ *  This is signaled by a drop-down arrow on the right of the push button.
+ *  Unfortunately, there's no good property to determine this. The property
+ *  we need is `QWidget::actions`, however, it's a method and not a
+ *  property.Note that the drop-down menu is not signaled by any of the
+ *  following:
  *      popupMode: any pop-up mode does not affect the right arrow style.
  *      arrowType: only replaces the icon.
  *      toolButtonStyle: this is almost always set to icon only, even with text.
+ *      text: can have a drop-down menu with or without text.
  *
- *  This particularly affects QFileDialog, but also affects anything with
- *  auto-raise set to true. Therefore, our styles should only be set when
- *  auto-raise is false.
+ *  Notably, we need to ensure we don't pad the widgets in the following
+ *  cases:
+ *      1. If the QToolButton is auto-raised.
+ *          This adds undesired padding in`QFileDialog`. These widgets
+ *          have text, even though no text is visible. This is not the
+ *          default, so it won't affect most situations.
+ *      2. If the QToolButton does not have text.
+ *          Normally, text-less buttons do not have a menu, and this
+ *          is required for #47, since the padding affects the scroll
+ *          bar icons in QTabBar. This causes major issues in the
+ *          UI, so disable the padding by default.
  *
- *  The affected issues are #22 and #28.
+ *  The padding can affect the placement of icons and other things
+ *  inside the toolbutton: near the menu-button in QFileDialog,
+ *  the clear text icon is misplaced vertically, making it nearly
+ *  illegible.
+ *
+ *  We provide special styles for a custom, dynamic property to
+ *  override the padding decisions with or without a menu.
+ *  To force styling as if there is a menu, set the `hasMenu` property
+ *  to true. Setting `hasMenu` to false will style as if there is no menu.
+ *  You can use `QWidget::setProperty` to set this property dynamically.
+ *
+ *  The affected issues are #22, #28, #47.
  *      https://github.com/Alexhuszagh/BreezeStyleSheets/issues/22
  *      https://github.com/Alexhuszagh/BreezeStyleSheets/issues/28
- *
- *  The invalid clear text icon in issue #28 still has:
- *      autoRaise: false
- *      arrowType: 0
- *      toolButtonStyle: 0
- *
- *  Do not have padding if we have no text: it affects the styling of
- *  QTabBar and leads to an ugly padding in the icons-only QToolButtons.
- *
- *  This affects issue #47.
+ *      https://github.com/Alexhuszagh/BreezeStyleSheets/issues/47
  */
+
+/**
+ *  Use an overly specific selector here to ensure no margins,
+ *  or for the default QToolButton. We must have `autoRaise="false"`
+ *  and `text` to have padding, so just add a `hasMenu="false"` to
+ *  undo the padding in that case. Also add selectors for QDialog
+ *  if a menu is explicitly forbidden.
+ */
+QToolButton,
+QToolButton[hasMenu="false"][autoRaise="false"][text],
+QDialog QToolBar QToolButton[hasMenu="false"][popupMode="0"],
+QDialog QToolBar QToolButton[hasMenu="false"][popupMode="1"],
+QDialog QToolBar QToolButton[hasMenu="false"][popupMode="2"]
+{
+    margin: 0em;
+    padding: 0em;
+}
+
 QToolButton[autoRaise="false"]
 {
     background-color: transparent;
@@ -1880,15 +1930,18 @@ QToolButton[autoRaise="false"]
     border-radius: 0.09em;
 }
 
-/**
- *  Need to add padding to the right if we have text and an indicator.
- *  Unfortunately, this applies to all QToolButtons with text, and
- *  not just those with an indicator, but it's a small price to pay.
- *
- *  We can't select on any property: the only item that could be relevant
- *  is `QWidget::actions`, but this is a method and not a property.
- */
-QToolButton[autoRaise="false"][text]
+QToolButton[autoRaise="true"]
+{
+    background-color: transparent;
+    border: 0.04em solid transparent;
+}
+
+/* Add selectors for the QDialog if a menu is explicitly requested. */
+QToolButton[hasMenu="true"],
+QToolButton[autoRaise="false"][text],
+QDialog QToolBar QToolButton[hasMenu="true"][popupMode="0"],
+QDialog QToolBar QToolButton[hasMenu="true"][popupMode="1"],
+QDialog QToolBar QToolButton[hasMenu="true"][popupMode="2"]
 {
     margin: 0.23em;
     padding: 0.23em;
@@ -1896,59 +1949,55 @@ QToolButton[autoRaise="false"][text]
     padding-right: 1.2em;
 }
 
-QToolButton[autoRaise="false"]::right-arrow,
-QToolButton[autoRaise="false"]::left-arrow,
-QToolButton[autoRaise="false"]::up-arrow,
-QToolButton[autoRaise="false"]::down-arrow
+QToolButton:hover
 {
-    subcontrol-origin: margin;
-    subcontrol-position: right;
+    border: 0.04em solid rgba(51, 164, 223, 0.5);
+}
+
+QToolButton:checked,
+QToolButton:pressed
+{
+    border: 0.04em solid rgba(51, 164, 223, 0.5);
+    background-color: rgba(51, 164, 223, 0.5);
+}
+
+QToolButton::right-arrow,
+QToolButton::left-arrow,
+QToolButton::up-arrow,
+QToolButton::down-arrow
+{
+    /**
+     *  Do not set the arrow width/height here. It causes
+     *  small icons in Qt6, and doesn't affect the styling
+     *  in Qt5. Both look ideal without manually specified sizes.
+     */
+    subcontrol-origin: content;
+    subcontrol-position: center;
+    margin: 0em;
+    padding: 0em;
 }
 
 QToolButton::right-arrow
 {
     image: url(light:right_arrow.svg);
-    width: 0.8em;
-    height: 0.5em;
 }
 
 QToolButton::left-arrow
 {
     image: url(light:left_arrow.svg);
-    width: 0.8em;
-    height: 0.5em;
 }
 
 QToolButton::up-arrow
 {
     image: url(light:up_arrow.svg);
-    height: 0.8em;
-    width: 0.5em;
 }
 
 QToolButton::down-arrow
 {
     image: url(light:down_arrow.svg);
-    height: 0.8em;
-    width: 0.5em;
 }
 
-QToolButton[autoRaise="false"]:hover
-{
-    border: 0.04em solid rgba(51, 164, 223, 0.5);
-}
-
-QToolButton[autoRaise="false"]:checked,
-QToolButton[autoRaise="false"]:pressed
-{
-    border: 0.04em solid rgba(51, 164, 223, 0.5);
-    background-color: rgba(51, 164, 223, 0.5);
-    padding: 0.23em;
-    padding-right: 1.2em;
-    outline: none;
-}
-
-QToolButton[autoRaise="false"]::menu-indicator
+QToolButton::menu-indicator
 {
     border-image: none;
     image: url(light:down_arrow.svg);
@@ -1967,7 +2016,16 @@ QToolButton[autoRaise="false"]::menu-indicator
     subcontrol-position: right;
 }
 
-QToolButton[autoRaise="false"]::menu-arrow
+/**
+ *  Special rule for the drop-down indicator in a QFileDialog.
+ *  We want these to be more compact, hence the smaller padding.
+ */
+QDialog QToolBar QToolButton[popupMode="2"]::menu-indicator
+{
+    padding-right: -0.7em;
+}
+
+QToolButton::menu-arrow
 {
     border-image: none;
     image: url(light:down_arrow.svg);
@@ -1977,7 +2035,7 @@ QToolButton[autoRaise="false"]::menu-arrow
     subcontrol-position: right;
 }
 
-QToolButton[autoRaise="false"]::menu-button
+QToolButton::menu-button
 {
     border-top-right-radius: 0.5em;
     border-bottom-right-radius: 0.5em;
@@ -1987,40 +2045,22 @@ QToolButton[autoRaise="false"]::menu-button
     outline: none;
 }
 
-QToolButton[autoRaise="false"]::menu-button::menu-arrow
+QToolButton::menu-button::menu-arrow
 {
     left: -0.09em;
     subcontrol-position: right;
 }
 
-QToolButton[autoRaise="false"]::menu-button:hover
+QToolButton::menu-button:hover
 {
     background-color: transparent;
 }
 
-QToolButton[autoRaise="false"]::menu-button:pressed
+QToolButton::menu-button:pressed
 {
     background-color: transparent;
     padding: 0.23em;
     outline: none;
-}
-
-QToolButton[autoRaise="true"]
-{
-    background-color: transparent;
-    border: 0.04em solid transparent;
-}
-
-QToolButton[autoRaise="true"]:hover
-{
-    border: 0.04em solid rgba(51, 164, 223, 0.5);
-}
-
-QToolButton[autoRaise="true"]:checked,
-QToolButton[autoRaise="true"]:pressed
-{
-    border: 0.04em solid rgba(51, 164, 223, 0.5);
-    background-color: rgba(51, 164, 223, 0.5);
 }
 
 QTableView
