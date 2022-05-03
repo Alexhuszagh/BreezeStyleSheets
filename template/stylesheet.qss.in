@@ -1472,34 +1472,6 @@ QTabBar::tab:right:!selected:first:hover
     border-bottom-left-radius: 0em;
 }
 
-QTabBar QToolButton::right-arrow:enabled
-{
-    border-image: url(^style^right_arrow.svg);
-    width: 0.5em;
-    height: 0.8em;
-}
-
-QTabBar QToolButton::left-arrow:enabled
-{
-    border-image: url(^style^left_arrow.svg);
-    width: 0.5em;
-    height: 0.8em;
-}
-
-QTabBar QToolButton::right-arrow:disabled
-{
-    border-image: url(^style^right_arrow_disabled.svg);
-    width: 0.5em;
-    height: 0.8em;
-}
-
-QTabBar QToolButton::left-arrow:disabled
-{
-    border-image: url(^style^left_arrow_disabled.svg);
-    width: 0.5em;
-    height: 0.8em;
-}
-
 /**
  *  Special styles for triangular QTabWidgets.
  *  These ignore the border attributes, and the border and
@@ -1925,14 +1897,14 @@ QDialog QToolBar QToolButton[hasMenu="false"][popupMode="2"]
 
 QToolButton[autoRaise="false"]
 {
-    background-color: transparent;
+    background-color: ^background^;
     border: 0.04em solid ^midtone^;
     border-radius: 0.09em;
 }
 
 QToolButton[autoRaise="true"]
 {
-    background-color: transparent;
+    background-color: ^background^;
     border: 0.04em solid transparent;
 }
 
@@ -1977,24 +1949,44 @@ QToolButton::down-arrow
     padding: 0em;
 }
 
-QToolButton::right-arrow
+QToolButton::right-arrow:enabled
 {
     image: url(^style^right_arrow.svg);
 }
 
-QToolButton::left-arrow
+QToolButton::left-arrow:enabled
 {
     image: url(^style^left_arrow.svg);
 }
 
-QToolButton::up-arrow
+QToolButton::up-arrow:enabled
 {
     image: url(^style^up_arrow.svg);
 }
 
-QToolButton::down-arrow
+QToolButton::down-arrow:enabled
 {
     image: url(^style^down_arrow.svg);
+}
+
+QToolButton::right-arrow:disabled
+{
+    image: url(^style^right_arrow_disabled.svg);
+}
+
+QToolButton::left-arrow:disabled
+{
+    image: url(^style^left_arrow_disabled.svg);
+}
+
+QToolButton::up-arrow:disabled
+{
+    image: url(^style^up_arrow_disabled.svg);
+}
+
+QToolButton::down-arrow:disabled
+{
+    image: url(^style^down_arrow_disabled.svg);
 }
 
 QToolButton::menu-indicator
