@@ -1867,12 +1867,29 @@ QSlider::sub-page:vertical
  *      autoRaise: false
  *      arrowType: 0
  *      toolButtonStyle: 0
+ *
+ *  Do not have padding if we have no text: it affects the styling of
+ *  QTabBar and leads to an ugly padding in the icons-only QToolButtons.
+ *
+ *  This affects issue #47.
  */
 QToolButton[autoRaise="false"]
 {
     background-color: transparent;
     border: 0.04em solid #76797c;
     border-radius: 0.09em;
+}
+
+/**
+ *  Need to add padding to the right if we have text and an indicator.
+ *  Unfortunately, this applies to all QToolButtons with text, and
+ *  not just those with an indicator, but it's a small price to pay.
+ *
+ *  We can't select on any property: the only item that could be relevant
+ *  is `QWidget::actions`, but this is a method and not a property.
+ */
+QToolButton[autoRaise="false"][text]
+{
     margin: 0.23em;
     padding: 0.23em;
     padding-top: 0.1em;
