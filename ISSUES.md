@@ -15,6 +15,7 @@ There are limitations to what can be styled with stylesheets, as well as rare bu
   - [Triangular Tab Padding](#triangular-tab-padding)
 - [QTextDocument](#qtextdocument)
   - [Placeholder Text](#placeholder-text)
+  - [Links](#links)
 - [QToolButton](#qtoolbutton)
   - [Menu Button Padding](#menu-button-padding)
 - [QWidget]
@@ -98,6 +99,65 @@ def main():
     palette = app.palette()
     red = QtGui.QColor(255, 0, 0)
     palette.setColor(ColorRole.PlaceholderText, red)
+    app.setPalette(palette)
+
+    ...
+
+    return app.exec()
+```
+
+### Links
+
+There is no way to set the default color of a link in a `QLabel`, `QTextEdit`, `QPlainTextEdit`, `QTextBrowser`,  `QMessageBox`, etc. There are a few possible workarounds.
+
+One is to set the link color when setting the label text, here, setting the label text to red. This will override the default color, and you can use a theme-dependent color to ensure the links are rendered properly.
+
+```python
+label = QtWidgets.QLabel()
+# Ensure it's displayed as a URL
+label.setTextFormat(QtCore.Qt.TextFormat.RichText)
+label.setText('<a href="https://google.com" style="color: red;">Google</a>')
+```
+
+However, this won't work with markdown input, and requires you to modify any existing text to include the styles, which is undesirable. A better solution is to set a default palette for `ColorRole.Link`.
+
+**C++**
+
+```cpp
+#include <QApplication>
+#include <QColor>
+#include <QPalette>
+
+int main(int argc, char* argv[]) 
+{
+    QApplication app(argc, argv);
+
+    auto palette = app.palette();
+    QColor red(255, 0, 0);
+    palette.setColor(QPalette::Active, QPalette::Link, red);
+    app.setPalette(palette);
+
+    ...
+
+    return app.exec();
+}
+```
+
+**Python**
+
+```python
+import sys
+from PyQt6 import QtGui, QtWidgets
+
+ColorGroup = QtGui.QPalette.ColorGroup
+ColorRole = QtGui.QPalette.ColorRole
+
+def main():
+    app = QtWidgets.QApplication(sys.argv)
+
+    palette = app.palette()
+    red = QtGui.QColor(255, 0, 0)
+    palette.setColor(ColorGroup.Active, ColorRole.Link, red)
     app.setPalette(palette)
 
     ...
