@@ -2212,7 +2212,7 @@ def test_aero_wizard(widget, *_):
 
 def test_system_tray(widget, window, *_):
     dialog = QtWidgets.QErrorMessage(widget)
-    dialog.showMessage('Error message')
+    dialog.showMessage('Hey! System tray icon.')
 
     tray = QtWidgets.QSystemTrayIcon()
     icon = close_icon(widget)

@@ -529,6 +529,7 @@ Some issues cannot be fixed with stylesheets alone, or there are bugs in Qt itse
 - `QDial` cannot be customized via a stylesheet, which is a known bug in [QTBUG-1160](https://bugreports.qt.io/browse/QTBUG-1160). An example of how to style a `QDial` is available in [dial.py](/example/dial.py). This works out-of-the-box, and can be a drop-in replacement for `QDial`.
 - `QCompleter` doesn't have a hover event in Qt5 on the drop-down menu. This works fine in Qt6, and changing rules for `QListView` (the drop-down menu) changes the drop-down menu in Qt6, but not Qt5.
 - `QToolButton` may have extra padding or clip the menu indicator in some cases. Auto-raised QToolButtons will clip the menu indicator, as will QToolButtons without text. Other cases will always add padding, whether there is a menu indicator or not. In order to force padding or no-padding for the menu indicator, set the Qt property of `hasMenu` to `true` or `false`. For example, to force additional padding for a menu indicator, use `button->setProperty("hasMenu", true);`.
+- The default icon for `QCommandLinkButton` is platform-dependent, and depends on the standard icon `SP_CommandLink` (which cannot be specified in a stylesheet). See the standard icon set [plugin](/extension/README.md#standard-icons) and [standard_icons.py](/example/standard_icons.py) for how to override this.
 
 # License
 
