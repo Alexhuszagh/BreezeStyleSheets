@@ -1098,12 +1098,12 @@ QPrevNextCalButton
 
 QPrevNextCalButton#qt_calendar_nextmonth
 {
-    image: url(^style^right_arrow.svg);
+    image: url(^style^calendar_next.svg);
 }
 
 QPrevNextCalButton#qt_calendar_prevmonth
 {
-    image: url(^style^left_arrow.svg);
+    image: url(^style^calendar_previous.svg);
 }
 
 /**
