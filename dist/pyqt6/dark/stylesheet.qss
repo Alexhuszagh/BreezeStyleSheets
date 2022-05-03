@@ -1098,12 +1098,12 @@ QPrevNextCalButton
 
 QPrevNextCalButton#qt_calendar_nextmonth
 {
-    image: url(dark:right_arrow.svg);
+    image: url(dark:calendar_next.svg);
 }
 
 QPrevNextCalButton#qt_calendar_prevmonth
 {
-    image: url(dark:left_arrow.svg);
+    image: url(dark:calendar_previous.svg);
 }
 
 /**
@@ -2350,12 +2350,76 @@ QDialogButtonBox
     dialog-discard-icon: url(dark:dialog_discard.svg);
 }
 
-QMessageBox
+QWidget
 {
+    /* QDialogButtonBox icons */
+    dialog-cancel-icon: url(dark:dialog_cancel.svg);
+    dialog-close-icon: url(dark:dialog_close.svg);
+    dialog-ok-icon: url(dark:dialog_ok.svg);
+    dialog-open-icon: url(dark:dialog_open.svg);
+    dialog-reset-icon: url(dark:dialog_reset.svg);
+    dialog-save-icon: url(dark:dialog_save.svg);
+    dialog-yes-icon: url(dark:dialog_ok.svg);
+    dialog-help-icon: url(dark:dialog_help.svg);
+    dialog-no-icon: url(dark:dialog_no.svg);
+    dialog-apply-icon: url(dark:dialog_ok.svg);
+    dialog-discard-icon: url(dark:dialog_discard.svg);
+
+    /* File icons */
+    filedialog-backward-icon: url(dark:left_arrow.svg);
+    filedialog-contentsview-icon: url(dark:file_dialog_contents.svg);
+    filedialog-detailedview-icon: url(dark:file_dialog_detailed.svg);
+    filedialog-end-icon: url(dark:file_dialog_end.svg);
+    filedialog-infoview-icon: url(dark:file_dialog_info.svg);
+    filedialog-listview-icon: url(dark:file_dialog_list.svg);
+    filedialog-new-directory-icon: url(dark:folder.svg);
+    filedialog-parent-directory-icon: url(dark:up_arrow.svg);
+    filedialog-start-icon: url(dark:file_dialog_start.svg);
+    directory-closed-icon: url(dark:folder.svg);
+    directory-icon: url(dark:folder.svg);
+    directory-link-icon: url(dark:folder_link.svg);
+    directory-open-icon: url(dark:folder_open.svg);
+    file-icon: url(dark:file.svg);
+    file-link-icon: url(dark:file_link.svg);
+    home-icon: url(dark:home_directory.svg);
+
+    /* QMessageBox icons */
     messagebox-critical-icon: url(dark:message_critical.svg);
     messagebox-information-icon: url(dark:message_information.svg);
     messagebox-question-icon: url(dark:message_question.svg);
     messagebox-warning-icon: url(dark:message_warning.svg);
+
+    /* Computer icons */
+    computer-icon: url(dark:computer.svg);
+    desktop-icon: url(dark:desktop.svg);
+    cd-icon: url(dark:disc_drive.svg);
+    dvd-icon: url(dark:disc_drive.svg);
+    floppy-icon: url(dark:floppy_drive.svg);
+    harddisk-icon: url(dark:hard_drive.svg);
+    network-icon: url(dark:network_drive.svg);
+    trash-icon: url(dark:trash.svg);
+
+    /* Arrow icons */
+    uparrow-icon: url(dark:up_arrow.svg);
+    downarrow-icon: url(dark:down_arrow.svg);
+    leftarrow-icon: url(dark:left_arrow.svg);
+    rightarrow-icon: url(dark:right_arrow.svg);
+    backward-icon: url(dark:left_arrow.svg);
+    forward-icon: url(dark:right_arrow.svg);
+
+    /* Titlebar icons */
+    titlebar-close-icon: url(dark:window_close.svg);
+    titlebar-contexthelp-icon: url(dark:help.svg);
+    titlebar-maximize-icon: url(dark:maximize.svg);
+    titlebar-menu-icon: url(dark:menu.svg);
+    titlebar-minimize-icon: url(dark:minimize.svg);
+    titlebar-normal-icon: url(dark:restore.svg);
+    titlebar-shade-icon: url(dark:shade.svg);
+    titlebar-unshade-icon: url(dark:unshade.svg);
+
+    /* Other icons */
+    dockwidget-close-icon: url(dark:close.svg);
+    lineedit-clear-button-icon: url(dark:clear_text.svg);
 }
 
 /* Set some styles for these custom dialog buttons */

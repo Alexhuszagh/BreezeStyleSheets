@@ -19,6 +19,8 @@
     <file>dark/close.svg</file>
     <file>dark/close_hover.svg</file>
     <file>dark/close_pressed.svg</file>
+    <file>dark/computer.svg</file>
+    <file>dark/desktop.svg</file>
     <file>dark/dialog_cancel.svg</file>
     <file>dark/dialog_close.svg</file>
     <file>dark/dialog_discard.svg</file>
@@ -28,37 +30,62 @@
     <file>dark/dialog_open.svg</file>
     <file>dark/dialog_reset.svg</file>
     <file>dark/dialog_save.svg</file>
+    <file>dark/disc_drive.svg</file>
     <file>dark/down_arrow.svg</file>
     <file>dark/down_arrow_disabled.svg</file>
     <file>dark/down_arrow_hover.svg</file>
+    <file>dark/file.svg</file>
+    <file>dark/file_dialog_contents.svg</file>
+    <file>dark/file_dialog_detailed.svg</file>
+    <file>dark/file_dialog_end.svg</file>
+    <file>dark/file_dialog_info.svg</file>
+    <file>dark/file_dialog_list.svg</file>
+    <file>dark/file_dialog_start.svg</file>
+    <file>dark/file_link.svg</file>
+    <file>dark/floppy_drive.svg</file>
+    <file>dark/folder.svg</file>
+    <file>dark/folder_link.svg</file>
+    <file>dark/folder_open.svg</file>
+    <file>dark/hard_drive.svg</file>
+    <file>dark/help.svg</file>
     <file>dark/hmovetoolbar.svg</file>
+    <file>dark/home_directory.svg</file>
     <file>dark/hseptoolbar.svg</file>
     <file>dark/left_arrow.svg</file>
     <file>dark/left_arrow_disabled.svg</file>
     <file>dark/left_arrow_hover.svg</file>
+    <file>dark/maximize.svg</file>
+    <file>dark/menu.svg</file>
     <file>dark/message_critical.svg</file>
     <file>dark/message_information.svg</file>
     <file>dark/message_question.svg</file>
     <file>dark/message_warning.svg</file>
+    <file>dark/minimize.svg</file>
+    <file>dark/network_drive.svg</file>
     <file>dark/radio_checked.svg</file>
     <file>dark/radio_checked_disabled.svg</file>
     <file>dark/radio_unchecked.svg</file>
     <file>dark/radio_unchecked_disabled.svg</file>
+    <file>dark/restore.svg</file>
     <file>dark/right_arrow.svg</file>
     <file>dark/right_arrow_disabled.svg</file>
     <file>dark/right_arrow_hover.svg</file>
+    <file>dark/shade.svg</file>
     <file>dark/sizegrip.svg</file>
     <file>dark/stylesheet.qss</file>
     <file>dark/transparent.svg</file>
+    <file>dark/trash.svg</file>
     <file>dark/undock.svg</file>
     <file>dark/undock_hover.svg</file>
     <file>dark/undock_hover_pressed.svg</file>
+    <file>dark/unshade.svg</file>
     <file>dark/up_arrow.svg</file>
     <file>dark/up_arrow_disabled.svg</file>
     <file>dark/up_arrow_hover.svg</file>
     <file>dark/vline.svg</file>
     <file>dark/vmovetoolbar.svg</file>
     <file>dark/vseptoolbar.svg</file>
+    <file>dark/window_close.svg</file>
     <file>light/branch_closed.svg</file>
     <file>light/branch_closed_hover.svg</file>
     <file>light/branch_end.svg</file>
@@ -78,6 +105,8 @@
     <file>light/close.svg</file>
     <file>light/close_hover.svg</file>
     <file>light/close_pressed.svg</file>
+    <file>light/computer.svg</file>
+    <file>light/desktop.svg</file>
     <file>light/dialog_cancel.svg</file>
     <file>light/dialog_close.svg</file>
     <file>light/dialog_discard.svg</file>
@@ -87,36 +116,61 @@
     <file>light/dialog_open.svg</file>
     <file>light/dialog_reset.svg</file>
     <file>light/dialog_save.svg</file>
+    <file>light/disc_drive.svg</file>
     <file>light/down_arrow.svg</file>
     <file>light/down_arrow_disabled.svg</file>
     <file>light/down_arrow_hover.svg</file>
+    <file>light/file.svg</file>
+    <file>light/file_dialog_contents.svg</file>
+    <file>light/file_dialog_detailed.svg</file>
+    <file>light/file_dialog_end.svg</file>
+    <file>light/file_dialog_info.svg</file>
+    <file>light/file_dialog_list.svg</file>
+    <file>light/file_dialog_start.svg</file>
+    <file>light/file_link.svg</file>
+    <file>light/floppy_drive.svg</file>
+    <file>light/folder.svg</file>
+    <file>light/folder_link.svg</file>
+    <file>light/folder_open.svg</file>
+    <file>light/hard_drive.svg</file>
+    <file>light/help.svg</file>
     <file>light/hmovetoolbar.svg</file>
+    <file>light/home_directory.svg</file>
     <file>light/hseptoolbar.svg</file>
     <file>light/left_arrow.svg</file>
     <file>light/left_arrow_disabled.svg</file>
     <file>light/left_arrow_hover.svg</file>
+    <file>light/maximize.svg</file>
+    <file>light/menu.svg</file>
     <file>light/message_critical.svg</file>
     <file>light/message_information.svg</file>
     <file>light/message_question.svg</file>
     <file>light/message_warning.svg</file>
+    <file>light/minimize.svg</file>
+    <file>light/network_drive.svg</file>
     <file>light/radio_checked.svg</file>
     <file>light/radio_checked_disabled.svg</file>
     <file>light/radio_unchecked.svg</file>
     <file>light/radio_unchecked_disabled.svg</file>
+    <file>light/restore.svg</file>
     <file>light/right_arrow.svg</file>
     <file>light/right_arrow_disabled.svg</file>
     <file>light/right_arrow_hover.svg</file>
+    <file>light/shade.svg</file>
     <file>light/sizegrip.svg</file>
     <file>light/stylesheet.qss</file>
     <file>light/transparent.svg</file>
+    <file>light/trash.svg</file>
     <file>light/undock.svg</file>
     <file>light/undock_hover.svg</file>
     <file>light/undock_hover_pressed.svg</file>
+    <file>light/unshade.svg</file>
     <file>light/up_arrow.svg</file>
     <file>light/up_arrow_disabled.svg</file>
     <file>light/up_arrow_hover.svg</file>
     <file>light/vline.svg</file>
     <file>light/vmovetoolbar.svg</file>
     <file>light/vseptoolbar.svg</file>
+    <file>light/window_close.svg</file>
   </qresource>
 </RCC>

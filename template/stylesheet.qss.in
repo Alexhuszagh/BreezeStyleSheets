@@ -2350,12 +2350,76 @@ QDialogButtonBox
     dialog-discard-icon: url(^style^dialog_discard.svg);
 }
 
-QMessageBox
+QWidget
 {
+    /* QDialogButtonBox icons */
+    dialog-cancel-icon: url(^style^dialog_cancel.svg);
+    dialog-close-icon: url(^style^dialog_close.svg);
+    dialog-ok-icon: url(^style^dialog_ok.svg);
+    dialog-open-icon: url(^style^dialog_open.svg);
+    dialog-reset-icon: url(^style^dialog_reset.svg);
+    dialog-save-icon: url(^style^dialog_save.svg);
+    dialog-yes-icon: url(^style^dialog_ok.svg);
+    dialog-help-icon: url(^style^dialog_help.svg);
+    dialog-no-icon: url(^style^dialog_no.svg);
+    dialog-apply-icon: url(^style^dialog_ok.svg);
+    dialog-discard-icon: url(^style^dialog_discard.svg);
+
+    /* File icons */
+    filedialog-backward-icon: url(^style^left_arrow.svg);
+    filedialog-contentsview-icon: url(^style^file_dialog_contents.svg);
+    filedialog-detailedview-icon: url(^style^file_dialog_detailed.svg);
+    filedialog-end-icon: url(^style^file_dialog_end.svg);
+    filedialog-infoview-icon: url(^style^file_dialog_info.svg);
+    filedialog-listview-icon: url(^style^file_dialog_list.svg);
+    filedialog-new-directory-icon: url(^style^folder.svg);
+    filedialog-parent-directory-icon: url(^style^up_arrow.svg);
+    filedialog-start-icon: url(^style^file_dialog_start.svg);
+    directory-closed-icon: url(^style^folder.svg);
+    directory-icon: url(^style^folder.svg);
+    directory-link-icon: url(^style^folder_link.svg);
+    directory-open-icon: url(^style^folder_open.svg);
+    file-icon: url(^style^file.svg);
+    file-link-icon: url(^style^file_link.svg);
+    home-icon: url(^style^home_directory.svg);
+
+    /* QMessageBox icons */
     messagebox-critical-icon: url(^style^message_critical.svg);
     messagebox-information-icon: url(^style^message_information.svg);
     messagebox-question-icon: url(^style^message_question.svg);
     messagebox-warning-icon: url(^style^message_warning.svg);
+
+    /* Computer icons */
+    computer-icon: url(^style^computer.svg);
+    desktop-icon: url(^style^desktop.svg);
+    cd-icon: url(^style^disc_drive.svg);
+    dvd-icon: url(^style^disc_drive.svg);
+    floppy-icon: url(^style^floppy_drive.svg);
+    harddisk-icon: url(^style^hard_drive.svg);
+    network-icon: url(^style^network_drive.svg);
+    trash-icon: url(^style^trash.svg);
+
+    /* Arrow icons */
+    uparrow-icon: url(^style^up_arrow.svg);
+    downarrow-icon: url(^style^down_arrow.svg);
+    leftarrow-icon: url(^style^left_arrow.svg);
+    rightarrow-icon: url(^style^right_arrow.svg);
+    backward-icon: url(^style^left_arrow.svg);
+    forward-icon: url(^style^right_arrow.svg);
+
+    /* Titlebar icons */
+    titlebar-close-icon: url(^style^window_close.svg);
+    titlebar-contexthelp-icon: url(^style^help.svg);
+    titlebar-maximize-icon: url(^style^maximize.svg);
+    titlebar-menu-icon: url(^style^menu.svg);
+    titlebar-minimize-icon: url(^style^minimize.svg);
+    titlebar-normal-icon: url(^style^restore.svg);
+    titlebar-shade-icon: url(^style^shade.svg);
+    titlebar-unshade-icon: url(^style^unshade.svg);
+
+    /* Other icons */
+    dockwidget-close-icon: url(^style^close.svg);
+    lineedit-clear-button-icon: url(^style^clear_text.svg);
 }
 
 /* Set some styles for these custom dialog buttons */

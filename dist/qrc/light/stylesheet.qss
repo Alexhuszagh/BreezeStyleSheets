@@ -1098,12 +1098,12 @@ QPrevNextCalButton
 
 QPrevNextCalButton#qt_calendar_nextmonth
 {
-    image: url(:/light/right_arrow.svg);
+    image: url(:/light/calendar_next.svg);
 }
 
 QPrevNextCalButton#qt_calendar_prevmonth
 {
-    image: url(:/light/left_arrow.svg);
+    image: url(:/light/calendar_previous.svg);
 }
 
 /**
@@ -2350,12 +2350,76 @@ QDialogButtonBox
     dialog-discard-icon: url(:/light/dialog_discard.svg);
 }
 
-QMessageBox
+QWidget
 {
+    /* QDialogButtonBox icons */
+    dialog-cancel-icon: url(:/light/dialog_cancel.svg);
+    dialog-close-icon: url(:/light/dialog_close.svg);
+    dialog-ok-icon: url(:/light/dialog_ok.svg);
+    dialog-open-icon: url(:/light/dialog_open.svg);
+    dialog-reset-icon: url(:/light/dialog_reset.svg);
+    dialog-save-icon: url(:/light/dialog_save.svg);
+    dialog-yes-icon: url(:/light/dialog_ok.svg);
+    dialog-help-icon: url(:/light/dialog_help.svg);
+    dialog-no-icon: url(:/light/dialog_no.svg);
+    dialog-apply-icon: url(:/light/dialog_ok.svg);
+    dialog-discard-icon: url(:/light/dialog_discard.svg);
+
+    /* File icons */
+    filedialog-backward-icon: url(:/light/left_arrow.svg);
+    filedialog-contentsview-icon: url(:/light/file_dialog_contents.svg);
+    filedialog-detailedview-icon: url(:/light/file_dialog_detailed.svg);
+    filedialog-end-icon: url(:/light/file_dialog_end.svg);
+    filedialog-infoview-icon: url(:/light/file_dialog_info.svg);
+    filedialog-listview-icon: url(:/light/file_dialog_list.svg);
+    filedialog-new-directory-icon: url(:/light/folder.svg);
+    filedialog-parent-directory-icon: url(:/light/up_arrow.svg);
+    filedialog-start-icon: url(:/light/file_dialog_start.svg);
+    directory-closed-icon: url(:/light/folder.svg);
+    directory-icon: url(:/light/folder.svg);
+    directory-link-icon: url(:/light/folder_link.svg);
+    directory-open-icon: url(:/light/folder_open.svg);
+    file-icon: url(:/light/file.svg);
+    file-link-icon: url(:/light/file_link.svg);
+    home-icon: url(:/light/home_directory.svg);
+
+    /* QMessageBox icons */
     messagebox-critical-icon: url(:/light/message_critical.svg);
     messagebox-information-icon: url(:/light/message_information.svg);
     messagebox-question-icon: url(:/light/message_question.svg);
     messagebox-warning-icon: url(:/light/message_warning.svg);
+
+    /* Computer icons */
+    computer-icon: url(:/light/computer.svg);
+    desktop-icon: url(:/light/desktop.svg);
+    cd-icon: url(:/light/disc_drive.svg);
+    dvd-icon: url(:/light/disc_drive.svg);
+    floppy-icon: url(:/light/floppy_drive.svg);
+    harddisk-icon: url(:/light/hard_drive.svg);
+    network-icon: url(:/light/network_drive.svg);
+    trash-icon: url(:/light/trash.svg);
+
+    /* Arrow icons */
+    uparrow-icon: url(:/light/up_arrow.svg);
+    downarrow-icon: url(:/light/down_arrow.svg);
+    leftarrow-icon: url(:/light/left_arrow.svg);
+    rightarrow-icon: url(:/light/right_arrow.svg);
+    backward-icon: url(:/light/left_arrow.svg);
+    forward-icon: url(:/light/right_arrow.svg);
+
+    /* Titlebar icons */
+    titlebar-close-icon: url(:/light/window_close.svg);
+    titlebar-contexthelp-icon: url(:/light/help.svg);
+    titlebar-maximize-icon: url(:/light/maximize.svg);
+    titlebar-menu-icon: url(:/light/menu.svg);
+    titlebar-minimize-icon: url(:/light/minimize.svg);
+    titlebar-normal-icon: url(:/light/restore.svg);
+    titlebar-shade-icon: url(:/light/shade.svg);
+    titlebar-unshade-icon: url(:/light/unshade.svg);
+
+    /* Other icons */
+    dockwidget-close-icon: url(:/light/close.svg);
+    lineedit-clear-button-icon: url(:/light/clear_text.svg);
 }
 
 /* Set some styles for these custom dialog buttons */

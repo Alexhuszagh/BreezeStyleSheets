@@ -7,15 +7,6 @@
     "browser_refresh_stop": {
         "default": ["critical"]
     },
-    "clear_text": {
-        "default": ["foreground"]
-    },
-    "computer": {
-        "default": ["foreground"]
-    },
-    "desktop": {
-        "default": ["foreground"]
-    },
     "dialog_apply": {
         "default": ["foreground"]
     },
@@ -31,79 +22,16 @@
     "dialog_yes_to_all": {
         "default": ["foreground"]
     },
-    "disc_drive": {
-        "default": ["foreground"]
-    },
-    "file": {
-        "default": ["foreground"]
-    },
-    "file_dialog_contents": {
-        "default": ["foreground", "highlight:alternate", "midtone"]
-    },
-    "file_dialog_detailed": {
-        "default": ["foreground", "midtone:light"]
-    },
-    "file_dialog_end": {
-        "default": ["foreground", "midtone:light"]
-    },
-    "file_dialog_info": {
-        "default": ["foreground"]
-    },
-    "file_dialog_list": {
-        "default": ["foreground", "midtone:light"]
-    },
-    "file_dialog_start": {
-        "default": ["foreground", "midtone:light"]
-    },
-    "file_link": {
-        "default": ["foreground"]
-    },
-    "floppy_drive": {
-        "default": ["foreground"]
-    },
-    "folder": {
-        "default": ["foreground"]
-    },
-    "folder_link": {
-        "default": ["foreground"]
-    },
-    "folder_open": {
-        "default": ["foreground"]
-    },
     "folder_open_link": {
         "default": ["foreground", "background"]
     },
-    "hard_drive": {
-        "default": ["foreground"]
-    },
-    "help": {
-        "default": ["foreground"]
-    },
-    "home_directory": {
-        "default": ["foreground"]
-    },
     "horizontal_extension": {
-        "default": ["foreground"]
-    },
-    "network_drive": {
-        "default": ["foreground"]
-    },
-    "maximize": {
-        "default": ["foreground"]
-    },
-    "menu": {
-        "default": ["foreground"]
-    },
-    "minimize": {
         "default": ["foreground"]
     },
     "pause": {
         "default": ["foreground"]
     },
     "play": {
-        "default": ["foreground"]
-    },
-    "restore": {
         "default": ["foreground"]
     },
     "restore_defaults": {
@@ -113,9 +41,6 @@
         "default": ["foreground"]
     },
     "seek_forward": {
-        "default": ["foreground"]
-    },
-    "shade": {
         "default": ["foreground"]
     },
     "skip_backward": {
@@ -130,12 +55,6 @@
     "tab_close": {
         "default": ["foreground"]
     },
-    "trash": {
-        "default": ["foreground"]
-    },
-    "unshade": {
-        "default": ["foreground"]
-    },
     "vertical_extension": {
         "default": ["foreground"]
     },
@@ -146,9 +65,6 @@
         "default": ["foreground"]
     },
     "volume_muted": {
-        "default": ["foreground"]
-    },
-    "window_close": {
         "default": ["foreground"]
     }
 }

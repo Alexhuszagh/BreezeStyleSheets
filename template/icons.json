@@ -122,7 +122,7 @@
     "sizegrip": {
         "default": ["midtone:light"]
     },
-    // Dialog icons
+    // DialogButtonBox icons
     "dialog_cancel": {
         "default": ["foreground"]
     },
@@ -150,6 +150,90 @@
     "dialog_discard": {
         "default": ["foreground"]
     },
+    // File icons.
+    "file": {
+        "default": ["foreground"]
+    },
+    "file_dialog_contents": {
+        "default": ["foreground", "highlight:alternate", "midtone"]
+    },
+    "file_dialog_detailed": {
+        "default": ["foreground", "midtone:light"]
+    },
+    "file_dialog_end": {
+        "default": ["foreground", "midtone:light"]
+    },
+    "file_dialog_info": {
+        "default": ["foreground"]
+    },
+    "file_dialog_list": {
+        "default": ["foreground", "midtone:light"]
+    },
+    "file_dialog_start": {
+        "default": ["foreground", "midtone:light"]
+    },
+    "file_link": {
+        "default": ["foreground"]
+    },
+    "folder": {
+        "default": ["foreground"]
+    },
+    "folder_link": {
+        "default": ["foreground"]
+    },
+    "folder_open": {
+        "default": ["foreground"]
+    },
+    "home_directory": {
+        "default": ["foreground"]
+    },
+    // Computer icons
+    "computer": {
+        "default": ["foreground"]
+    },
+    "desktop": {
+        "default": ["foreground"]
+    },
+    "disc_drive": {
+        "default": ["foreground"]
+    },
+    "floppy_drive": {
+        "default": ["foreground"]
+    },
+    "hard_drive": {
+        "default": ["foreground"]
+    },
+    "network_drive": {
+        "default": ["foreground"]
+    },
+    "trash": {
+        "default": ["foreground"]
+    },
+    // Titlebar icons
+    "help": {
+        "default": ["foreground"]
+    },
+    "maximize": {
+        "default": ["foreground"]
+    },
+    "menu": {
+        "default": ["foreground"]
+    },
+    "minimize": {
+        "default": ["foreground"]
+    },
+    "restore": {
+        "default": ["foreground"]
+    },
+    "shade": {
+        "default": ["foreground"]
+    },
+    "unshade": {
+        "default": ["foreground"]
+    },
+    "window_close": {
+        "default": ["foreground"]
+    },
     // Message icons
     "message_critical": {
         "default": ["critical", "foreground"]
@@ -162,5 +246,9 @@
     },
     "message_warning": {
         "default": ["warning", "foreground"]
+    },
+    // Other icons
+    "clear_text": {
+        "default": ["foreground"]
     }
 }
