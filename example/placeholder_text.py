@@ -33,55 +33,10 @@
     and palette edits correctly affect styles in Qt5, but not Qt6.
 '''
 
-import argparse
-import os
+import shared
 import sys
 
-example_dir = os.path.dirname(os.path.realpath(__file__))
-home = os.path.dirname(example_dir)
-dist = os.path.join(home, 'dist')
-
-# Create our arguments.
-parser = argparse.ArgumentParser(description='Configurations for the Qt5 application.')
-parser.add_argument(
-    '--stylesheet',
-    help='''stylesheet name''',
-    default='native'
-)
-# Know working styles include:
-#   1. Fusion
-#   2. Windows
-parser.add_argument(
-    '--style',
-    help='''application style, which is different than the stylesheet''',
-    default='native'
-)
-parser.add_argument(
-    '--font-size',
-    help='''font size for the application''',
-    type=float,
-    default=-1
-)
-parser.add_argument(
-    '--font-family',
-    help='''the font family'''
-)
-parser.add_argument(
-    '--scale',
-    help='''scale factor for the UI''',
-    type=float,
-    default=1,
-)
-parser.add_argument(
-    '--pyqt6',
-    help='''use PyQt6 rather than PyQt5.''',
-    action='store_true'
-)
-parser.add_argument(
-    '--use-x11',
-    help='''force the use of x11 on compatible systems.''',
-    action='store_true'
-)
+parser = shared.create_parser()
 parser.add_argument(
     '--set-app-palette',
     help='''set the placeholder text palette globally.''',
@@ -92,38 +47,11 @@ parser.add_argument(
     help='''set the placeholder text palette for the affected widgets.''',
     action='store_true'
 )
+args, unknown = shared.parse_args(parser)
+QtCore, QtGui, QtWidgets = shared.import_qt(args)
+compat = shared.get_compat_definitions(args)
+colors = shared.get_colors(args, compat)
 
-args, unknown = parser.parse_known_args()
-if args.pyqt6:
-    from PyQt6 import QtCore, QtGui, QtWidgets
-    QtCore.QDir.addSearchPath(args.stylesheet, f'{dist}/pyqt6/{args.stylesheet}/')
-    resource_format = f'{args.stylesheet}:'
-else:
-    sys.path.insert(0, home)
-    from PyQt5 import QtCore, QtGui, QtWidgets
-    import breeze_resources
-    resource_format = f':/{args.stylesheet}/'
-stylesheet = f'{resource_format}stylesheet.qss'
-
-# Compat definitions, between Qt5 and Qt6.
-if args.pyqt6:
-    AlignHCenter = QtCore.Qt.AlignmentFlag.AlignHCenter
-    ReadOnly = QtCore.QFile.OpenModeFlag.ReadOnly
-    Text = QtCore.QFile.OpenModeFlag.Text
-    PlaceholderText = QtGui.QPalette.ColorRole.PlaceholderText
-    WindowText = QtGui.QPalette.ColorRole.WindowText
-else:
-    AlignHCenter = QtCore.Qt.AlignHCenter
-    ReadOnly = QtCore.QFile.ReadOnly
-    Text = QtCore.QFile.Text
-    PlaceholderText = QtGui.QPalette.PlaceholderText
-    WindowText = QtGui.QPalette.WindowText
-
-PLACEHOLDER_COLOR = QtGui.QColor(255, 0, 0)
-if 'dark' in args.stylesheet:
-    PLACEHOLDER_COLOR = QtGui.QColor(118, 121, 124)
-elif 'light' in args.stylesheet:
-    PLACEHOLDER_COLOR = QtGui.QColor(186, 185, 184)
 
 def set_palette(widget, role, color):
     '''Set the palette for the placeholder text. This only works in Qt5.'''
@@ -133,7 +61,7 @@ def set_palette(widget, role, color):
     widget.setPalette(palette)
 
 def set_placeholder_palette(widget):
-    set_palette(widget, PlaceholderText, PLACEHOLDER_COLOR)
+    set_palette(widget, compat.PlaceholderText, colors.PlaceholderColor)
 
 
 class Ui:
@@ -146,7 +74,7 @@ class Ui:
         self.centralwidget.setObjectName('centralwidget')
         self.layout = QtWidgets.QVBoxLayout(self.centralwidget)
         self.layout.setObjectName('layout')
-        self.layout.setAlignment(AlignHCenter)
+        self.layout.setAlignment(compat.AlignHCenter)
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.textEdit = QtWidgets.QTextEdit(self.centralwidget)
@@ -172,46 +100,16 @@ class Ui:
 def main():
     'Application entry point'
 
-    if args.scale != 1:
-        os.environ['QT_SCALE_FACTOR'] = str(args.scale)
-    else:
-        os.environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = '1'
-
-    app = QtWidgets.QApplication(sys.argv[:1] + unknown)
-    if args.style != 'native':
-        style = QtWidgets.QStyleFactory.create(args.style)
-        app.setStyle(style)
+    app, window = shared.setup_app(args, unknown, compat)
     if args.set_app_palette:
         set_placeholder_palette(app)
-
-    window = QtWidgets.QMainWindow()
 
     # setup ui
     ui = Ui()
     ui.setup(window)
     window.setWindowTitle('Stylized Placeholder Text.')
 
-    # use the default font size
-    font = app.font()
-    if args.font_size > 0:
-        font.setPointSizeF(args.font_size)
-    if args.font_family:
-        font.setFamily(args.font_family)
-    app.setFont(font)
-
-    # setup stylesheet
-    if args.stylesheet != 'native':
-        file = QtCore.QFile(stylesheet)
-        file.open(ReadOnly | Text)
-        stream = QtCore.QTextStream(file)
-        app.setStyleSheet(stream.readAll())
-
-    # run
-    window.show()
-    if args.pyqt6:
-        return app.exec()
-    else:
-        return app.exec_()
+    return shared.exec_app(args, app, window, compat)
 
 if __name__ == '__main__':
     sys.exit(main())

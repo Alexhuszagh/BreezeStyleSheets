@@ -223,12 +223,6 @@ class ApplicationStyle(QtWidgets.QCommonStyle):
 def main():
     app = QtWidgets.QApplication(sys.argv)
 
-    # Set our stylesheet.
-    file = QtCore.QFile('dark:stylesheet.qss')
-    file.open(OpenModeFlag.ReadOnly | OpenModeFlag.Text)
-    stream = QtCore.QTextStream(file)
-    app.setStyleSheet(stream.readAll())
-
     # Install our custom style globally. QCommonStyle, unlike QProxyStyle,
     # actually works nicely with stylesheets. `Fusion` is available
     # on all platforms, but you can use any style you want. We
@@ -236,6 +230,13 @@ def main():
     # deleted by he garbage collector.
     style = QtWidgets.QStyleFactory.create('Fusion')
     app.setStyle(ApplicationStyle(style))
+
+    # Set our stylesheet. 
+    # NOTE: this must occur after setting the application style.
+    file = QtCore.QFile('dark:stylesheet.qss')
+    file.open(OpenModeFlag.ReadOnly | OpenModeFlag.Text)
+    stream = QtCore.QTextStream(file)
+    app.setStyleSheet(stream.readAll())
 
     ...
 

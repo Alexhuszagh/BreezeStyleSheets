@@ -30,134 +30,22 @@
     Simple example showing numerous built-in widgets.
 '''
 
-import argparse
-import os
+import shared
 import sys
 
-example_dir = os.path.dirname(os.path.realpath(__file__))
-home = os.path.dirname(example_dir)
-dist = os.path.join(home, 'dist')
+parser = shared.create_parser()
+args, unknown = shared.parse_args(parser)
+QtCore, QtGui, QtWidgets = shared.import_qt(args)
+compat = shared.get_compat_definitions(args)
+ICON_MAP = shared.get_icon_map(args, compat)
 
-# Create our arguments.
-parser = argparse.ArgumentParser(description='Configurations for the Qt5 application.')
-parser.add_argument(
-    '--stylesheet',
-    help='''stylesheet name''',
-    default='native'
-)
-# Know working styles include:
-#   1. Fusion
-#   2. Windows
-parser.add_argument(
-    '--style',
-    help='''application style, which is different than the stylesheet''',
-    default='native'
-)
-parser.add_argument(
-    '--font-size',
-    help='''font size for the application''',
-    type=float,
-    default=-1
-)
-parser.add_argument(
-    '--font-family',
-    help='''the font family'''
-)
-parser.add_argument(
-    '--scale',
-    help='''scale factor for the UI''',
-    type=float,
-    default=1,
-)
-parser.add_argument(
-    '--pyqt6',
-    help='''use PyQt6 rather than PyQt5.''',
-    action='store_true'
-)
-parser.add_argument(
-    '--use-x11',
-    help='''force the use of x11 on compatible systems.''',
-    action='store_true'
-)
-
-args, unknown = parser.parse_known_args()
-if args.pyqt6:
-    from PyQt6 import QtCore, QtGui, QtWidgets
-    QtCore.QDir.addSearchPath(args.stylesheet, f'{dist}/pyqt6/{args.stylesheet}/')
-    resource_format = f'{args.stylesheet}:'
-else:
-    sys.path.insert(0, home)
-    from PyQt5 import QtCore, QtGui, QtWidgets
-    import breeze_resources
-    resource_format = f':/{args.stylesheet}/'
-stylesheet = f'{resource_format}stylesheet.qss'
-
-# Compat definitions, between Qt5 and Qt6.
-if args.pyqt6:
-    QAction = QtGui.QAction
-    Horizontal = QtCore.Qt.Orientation.Horizontal
-    Vertical = QtCore.Qt.Orientation.Vertical
-    TopToolBarArea = QtCore.Qt.ToolBarArea.TopToolBarArea
-    StyledPanel = QtWidgets.QFrame.Shape.StyledPanel
-    HLine = QtWidgets.QFrame.Shape.HLine
-    VLine = QtWidgets.QFrame.Shape.VLine
-    Raised = QtWidgets.QFrame.Shadow.Raised
-    Sunken = QtWidgets.QFrame.Shadow.Sunken
-    InstantPopup = QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup
-    MenuButtonPopup = QtWidgets.QToolButton.ToolButtonPopupMode.MenuButtonPopup
-    AlignTop = QtCore.Qt.AlignmentFlag.AlignTop
-    ItemIsUserCheckable = QtCore.Qt.ItemFlag.ItemIsUserCheckable
-    ItemIsUserTristate = QtCore.Qt.ItemFlag.ItemIsUserTristate
-    Checked = QtCore.Qt.CheckState.Checked
-    Unchecked = QtCore.Qt.CheckState.Unchecked
-    PartiallyChecked = QtCore.Qt.CheckState.PartiallyChecked
-    ReadOnly = QtCore.QFile.OpenModeFlag.ReadOnly
-    Text = QtCore.QFile.OpenModeFlag.Text
-    East = QtWidgets.QTabWidget.TabPosition.East
-    SP_DockWidgetCloseButton = QtWidgets.QStyle.StandardPixmap.SP_DockWidgetCloseButton
-    UpArrow = QtCore.Qt.ArrowType.UpArrow
-    Triangular = QtWidgets.QTabWidget.TabShape.Triangular
-    Password = QtWidgets.QLineEdit.EchoMode.Password
-else:
-    QAction = QtWidgets.QAction
-    Horizontal = QtCore.Qt.Horizontal
-    Vertical = QtCore.Qt.Vertical
-    TopToolBarArea = QtCore.Qt.TopToolBarArea
-    StyledPanel = QtWidgets.QFrame.StyledPanel
-    HLine = QtWidgets.QFrame.HLine
-    VLine = QtWidgets.QFrame.VLine
-    Raised = QtWidgets.QFrame.Raised
-    Sunken = QtWidgets.QFrame.Sunken
-    InstantPopup = QtWidgets.QToolButton.InstantPopup
-    MenuButtonPopup = QtWidgets.QToolButton.MenuButtonPopup
-    AlignTop = QtCore.Qt.AlignTop
-    ItemIsUserCheckable = QtCore.Qt.ItemIsUserCheckable
-    ItemIsUserTristate = QtCore.Qt.ItemIsUserTristate
-    Checked = QtCore.Qt.Checked
-    Unchecked = QtCore.Qt.Unchecked
-    PartiallyChecked = QtCore.Qt.PartiallyChecked
-    ReadOnly = QtCore.QFile.ReadOnly
-    Text = QtCore.QFile.Text
-    East = QtWidgets.QTabWidget.East
-    SP_DockWidgetCloseButton = QtWidgets.QStyle.SP_DockWidgetCloseButton
-    UpArrow = QtCore.Qt.UpArrow
-    Triangular = QtWidgets.QTabWidget.Triangular
-    Password = QtWidgets.QLineEdit.Password
-
-# Need to fix an issue on Wayland on Linux:
-#   conda-forge does not support Wayland, for who knows what reason.
-if sys.platform.lower().startswith('linux') and 'CONDA_PREFIX' in os.environ:
-    args.use_x11 = True
-
-if args.use_x11:
-    os.environ['XDG_SESSION_TYPE'] = 'x11'
 
 def close_icon(widget):
     '''Get the close icon depending on the stylesheet.'''
 
-    if args.stylesheet == 'native':
-        return widget.style().standardIcon(SP_DockWidgetCloseButton)
-    return QtGui.QIcon(f'{resource_format}close.svg')
+    style = widget.style()
+    icon = compat.SP_DockWidgetCloseButton
+    return shared.style_icon(args, style, icon, ICON_MAP, widget=widget)
 
 
 class Ui:
@@ -171,7 +59,7 @@ class Ui:
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.centralwidget)
         self.verticalLayout_5.setObjectName('verticalLayout_5')
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
-        self.tabWidget.setTabPosition(East)
+        self.tabWidget.setTabPosition(compat.East)
         self.tabWidget.setTabsClosable(True)
         self.tabWidget.setObjectName('tabWidget')
         self.tab = QtWidgets.QWidget()
@@ -326,17 +214,17 @@ class Ui:
         item_2 = QtWidgets.QTreeWidgetItem(item_1)
         item_2.setText(0, 'subitem')
         item_3 = QtWidgets.QTreeWidgetItem(item_2, ['Row 2.1'])
-        item_3.setFlags(item_3.flags() | ItemIsUserCheckable)
-        item_3.setCheckState(0, Unchecked)
+        item_3.setFlags(item_3.flags() | compat.ItemIsUserCheckable)
+        item_3.setCheckState(0, compat.Unchecked)
         item_4 = QtWidgets.QTreeWidgetItem(item_2, ['Row 2.2'])
         item_5 = QtWidgets.QTreeWidgetItem(item_4, ['Row 2.2.1'])
         item_6 = QtWidgets.QTreeWidgetItem(item_5, ['Row 2.2.1.1'])
         item_7 = QtWidgets.QTreeWidgetItem(item_5, ['Row 2.2.1.2'])
-        item_3.setFlags(item_7.flags() | ItemIsUserCheckable)
-        item_7.setCheckState(0, Checked)
+        item_3.setFlags(item_7.flags() | compat.ItemIsUserCheckable)
+        item_7.setCheckState(0, compat.Checked)
         item_8 = QtWidgets.QTreeWidgetItem(item_2, ['Row 2.3'])
-        item_8.setFlags(item_8.flags() | ItemIsUserTristate)
-        item_8.setCheckState(0, PartiallyChecked)
+        item_8.setFlags(item_8.flags() | compat.ItemIsUserTristate)
+        item_8.setCheckState(0, compat.PartiallyChecked)
         item_9 = QtWidgets.QTreeWidgetItem(self.treeWidget, ['Row 3'])
         item_10 = QtWidgets.QTreeWidgetItem(item_9, ['Row 3.1'])
         item_11 = QtWidgets.QTreeWidgetItem(self.treeWidget, ['Row 4'])
@@ -351,7 +239,7 @@ class Ui:
         self.verticalLayout_4v2 = QtWidgets.QVBoxLayout(self.groupBox_3v2)
         self.verticalLayout_4v2.setObjectName('verticalLayout_4v2')
         self.tabWidget3 = QtWidgets.QTabWidget(self.tab_3v2)
-        self.tabWidget3.setTabShape(Triangular)
+        self.tabWidget3.setTabShape(compat.Triangular)
         self.gridLayout_3v2.setObjectName('tabWidget3')
         self.tab_1v3 = QtWidgets.QWidget()
         self.tab_2v3 = QtWidgets.QWidget()
@@ -368,7 +256,7 @@ class Ui:
         self.line_3.setCompleter(completer)
         self.verticalLayout_6.addWidget(self.line_3)
         self.password = QtWidgets.QLineEdit('Sample', self.tab_1v3)
-        self.password.setEchoMode(Password)
+        self.password.setEchoMode(compat.Password)
         self.verticalLayout_6.addWidget(self.password)
         self.clear_line = QtWidgets.QLineEdit('Sample', self.tab_1v3)
         self.clear_line.setClearButtonEnabled(True)
@@ -376,7 +264,7 @@ class Ui:
         self.lcd = QtWidgets.QLCDNumber(3, self.tab_1v3)
         self.lcd.display(15)
         self.verticalLayout_6.addWidget(self.lcd)
-        self.verticalLayout_4v2.addWidget(self.tabWidget3, 0, AlignTop)
+        self.verticalLayout_4v2.addWidget(self.tabWidget3, 0, compat.AlignTop)
         self.gridLayout_3v2.addWidget(self.groupBox_3v2, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tab_2, '')
         self.tabWidget.addTab(self.tab_3v2, '')
@@ -391,11 +279,11 @@ class Ui:
         self.bt_delay_popup.setObjectName('bt_delay_popup')
         self.horizontalLayout.addWidget(self.bt_delay_popup)
         self.bt_instant_popup = QtWidgets.QToolButton(self.centralwidget)
-        self.bt_instant_popup.setPopupMode(InstantPopup)
+        self.bt_instant_popup.setPopupMode(compat.InstantPopup)
         self.bt_instant_popup.setObjectName('bt_instant_popup')
         self.horizontalLayout.addWidget(self.bt_instant_popup)
         self.bt_menu_button_popup = QtWidgets.QToolButton(self.centralwidget)
-        self.bt_menu_button_popup.setPopupMode(MenuButtonPopup)
+        self.bt_menu_button_popup.setPopupMode(compat.MenuButtonPopup)
         self.bt_menu_button_popup.setObjectName('bt_menu_button_popup')
         self.horizontalLayout.addWidget(self.bt_menu_button_popup)
         self.bt_auto_raise = QtWidgets.QToolButton(self.centralwidget)
@@ -405,12 +293,12 @@ class Ui:
         self.horizontalLayout.addWidget(self.bt_auto_raise)
         self.bt_arrow = QtWidgets.QToolButton(self.centralwidget)
         self.bt_arrow.setAutoRaise(True)
-        self.bt_arrow.setArrowType(UpArrow)
+        self.bt_arrow.setArrowType(compat.UpArrow)
         self.bt_arrow.setObjectName('bt_arrow')
         self.horizontalLayout.addWidget(self.bt_arrow)
         self.line_2 = QtWidgets.QFrame(self.centralwidget)
-        self.line_2.setFrameShape(VLine)
-        self.line_2.setFrameShadow(Sunken)
+        self.line_2.setFrameShape(compat.VLine)
+        self.line_2.setFrameShadow(compat.Sunken)
         self.line_2.setObjectName('line_2')
         self.horizontalLayout.addWidget(self.line_2)
         self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
@@ -422,7 +310,7 @@ class Ui:
         self.doubleSpinBox.setObjectName('doubleSpinBox')
         self.horizontalLayout.addWidget(self.doubleSpinBox)
         self.toolButton = QtWidgets.QToolButton(self.centralwidget)
-        self.toolButton.setPopupMode(InstantPopup)
+        self.toolButton.setPopupMode(compat.InstantPopup)
         self.toolButton.setObjectName('toolButton')
         self.horizontalLayout.addWidget(self.toolButton)
         self.verticalLayout_5.addLayout(self.horizontalLayout)
@@ -453,15 +341,15 @@ class Ui:
         self.comboBox.addItem('')
         self.verticalLayout.addWidget(self.comboBox)
         self.horizontalSlider = QtWidgets.QSlider(self.dockWidgetContents)
-        self.horizontalSlider.setOrientation(Horizontal)
+        self.horizontalSlider.setOrientation(compat.Horizontal)
         self.horizontalSlider.setObjectName('horizontalSlider')
         self.verticalLayout.addWidget(self.horizontalSlider)
         self.textEdit = QtWidgets.QTextEdit(self.dockWidgetContents)
         self.textEdit.setObjectName('textEdit')
         self.verticalLayout.addWidget(self.textEdit)
         self.line = QtWidgets.QFrame(self.dockWidgetContents)
-        self.line.setFrameShape(HLine)
-        self.line.setFrameShadow(Sunken)
+        self.line.setFrameShape(compat.HLine)
+        self.line.setFrameShadow(compat.Sunken)
         self.line.setObjectName('line')
         self.verticalLayout.addWidget(self.line)
         self.progressBar = QtWidgets.QProgressBar(self.dockWidgetContents)
@@ -471,8 +359,8 @@ class Ui:
         self.verticalLayout_2.addLayout(self.verticalLayout)
         self.frame = QtWidgets.QFrame(self.dockWidgetContents)
         self.frame.setMinimumSize(QtCore.QSize(0, 100))
-        self.frame.setFrameShape(StyledPanel)
-        self.frame.setFrameShadow(Raised)
+        self.frame.setFrameShape(compat.StyledPanel)
+        self.frame.setFrameShadow(compat.Raised)
         self.frame.setLineWidth(3)
         self.frame.setObjectName('frame')
         self.verticalLayout_2.addWidget(self.frame)
@@ -480,7 +368,7 @@ class Ui:
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget1)
         self.toolBar = QtWidgets.QToolBar(MainWindow)
         self.toolBar.setObjectName('toolBar')
-        MainWindow.addToolBar(TopToolBarArea, self.toolBar)
+        MainWindow.addToolBar(compat.TopToolBarArea, self.toolBar)
         self.dockWidget2 = QtWidgets.QDockWidget(MainWindow)
         self.dockWidget2.setObjectName('dockWidget2')
         self.dockWidgetContents_2 = QtWidgets.QWidget()
@@ -488,16 +376,16 @@ class Ui:
         self.gridLayout_3 = QtWidgets.QGridLayout(self.dockWidgetContents_2)
         self.gridLayout_3.setObjectName('gridLayout_3')
         self.verticalSlider = QtWidgets.QSlider(self.dockWidgetContents_2)
-        self.verticalSlider.setOrientation(Vertical)
+        self.verticalSlider.setOrientation(compat.Vertical)
         self.verticalSlider.setObjectName('verticalSlider')
         self.gridLayout_3.addWidget(self.verticalSlider, 0, 0, 1, 1)
         self.dockWidget2.setWidget(self.dockWidgetContents_2)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget2)
-        self.actionAction = QAction(MainWindow)
+        self.actionAction = compat.QAction(MainWindow)
         self.actionAction.setObjectName('actionAction')
-        self.actionSub_menu = QAction(MainWindow)
+        self.actionSub_menu = compat.QAction(MainWindow)
         self.actionSub_menu.setObjectName('actionSub_menu')
-        self.actionAction_C = QAction(MainWindow)
+        self.actionAction_C = compat.QAction(MainWindow)
         self.actionAction_C.setObjectName('actionAction_C')
         self.menuSubmenu_2.addAction(self.actionSub_menu)
         self.menuSubmenu_2.addAction(self.actionAction_C)
@@ -624,25 +512,7 @@ class Ui:
 def main():
     'Application entry point'
 
-    if args.scale != 1:
-        os.environ['QT_SCALE_FACTOR'] = str(args.scale)
-    else:
-        os.environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = '1'
-
-    app = QtWidgets.QApplication(sys.argv[:1] + unknown)
-    if args.style != 'native':
-        style = QtWidgets.QStyleFactory.create(args.style)
-        app.setStyle(style)
-
-    window = QtWidgets.QMainWindow()
-
-    # use the default font size
-    font = app.font()
-    if args.font_size > 0:
-        font.setPointSizeF(args.font_size)
-    if args.font_family:
-        font.setFamily(args.font_family)
-    app.setFont(font)
+    app, window = shared.setup_app(args, unknown, compat)
 
     # setup ui
     ui = Ui()
@@ -668,19 +538,7 @@ def main():
     # tabify dock widgets to show bug #6
     window.tabifyDockWidget(ui.dockWidget1, ui.dockWidget2)
 
-    # setup stylesheet
-    if args.stylesheet != 'native':
-        file = QtCore.QFile(stylesheet)
-        file.open(ReadOnly | Text)
-        stream = QtCore.QTextStream(file)
-        app.setStyleSheet(stream.readAll())
-
-    # run
-    window.show()
-    if args.pyqt6:
-        return app.exec()
-    else:
-        return app.exec_()
+    return shared.exec_app(args, app, window, compat)
 
 
 if __name__ == '__main__':

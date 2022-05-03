@@ -31,123 +31,20 @@
     supports highlighting the handle on the active or hovered dial.
 '''
 
-import argparse
 import math
-import os
+import shared
 import sys
 
-example_dir = os.path.dirname(os.path.realpath(__file__))
-home = os.path.dirname(example_dir)
-dist = os.path.join(home, 'dist')
-
-# Create our arguments.
-parser = argparse.ArgumentParser(description='Configurations for the Qt5 application.')
-parser.add_argument(
-    '--stylesheet',
-    help='''stylesheet name''',
-    default='native'
-)
-# Know working styles include:
-#   1. Fusion
-#   2. Windows
-parser.add_argument(
-    '--style',
-    help='''application style, which is different than the stylesheet''',
-    default='native'
-)
-parser.add_argument(
-    '--font-size',
-    help='''font size for the application''',
-    type=float,
-    default=-1
-)
-parser.add_argument(
-    '--font-family',
-    help='''the font family'''
-)
-parser.add_argument(
-    '--scale',
-    help='''scale factor for the UI''',
-    type=float,
-    default=1,
-)
-parser.add_argument(
-    '--pyqt6',
-    help='''use PyQt6 rather than PyQt5.''',
-    action='store_true'
-)
-parser.add_argument(
-    '--use-x11',
-    help='''force the use of x11 on compatible systems.''',
-    action='store_true'
-)
+parser = shared.create_parser()
 parser.add_argument(
     '--no-align',
     help='''allow larger widgets without forcing alignment.''',
     action='store_true'
 )
-
-args, unknown = parser.parse_known_args()
-if args.pyqt6:
-    from PyQt6 import QtCore, QtGui, QtWidgets
-    QtCore.QDir.addSearchPath(args.stylesheet, f'{dist}/pyqt6/{args.stylesheet}/')
-    resource_format = f'{args.stylesheet}:'
-else:
-    sys.path.insert(0, home)
-    from PyQt5 import QtCore, QtGui, QtWidgets
-    import breeze_resources
-    resource_format = f':/{args.stylesheet}/'
-stylesheet = f'{resource_format}stylesheet.qss'
-
-# Compat definitions, between Qt5 and Qt6.
-if args.pyqt6:
-    AlignHCenter = QtCore.Qt.AlignmentFlag.AlignHCenter
-    ReadOnly = QtCore.QFile.OpenModeFlag.ReadOnly
-    Text = QtCore.QFile.OpenModeFlag.Text
-    SolidLine = QtCore.Qt.PenStyle.SolidLine
-    FlatCap = QtCore.Qt.PenCapStyle.FlatCap
-    SquareCap = QtCore.Qt.PenCapStyle.SquareCap
-    RoundCap = QtCore.Qt.PenCapStyle.RoundCap
-    MiterJoin = QtCore.Qt.PenJoinStyle.MiterJoin
-    BevelJoin = QtCore.Qt.PenJoinStyle.BevelJoin
-    RoundJoin = QtCore.Qt.PenJoinStyle.RoundJoin
-    SvgMiterJoin = QtCore.Qt.PenJoinStyle.SvgMiterJoin
-    State_HasFocus = QtWidgets.QStyle.StateFlag.State_HasFocus
-    State_Selected = QtWidgets.QStyle.StateFlag.State_Selected
-    HoverEnter = QtCore.QEvent.Type.HoverEnter
-    HoverMove = QtCore.QEvent.Type.HoverMove
-    HoverLeave = QtCore.QEvent.Type.HoverLeave
-else:
-    AlignHCenter = QtCore.Qt.AlignHCenter
-    ReadOnly = QtCore.QFile.ReadOnly
-    Text = QtCore.QFile.Text
-    SolidLine = QtCore.Qt.SolidLine
-    FlatCap = QtCore.Qt.FlatCap
-    SquareCap = QtCore.Qt.SquareCap
-    RoundCap = QtCore.Qt.RoundCap
-    MiterJoin = QtCore.Qt.MiterJoin
-    BevelJoin = QtCore.Qt.BevelJoin
-    RoundJoin = QtCore.Qt.RoundJoin
-    SvgMiterJoin = QtCore.Qt.SvgMiterJoin
-    State_HasFocus = QtWidgets.QStyle.State_HasFocus
-    State_Selected = QtWidgets.QStyle.State_Selected
-    HoverEnter = QtCore.QEvent.HoverEnter
-    HoverMove = QtCore.QEvent.HoverMove
-    HoverLeave = QtCore.QEvent.HoverLeave
-
-SELECTED = QtGui.QColor(61, 174, 233)
-if 'dark' in args.stylesheet:
-    GROOVE_BACKGROUND = QtGui.QColor(98, 101, 104)
-    GROOVE_BORDER = QtGui.QColor(49, 54, 59)
-    HANDLE_BACKGROUND = QtGui.QColor(29, 32, 35)
-    HANDLE_BORDER = QtGui.QColor(98, 101, 104)
-    NOTCH = QtGui.QColor(51, 78, 94)
-elif 'light' in args.stylesheet:
-    GROOVE_BACKGROUND = QtGui.QColor(106, 105, 105, 179)
-    GROOVE_BORDER = QtGui.QColor(239, 240, 241)
-    HANDLE_BACKGROUND = QtGui.QColor(239, 240, 241)
-    HANDLE_BORDER = QtGui.QColor(106, 105, 105, 179)
-    NOTCH = QtGui.QColor(61, 173, 232, 51)
+args, unknown = shared.parse_args(parser)
+QtCore, QtGui, QtWidgets = shared.import_qt(args)
+compat = shared.get_compat_definitions(args)
+colors = shared.get_colors(args, compat)
 
 
 def radius(dial):
@@ -209,7 +106,13 @@ def default_pen(color, width):
 
 def round_pen(color, width):
     '''Create a pen with round join styles.'''
-    return QtGui.QPen(color, width, SolidLine, RoundCap, RoundJoin)
+    return QtGui.QPen(
+        color,
+        width,
+        compat.SolidLine,
+        compat.RoundCap,
+        compat.RoundJoin,
+    )
 
 def event_pos(event):
     '''Determine the event position.'''
@@ -238,12 +141,12 @@ class Dial(QtWidgets.QDial):
         self.notch_start = self.groove_width + 2
         self.notch_end = self.notch_start + 2
         self.notch_width = 2
-        self.groove_bd_color = GROOVE_BORDER
-        self.groove_bg_color = GROOVE_BACKGROUND
-        self.handle_bg_color = HANDLE_BACKGROUND
-        self.handle_bd_color = HANDLE_BORDER
-        self.notch_color = NOTCH
-        self.selected_color = SELECTED
+        self.groove_bd_color = colors.GrooveBorder
+        self.groove_bg_color = colors.GrooveBackground
+        self.handle_bg_color = colors.HandleBackground
+        self.handle_bd_color = colors.HandleBorder
+        self.notch_color = colors.Notch
+        self.selected_color = colors.Selected
 
         # Store some state changes.
         self.groove = (0, 0)
@@ -262,7 +165,7 @@ class Dial(QtWidgets.QDial):
 
         # Get our item colors. Override the color when selected/active.
         handle_bd_color = self.handle_bd_color
-        mask = State_HasFocus | State_Selected
+        mask = compat.State_HasFocus | compat.State_Selected
         # WindowActive
         if options.state & mask or self.is_hovered:
             handle_bd_color = self.selected_color
@@ -347,14 +250,14 @@ class Dial(QtWidgets.QDial):
         # for the handle, and determine if the mouse is contained in there,
         # rather than calculate if it's actually in the circle. This won't
         # matter except if the dial is scaled by a large amount.
-        if event.type() == HoverEnter or event.type() == HoverMove:
+        if event.type() == compat.HoverEnter or event.type() == compat.HoverMove:
             x0 = self.handle[0] - self.handle_radius
             y0 = self.handle[1] - self.handle_radius
             size = 2 * self.handle_radius
             rect = QtCore.QRectF(x0, y0, size, size)
             self.is_hovered = rect.contains(event_pos(event))
             self.repaint()
-        elif event.type() == HoverLeave:
+        elif event.type() == compat.HoverLeave:
             self.is_hovered = False
             self.repaint()
 
@@ -372,7 +275,7 @@ class Ui:
         self.layout = QtWidgets.QVBoxLayout(self.centralwidget)
         self.layout.setObjectName('layout')
         if not args.no_align:
-            self.layout.setAlignment(AlignHCenter)
+            self.layout.setAlignment(compat.AlignHCenter)
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.dial1 = Dial(self.centralwidget)
@@ -390,44 +293,14 @@ class Ui:
 def main():
     'Application entry point'
 
-    if args.scale != 1:
-        os.environ['QT_SCALE_FACTOR'] = str(args.scale)
-    else:
-        os.environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = '1'
-
-    app = QtWidgets.QApplication(sys.argv[:1] + unknown)
-    if args.style != 'native':
-        style = QtWidgets.QStyleFactory.create(args.style)
-        app.setStyle(style)
-
-    window = QtWidgets.QMainWindow()
+    app, window = shared.setup_app(args, unknown, compat)
 
     # setup ui
     ui = Ui()
     ui.setup(window)
     window.setWindowTitle('QDial')
 
-    # use the default font size
-    font = app.font()
-    if args.font_size > 0:
-        font.setPointSizeF(args.font_size)
-    if args.font_family:
-        font.setFamily(args.font_family)
-    app.setFont(font)
-
-    # setup stylesheet
-    if args.stylesheet != 'native':
-        file = QtCore.QFile(stylesheet)
-        file.open(ReadOnly | Text)
-        stream = QtCore.QTextStream(file)
-        app.setStyleSheet(stream.readAll())
-
-    # run
-    window.show()
-    if args.pyqt6:
-        return app.exec()
-    else:
-        return app.exec_()
+    return shared.exec_app(args, app, window, compat)
 
 if __name__ == '__main__':
     sys.exit(main())
