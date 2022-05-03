@@ -1,9 +1,9 @@
 Extensions
 ==========
 
-Extensions enable the creation of stylesheets using the same, customizable themes of the original stylesheet. This both allows refining the generated stylesheet and supporting third-party Qt plugins/widgets.
+Extensions enable the creation of stylesheets using the same, customizable themes of the original stylesheet. This both allows refining the generated stylesheet and supporting third-party Qt extensions/widgets.
 
-Extensions are optionally added to the generated stylesheets, allowing you to extend existing stylesheets to support third-party plugins and optional features.
+Extensions are optionally added to the generated stylesheets, allowing you to extend existing stylesheets to support third-party extensions and optional features.
 
 Furthermore, this simplifies making local, application-specific changes, without having to deal with merge conflicts when fetching updates.
 

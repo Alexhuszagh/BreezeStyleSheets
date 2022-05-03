@@ -283,9 +283,9 @@ def main():
 
 ### Standard Icons
 
-Certain standard icons cannot be overwritten in the stylesheet, and therefore a custom style must be installed in the Qt application. The `standard-icons` [plugin](/extension/README.md#standard-icons) comes with a set of custom standard icons, and the [standard_icons.py](/example/standard_icons.py) example shows a complete application for how to override the default standard icons.
+Certain standard icons cannot be overwritten in the stylesheet, and therefore a custom style must be installed in the Qt application. The `standard-icons` [extension](/extension/README.md#standard-icons) comes with a set of custom standard icons, and the [standard_icons.py](/example/standard_icons.py) example shows a complete application for how to override the default standard icons.
 
-A simple example of overriding the command link icon for a PyQt6 application is as follows. First, configure with the `standard-icons` plugin.
+A simple example of overriding the command link icon for a PyQt6 application is as follows. First, configure with the `standard-icons` extension.
 
 ```bash
 python configure.py --extensions=standard-icons

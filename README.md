@@ -3,14 +3,14 @@ BreezeStyleSheets
 
 Configurable Breeze and BreezeDark-like stylesheets for Qt Applications.
 
-BreezeStyleSheets is a set of beautiful light and dark stylesheets that render consistently across platforms, including high DPI screens. Each stylesheet is generated from a theme file and can be extended with a plugin system, simplifying the generation custom stylesheets for your application. The stylesheets are comprehensively tested with most Qt widgets and widget properties, providing a consistent, stylish feel on any platform, including different operating systems, desktop environments, and Qt versions.
+BreezeStyleSheets is a set of beautiful light and dark stylesheets that render consistently across platforms, including high DPI screens. Each stylesheet is generated from a theme file and can be extended with a extension system, simplifying the generation custom stylesheets for your application. The stylesheets are comprehensively tested with most Qt widgets and widget properties, providing a consistent, stylish feel on any platform, including different operating systems, desktop environments, and Qt versions.
 
 **Table of Contents**
 
 - [Gallery](#gallery)
 - [Customization](#customization)
 - [Features](#features)
-  - [Plugins](#plugins)
+  - [Extensions](#extensions)
 - [Extending Stylesheets](#extending-stylesheets)
 - [Installing](#installing)
   - [CMake Installation](#cmake-installation)
@@ -163,7 +163,7 @@ As a reference point, see the pre-generated [themes](/theme). In general, to cre
 
 **Extensions**
 
-We also allow customizable extensions to extend the default stylesheets with additional style rules, using the colors defined in your theme. This also enables the integration of third-party Qt plugins/widgets into the generated stylesheets.
+We also allow customizable extensions to extend the default stylesheets with additional style rules, using the colors defined in your theme. This also enables the integration of third-party Qt extensions/widgets into the generated stylesheets.
 
 For example, to configure with extensions for the [Advanced Docking System](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System), run:
 
@@ -178,11 +178,11 @@ Like with styles, `--extensions` takes a comma-separated list of values, or `all
 - Complete stylesheet for all Qt widgets, including esoteric widgets like `QCalendarWidget`.
 - Customizable, beautiful light and dark themes.
 - Cross-platform icon packs for standard icons.
-- Extensible stylesheets: add your own plugins or rules and automatically configure them using the same configuration syntax.
+- Extensible stylesheets: add your own extensions or rules and automatically configure them using the same configuration syntax.
 
-## Plugins
+## Extensions
 
-The supported plugins can be found in the [extensions](/extension/README.md) directory and include theme support for:
+The supported extensions can be found in the [extensions](/extension/README.md) directory and include theme support for:
 - [Advanced Docking System](/extension/README.md#advanced-docking-system)
 - [QDockWidget Tooltips](/extension/README.md#qdockwidget-tooltips)
 - [Complete Standard Icon Set](/extension/README.md#standard-icons)
