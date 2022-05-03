@@ -109,6 +109,7 @@ def main():
     ui.setup(window)
     window.setWindowTitle('Stylized Placeholder Text.')
 
+    shared.set_stylesheet(args, app, compat)
     return shared.exec_app(args, app, window, compat)
 
 if __name__ == '__main__':

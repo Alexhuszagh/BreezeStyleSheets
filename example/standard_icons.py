@@ -277,6 +277,7 @@ def main():
     ui.actionAction.triggered.connect(ui.about)
     ui.actionAction_C.triggered.connect(ui.critical)
 
+    shared.set_stylesheet(args, app, compat)
     return shared.exec_app(args, app, window, compat)
 
 if __name__ == '__main__':

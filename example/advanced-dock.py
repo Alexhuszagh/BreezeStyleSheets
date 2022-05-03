@@ -88,6 +88,7 @@ def main():
 
     # run
     window.setWindowState(compat.WindowMaximized)
+    shared.set_stylesheet(args, app, compat)
     return shared.exec_app(args, app, window, compat)
 
 if __name__ == '__main__':

@@ -21,42 +21,42 @@ def create_parser():
     )
     parser.add_argument(
         '--stylesheet',
-        help='''stylesheet name''',
-        default='native'
+        help='stylesheet name (`dark`, `light`, `native`, ...)',
+        default='native',
     )
     # Know working styles include:
     #   1. Fusion
     #   2. Windows
     parser.add_argument(
         '--style',
-        help='''application style, which is different than the stylesheet''',
-        default='native'
+        help='application style (`Fusion`, `Windows`, `native`, ...)',
+        default='native',
     )
     parser.add_argument(
         '--font-size',
-        help='''font size for the application''',
+        help='font size for the application',
         type=float,
         default=-1
     )
     parser.add_argument(
         '--font-family',
-        help='''the font family'''
+        help='the font family'
     )
     parser.add_argument(
         '--scale',
-        help='''scale factor for the UI''',
+        help='scale factor for the UI',
         type=float,
         default=1,
     )
     parser.add_argument(
         '--pyqt6',
-        help='''use PyQt6 rather than PyQt5.''',
+        help='use PyQt6 rather than PyQt5.',
         action='store_true'
     )
     # Linux or Unix-like only.
     parser.add_argument(
         '--use-x11',
-        help='''force the use of x11 on compatible systems.''',
+        help='force the use of x11 on compatible systems.',
         action='store_true'
     )
 
@@ -118,6 +118,7 @@ def get_compat_definitions(args):
         ns.ToolBarArea = QtCore.Qt.ToolBarArea
         ns.FrameShape = QtWidgets.QFrame.Shape
         ns.FrameShadow = QtWidgets.QFrame.Shadow
+        ns.FrameStyleMask = QtWidgets.QFrame.StyleMask
         ns.ToolButtonPopupMode = QtWidgets.QToolButton.ToolButtonPopupMode
         ns.AlignmentFlag = QtCore.Qt.AlignmentFlag
         ns.OpenModeFlag = QtCore.QFile.OpenModeFlag
@@ -137,20 +138,62 @@ def get_compat_definitions(args):
         ns.TickPosition = QtWidgets.QSlider.TickPosition
         ns.ComplexControl = QtWidgets.QStyle.ComplexControl
         ns.SubControl = QtWidgets.QStyle.SubControl
+        ns.ScrollBarPolicy = QtCore.Qt.ScrollBarPolicy
+        ns.AspectRatioMode = QtCore.Qt.AspectRatioMode
+        ns.MessageStandardButton = QtWidgets.QMessageBox.StandardButton
+        ns.MessageIcon = QtWidgets.QMessageBox.Icon
+        ns.FileMode = QtWidgets.QFileDialog.FileMode
+        ns.ColorOption = QtWidgets.QColorDialog.ColorDialogOption
+        ns.SegmentStyle = QtWidgets.QLCDNumber.SegmentStyle
+        ns.FileIconType = QtWidgets.QFileIconProvider.IconType
+        ns.FontDialogOption = QtWidgets.QFontDialog.FontDialogOption
+        ns.TextFormat = QtCore.Qt.TextFormat
+        ns.AspectRatioMode = QtCore.Qt.AspectRatioMode
+        ns.ScrollBarPolicy = QtCore.Qt.ScrollBarPolicy
+        ns.ToolButtonStyle = QtCore.Qt.ToolButtonStyle
+        ns.FileOption = QtWidgets.QFileDialog.Option.DontUseNativeDialog
+        ns.DialogStandardButton = QtWidgets.QDialogButtonBox.StandardButton
+        ns.DialogButtonRole = QtWidgets.QDialogButtonBox.ButtonRole
+        ns.WizardStyle = QtWidgets.QWizard.WizardStyle
+        ns.WizardOption = QtWidgets.QWizard.WizardOption
+        ns.WizardPixmap = QtWidgets.QWizard.WizardPixmap
+        ns.DockWidgetArea = QtCore.Qt.DockWidgetArea
+        ns.DockWidgetFeature = QtWidgets.QDockWidget.DockWidgetFeature
+        ns.InputDialogOption = QtWidgets.QInputDialog.InputDialogOption
+        ns.ProgressDirection = QtWidgets.QProgressBar.Direction
+        ns.ButtonPosition = QtWidgets.QTabBar.ButtonPosition
+        ns.TabShape = QtWidgets.QTabWidget.TabShape
+        ns.InputMode = QtWidgets.QInputDialog.InputMode
+        ns.RubberBandShape = QtWidgets.QRubberBand.Shape
+        ns.TextInteractionFlag = QtCore.Qt.TextInteractionFlag
 
         # QObjects
         ns.QAction = QtGui.QAction
+        ns.QFileSystemModel = QtGui.QFileSystemModel
+        ns.QUndoGroup = QtGui.QUndoGroup
+        ns.QUndoStack = QtGui.QUndoStack
+        ns.QUndoCommand = QtGui.QUndoCommand
 
         # Enumerations
         ns.Horizontal = ns.Orientation.Horizontal
         ns.Vertical = ns.Orientation.Vertical
         ns.AlignTop = ns.AlignmentFlag.AlignTop
+        ns.AlignBottom = ns.AlignmentFlag.AlignBottom
         ns.AlignLeft = ns.AlignmentFlag.AlignLeft
+        ns.AlignRight = ns.AlignmentFlag.AlignRight
         ns.AlignHCenter = ns.AlignmentFlag.AlignHCenter
+        ns.AlignVCenter = ns.AlignmentFlag.AlignVCenter
+        ns.AlignCenter = ns.AlignmentFlag.AlignCenter
+        ns.NoFrame = ns.FrameShape.NoFrame
+        ns.Box = ns.FrameShape.Box
+        ns.Panel = ns.FrameShape.Panel
         ns.StyledPanel = ns.FrameShape.StyledPanel
         ns.HLine = ns.FrameShape.HLine
         ns.VLine = ns.FrameShape.VLine
+        ns.WinPanel = ns.FrameShape.WinPanel
         ns.TopToolBarArea = ns.ToolBarArea.TopToolBarArea
+        ns.LeftToolBarArea = ns.ToolBarArea.LeftToolBarArea
+        ns.Plain = ns.FrameShadow.Plain
         ns.Raised = ns.FrameShadow.Raised
         ns.Sunken = ns.FrameShadow.Sunken
         ns.InstantPopup = ns.ToolButtonPopupMode.InstantPopup
@@ -162,12 +205,21 @@ def get_compat_definitions(args):
         ns.PartiallyChecked = ns.CheckState.PartiallyChecked
         ns.ReadOnly = ns.OpenModeFlag.ReadOnly
         ns.Text = ns.OpenModeFlag.Text
+        ns.North = ns.TabPosition.North
+        ns.West = ns.TabPosition.West
         ns.East = ns.TabPosition.East
+        ns.South = ns.TabPosition.South
+        ns.LeftArrow = ns.ArrowType.LeftArrow
+        ns.RightArrow = ns.ArrowType.RightArrow
         ns.UpArrow = ns.ArrowType.UpArrow
+        ns.DownArrow = ns.ArrowType.DownArrow
         ns.Triangular = ns.TabShape.Triangular
+        ns.NoEcho = ns.EchoMode.NoEcho
         ns.Password = ns.EchoMode.Password
+        ns.PasswordEchoOnEdit = ns.EchoMode.PasswordEchoOnEdit
         ns.WindowMaximized = ns.WindowState.WindowMaximized
         ns.SolidLine = ns.PenStyle.SolidLine
+        ns.DotLine = ns.PenStyle.DotLine
         ns.FlatCap = ns.PenCapStyle.FlatCap
         ns.SquareCap = ns.PenCapStyle.SquareCap
         ns.RoundCap = ns.PenCapStyle.RoundCap
@@ -269,6 +321,83 @@ def get_compat_definitions(args):
         ns.SP_ToolBarVerticalExtensionButton = ns.StandardPixmap.SP_ToolBarVerticalExtensionButton
         ns.SP_TrashIcon = ns.StandardPixmap.SP_TrashIcon
         ns.SP_VistaShield = ns.StandardPixmap.SP_VistaShield
+        ns.MessageOk = ns.MessageStandardButton.Ok
+        ns.MessageCancel = ns.MessageStandardButton.Cancel
+        ns.MessageClose = ns.MessageStandardButton.Close
+        ns.MessageOpen = ns.MessageStandardButton.Open
+        ns.MessageReset = ns.MessageStandardButton.Reset
+        ns.MessageSave = ns.MessageStandardButton.Save
+        ns.MessageSaveAll = ns.MessageStandardButton.SaveAll
+        ns.MessageRestoreDefaults = ns.MessageStandardButton.RestoreDefaults
+        ns.MessageYes = ns.MessageStandardButton.Yes
+        ns.MessageHelp = ns.MessageStandardButton.Help
+        ns.MessageNo = ns.MessageStandardButton.No
+        ns.MessageApply = ns.MessageStandardButton.Apply
+        ns.MessageDiscard = ns.MessageStandardButton.Discard
+        ns.MessageCritical = ns.MessageIcon.Critical
+        ns.MessageInformation = ns.MessageIcon.Information
+        ns.MessageNoIcon = ns.MessageIcon.NoIcon
+        ns.MessageQuestion = ns.MessageIcon.Question
+        ns.MessageWarning = ns.MessageIcon.Warning
+        # Qt6 expects an int value, not enumerated value for the StyleMask.
+        ns.Shadow_Mask = ns.FrameStyleMask.Shadow_Mask.value
+        ns.Shape_Mask = ns.FrameStyleMask.Shape_Mask.value
+        ns.AnyFile = ns.FileMode.AnyFile
+        ns.ExistingFile = ns.FileMode.ExistingFile
+        ns.ExistingFiles = ns.FileMode.ExistingFiles
+        ns.Directory = ns.FileMode.Directory
+        ns.ColorShowAlphaChannel = ns.ColorOption.ShowAlphaChannel
+        ns.ColorNoButtons = ns.ColorOption.NoButtons
+        ns.ColorDontUseNativeDialog = ns.ColorOption.DontUseNativeDialog
+        ns.LCDOutline = ns.SegmentStyle.Outline
+        ns.LCDFlat = ns.SegmentStyle.Flat
+        ns.NetworkIcon = ns.FileIconType.Network
+        ns.FontNoButtons = ns.FontDialogOption.NoButtons
+        ns.FontDontUseNativeDialog = ns.FontDialogOption.DontUseNativeDialog
+        ns.ClassicStyle = ns.WizardStyle.ClassicStyle
+        ns.ModernStyle = ns.WizardStyle.ModernStyle
+        ns.MacStyle = ns.WizardStyle.MacStyle
+        ns.AeroStyle = ns.WizardStyle.AeroStyle
+        ns.PlainText = ns.TextFormat.PlainText
+        ns.RichText = ns.TextFormat.RichText
+        ns.AutoText = ns.TextFormat.AutoText
+        ns.MarkdownText = ns.TextFormat.MarkdownText
+        ns.KeepAspectRatio = ns.AspectRatioMode.KeepAspectRatio
+        ns.ScrollBarAsNeeded = ns.ScrollBarPolicy.ScrollBarAsNeeded
+        ns.ToolButtonIconOnly = ns.ToolButtonStyle.ToolButtonIconOnly
+        ns.ToolButtonTextOnly = ns.ToolButtonStyle.ToolButtonTextOnly
+        ns.ToolButtonTextBesideIcon = ns.ToolButtonStyle.ToolButtonTextBesideIcon
+        ns.ToolButtonTextUnderIcon = ns.ToolButtonStyle.ToolButtonTextUnderIcon
+        ns.ToolButtonFollowStyle = ns.ToolButtonStyle.ToolButtonFollowStyle
+        ns.FileDontUseNativeDialog = ns.FileOption.DontUseNativeDialog
+        ns.DialogYesRole = ns.DialogButtonRole.YesRole
+        ns.DialogOk = ns.DialogStandardButton.Ok
+        ns.DialogCancel = ns.DialogStandardButton.Cancel
+        ns.HaveHelpButton = ns.WizardOption.HaveHelpButton
+        ns.WatermarkPixmap = ns.WizardPixmap.WatermarkPixmap
+        ns.LogoPixmap = ns.WizardPixmap.LogoPixmap
+        ns.BannerPixmap = ns.WizardPixmap.BannerPixmap
+        ns.BackgroundPixmap = ns.WizardPixmap.BackgroundPixmap
+        ns.LeftDockWidgetArea = ns.DockWidgetArea.LeftDockWidgetArea
+        DockWidgetClosable = ns.DockWidgetFeature.DockWidgetClosable
+        DockWidgetFloatable = ns.DockWidgetFeature.DockWidgetFloatable
+        DockWidgetMovable = ns.DockWidgetFeature.DockWidgetMovable
+        ns.AllDockWidgetFeatures = DockWidgetClosable | DockWidgetFloatable | DockWidgetMovable
+        ns.DockWidgetVerticalTitleBar = ns.DockWidgetFeature.DockWidgetVerticalTitleBar
+        ns.InputNoButtons = ns.InputDialogOption.NoButtons
+        ns.UseListViewForComboBoxItems = ns.InputDialogOption.UseListViewForComboBoxItems
+        ns.TopToBottom = ns.ProgressDirection.TopToBottom
+        ns.BottomToTop = ns.ProgressDirection.BottomToTop
+        ns.Rounded = ns.TabShape.Rounded
+        ns.Triangular = ns.TabShape.Triangular
+        ns.LeftSide = ns.ButtonPosition.LeftSide
+        ns.RightSide = ns.ButtonPosition.RightSide
+        ns.IntInput = ns.InputMode.IntInput
+        ns.DoubleInput = ns.InputMode.DoubleInput
+        ns.RubberBandLine = ns.RubberBandShape.Line
+        ns.RubberBandRectangle = ns.RubberBandShape.Rectangle
+        ns.TextSelectableByMouse = ns.TextInteractionFlag.TextSelectableByMouse
+        ns.TextEditorInteraction = ns.TextInteractionFlag.TextEditorInteraction
     else:
         from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -279,21 +408,35 @@ def get_compat_definitions(args):
 
         # QObjects
         ns.QAction = QtWidgets.QAction
+        ns.QFileSystemModel = QtWidgets.QFileSystemModel
+        ns.QUndoGroup = QtWidgets.QUndoGroup
+        ns.QUndoStack = QtWidgets.QUndoStack
+        ns.QUndoCommand = QtWidgets.QUndoCommand
 
         # Enumerations
         ns.Horizontal = QtCore.Qt.Horizontal
         ns.Vertical = QtCore.Qt.Vertical
         ns.TopToolBarArea = QtCore.Qt.TopToolBarArea
+        ns.LeftToolBarArea = QtCore.Qt.LeftToolBarArea
+        ns.NoFrame = QtWidgets.QFrame.NoFrame
+        ns.Box = QtWidgets.QFrame.Box
+        ns.Panel = QtWidgets.QFrame.Panel
         ns.StyledPanel = QtWidgets.QFrame.StyledPanel
         ns.HLine = QtWidgets.QFrame.HLine
         ns.VLine = QtWidgets.QFrame.VLine
+        ns.WinPanel = QtWidgets.QFrame.WinPanel
+        ns.Plain = QtWidgets.QFrame.Plain
         ns.Raised = QtWidgets.QFrame.Raised
         ns.Sunken = QtWidgets.QFrame.Sunken
         ns.InstantPopup = QtWidgets.QToolButton.InstantPopup
         ns.MenuButtonPopup = QtWidgets.QToolButton.MenuButtonPopup
         ns.AlignTop = QtCore.Qt.AlignTop
+        ns.AlignBottom = QtCore.Qt.AlignBottom
         ns.AlignLeft = QtCore.Qt.AlignLeft
+        ns.AlignRight = QtCore.Qt.AlignRight
         ns.AlignHCenter = QtCore.Qt.AlignHCenter
+        ns.AlignVCenter = QtCore.Qt.AlignVCenter
+        ns.AlignCenter = QtCore.Qt.AlignCenter
         ns.ItemIsUserCheckable = QtCore.Qt.ItemIsUserCheckable
         ns.ItemIsUserTristate = QtCore.Qt.ItemIsUserTristate
         ns.Checked = QtCore.Qt.Checked
@@ -301,13 +444,22 @@ def get_compat_definitions(args):
         ns.PartiallyChecked = QtCore.Qt.PartiallyChecked
         ns.ReadOnly = QtCore.QFile.ReadOnly
         ns.Text = QtCore.QFile.Text
+        ns.North = QtWidgets.QTabWidget.North
+        ns.West = QtWidgets.QTabWidget.West
         ns.East = QtWidgets.QTabWidget.East
+        ns.South = QtWidgets.QTabWidget.South
         ns.SP_DockWidgetCloseButton = QtWidgets.QStyle.SP_DockWidgetCloseButton
+        ns.LeftArrow = QtCore.Qt.LeftArrow
+        ns.RightArrow = QtCore.Qt.RightArrow
         ns.UpArrow = QtCore.Qt.UpArrow
+        ns.DownArrow = QtCore.Qt.DownArrow
         ns.Triangular = QtWidgets.QTabWidget.Triangular
+        ns.NoEcho = QtWidgets.QLineEdit.NoEcho
         ns.Password = QtWidgets.QLineEdit.Password
+        ns.PasswordEchoOnEdit = QtWidgets.QLineEdit.PasswordEchoOnEdit
         ns.WindowMaximized = QtCore.Qt.WindowMaximized
         ns.SolidLine = QtCore.Qt.SolidLine
+        ns.DotLine = QtCore.Qt.DotLine
         ns.FlatCap = QtCore.Qt.FlatCap
         ns.SquareCap = QtCore.Qt.SquareCap
         ns.RoundCap = QtCore.Qt.RoundCap
@@ -407,6 +559,79 @@ def get_compat_definitions(args):
         ns.SP_ToolBarVerticalExtensionButton = QtWidgets.QStyle.SP_ToolBarVerticalExtensionButton
         ns.SP_TrashIcon = QtWidgets.QStyle.SP_TrashIcon
         ns.SP_VistaShield = QtWidgets.QStyle.SP_VistaShield
+        ns.MessageOk = QtWidgets.QMessageBox.Ok
+        ns.MessageCancel = QtWidgets.QMessageBox.Cancel
+        ns.MessageClose = QtWidgets.QMessageBox.Close
+        ns.MessageOpen = QtWidgets.QMessageBox.Open
+        ns.MessageReset = QtWidgets.QMessageBox.Reset
+        ns.MessageSave = QtWidgets.QMessageBox.Save
+        ns.MessageSaveAll = QtWidgets.QMessageBox.SaveAll
+        ns.MessageRestoreDefaults = QtWidgets.QMessageBox.RestoreDefaults
+        ns.MessageYes = QtWidgets.QMessageBox.Yes
+        ns.MessageHelp = QtWidgets.QMessageBox.Help
+        ns.MessageNo = QtWidgets.QMessageBox.No
+        ns.MessageApply = QtWidgets.QMessageBox.Apply
+        ns.MessageDiscard = QtWidgets.QMessageBox.Discard
+        ns.MessageCritical = QtWidgets.QMessageBox.Critical
+        ns.MessageInformation = QtWidgets.QMessageBox.Information
+        ns.MessageNoIcon = QtWidgets.QMessageBox.NoIcon
+        ns.MessageQuestion = QtWidgets.QMessageBox.Question
+        ns.MessageWarning = QtWidgets.QMessageBox.Warning
+        ns.Shadow_Mask = QtWidgets.QFrame.Shadow_Mask
+        ns.Shape_Mask = QtWidgets.QFrame.Shape_Mask
+        ns.AnyFile = QtWidgets.QFileDialog.AnyFile
+        ns.ExistingFile = QtWidgets.QFileDialog.ExistingFile
+        ns.ExistingFiles = QtWidgets.QFileDialog.ExistingFiles
+        ns.Directory = QtWidgets.QFileDialog.Directory
+        ns.ColorShowAlphaChannel = QtWidgets.QColorDialog.ShowAlphaChannel
+        ns.ColorNoButtons = QtWidgets.QColorDialog.NoButtons
+        ns.ColorDontUseNativeDialog = QtWidgets.QColorDialog.DontUseNativeDialog
+        ns.LCDOutline = QtWidgets.QLCDNumber.Outline
+        ns.LCDFlat = QtWidgets.QLCDNumber.Flat
+        ns.NetworkIcon = QtWidgets.QFileIconProvider.Network
+        ns.FontNoButtons = QtWidgets.QFontDialog.NoButtons
+        ns.FontDontUseNativeDialog = QtWidgets.QFontDialog.DontUseNativeDialog
+        ns.ClassicStyle = QtWidgets.QWizard.ClassicStyle
+        ns.ModernStyle = QtWidgets.QWizard.ModernStyle
+        ns.MacStyle = QtWidgets.QWizard.MacStyle
+        ns.AeroStyle = QtWidgets.QWizard.AeroStyle
+        ns.PlainText = QtCore.Qt.PlainText
+        ns.RichText = QtCore.Qt.RichText
+        ns.AutoText = QtCore.Qt.AutoText
+        ns.MarkdownText = QtCore.Qt.MarkdownText
+        ns.KeepAspectRatio = QtCore.Qt.KeepAspectRatio
+        ns.ScrollBarAsNeeded = QtCore.Qt.ScrollBarAsNeeded
+        ns.ToolButtonIconOnly = QtCore.Qt.ToolButtonIconOnly
+        ns.ToolButtonTextOnly = QtCore.Qt.ToolButtonTextOnly
+        ns.ToolButtonTextBesideIcon = QtCore.Qt.ToolButtonTextBesideIcon
+        ns.ToolButtonTextUnderIcon = QtCore.Qt.ToolButtonTextUnderIcon
+        ns.ToolButtonFollowStyle = QtCore.Qt.ToolButtonFollowStyle
+        ns.FileDontUseNativeDialog = QtWidgets.QFileDialog.DontUseNativeDialog
+        ns.DialogYesRole = QtWidgets.QDialogButtonBox.YesRole
+        ns.DialogOk = QtWidgets.QDialogButtonBox.Ok
+        ns.DialogCancel = QtWidgets.QDialogButtonBox.Cancel
+        ns.HaveHelpButton = QtWidgets.QWizard.HaveHelpButton
+        ns.WatermarkPixmap = QtWidgets.QWizard.WatermarkPixmap
+        ns.LogoPixmap = QtWidgets.QWizard.LogoPixmap
+        ns.BannerPixmap = QtWidgets.QWizard.BannerPixmap
+        ns.BackgroundPixmap = QtWidgets.QWizard.BackgroundPixmap
+        ns.LeftDockWidgetArea = QtCore.Qt.LeftDockWidgetArea
+        ns.AllDockWidgetFeatures = QtWidgets.QDockWidget.AllDockWidgetFeatures
+        ns.DockWidgetVerticalTitleBar = QtWidgets.QDockWidget.DockWidgetVerticalTitleBar
+        ns.InputNoButtons = QtWidgets.QInputDialog.NoButtons
+        ns.TopToBottom = QtWidgets.QProgressBar.TopToBottom
+        ns.BottomToTop = QtWidgets.QProgressBar.BottomToTop
+        ns.Rounded = QtWidgets.QTabWidget.Rounded
+        ns.Triangular = QtWidgets.QTabWidget.Triangular
+        ns.LeftSide = QtWidgets.QTabBar.LeftSide
+        ns.RightSide = QtWidgets.QTabBar.RightSide
+        ns.UseListViewForComboBoxItems = QtWidgets.QInputDialog.UseListViewForComboBoxItems
+        ns.IntInput = QtWidgets.QInputDialog.IntInput
+        ns.DoubleInput = QtWidgets.QInputDialog.DoubleInput
+        ns.RubberBandLine = QtWidgets.QRubberBand.Line
+        ns.RubberBandRectangle = QtWidgets.QRubberBand.Rectangle
+        ns.TextSelectableByMouse = QtCore.Qt.TextSelectableByMouse
+        ns.TextEditorInteraction = QtCore.Qt.TextEditorInteraction
 
     return ns
 
@@ -551,10 +776,9 @@ def setup_app(args, unknown, compat, style_class=None):
 
     return app, window
 
-def exec_app(args, app, window, compat):
-    '''Show and execute the Qt application.'''
+def set_stylesheet(args, app, compat):
+    '''Set the application stylesheet.'''
 
-    # setup stylesheet
     if args.stylesheet != 'native':
         resource_format = get_resources(args)
         stylesheet = get_stylesheet(resource_format)
@@ -562,6 +786,9 @@ def exec_app(args, app, window, compat):
         file.open(compat.ReadOnly | compat.Text)
         stream = compat.QtCore.QTextStream(file)
         app.setStyleSheet(stream.readAll())
+
+def exec_app(args, app, window, compat):
+    '''Show and execute the Qt application.'''
 
     window.show()
     return execute(args, app)
@@ -598,3 +825,7 @@ def style_icon(args, style, icon, icon_map, option=None, widget=None):
     if args.stylesheet == 'native':
         return native_icon(style, icon, option, widget)
     return stylesheet_icon(args, style, icon, icon_map, option, widget)
+
+def standard_icon(args, widget, icon, icon_map):
+    '''Simplified wrapper to get a standard icon from a widget.'''
+    return style_icon(args, widget.style(), icon, icon_map, widget=widget)

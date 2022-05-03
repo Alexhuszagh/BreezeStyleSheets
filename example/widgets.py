@@ -42,10 +42,7 @@ ICON_MAP = shared.get_icon_map(args, compat)
 
 def close_icon(widget):
     '''Get the close icon depending on the stylesheet.'''
-
-    style = widget.style()
-    icon = compat.SP_DockWidgetCloseButton
-    return shared.style_icon(args, style, icon, ICON_MAP, widget=widget)
+    return shared.standard_icon(args, widget, compat.SP_DockWidgetCloseButton, ICON_MAP)
 
 
 class Ui:
@@ -538,6 +535,7 @@ def main():
     # tabify dock widgets to show bug #6
     window.tabifyDockWidget(ui.dockWidget1, ui.dockWidget2)
 
+    shared.set_stylesheet(args, app, compat)
     return shared.exec_app(args, app, window, compat)
 
 
