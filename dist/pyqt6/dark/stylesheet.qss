@@ -44,6 +44,7 @@ QToolTip
 {
     /* 0.2ex is the smallest value that's not ignored on Windows. */
     border: 0.04em solid #eff0f1;
+    background-image: none;
     background-color: #31363b;
     alternate-background-color: #31363b;
     color: #eff0f1;
@@ -2419,7 +2420,10 @@ QWidget
 
     /* Other icons */
     dockwidget-close-icon: url(dark:close.svg);
-    lineedit-clear-button-icon: url(dark:clear_text.svg);
+    /**
+     *  Only available in Qt6, and causes other issues. See #62.
+     *  lineedit-clear-button-icon: url(dark:clear_text.svg);
+     */
 }
 
 /* Set some styles for these custom dialog buttons */
