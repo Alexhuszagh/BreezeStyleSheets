@@ -1750,7 +1750,7 @@ QTreeView::item
 }
 
 QTableView::item:!selected:hover,
-QListView::item:!selected:hover
+QListView::item:!selected:hover,
 QTreeView::item:!selected:hover
 {
     background-color: rgba(61, 173, 232, 0.1);
