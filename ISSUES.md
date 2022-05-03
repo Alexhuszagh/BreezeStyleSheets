@@ -1,0 +1,243 @@
+Issues
+======
+
+There are limitations to what can be styled with stylesheets, as well as rare bugs that prevent certain styles or widgets from rendering properly. This is a list of known issues, as well as suitable workarounds. THese issues are organized by the widget type, then the description of the properties/styles they affect.
+
+- [QCompleter](#qcompleter)
+  - [Menu Hover Background Color](#menu-hover-background-color)
+- [QDial](#qdial)
+  - [Custom Style](#custom-style)
+- [QSlider](#qslider)
+  - [Invisible Ticks](#invisible-ticks)
+- [QTabBar](#qtabbar)
+  - [Triangular Tab Color](#triangular-tab-color)
+  - [Triangular Tab Hover Background Color](#triangular-tab-hover-background-color)
+  - [Triangular Tab Padding](#triangular-tab-padding)
+- [QTextDocument](#qtextdocument)
+  - [Placeholder Text](#placeholder-text)
+- [QToolButton](#qtoolbutton)
+  - [Menu Button Padding](#menu-button-padding)
+- [QWidget]
+  - [Standard Icons](#standard-icons)
+
+# QCompleter
+
+### Menu Hover Background Color
+
+`QCompleter` doesn't have a hover background color in Qt5 on the drop-down menu. This works fine in Qt6, and changing rules for `QListView` (the drop-down menu) changes the drop-down menu in Qt6, but not Qt5.
+
+# QDial
+
+### Custom Style
+
+`QDial` cannot be customized via a stylesheet, which is a known bug in [QTBUG-1160](https://bugreports.qt.io/browse/QTBUG-1160). An example of how to style a `QDial` is available in [dial.py](/example/dial.py). This works out-of-the-box, and can be a drop-in replacement for `QDial`.
+
+# QSlider
+
+### Invisible Ticks
+
+`QSlider` ticks disappear when using stylesheets, which is a known bug referenced in [QTBUG-3304](https://bugreports.qt.io/browse/QTBUG-3304) and [QTBUG-3564](https://bugreports.qt.io/browse/QTBUG-3564). An example of how to style a `QSlider` is available in [slider.py](/example/slider.py), however, this does not work with a stylesheet applied to a `QSlider`.
+
+# QTabBar
+
+### Triangular Tab Color
+
+The text and border colors of a triangular `QTabBar` must be the same. This cannot be modified via a stylesheet.
+
+### Triangular Tab Hover Background Color
+
+Triangular tab bars do not have `:hover` pseudo-states for non-selected tabs. Only the selected tab has a `:hover` pseudo-state, defeating the purpose. This could be fixed by installing an event filter for a `HoverEnter` or `HoverMove` event.
+
+### Triangular Tab Padding
+
+Custom padding for triangular QTabBars on the bottom is ignored. All other tab positions work.
+
+# QTextDocument
+
+### Placeholder Text 
+
+For the widgets `QTextEdit`, `QPlainTextEdit`, and `QLineEdit`, which use an internal `QTextDocument`, you can set placeholder text for when no text is present. In Qt5, this is correctly grayed out when the placeholder text is present, which is not respected in Qt6 (as of Qt version 6.3.0).
+
+An example of a workaround [placeholder_text.py](/example/placeholder_text.py), which only works currently for Qt5 or Qt6 without a stylesheet. Using the native stylesheet shows it uses hard-coded colors for Qt6, so this is almost certainly a Qt bug. This is likely referenced in [QTBUG-92947](https://bugreports.qt.io/browse/QTBUG-92947) and [QTCREATORBUG-25444](https://bugreports.qt.io/browse/QTCREATORBUG-25444).
+
+An example workaround setting the placeholder text at palette at the application level (for all widgets) is as follows. You can also set the placeholder text color for each individual widget.
+
+**C++**
+
+```cpp
+#include <QApplication>
+#include <QColor>
+#include <QPalette>
+
+int main(int argc, char* argv[]) 
+{
+    QApplication app(argc, argv);
+
+    auto palette = app.palette();
+    QColor red(255, 0, 0);
+    palette.setColor(QPalette::PlaceholderText, red);
+    app.setPalette(palette);
+
+    ...
+
+    return app.exec();
+}
+```
+
+**Python**
+
+```python
+import sys
+from PyQt6 import QtGui, QtWidgets
+
+ColorRole = QtGui.QPalette.ColorRole
+
+def main():
+    app = QtWidgets.QApplication(sys.argv)
+
+    palette = app.palette()
+    red = QtGui.QColor(255, 0, 0)
+    palette.setColor(ColorRole.PlaceholderText, red)
+    app.setPalette(palette)
+
+    ...
+
+    return app.exec()
+```
+
+# QToolButton
+
+### Menu Button Padding
+
+`QToolButton` may have extra padding or clip the menu indicator in some cases. Auto-raised QToolButtons will clip the menu indicator, as will QToolButtons without text. Other cases will always add padding, whether there is a menu indicator or not. In order to force padding or no-padding for the menu indicator, set the Qt property of `hasMenu` to `true` or `false`. For example, to force additional padding for a menu indicator, use `button->setProperty("hasMenu", true);`.
+
+A simple example of creating a `QToolButton` with text and with no menu drop-down is as follows:
+
+**C++**
+
+```cpp
+#include <QApplication>
+#include <QString>
+#include <QToolButton>
+
+int main(int argc, char* argv[]) 
+{
+    QApplication app(argc, argv);
+
+    ... // Get our window, central widget, layout, etc.
+
+    auto *button = new QToolButton(widget);
+    button->setText(QString("Button 1"));
+    button->setProperty(QString("hasMenu"), false);
+
+    ... // Add button to layout, show window, etc.
+
+    return app.exec();
+}
+```
+
+**Python**
+
+```python
+import sys
+from PyQt6 import QtGui, QtWidgets
+
+def main():
+    app = QtWidgets.QApplication(sys.argv)
+
+    ... # Get our window, central widget, layout, etc.
+
+    button = QtWidgets.QToolButton(widget)
+    button.setText('Button 1')
+    button.setProperty('hasMenu', False)
+
+    ... # Add button to layout, show window, etc.
+
+    return app.exec()
+```
+
+### QCommandLink Icon
+
+The default icon for `QCommandLinkButton` is platform-dependent, and depends on the standard icon `SP_CommandLink` (which cannot be specified in a stylesheet). See [Standard Icons](#standard-icons) for an explanation on how to override this standard icon.
+
+# QWidget
+
+### Standard Icons
+
+Certain standard icons cannot be overwritten in the stylesheet, and therefore a custom style must be installed in the Qt application. The `standard-icons` [plugin](/extension/README.md#standard-icons) comes with a set of custom standard icons, and the [standard_icons.py](/example/standard_icons.py) example shows a complete application for how to override the default standard icons.
+
+A simple example of overriding the command link icon for a PyQt6 application is as follows. First, configure with the `standard-icons` plugin.
+
+```bash
+python configure.py --extensions=standard-icons
+```
+
+Next, set the application stylesheet, subclass `QCommonStyle` to get custom standard icons, and install the style globally in the Qt application.
+
+```python
+from PyQt6 import QtCore, QtGui, QtWidgets
+
+StandardPixmap = QtWidgets.QStyle.StandardPixmap
+OpenModeFlag = QtCore.QFile.OpenModeFlag
+
+# Create a map of registered icons, so we can efficiently query if we
+# should override the icon or use the pre-packaged standard icons.
+ICON_MAP = {
+    ...
+    StandardPixmap.SP_CommandLink: 'right_arrow.svg',
+    ...
+}
+
+def stylesheet_icon(style, icon, option=None, widget=None):
+    '''Get a standard icon for the stylesheet style'''
+
+    # See if we've registered a custom icon in the stylesheet
+    path = ICON_MAP.get(icon, None)
+    if path is not None:
+        resource = f'dark:{path}'
+        if QtCore.QFile.exists(resource):
+            return QtGui.QIcon(resource)
+
+    # No custom icon: return the default for the style.
+    return QtWidgets.QCommonStyle.standardIcon(style, icon, option, widget)
+
+
+class ApplicationStyle(QtWidgets.QCommonStyle):
+    def __init__(self, style):
+        super().__init__()
+        # Store an instance for the default style, so we can query that.
+        # Avoids an infinite, recursive loop.
+        self.style = style
+
+    def __getattribute__(self, item):
+        '''
+        Override for standardIcon. Everything else should default to the
+        system default. We cannot have `style_icon` be a member of
+        `ApplicationStyle`, since this will cause an infinite recursive loop.
+        '''
+
+        if item == 'standardIcon':
+            return lambda *x: stylesheet_icon(self, *x)
+        return getattr(self.style, item)
+
+def main():
+    app = QtWidgets.QApplication(sys.argv)
+
+    # Set our stylesheet.
+    file = QtCore.QFile('dark:stylesheet.qss')
+    file.open(OpenModeFlag.ReadOnly | OpenModeFlag.Text)
+    stream = QtCore.QTextStream(file)
+    app.setStyleSheet(stream.readAll())
+
+    # Install our custom style globally. QCommonStyle, unlike QProxyStyle,
+    # actually works nicely with stylesheets. `Fusion` is available
+    # on all platforms, but you can use any style you want. We
+    # just need a created style, because `app.style()` will be 
+    # deleted by he garbage collector.
+    style = QtWidgets.QStyleFactory.create('Fusion')
+    app.setStyle(ApplicationStyle(style))
+
+    ...
+
+    return app.exec()
+```

@@ -83,8 +83,13 @@ parser.add_argument(
     action='store_true'
 )
 parser.add_argument(
-    '--set-palette',
-    help='''set the placeholder text palette.''',
+    '--set-app-palette',
+    help='''set the placeholder text palette globally.''',
+    action='store_true'
+)
+parser.add_argument(
+    '--set-widget-palette',
+    help='''set the placeholder text palette for the affected widgets.''',
     action='store_true'
 )
 
@@ -114,6 +119,7 @@ else:
     PlaceholderText = QtGui.QPalette.PlaceholderText
     WindowText = QtGui.QPalette.WindowText
 
+PLACEHOLDER_COLOR = QtGui.QColor(255, 0, 0)
 if 'dark' in args.stylesheet:
     PLACEHOLDER_COLOR = QtGui.QColor(118, 121, 124)
 elif 'light' in args.stylesheet:
@@ -122,9 +128,9 @@ elif 'light' in args.stylesheet:
 def set_palette(widget, role, color):
     '''Set the palette for the placeholder text. This only works in Qt5.'''
 
-    palette = widget.palette();
+    palette = widget.palette()
     palette.setColor(role, color)
-    widget.setPalette(palette);
+    widget.setPalette(palette)
 
 def set_placeholder_palette(widget):
     set_palette(widget, PlaceholderText, PLACEHOLDER_COLOR)
@@ -157,19 +163,11 @@ class Ui:
         self.lineEdit.setObjectName('lineEdit')
         self.lineEdit.setPlaceholderText('Placeholder Text')
         self.layout.addWidget(self.lineEdit)
-
         # Set the palettes.
-        if args.set_palette:
+        if args.set_widget_palette:
             set_placeholder_palette(self.textEdit)
             set_placeholder_palette(self.plainTextEdit)
             set_placeholder_palette(self.lineEdit)
-
-    def style_text(self, widget, text):
-        if text:
-            set_text_palette(widget)
-        else:
-            set_notext_palette(widget)
-
 
 def main():
     'Application entry point'
@@ -183,6 +181,8 @@ def main():
     if args.style != 'native':
         style = QtWidgets.QStyleFactory.create(args.style)
         app.setStyle(style)
+    if args.set_app_palette:
+        set_placeholder_palette(app)
 
     window = QtWidgets.QMainWindow()
 

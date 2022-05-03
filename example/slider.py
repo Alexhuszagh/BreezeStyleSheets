@@ -119,6 +119,12 @@ else:
     SC_SliderHandle = QtWidgets.QStyle.SC_SliderHandle
     SC_SliderGroove = QtWidgets.QStyle.SC_SliderGroove
 
+TICK_COLOR = QtGui.QColor(255, 0, 0)
+if 'dark' in args.stylesheet:
+    TICK_COLOR = QtGui.QColor(51, 78, 94)
+elif 'light' in args.stylesheet:
+    TICK_COLOR = QtGui.QColor(61, 173, 232, 51)
+
 
 class Slider(QtWidgets.QSlider):
     '''QSlider with a custom paint event.'''
@@ -141,8 +147,7 @@ class Slider(QtWidgets.QSlider):
         if position != NoTicks and interval != 0:
             minimum = self.minimum()
             maximum = self.maximum()
-            color = self.palette().color(self.foregroundRole())
-            painter.setPen(color)
+            painter.setPen(TICK_COLOR)
             for i in range(minimum, maximum + interval, interval):
                 percent = (i - minimum) / (maximum - minimum + 1) + 0.005
                 width = (self.width() - handle.width()) + handle.width() / 2

@@ -372,12 +372,6 @@ def native_icon(style, icon, option=None, widget=None):
     return style.standardIcon(icon, option, widget)
 
 
-def style_icon(style, icon, option=None, widget=None):
-    if args.stylesheet == 'native':
-        return native_icon(style, icon, option, widget)
-    return stylesheet_icon(style, icon, option, widget)
-
-
 def stylesheet_icon(style, icon, option=None, widget=None):
     '''Get a standard icon for the stylesheet style'''
 
@@ -386,6 +380,11 @@ def stylesheet_icon(style, icon, option=None, widget=None):
     if QtCore.QFile.exists(resource):
         return QtGui.QIcon(resource)
     return QtWidgets.QCommonStyle.standardIcon(style, icon, option, widget)
+
+def style_icon(style, icon, option=None, widget=None):
+    if args.stylesheet == 'native':
+        return native_icon(style, icon, option, widget)
+    return stylesheet_icon(style, icon, option, widget)
 
 
 class ApplicationStyle(QtWidgets.QCommonStyle):
