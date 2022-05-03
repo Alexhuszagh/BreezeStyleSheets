@@ -116,6 +116,8 @@ if args.pyqt6:
     East = QtWidgets.QTabWidget.TabPosition.East
     SP_DockWidgetCloseButton = QtWidgets.QStyle.StandardPixmap.SP_DockWidgetCloseButton
     UpArrow = QtCore.Qt.ArrowType.UpArrow
+    Triangular = QtWidgets.QTabWidget.TabShape.Triangular
+    Password = QtWidgets.QLineEdit.EchoMode.Password
 else:
     QAction = QtWidgets.QAction
     Horizontal = QtCore.Qt.Horizontal
@@ -139,6 +141,8 @@ else:
     East = QtWidgets.QTabWidget.East
     SP_DockWidgetCloseButton = QtWidgets.QStyle.SP_DockWidgetCloseButton
     UpArrow = QtCore.Qt.UpArrow
+    Triangular = QtWidgets.QTabWidget.Triangular
+    Password = QtWidgets.QLineEdit.Password
 
 # Need to fix an issue on Wayland on Linux:
 #   conda-forge does not support Wayland, for who knows what reason.
@@ -346,12 +350,33 @@ class Ui:
         self.groupBox_3v2.setObjectName('groupBox_3v2')
         self.verticalLayout_4v2 = QtWidgets.QVBoxLayout(self.groupBox_3v2)
         self.verticalLayout_4v2.setObjectName('verticalLayout_4v2')
-        self.tabBar = QtWidgets.QTabBar(self.tab_3v2)
-        self.gridLayout_3v2.setObjectName('tabBar')
-        self.tabBar.addTab('TabBar Tab 1')
-        self.tabBar.addTab('TabBar Tab 2')
-        self.tabBar.addTab('TabBar Tab 3')
-        self.verticalLayout_4v2.addWidget(self.tabBar, 0, AlignTop)
+        self.tabWidget3 = QtWidgets.QTabWidget(self.tab_3v2)
+        self.tabWidget3.setTabShape(Triangular)
+        self.gridLayout_3v2.setObjectName('tabWidget3')
+        self.tab_1v3 = QtWidgets.QWidget()
+        self.tab_2v3 = QtWidgets.QWidget()
+        self.tab_3v3 = QtWidgets.QWidget()
+        self.tabWidget3.addTab(self.tab_1v3, 'Tab 1')
+        self.tabWidget3.addTab(self.tab_2v3, 'Tab 2')
+        self.tabWidget3.addTab(self.tab_3v3, 'Tab 3')
+        self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.tab_1v3)
+        self.verticalLayout_6.setObjectName('verticalLayout_6')
+        self.key_sequence = QtWidgets.QKeySequenceEdit(self.tab_1v3)
+        self.verticalLayout_6.addWidget(self.key_sequence)
+        self.line_3 = QtWidgets.QLineEdit(self.tab_1v3)
+        completer = QtWidgets.QCompleter(['Fruit', 'Fruits Basket', 'Fruba'])
+        self.line_3.setCompleter(completer)
+        self.verticalLayout_6.addWidget(self.line_3)
+        self.password = QtWidgets.QLineEdit('Sample', self.tab_1v3)
+        self.password.setEchoMode(Password)
+        self.verticalLayout_6.addWidget(self.password)
+        self.clear_line = QtWidgets.QLineEdit('Sample', self.tab_1v3)
+        self.clear_line.setClearButtonEnabled(True)
+        self.verticalLayout_6.addWidget(self.clear_line)
+        self.lcd = QtWidgets.QLCDNumber(3, self.tab_1v3)
+        self.lcd.display(15)
+        self.verticalLayout_6.addWidget(self.lcd)
+        self.verticalLayout_4v2.addWidget(self.tabWidget3, 0, AlignTop)
         self.gridLayout_3v2.addWidget(self.groupBox_3v2, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tab_2, '')
         self.tabWidget.addTab(self.tab_3v2, '')
