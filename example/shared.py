@@ -233,6 +233,8 @@ def get_compat_definitions(args):
         ns.HoverMove = ns.EventType.HoverMove
         ns.HoverLeave = ns.EventType.HoverLeave
         ns.PlaceholderText = ns.ColorRole.PlaceholderText
+        ns.ToolTipBase = ns.ColorRole.ToolTipBase
+        ns.ToolTipText = ns.ColorRole.ToolTipText
         ns.NoTicks = ns.TickPosition.NoTicks
         ns.TicksAbove = ns.TickPosition.TicksAbove
         ns.TicksBelow = ns.TickPosition.TicksBelow
@@ -473,6 +475,8 @@ def get_compat_definitions(args):
         ns.HoverMove = QtCore.QEvent.HoverMove
         ns.HoverLeave = QtCore.QEvent.HoverLeave
         ns.PlaceholderText = QtGui.QPalette.PlaceholderText
+        ns.ToolTipBase = QtGui.QPalette.ToolTipBase
+        ns.ToolTipText = QtGui.QPalette.ToolTipText
         ns.NoTicks = QtWidgets.QSlider.NoTicks
         ns.TicksAbove = QtWidgets.QSlider.TicksAbove
         ns.TicksBelow = QtWidgets.QSlider.TicksBelow
@@ -642,6 +646,8 @@ def get_colors(args, compat):
     ns.Selected = compat.QtGui.QColor(61, 174, 233)
     ns.PlaceholderColor = compat.QtGui.QColor(255, 0, 0)
     ns.TickColor = compat.QtGui.QColor(255, 0, 0)
+    ns.ToolTipBase = compat.QtGui.QColor(0, 255, 0)
+    ns.ToolTipText = compat.QtGui.QColor(0, 0, 255)
     if 'dark' in args.stylesheet:
         ns.GrooveBackground = compat.QtGui.QColor(98, 101, 104)
         ns.GrooveBorder = compat.QtGui.QColor(49, 54, 59)
@@ -650,6 +656,8 @@ def get_colors(args, compat):
         ns.Notch = compat.QtGui.QColor(51, 78, 94)
         ns.PlaceholderColor = compat.QtGui.QColor(118, 121, 124)
         ns.TickColor = compat.QtGui.QColor(51, 78, 94)
+        ns.ToolTipBase = compat.QtGui.QColor(49, 54, 59)
+        ns.ToolTipText = compat.QtGui.QColor(239, 240, 241)
     elif 'light' in args.stylesheet:
         ns.GrooveBackground = compat.QtGui.QColor(106, 105, 105, 179)
         ns.GrooveBorder = compat.QtGui.QColor(239, 240, 241)
@@ -658,6 +666,8 @@ def get_colors(args, compat):
         ns.Notch = compat.QtGui.QColor(61, 173, 232, 51)
         ns.PlaceholderColor = compat.QtGui.QColor(186, 185, 184)
         ns.TickColor = compat.QtGui.QColor(61, 173, 232, 51)
+        ns.ToolTipBase = compat.QtGui.QColor(49, 54, 59)
+        ns.ToolTipText = compat.QtGui.QColor(239, 240, 241)
 
     return ns
 

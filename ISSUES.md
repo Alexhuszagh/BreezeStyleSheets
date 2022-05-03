@@ -18,6 +18,8 @@ There are limitations to what can be styled with stylesheets, as well as rare bu
   - [Links](#links)
 - [QToolButton](#qtoolbutton)
   - [Menu Button Padding](#menu-button-padding)
+- [QWhatsThis]
+  - [Tooltip Colors](#tooltip-colors)
 - [QWidget]
   - [Standard Icons](#standard-icons)
 
@@ -219,6 +221,61 @@ def main():
 ### QCommandLink Icon
 
 The default icon for `QCommandLinkButton` is platform-dependent, and depends on the standard icon `SP_CommandLink` (which cannot be specified in a stylesheet). See [Standard Icons](#standard-icons) for an explanation on how to override this standard icon.
+
+# QWhatsThis
+
+### Tooltip Colors
+
+QWhatsThis uses `QPalette::toolTipText` and `QPalette::toolTipBase` for its colors: unfortunately, these are not influenced by the stylesheet. To modify these, you can change the colors for `QPalette::ToolTipBase` and `QPalette::ToolTipText`. An example can be found in [whatsthis.py](/example/whatsthis.py).
+
+A simple example of modifying the tooltip palette for the `QWhatsThis` style is as follows:
+
+**C++**
+
+```cpp
+#include <QApplication>
+#include <QColor>
+#include <QPalette>
+
+int main(int argc, char* argv[])
+{
+    QApplication app(argc, argv);
+
+    auto palette = app.palette();
+    QColor green(0, 255, 0);
+    QColor blue(0, 0, 255);
+    palette.setColor(QPalette::ToolTipBase, green);
+    palette.setColor(QPalette::ToolTipText, blue);
+    app.setPalette(palette);
+
+    ...
+
+    return app.exec();
+}
+```
+
+**Python**
+
+```python
+import sys
+from PyQt6 import QtGui, QtWidgets
+
+ColorRole = QtGui.QPalette.ColorRole
+
+def main():
+    app = QtWidgets.QApplication(sys.argv)
+
+    palette = app.palette()
+    green = QtGui.QColor(0, 255, 0)
+    blue = QtGui.QColor(0, 0, 255)
+    palette.setColor(ColorRole.ToolTipBase, green)
+    palette.setColor(ColorRole.ToolTipText, blue)
+    app.setPalette(palette)
+
+    ...
+
+    return app.exec()
+```
 
 # QWidget
 
