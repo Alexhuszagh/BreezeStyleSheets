@@ -327,8 +327,11 @@ QMenu::item:disabled
 
 QMenu::indicator
 {
-    width: 1em;
-    height: 1em;
+    width: 0.8em;
+    height: 0.8em;
+    /* To align with QMenu::icon, which has a 0.23em margin. */
+    margin-left: 0.3em;
+    subcontrol-position: center left;
 }
 
 QMenu::indicator:non-exclusive:unchecked
