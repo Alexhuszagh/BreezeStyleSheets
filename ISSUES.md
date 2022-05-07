@@ -41,6 +41,8 @@ There are limitations to what can be styled with stylesheets, as well as rare bu
 
 `QDial` cannot be customized via a stylesheet, which is a known bug in [QTBUG-1160](https://bugreports.qt.io/browse/QTBUG-1160). An example of how to style a `QDial` is available in [dial.py](/example/dial.py). This works out-of-the-box, and can be a drop-in replacement for `QDial`.
 
+<img src="/assets/custom_dial.png" alt="Custom Dial" width="500" height="192"/>
+
 # QMdiSubwindow
 
 ### Title Bar Icons
@@ -289,6 +291,8 @@ def main():
     return app.exec()
 ```
 
+![Custom Whats This](/assets/custom_whatsthis.png)
+
 # QWidget
 
 ### Standard Icons
@@ -378,7 +382,7 @@ def main():
 
 The system title bar cannot be customized extensively, since it depends on either the application style or the system theme for how it renders. For a comprehensive example on how to create your own, custom title bar, with fully functional minimize, maximize, shade, unshade, context help, keep above, window title, and a context menu, see [titlebar.py](/example/titlebar.py). This is a drop-in replacement for the title bar on `QMdiSubWindow` which also lets you customize the placement of where the windows minimize to, but could also be modified for `QMainWindow` or `QDialog`.
 
-![Custom Titlebar](/assets/custom-titlebar.png)
+<img src="/assets/custom_titlebar.png" alt="Custom Titlebar" width="500" height="438"/>
 
 # QWizard
 
@@ -386,4 +390,4 @@ The system title bar cannot be customized extensively, since it depends on eithe
 
 The background color at the top and bottom of a `QWizard` using `QWizard::AeroStyle` uses hard-coded colors for the values above and below the page. These cannot be modified, even with `QPalette`, and the solution is quite simple: use any other style other than `QWizard::AeroStyle`. Other available options include `QWizard::ModernStyle` and `QWizard::MacStyle`.
 
-![QWizard Aero Windows](/assets/wizard-aero-windows.png)
+![QWizard Aero Windows](/assets/wizard_aero_windows.png)

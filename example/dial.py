@@ -272,10 +272,10 @@ class Ui:
         MainWindow.resize(1068, 824)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName('centralwidget')
-        self.layout = QtWidgets.QVBoxLayout(self.centralwidget)
+        self.layout = QtWidgets.QHBoxLayout(self.centralwidget)
         self.layout.setObjectName('layout')
         if not args.no_align:
-            self.layout.setAlignment(compat.AlignHCenter)
+            self.layout.setAlignment(compat.AlignVCenter)
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.dial1 = Dial(self.centralwidget)
