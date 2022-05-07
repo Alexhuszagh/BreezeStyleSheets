@@ -7,6 +7,8 @@ There are limitations to what can be styled with stylesheets, as well as rare bu
   - [Menu Hover Background Color](#menu-hover-background-color)
 - [QDial](#qdial)
   - [Custom Style](#custom-style)
+- [QLCDNumber](#qlcdnumber)
+  - [LCD Color](#lcd-color)
 - [QMdiSubwindow](#qmdisubwindow)
   - [Title Bar Icons](#title-bar-icons)
 - [QSlider](#qslider)
@@ -42,6 +44,14 @@ There are limitations to what can be styled with stylesheets, as well as rare bu
 `QDial` cannot be customized via a stylesheet, which is a known bug in [QTBUG-1160](https://bugreports.qt.io/browse/QTBUG-1160). An example of how to style a `QDial` is available in [dial.py](/example/dial.py). This works out-of-the-box, and can be a drop-in replacement for `QDial`.
 
 <img src="/assets/custom_dial.png" alt="Custom Dial" width="500" height="192"/>
+
+# QLCDNumber
+
+### LCD Color
+
+The LCD display of a `QLCDNumber` cannot be customized via a stylesheet. An example of how to style a `QLCDNumber` is available in [lcd.py](/example/lcd.py). This works out-of-the-box, and can be a drop-in replacement for `QLCDNumber`.
+
+<img src="/assets/custom_lcd.png" alt="Custom Dial" width="500" height="132"/>
 
 # QMdiSubwindow
 

@@ -245,6 +245,10 @@ def get_compat_definitions(args):
         ns.MouseButtonRelease = ns.EventType.MouseButtonRelease
         ns.MouseMove = ns.EventType.MouseMove
         ns.WindowPalette = ns.ColorRole.Window
+        ns.WindowTextPalette = ns.ColorRole.WindowText
+        ns.BackgroundPalette = ns.ColorRole.Background
+        ns.LightPalette = ns.ColorRole.LightPalette
+        ns.DarkPalette = ns.ColorRole.DarkPalette
         ns.PlaceholderText = ns.ColorRole.PlaceholderText
         ns.ToolTipBase = ns.ColorRole.ToolTipBase
         ns.ToolTipText = ns.ColorRole.ToolTipText
@@ -526,6 +530,10 @@ def get_compat_definitions(args):
         ns.MouseButtonRelease = QtCore.QEvent.MouseButtonRelease
         ns.MouseMove = QtCore.QEvent.MouseMove
         ns.WindowPalette = QtGui.QPalette.Window
+        ns.WindowTextPalette = QtGui.QPalette.WindowText
+        ns.BackgroundPalette = QtGui.QPalette.Background
+        ns.LightPalette = QtGui.QPalette.Light
+        ns.DarkPalette = QtGui.QPalette.Dark
         ns.PlaceholderText = QtGui.QPalette.PlaceholderText
         ns.ToolTipBase = QtGui.QPalette.ToolTipBase
         ns.ToolTipText = QtGui.QPalette.ToolTipText
@@ -739,6 +747,7 @@ def get_colors(args, compat):
     ns.MidTone = compat.QtGui.QColor(127, 127, 127)
     ns.ViewBackground = compat.QtGui.QColor(0, 0, 0)
     ns.TabBackground = compat.QtGui.QColor(0, 0, 0)
+    ns.HighLightDark = compat.QtGui.QColor(255, 0, 0)
     if 'dark' in args.stylesheet:
         ns.Background = compat.QtGui.QColor(49, 54, 59)
         ns.Foreground = compat.QtGui.QColor(239, 240, 241)
@@ -754,6 +763,7 @@ def get_colors(args, compat):
         ns.MidTone = compat.QtGui.QColor(118, 121, 124)
         ns.ViewBackground = compat.QtGui.QColor(29, 32, 35)
         ns.TabBackground = compat.QtGui.QColor(44, 48, 52)
+        ns.HighLightDark = compat.QtGui.QColor(42, 121, 163)
     elif 'light' in args.stylesheet:
         ns.Background = compat.QtGui.QColor(239, 240, 241)
         ns.Foreground = compat.QtGui.QColor(49, 54, 59)
@@ -769,6 +779,7 @@ def get_colors(args, compat):
         ns.MidTone = compat.QtGui.QColor(186, 185, 184)
         ns.ViewBackground = compat.QtGui.QColor(239, 240, 241)
         ns.TabBackground = compat.QtGui.QColor(217, 216, 215)
+        ns.HighLightDark = compat.QtGui.QColor(45, 147, 200, 127)
 
     return ns
 
