@@ -260,6 +260,7 @@ class Ui:
         self.verticalLayout_6.addWidget(self.clear_line)
         self.lcd = QtWidgets.QLCDNumber(3, self.tab_1v3)
         self.lcd.display(15)
+        self.lcd.setFrameShape(compat.NoFrame)
         self.verticalLayout_6.addWidget(self.lcd)
         self.verticalLayout_4v2.addWidget(self.tabWidget3, 0, compat.AlignTop)
         self.gridLayout_3v2.addWidget(self.groupBox_3v2, 0, 0, 1, 1)
