@@ -62,7 +62,7 @@ class LCD(QtWidgets.QLCDNumber):
         self.setStyleSheet(f'QLCDNumber {{ color: rgba{color}; }}')
 
         palette = self.palette()
-        palette.setColor(compat.BackgroundPalette, colors.Background)
+        palette.setColor(compat.WindowPalette, colors.Background)
         palette.setColor(compat.LightPalette, colors.Selected)
         palette.setColor(compat.DarkPalette, colors.Notch)
         self.setPalette(palette)

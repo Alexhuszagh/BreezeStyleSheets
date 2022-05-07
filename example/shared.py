@@ -246,9 +246,8 @@ def get_compat_definitions(args):
         ns.MouseMove = ns.EventType.MouseMove
         ns.WindowPalette = ns.ColorRole.Window
         ns.WindowTextPalette = ns.ColorRole.WindowText
-        ns.BackgroundPalette = ns.ColorRole.Background
-        ns.LightPalette = ns.ColorRole.LightPalette
-        ns.DarkPalette = ns.ColorRole.DarkPalette
+        ns.LightPalette = ns.ColorRole.Light
+        ns.DarkPalette = ns.ColorRole.Dark
         ns.PlaceholderText = ns.ColorRole.PlaceholderText
         ns.ToolTipBase = ns.ColorRole.ToolTipBase
         ns.ToolTipText = ns.ColorRole.ToolTipText
@@ -531,7 +530,6 @@ def get_compat_definitions(args):
         ns.MouseMove = QtCore.QEvent.MouseMove
         ns.WindowPalette = QtGui.QPalette.Window
         ns.WindowTextPalette = QtGui.QPalette.WindowText
-        ns.BackgroundPalette = QtGui.QPalette.Background
         ns.LightPalette = QtGui.QPalette.Light
         ns.DarkPalette = QtGui.QPalette.Dark
         ns.PlaceholderText = QtGui.QPalette.PlaceholderText
