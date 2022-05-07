@@ -7,6 +7,8 @@ There are limitations to what can be styled with stylesheets, as well as rare bu
   - [Menu Hover Background Color](#menu-hover-background-color)
 - [QDial](#qdial)
   - [Custom Style](#custom-style)
+- [QMdiSubwindow](#qmdisubwindow)
+  - [Title Bar Icons](#title-bar-icons)
 - [QSlider](#qslider)
   - [Invisible Ticks](#invisible-ticks)
 - [QTabBar](#qtabbar)
@@ -22,6 +24,8 @@ There are limitations to what can be styled with stylesheets, as well as rare bu
   - [Tooltip Colors](#tooltip-colors)
 - [QWidget](#qwidget)
   - [Standard Icons](#standard-icons)
+- [QWindow](#qwindow)
+  - [Title Bar Customization](#title-bar-customization)
 - [QWizard](#qwizard)
   - [Aero Style Background Color](#aero-style-background-color)
 
@@ -36,6 +40,12 @@ There are limitations to what can be styled with stylesheets, as well as rare bu
 ### Custom Style
 
 `QDial` cannot be customized via a stylesheet, which is a known bug in [QTBUG-1160](https://bugreports.qt.io/browse/QTBUG-1160). An example of how to style a `QDial` is available in [dial.py](/example/dial.py). This works out-of-the-box, and can be a drop-in replacement for `QDial`.
+
+# QMdiSubwindow
+
+### Title Bar Icons
+
+The tilebar icons (except for the menu icon) cannot be overridden in the stylesheet, which is a known bug in [QTBUG-1399](https://bugreports.qt.io/browse/QTBUG-1399). This bug has been present for ~15 years, so it is unlikely to be patched soon, if ever. For a working example on how to customize your own title bar, including icons, see [Title Bar Customization for QWindow](#title-bar-customization).
 
 # QSlider
 
@@ -283,7 +293,7 @@ def main():
 
 ### Standard Icons
 
-Certain standard icons cannot be overwritten in the stylesheet, and therefore a custom style must be installed in the Qt application. The `standard-icons` [extension](/extension/README.md#standard-icons) comes with a set of custom standard icons, and the [standard_icons.py](/example/standard_icons.py) example shows a complete application for how to override the default standard icons.
+Certain standard icons cannot be overridden in the stylesheet, and therefore a custom style must be installed in the Qt application. The `standard-icons` [extension](/extension/README.md#standard-icons) comes with a set of custom standard icons, and the [standard_icons.py](/example/standard_icons.py) example shows a complete application for how to override the default standard icons.
 
 A simple example of overriding the command link icon for a PyQt6 application is as follows. First, configure with the `standard-icons` extension.
 
@@ -361,6 +371,14 @@ def main():
 
     return app.exec()
 ```
+
+# QWindow
+
+### Title Bar Customization
+
+The system title bar cannot be customized extensively, since it depends on either the application style or the system theme for how it renders. For a comprehensive example on how to create your own, custom title bar, with fully functional minimize, maximize, shade, unshade, context help, keep above, window title, and a context menu, see [titlebar.py](/example/titlebar.py). This is a drop-in replacement for the title bar on `QMdiSubWindow` which also lets you customize the placement of where the windows minimize to, but could also be modified for `QMainWindow` or `QDialog`.
+
+![Custom Titlebar](/assets/custom-titlebar.png)
 
 # QWizard
 

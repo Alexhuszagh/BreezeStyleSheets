@@ -166,6 +166,14 @@ def get_compat_definitions(args):
         ns.InputMode = QtWidgets.QInputDialog.InputMode
         ns.RubberBandShape = QtWidgets.QRubberBand.Shape
         ns.TextInteractionFlag = QtCore.Qt.TextInteractionFlag
+        ns.WindowType = QtCore.Qt.WindowType
+        ns.WindowState = QtCore.Qt.WindowState
+        ns.WidgetAttribute = QtCore.Qt.WidgetAttribute
+        ns.TextElideMode = QtCore.Qt.TextElideMode
+        ns.CursorShape = QtCore.Qt.CursorShape
+        ns.MouseButton = QtCore.Qt.MouseButton
+        ns.SizePolicy = QtWidgets.QSizePolicy.Policy
+        ns.SizeConstraint = QtWidgets.QLayout.SizeConstraint
 
         # QObjects
         ns.QAction = QtGui.QAction
@@ -217,7 +225,6 @@ def get_compat_definitions(args):
         ns.NoEcho = ns.EchoMode.NoEcho
         ns.Password = ns.EchoMode.Password
         ns.PasswordEchoOnEdit = ns.EchoMode.PasswordEchoOnEdit
-        ns.WindowMaximized = ns.WindowState.WindowMaximized
         ns.SolidLine = ns.PenStyle.SolidLine
         ns.DotLine = ns.PenStyle.DotLine
         ns.FlatCap = ns.PenCapStyle.FlatCap
@@ -229,9 +236,15 @@ def get_compat_definitions(args):
         ns.SvgMiterJoin = ns.PenJoinStyle.SvgMiterJoin
         ns.State_HasFocus = ns.StateFlag.State_HasFocus
         ns.State_Selected = ns.StateFlag.State_Selected
+        ns.Enter = ns.EventType.Enter
+        ns.Leave = ns.EventType.Leave
         ns.HoverEnter = ns.EventType.HoverEnter
         ns.HoverMove = ns.EventType.HoverMove
         ns.HoverLeave = ns.EventType.HoverLeave
+        ns.MouseButtonPress = ns.EventType.MouseButtonPress
+        ns.MouseButtonRelease = ns.EventType.MouseButtonRelease
+        ns.MouseMove = ns.EventType.MouseMove
+        ns.WindowPalette = ns.ColorRole.Window
         ns.PlaceholderText = ns.ColorRole.PlaceholderText
         ns.ToolTipBase = ns.ColorRole.ToolTipBase
         ns.ToolTipText = ns.ColorRole.ToolTipText
@@ -400,6 +413,40 @@ def get_compat_definitions(args):
         ns.RubberBandRectangle = ns.RubberBandShape.Rectangle
         ns.TextSelectableByMouse = ns.TextInteractionFlag.TextSelectableByMouse
         ns.TextEditorInteraction = ns.TextInteractionFlag.TextEditorInteraction
+        ns.Window = ns.WindowType.Window
+        ns.Dialog = ns.WindowType.Dialog
+        ns.SubWindow = ns.WindowType.SubWindow
+        ns.WindowContextHelpButtonHint = ns.WindowType.WindowContextHelpButtonHint
+        ns.WindowShadeButtonHint = ns.WindowType.WindowShadeButtonHint
+        ns.FramelessWindowHint = ns.WindowType.FramelessWindowHint
+        ns.WindowStaysOnTopHint = ns.WindowType.WindowStaysOnTopHint
+        ns.WindowNoState = ns.WindowState.WindowNoState
+        ns.WindowMinimized = ns.WindowState.WindowMinimized
+        ns.WindowMaximized = ns.WindowState.WindowMaximized
+        ns.WA_Hover = ns.WidgetAttribute.WA_Hover
+        ns.WA_LayoutOnEntireRect = ns.WidgetAttribute.WA_LayoutOnEntireRect
+        ns.WA_LayoutUsesWidgetRect = ns.WidgetAttribute.WA_LayoutUsesWidgetRect
+        ns.ElideLeft = ns.TextElideMode.ElideLeft
+        ns.ElideRight = ns.TextElideMode.ElideRight
+        ns.ElideMiddle = ns.TextElideMode.ElideMiddle
+        ns.ElideNone = ns.TextElideMode.ElideNone
+        ns.CrossCursor = ns.CursorShape.CrossCursor
+        ns.SizeVerCursor = ns.CursorShape.SizeVerCursor
+        ns.SizeHorCursor = ns.CursorShape.SizeHorCursor
+        ns.SizeBDiagCursor = ns.CursorShape.SizeBDiagCursor
+        ns.SizeFDiagCursor = ns.CursorShape.SizeFDiagCursor
+        ns.SizeAllCursor = ns.CursorShape.SizeAllCursor
+        ns.WhatsThisCursor = ns.CursorShape.WhatsThisCursor
+        ns.LeftButton = ns.MouseButton.LeftButton
+        ns.RightButton = ns.MouseButton.RightButton
+        ns.SizeFixed = ns.SizePolicy.Fixed
+        ns.SizeMinimum = ns.SizePolicy.Minimum
+        ns.SizeMaximum = ns.SizePolicy.Maximum
+        ns.SizePreferred = ns.SizePolicy.Preferred
+        ns.SizeExpanding = ns.SizePolicy.Expanding
+        ns.SizeMinimumExpanding = ns.SizePolicy.MinimumExpanding
+        ns.SizeIgnored = ns.SizePolicy.Ignored
+        ns.SetFixedSize = ns.SizeConstraint.SetFixedSize
     else:
         from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -459,7 +506,6 @@ def get_compat_definitions(args):
         ns.NoEcho = QtWidgets.QLineEdit.NoEcho
         ns.Password = QtWidgets.QLineEdit.Password
         ns.PasswordEchoOnEdit = QtWidgets.QLineEdit.PasswordEchoOnEdit
-        ns.WindowMaximized = QtCore.Qt.WindowMaximized
         ns.SolidLine = QtCore.Qt.SolidLine
         ns.DotLine = QtCore.Qt.DotLine
         ns.FlatCap = QtCore.Qt.FlatCap
@@ -471,9 +517,15 @@ def get_compat_definitions(args):
         ns.SvgMiterJoin = QtCore.Qt.SvgMiterJoin
         ns.State_HasFocus = QtWidgets.QStyle.State_HasFocus
         ns.State_Selected = QtWidgets.QStyle.State_Selected
+        ns.Enter = QtCore.QEvent.Enter
+        ns.Leave = QtCore.QEvent.Leave
         ns.HoverEnter = QtCore.QEvent.HoverEnter
         ns.HoverMove = QtCore.QEvent.HoverMove
         ns.HoverLeave = QtCore.QEvent.HoverLeave
+        ns.MouseButtonPress = QtCore.QEvent.MouseButtonPress
+        ns.MouseButtonRelease = QtCore.QEvent.MouseButtonRelease
+        ns.MouseMove = QtCore.QEvent.MouseMove
+        ns.WindowPalette = QtGui.QPalette.Window
         ns.PlaceholderText = QtGui.QPalette.PlaceholderText
         ns.ToolTipBase = QtGui.QPalette.ToolTipBase
         ns.ToolTipText = QtGui.QPalette.ToolTipText
@@ -636,6 +688,40 @@ def get_compat_definitions(args):
         ns.RubberBandRectangle = QtWidgets.QRubberBand.Rectangle
         ns.TextSelectableByMouse = QtCore.Qt.TextSelectableByMouse
         ns.TextEditorInteraction = QtCore.Qt.TextEditorInteraction
+        ns.Window = QtCore.Qt.Window
+        ns.Dialog = QtCore.Qt.Dialog
+        ns.SubWindow = QtCore.Qt.SubWindow
+        ns.WindowContextHelpButtonHint = QtCore.Qt.WindowContextHelpButtonHint
+        ns.WindowShadeButtonHint = QtCore.Qt.WindowShadeButtonHint
+        ns.FramelessWindowHint = QtCore.Qt.FramelessWindowHint
+        ns.WindowStaysOnTopHint = QtCore.Qt.WindowStaysOnTopHint
+        ns.WindowNoState = QtCore.Qt.WindowNoState
+        ns.WindowMinimized = QtCore.Qt.WindowMinimized
+        ns.WindowMaximized = QtCore.Qt.WindowMaximized
+        ns.WA_Hover = QtCore.Qt.WA_Hover
+        ns.WA_LayoutOnEntireRect = QtCore.Qt.WA_LayoutOnEntireRect
+        ns.WA_LayoutUsesWidgetRect = QtCore.Qt.WA_LayoutUsesWidgetRect
+        ns.ElideLeft = QtCore.Qt.ElideLeft
+        ns.ElideRight = QtCore.Qt.ElideRight
+        ns.ElideMiddle = QtCore.Qt.ElideMiddle
+        ns.ElideNone = QtCore.Qt.ElideNone
+        ns.CrossCursor = QtCore.Qt.CrossCursor
+        ns.SizeVerCursor = QtCore.Qt.SizeVerCursor
+        ns.SizeHorCursor = QtCore.Qt.SizeHorCursor
+        ns.SizeBDiagCursor = QtCore.Qt.SizeBDiagCursor
+        ns.SizeFDiagCursor = QtCore.Qt.SizeFDiagCursor
+        ns.SizeAllCursor = QtCore.Qt.SizeAllCursor
+        ns.WhatsThisCursor = QtCore.Qt.WhatsThisCursor
+        ns.LeftButton = QtCore.Qt.LeftButton
+        ns.RightButton = QtCore.Qt.RightButton
+        ns.SizeFixed = QtWidgets.QSizePolicy.Fixed
+        ns.SizeMinimum = QtWidgets.QSizePolicy.Minimum
+        ns.SizeMaximum = QtWidgets.QSizePolicy.Maximum
+        ns.SizePreferred = QtWidgets.QSizePolicy.Preferred
+        ns.SizeExpanding = QtWidgets.QSizePolicy.Expanding
+        ns.SizeMinimumExpanding = QtWidgets.QSizePolicy.MinimumExpanding
+        ns.SizeIgnored = QtWidgets.QSizePolicy.Ignored
+        ns.SetFixedSize = QtWidgets.QLayout.SetFixedSize
 
     return ns
 
@@ -643,12 +729,19 @@ def get_colors(args, compat):
     '''Create shared colors dependent on the stylesheet.'''
 
     ns = argparse.Namespace()
+    ns.Background = compat.QtGui.QColor(255, 255, 0)
+    ns.Foreground = compat.QtGui.QColor(0, 255, 255)
     ns.Selected = compat.QtGui.QColor(61, 174, 233)
     ns.PlaceholderColor = compat.QtGui.QColor(255, 0, 0)
     ns.TickColor = compat.QtGui.QColor(255, 0, 0)
     ns.ToolTipBase = compat.QtGui.QColor(0, 255, 0)
     ns.ToolTipText = compat.QtGui.QColor(0, 0, 255)
+    ns.MidTone = compat.QtGui.QColor(127, 127, 127)
+    ns.ViewBackground = compat.QtGui.QColor(0, 0, 0)
+    ns.TabBackground = compat.QtGui.QColor(0, 0, 0)
     if 'dark' in args.stylesheet:
+        ns.Background = compat.QtGui.QColor(49, 54, 59)
+        ns.Foreground = compat.QtGui.QColor(239, 240, 241)
         ns.GrooveBackground = compat.QtGui.QColor(98, 101, 104)
         ns.GrooveBorder = compat.QtGui.QColor(49, 54, 59)
         ns.HandleBackground = compat.QtGui.QColor(29, 32, 35)
@@ -658,7 +751,12 @@ def get_colors(args, compat):
         ns.TickColor = compat.QtGui.QColor(51, 78, 94)
         ns.ToolTipBase = compat.QtGui.QColor(49, 54, 59)
         ns.ToolTipText = compat.QtGui.QColor(239, 240, 241)
+        ns.MidTone = compat.QtGui.QColor(118, 121, 124)
+        ns.ViewBackground = compat.QtGui.QColor(29, 32, 35)
+        ns.TabBackground = compat.QtGui.QColor(44, 48, 52)
     elif 'light' in args.stylesheet:
+        ns.Background = compat.QtGui.QColor(239, 240, 241)
+        ns.Foreground = compat.QtGui.QColor(49, 54, 59)
         ns.GrooveBackground = compat.QtGui.QColor(106, 105, 105, 179)
         ns.GrooveBorder = compat.QtGui.QColor(239, 240, 241)
         ns.HandleBackground = compat.QtGui.QColor(239, 240, 241)
@@ -668,6 +766,9 @@ def get_colors(args, compat):
         ns.TickColor = compat.QtGui.QColor(61, 173, 232, 51)
         ns.ToolTipBase = compat.QtGui.QColor(49, 54, 59)
         ns.ToolTipText = compat.QtGui.QColor(239, 240, 241)
+        ns.MidTone = compat.QtGui.QColor(186, 185, 184)
+        ns.ViewBackground = compat.QtGui.QColor(239, 240, 241)
+        ns.TabBackground = compat.QtGui.QColor(217, 216, 215)
 
     return ns
 
@@ -759,7 +860,7 @@ def get_icon_map(args, compat):
 
     return icon_map
 
-def setup_app(args, unknown, compat, style_class=None):
+def setup_app(args, unknown, compat, style_class=None, window_class=None):
     '''Setup code for the Qt application.'''
 
     if args.scale != 1:
@@ -774,7 +875,9 @@ def setup_app(args, unknown, compat, style_class=None):
             style = style_class(style)
         app.setStyle(style)
 
-    window = compat.QtWidgets.QMainWindow()
+    if window_class is None:
+        window_class = compat.QtWidgets.QMainWindow
+    window = window_class()
 
     # use the default font size
     font = app.font()
@@ -803,12 +906,28 @@ def exec_app(args, app, window, compat):
     window.show()
     return execute(args, app)
 
-def execute(args, widget):
+def execute(args, widget, *params):
     '''Shared code to call `exec()` on a widget.'''
 
     if args.pyqt6:
-        return widget.exec()
-    return widget.exec_()
+        return widget.exec(*params)
+    return widget.exec_(*params)
+
+def single_point_position(args, event):
+    '''Shared code to call `pos()` on a single-point event.'''
+
+    if args.pyqt6:
+        # Qt6 returns `QPointF`, which is overkill.
+        return event.position().toPoint()
+    return event.pos()
+
+def single_point_global_position(args, event):
+    '''Shared code to call `globalPos()` on a single-point event.'''
+
+    if args.pyqt6:
+        # Qt6 returns `QPointF`, which is overkill.
+        return event.globalPosition().toPoint()
+    return event.globalPos()
 
 def native_icon(style, icon, option=None, widget=None):
     '''Get a standard icon for the native style'''

@@ -136,21 +136,25 @@ def splash_timer(splash, window):
     splash.finish(window)
     window.show()
 
+def standard_icon(widget, icon):
+    '''Get a standard icon depending on the stylesheet.'''
+    return shared.standard_icon(args, widget, icon, ICON_MAP)
+
 def close_icon(widget):
     '''Get the close icon depending on the stylesheet.'''
-    return shared.standard_icon(args, widget, compat.SP_DockWidgetCloseButton, ICON_MAP)
+    return standard_icon(widget, compat.SP_DockWidgetCloseButton)
 
 def reset_icon(widget):
     '''Get the reset icon depending on the stylesheet.'''
-    return shared.standard_icon(args, widget, compat.SP_DialogResetButton, ICON_MAP)
+    return standard_icon(widget, compat.SP_DialogResetButton)
 
 def next_icon(widget):
     '''Get the next icon depending on the stylesheet.'''
-    return shared.standard_icon(args, widget, compat.SP_ArrowRight, ICON_MAP)
+    return standard_icon(widget, compat.SP_ArrowRight)
 
 def previous_icon(widget):
     '''Get the previous icon depending on the stylesheet.'''
-    return shared.standard_icon(args, widget, compat.SP_ArrowLeft, ICON_MAP)
+    return standard_icon(widget, compat.SP_ArrowLeft)
 
 def test_progressbar_horizontal(widget, *_):
     child = []
@@ -409,7 +413,30 @@ def test_tooltips_menu(widget, window, font, width, *_):
 def test_mdi_area(widget, *_):
     child = QtWidgets.QMdiArea(widget)
     child.addSubWindow(QtWidgets.QMdiSubWindow())
-    child.addSubWindow(QtWidgets.QMdiSubWindow())
+    window = QtWidgets.QMdiSubWindow()
+    flags = window.windowFlags()
+    flags |= compat.WindowContextHelpButtonHint
+    flags |= compat.WindowShadeButtonHint
+    window.setWindowFlags(flags)
+    window.setWindowTitle('Subwindow')
+    child.addSubWindow(window)
+
+    return child
+
+def test_partial_mdi_area(widget, *_):
+    child = [
+        QtWidgets.QWidget(),
+        QtWidgets.QMdiArea(widget),
+    ]
+    child[0].setMinimumSize(200, 200)
+    child[1].addSubWindow(QtWidgets.QMdiSubWindow())
+    window = QtWidgets.QMdiSubWindow()
+    flags = window.windowFlags()
+    flags |= compat.WindowContextHelpButtonHint
+    flags |= compat.WindowShadeButtonHint
+    window.setWindowFlags(flags)
+    window.setWindowTitle('Subwindow')
+    child[1].addSubWindow(window)
 
     return child
 
@@ -1200,7 +1227,7 @@ def test_view_scrollarea(widget, *_):
     child.setRowCount(100)
     for index in range(100):
         row = QtWidgets.QTableWidgetItem(f'Row {index + 1}')
-        child.setVerticalHeaderItem(0, row)
+        child.setVerticalHeaderItem(index, row)
         column = QtWidgets.QTableWidgetItem(f'Column {index + 1}')
         child.setHorizontalHeaderItem(index, column)
 
