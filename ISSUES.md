@@ -392,7 +392,7 @@ def main():
 
 ### Title Bar Customization
 
-The system title bar cannot be customized extensively, since it depends on either the application style or the system theme for how it renders. For a comprehensive example on how to create your own, custom title bar, with fully functional minimize, maximize, shade, unshade, context help, keep above, window title, and a context menu, see [titlebar.py](/example/titlebar.py). This is a drop-in replacement for the title bar on `QMdiSubWindow` which also lets you customize the placement of where the windows minimize to, but could also be modified for `QMainWindow` or `QDialog`.
+The system title bar cannot be customized extensively, since it depends on either the application style or the system theme for how it renders. For a comprehensive example on how to create your own, custom title bar, with fully functional minimize, maximize, shade, unshade, context help, keep above, window title, and a context menu, see [titlebar.py](/example/titlebar.py). This is a drop-in replacement for the title bar on `QMdiSubWindow` and `QMaindWindow` which also lets you customize the placement of where the windows minimize to, but could also be modified for `QDialog`.
 
 <img src="/assets/custom_titlebar.png" alt="Custom Title Bar" width="500" height="399"/>
 

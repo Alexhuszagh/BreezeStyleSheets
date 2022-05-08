@@ -421,8 +421,11 @@ def get_compat_definitions(args):
         ns.SubWindow = ns.WindowType.SubWindow
         ns.WindowContextHelpButtonHint = ns.WindowType.WindowContextHelpButtonHint
         ns.WindowShadeButtonHint = ns.WindowType.WindowShadeButtonHint
+        ns.BypassWindowManagerHint = ns.WindowType.BypassWindowManagerHint
+        ns.X11BypassWindowManagerHint = ns.WindowType.X11BypassWindowManagerHint
         ns.FramelessWindowHint = ns.WindowType.FramelessWindowHint
         ns.WindowStaysOnTopHint = ns.WindowType.WindowStaysOnTopHint
+        ns.WindowStaysOnBottomHint = ns.WindowType.WindowStaysOnBottomHint
         ns.WindowNoState = ns.WindowState.WindowNoState
         ns.WindowMinimized = ns.WindowState.WindowMinimized
         ns.WindowMaximized = ns.WindowState.WindowMaximized
@@ -699,8 +702,11 @@ def get_compat_definitions(args):
         ns.SubWindow = QtCore.Qt.SubWindow
         ns.WindowContextHelpButtonHint = QtCore.Qt.WindowContextHelpButtonHint
         ns.WindowShadeButtonHint = QtCore.Qt.WindowShadeButtonHint
+        ns.BypassWindowManagerHint = QtCore.Qt.BypassWindowManagerHint
+        ns.X11BypassWindowManagerHint = QtCore.Qt.X11BypassWindowManagerHint
         ns.FramelessWindowHint = QtCore.Qt.FramelessWindowHint
         ns.WindowStaysOnTopHint = QtCore.Qt.WindowStaysOnTopHint
+        ns.WindowStaysOnBottomHint = QtCore.Qt.WindowStaysOnBottomHint
         ns.WindowNoState = QtCore.Qt.WindowNoState
         ns.WindowMinimized = QtCore.Qt.WindowMinimized
         ns.WindowMaximized = QtCore.Qt.WindowMaximized
