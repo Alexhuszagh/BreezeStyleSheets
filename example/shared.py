@@ -73,6 +73,7 @@ def parse_args(parser):
 
     if args.use_x11:
         os.environ['XDG_SESSION_TYPE'] = 'x11'
+        os.environ['QT_QPA_PLATFORM'] = 'xcb'
 
     return args, unknown
 
@@ -172,6 +173,7 @@ def get_compat_definitions(args):
         ns.TextElideMode = QtCore.Qt.TextElideMode
         ns.CursorShape = QtCore.Qt.CursorShape
         ns.MouseButton = QtCore.Qt.MouseButton
+        ns.KeyboardModifier = QtCore.Qt.KeyboardModifier
         ns.SizePolicy = QtWidgets.QSizePolicy.Policy
         ns.SizeConstraint = QtWidgets.QLayout.SizeConstraint
 
@@ -244,6 +246,8 @@ def get_compat_definitions(args):
         ns.MouseButtonPress = ns.EventType.MouseButtonPress
         ns.MouseButtonRelease = ns.EventType.MouseButtonRelease
         ns.MouseMove = ns.EventType.MouseMove
+        ns.WindowStateChange = ns.EventType.WindowStateChange
+        ns.ActivationChange = ns.EventType.ActivationChange
         ns.WindowPalette = ns.ColorRole.Window
         ns.WindowTextPalette = ns.ColorRole.WindowText
         ns.LightPalette = ns.ColorRole.Light
@@ -445,6 +449,7 @@ def get_compat_definitions(args):
         ns.WhatsThisCursor = ns.CursorShape.WhatsThisCursor
         ns.LeftButton = ns.MouseButton.LeftButton
         ns.RightButton = ns.MouseButton.RightButton
+        ns.NoModifier = ns.KeyboardModifier.NoModifier
         ns.SizeFixed = ns.SizePolicy.Fixed
         ns.SizeMinimum = ns.SizePolicy.Minimum
         ns.SizeMaximum = ns.SizePolicy.Maximum
@@ -531,6 +536,8 @@ def get_compat_definitions(args):
         ns.MouseButtonPress = QtCore.QEvent.MouseButtonPress
         ns.MouseButtonRelease = QtCore.QEvent.MouseButtonRelease
         ns.MouseMove = QtCore.QEvent.MouseMove
+        ns.WindowStateChange = QtCore.QEvent.WindowStateChange
+        ns.ActivationChange = QtCore.QEvent.ActivationChange
         ns.WindowPalette = QtGui.QPalette.Window
         ns.WindowTextPalette = QtGui.QPalette.WindowText
         ns.LightPalette = QtGui.QPalette.Light
@@ -726,6 +733,7 @@ def get_compat_definitions(args):
         ns.WhatsThisCursor = QtCore.Qt.WhatsThisCursor
         ns.LeftButton = QtCore.Qt.LeftButton
         ns.RightButton = QtCore.Qt.RightButton
+        ns.NoModifier = QtCore.Qt.NoModifier
         ns.SizeFixed = QtWidgets.QSizePolicy.Fixed
         ns.SizeMinimum = QtWidgets.QSizePolicy.Minimum
         ns.SizeMaximum = QtWidgets.QSizePolicy.Maximum
