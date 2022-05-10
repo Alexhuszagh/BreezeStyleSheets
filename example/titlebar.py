@@ -95,11 +95,16 @@
     - We cannot intercept mouse events for the menu resize outside the window.
         - This even occurs when forcing X11 on Wayland.
 
+    On Windows, only the menu resize event fails. For the subwindow, it stops
+    tracking outside of the window boundaries, and for the main window, it does
+    the same, making it practically useless.
+
     # Testing
 
     The current platforms/desktop environments have been tested:
     - Gnome (X11, Wayland)
     - KDE Plasma (X11, Wayland)
+    - Windows 10
 '''
 
 import enum
