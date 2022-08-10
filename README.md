@@ -296,7 +296,7 @@ int main()
 
     // Need to initialize the resource, since we're using an external
     // build system and this isn't automatically handled by CMake.
-    Q_INIT_RESOURCE(breeze_themes);
+    Q_INIT_RESOURCE(breeze);
     QFile file(":/dark-green/stylesheet.qss");
     file.open(QFile::ReadOnly | QFile::Text);
     QTextStream stream(&file);
