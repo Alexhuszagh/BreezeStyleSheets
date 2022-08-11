@@ -2125,7 +2125,7 @@ def test(args, test_widget):
     return shared.execute(args, app)
 
 def main():
-    'Application entry point'
+    '''Application entry point'''
 
     def test_names():
         return [i for i in globals().keys() if i.startswith('test_')]
