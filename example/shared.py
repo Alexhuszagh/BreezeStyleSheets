@@ -912,16 +912,19 @@ def setup_app(args, unknown, compat, style_class=None, window_class=None):
 
     return app, window
 
+def read_qtext_file(path, compat):
+    file = compat.QtCore.QFile(path)
+    file.open(compat.ReadOnly | compat.Text)
+    stream = compat.QtCore.QTextStream(file)
+    return stream.readAll()
+
 def set_stylesheet(args, app, compat):
     '''Set the application stylesheet.'''
 
     if args.stylesheet != 'native':
         resource_format = get_resources(args)
         stylesheet = get_stylesheet(resource_format)
-        file = compat.QtCore.QFile(stylesheet)
-        file.open(compat.ReadOnly | compat.Text)
-        stream = compat.QtCore.QTextStream(file)
-        app.setStyleSheet(stream.readAll())
+        app.setStyleSheet(read_qtext_file(stylesheet, compat))
 
 def exec_app(args, app, window, compat):
     '''Show and execute the Qt application.'''

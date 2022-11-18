@@ -1,0 +1,43 @@
+/**
+ *  BRANCHLESS QTREEVIEW STYLESHEET
+ *  -------------------------------
+ */
+
+/**
+ *  We disable all the border images for the branch indicators, while
+ *  keeping the images for the branch closed/open and hover variants
+ *  the default.
+ */
+QTreeView[objectName="branchless"]::branch:has-siblings
+{
+    border-image: none;
+    image: none;
+}
+
+QTreeView[objectName="branchless"]::branch:!has-siblings
+{
+    border-image: none;
+    image: none;
+}
+
+QTreeView[objectName="branchless"]::branch:has-siblings:adjoins-item
+{
+    border-image: none;
+}
+
+QTreeView[objectName="branchless"]::branch:!has-children:!has-siblings:adjoins-item
+{
+    border-image: none;
+}
+
+QTreeView[objectName="branchless"]::branch:has-children:!has-siblings:closed,
+QTreeView[objectName="branchless"]::branch:open:has-children:!has-siblings
+{
+    border-image: none;
+}
+
+QTreeView[objectName="branchless"]::branch:closed:has-children:has-siblings,
+QTreeView[objectName="branchless"]::branch:open:has-children:has-siblings
+{
+    border-image: none;
+}
