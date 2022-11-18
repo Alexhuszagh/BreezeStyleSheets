@@ -208,6 +208,7 @@ def get_compat_definitions(args):
         ns.Sunken = ns.FrameShadow.Sunken
         ns.InstantPopup = ns.ToolButtonPopupMode.InstantPopup
         ns.MenuButtonPopup = ns.ToolButtonPopupMode.MenuButtonPopup
+        ns.ItemIsEditable = ns.ItemFlag.ItemIsEditable
         ns.ItemIsUserCheckable = ns.ItemFlag.ItemIsUserCheckable
         ns.ItemIsUserTristate = ns.ItemFlag.ItemIsUserTristate
         ns.Checked = ns.CheckState.Checked
@@ -497,6 +498,7 @@ def get_compat_definitions(args):
         ns.AlignHCenter = QtCore.Qt.AlignHCenter
         ns.AlignVCenter = QtCore.Qt.AlignVCenter
         ns.AlignCenter = QtCore.Qt.AlignCenter
+        ns.ItemIsEditable = QtCore.Qt.ItemIsEditable
         ns.ItemIsUserCheckable = QtCore.Qt.ItemIsUserCheckable
         ns.ItemIsUserTristate = QtCore.Qt.ItemIsUserTristate
         ns.Checked = QtCore.Qt.Checked
