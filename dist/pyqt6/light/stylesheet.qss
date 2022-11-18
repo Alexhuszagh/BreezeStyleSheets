@@ -1838,6 +1838,16 @@ QTreeView::item:!selected:hover
     padding: 0.13em;
 }
 
+QAbstractItemView::item QLineEdit
+{
+    border: 0em transparent black;
+    /*
+     *  The top/bottom padding causes the editable widget to conceal text.
+     *  https://github.com/Alexhuszagh/BreezeStyleSheets/issues/69
+     */
+    padding: 0em;
+}
+
 QSlider::handle:horizontal,
 QSlider::handle:vertical
 {

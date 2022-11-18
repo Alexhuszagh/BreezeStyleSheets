@@ -815,6 +815,16 @@ def test_sortable_list(widget, *_):
 
     return child
 
+def test_editable_list(widget, *_):
+    child = QtWidgets.QListWidget(widget)
+    child.setSortingEnabled(True)
+    for index in range(10):
+        item = QtWidgets.QListWidgetItem(f'Item {index + 1}')
+        item.setFlags(item.flags() | compat.ItemIsEditable)
+        child.addItem(item)
+
+    return child
+
 def test_key_sequence_edit(widget, *_):
     return QtWidgets.QKeySequenceEdit(widget)
 
@@ -1160,6 +1170,41 @@ def test_sortable_tree(widget, *_):
     tree.setSortingEnabled(True)
 
     return tree
+
+def test_editable_tree(widget, *_):
+    def new_item(widget, columns):
+        item = QtWidgets.QTreeWidgetItem(widget, columns)
+        item.setFlags(item.flags() | compat.ItemIsEditable)
+        return item
+
+    child = []
+    tree1 = QtWidgets.QTreeWidget(widget)
+    tree1.setHeaderLabel('Tree 1')
+    item1 = new_item(tree1, ['Row 1'])
+    item2 = new_item(tree1, ['Row 2'])
+    item3 = new_item(item2, ['Row 2.1'])
+    item3.setFlags(item3.flags() | compat.ItemIsUserCheckable)
+    item3.setCheckState(0, compat.Unchecked)
+    item4 = new_item(item2, ['Row 2.2'])
+    item5 = new_item(item4, ['Row 2.2.1'])
+    item6 = new_item(item5, ['Row 2.2.1.1'])
+    item7 = new_item(item5, ['Row 2.2.1.2'])
+    item7.setFlags(item7.flags() | compat.ItemIsUserCheckable)
+    item7.setCheckState(0, compat.Checked)
+    item8 = new_item(item2, ['Row 2.3'])
+    item8.setFlags(item8.flags() | compat.ItemIsUserTristate)
+    item8.setCheckState(0, compat.PartiallyChecked)
+    item9 = new_item(tree1, ['Row 3'])
+    item10 = new_item(item9, ['Row 3.1'])
+    item11 = new_item(tree1, ['Row 4'])
+    child.append(tree1)
+    tree2 = QtWidgets.QTreeWidget(widget)
+    tree2.setHeaderLabel('Tree 2')
+    tree2.header().setSectionsClickable(True)
+    item12 = new_item(tree2, ['Row 1', 'Column 2', 'Column 3'])
+    child.append(tree2)
+
+    return child
 
 def test_hidden_header_tree(widget, *_):
     tree = QtWidgets.QTreeWidget(widget)
