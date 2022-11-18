@@ -7,6 +7,8 @@ This contains an example widget for a `QTreeView` where the branch indicators ar
 python configure.py --extensions=branchless --resource custom.qrc
 ```
 
+To remove the branch indicators, you must also set the object name for each `QTreeView` or `QTreeWidget` to `"branchless"`, for example, in Python, `tree.setObjectName("branchless")`.
+
 ## Example
 
 <p align="center"><b>Dark</b></p>
