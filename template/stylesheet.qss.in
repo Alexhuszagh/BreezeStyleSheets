@@ -836,6 +836,12 @@ QPushButton
     min-height: 1.1em;
 }
 
+QPushButton:flat,
+QPushButton:flat:hover
+{
+    border: 0.04em transparent ^midtone^;
+}
+
 QComboBox:open,
 QPushButton:open
 {
