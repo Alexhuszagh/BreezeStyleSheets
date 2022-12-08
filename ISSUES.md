@@ -134,7 +134,7 @@ def main():
 
 ### Links
 
-There is no way to set the default color of a link in a `QLabel`, `QTextEdit`, `QPlainTextEdit`, `QTextBrowser`,  `QMessageBox`, etc. There are a few possible workarounds.
+There is no way to set the default color of a link in a `QLabel`, `QTextEdit`, `QPlainTextEdit`, `QTextBrowser`,  `QMessageBox`, etc. There are a few possible workarounds. A working example using `QPalette` can be found [url.py](/example/url.py).
 
 One is to set the link color when setting the label text, here, setting the label text to red. This will override the default color, and you can use a theme-dependent color to ensure the links are rendered properly.
 

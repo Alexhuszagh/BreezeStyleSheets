@@ -254,6 +254,8 @@ def get_compat_definitions(args):
         ns.LightPalette = ns.ColorRole.Light
         ns.DarkPalette = ns.ColorRole.Dark
         ns.PlaceholderText = ns.ColorRole.PlaceholderText
+        ns.Link = ns.ColorRole.Link
+        ns.LinkVisited = ns.ColorRole.LinkVisited
         ns.ToolTipBase = ns.ColorRole.ToolTipBase
         ns.ToolTipText = ns.ColorRole.ToolTipText
         ns.NoTicks = ns.TickPosition.NoTicks
@@ -421,6 +423,7 @@ def get_compat_definitions(args):
         ns.RubberBandRectangle = ns.RubberBandShape.Rectangle
         ns.TextSelectableByMouse = ns.TextInteractionFlag.TextSelectableByMouse
         ns.TextEditorInteraction = ns.TextInteractionFlag.TextEditorInteraction
+        ns.TextBrowserInteraction = ns.TextInteractionFlag.TextBrowserInteraction
         ns.Window = ns.WindowType.Window
         ns.Dialog = ns.WindowType.Dialog
         ns.SubWindow = ns.WindowType.SubWindow
@@ -545,6 +548,8 @@ def get_compat_definitions(args):
         ns.LightPalette = QtGui.QPalette.Light
         ns.DarkPalette = QtGui.QPalette.Dark
         ns.PlaceholderText = QtGui.QPalette.PlaceholderText
+        ns.Link = QtGui.QPalette.Link
+        ns.LinkVisited = QtGui.QPalette.LinkVisited
         ns.ToolTipBase = QtGui.QPalette.ToolTipBase
         ns.ToolTipText = QtGui.QPalette.ToolTipText
         ns.NoTicks = QtWidgets.QSlider.NoTicks
@@ -706,6 +711,7 @@ def get_compat_definitions(args):
         ns.RubberBandRectangle = QtWidgets.QRubberBand.Rectangle
         ns.TextSelectableByMouse = QtCore.Qt.TextSelectableByMouse
         ns.TextEditorInteraction = QtCore.Qt.TextEditorInteraction
+        ns.TextBrowserInteraction = QtCore.Qt.TextBrowserInteraction
         ns.Window = QtCore.Qt.Window
         ns.Dialog = QtCore.Qt.Dialog
         ns.SubWindow = QtCore.Qt.SubWindow
@@ -778,6 +784,8 @@ def get_colors(args, compat):
         ns.ViewBackground = compat.QtGui.QColor(29, 32, 35)
         ns.TabBackground = compat.QtGui.QColor(44, 48, 52)
         ns.HighLightDark = compat.QtGui.QColor(42, 121, 163)
+        ns.LinkColor = compat.QtGui.QColor(88, 166, 255)
+        ns.LinkVisitedColor = compat.QtGui.QColor(255, 88, 250)
     elif 'light' in args.stylesheet:
         ns.Background = compat.QtGui.QColor(239, 240, 241)
         ns.Foreground = compat.QtGui.QColor(49, 54, 59)
@@ -794,6 +802,8 @@ def get_colors(args, compat):
         ns.ViewBackground = compat.QtGui.QColor(239, 240, 241)
         ns.TabBackground = compat.QtGui.QColor(217, 216, 215)
         ns.HighLightDark = compat.QtGui.QColor(45, 147, 200, 127)
+        ns.LinkColor = compat.QtGui.QColor(70, 132, 204)
+        ns.LinkVisitedColor = compat.QtGui.QColor(204, 70, 200)
 
     return ns
 
