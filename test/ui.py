@@ -341,6 +341,17 @@ def test_menu(widget, window, font, width, *_):
     child.addAction(menu.menuAction())
     window.setMenuBar(child)
 
+    file = QtWidgets.QMenu('File', child)
+    file.addAction(compat.QAction('&Open', window))
+    file.addAction(compat.QAction('&Close', window))
+    child.addAction(file.menuAction())
+
+    edit = QtWidgets.QMenu('Edit', child)
+    edit.addAction(compat.QAction('&Cut', window))
+    edit.addAction(compat.QAction('&Copy', window))
+    edit.addAction(compat.QAction('&Paste', window))
+    child.addAction(edit.menuAction())
+
     return child
 
 def _menu(window, font, width):
