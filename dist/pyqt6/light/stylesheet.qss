@@ -347,6 +347,7 @@ QMenuBar::item
 QMenuBar::item:selected
 {
     background: transparent;
+    border: 0.04em solid rgba(51, 164, 223, 0.5);
 }
 
 QMenuBar::item:disabled
@@ -465,11 +466,6 @@ QAbstractItemView
     color: #31363b;
     border: 0.09em solid #bab9b8;
     border-radius: 0.09em;
-}
-
-QMenuBar::item:focus:!disabled
-{
-    border: 0.04em solid rgba(51, 164, 223, 0.5);
 }
 
 QTabWidget:focus,
