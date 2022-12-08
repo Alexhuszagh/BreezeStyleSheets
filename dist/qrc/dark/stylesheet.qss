@@ -186,6 +186,14 @@ QGroupBox::title
     padding-right: 0.2em;
 }
 
+QGroupBox:flat
+{
+    border-top: 0.04em solid #626568;
+    border-left: 0.04em transparent #76797c;
+    border-right: 0.04em transparent #76797c;
+    border-bottom: 0.04em transparent #76797c;
+}
+
 QCheckBox::indicator,
 QTreeView::indicator,
 QGroupBox::indicator
