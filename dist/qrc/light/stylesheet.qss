@@ -196,6 +196,7 @@ QGroupBox:flat
 
 QCheckBox::indicator,
 QTreeView::indicator,
+QTableWidget::indicator,
 QGroupBox::indicator
 {
     width: 1em;
