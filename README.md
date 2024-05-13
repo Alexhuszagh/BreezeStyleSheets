@@ -15,14 +15,14 @@ BreezeStyleSheets is a set of beautiful light and dark stylesheets that render c
 - [Installing](#installing)
   - [CMake Installation](#cmake-installation)
   - [QMake Installation](#qmake-installation)
-  - [PyQt5 Installation](#pyqt5-installation)
-  - [PyQt6 Installation](#pyqt6-installation)
+  - [PyQt5/6 & PySide2/6 Installation](#pyqt56--pyside26-installation)
 - [Debugging](#debugging)
 - [Development Guide](#development-guide)
   - [Configuring](#configuring)
   - [Testing](#testing)
   - [Distribution Files](#distribution-files)
   - [Git Ignore](#git-ignore)
+- [What's changed in this fork?](#whats-changed-in-this-fork)
 - [Known Issues and Workarounds](#known-issues-and-workarounds)
 - [License](#license)
 - [Contributing](#contributing)
@@ -216,7 +216,7 @@ Here are detailed instructions on how to install Breeze Style Sheets for a varie
 By default, BreezeStyleSheets comes with the `dark` and `light` themes pre-built. In order to build all pre-packaged themes including PyQt5 and PyQt6 support, run:
 
 ```bash
-python configure.py --styles=all --extensions=all --pyqt6 \
+python configure.py --styles=all --extensions=all --qt-resource pyqt6 \
     --resource breeze.qrc --compiled-resource breeze_resources.py
 ```
 
@@ -343,9 +343,9 @@ int main(int argc, char *argv[])
 }
 ```
 
-## PyQt5 Installation
+## PyQt5/6 & PySide2/6 Installation
 
-To compile the stylesheet for use with PyQt5, ensure you configure with the `--compiled-resource` flag (which requires `pyrcc5` installed). The compiled resource Python file now contains all the stylesheet data. To load and set the stylesheet in a PyQt5 application, import that file, load the contents using QFile and read the data. For example, to load BreezeDark, first configure using:
+To compile the stylesheet for use with PyQt5, PyQt6, PySide2 or PySide6, ensure you configure with the `--compiled-resource` flag (which requires the rcc executable for your chosen framework to be installed - see below for details). The compiled resource Python file now contains all the stylesheet data. To load and set the stylesheet in a PyQt5/6 or PySide2/6 application, import that file, load the contents using QFile and read the data. For example, to load BreezeDark, first configure using:
 
 ```bash
 python configure.py --compiled-resource breeze_resources.py
@@ -373,52 +373,12 @@ def main():
     app.exec_()
 ```
 
-## PyQt6 Installation
+Required rcc for each framework:
 
-Since [pyrcc](https://www.riverbankcomputing.com/pipermail/pyqt/2020-September/043209.html) is no longer being maintained, using local Python paths is the preferable solution. For a detailed description on how to package these resources, see this StackOverflow [answer](https://stackoverflow.com/a/20885799/4131059).
-
-First, package your code using setuptools. Make sure `zip_safe` is off, so we can properly load the files from a search path, and include the necessary package directories to your `MANIFEST.in` file.
-
-```python
-from setuptools import setup
-
-setup(
-    # Either option is valid here.
-    #   Either use `package_data` with enumerating the values, or
-    #   set `include_package_data=True`.
-    include_package_data=True,
-    package_data={
-        'breeze_theme': ['dist/pyqt6/*'],
-    },
-    zip_safe=False,
-)
-```
-
-Then, you can import the resources as follows:
-
-```python
-import importlib.resources
-from Qt6 import QtWidgets, QtCore
-from Qt6.QtCore import QFile, QTextStream
-
-
-def main():
-    app = QtWidgets.QApplication(sys.argv)
-
-    # set stylesheet
-    # Note that the search path name must be the theme name.
-    #   dark => dark, light => light, dark-purple => dark-purple, ...
-    breeze_theme = importlib_resources.files('breeze_theme.dark')
-    QtCore.QDir.addSearchPath('dark', breeze_theme)
-    file = QFile("dark:stylesheet.qss")
-    file.open(QFile.OpenModeFlag.ReadOnly | QFile.OpenModeFlag.Text)
-    stream = QTextStream(file)
-    app.setStyleSheet(stream.readAll())
-
-    # code goes here
-
-    app.exec()
-```
+    PyQt5: pyrcc5
+    PyQt6: pyside6-rcc
+    PySide2: pyside2-rcc
+    PySide6: pyside6-rcc
 
 # Debugging
 
@@ -450,7 +410,7 @@ $ python test/ui.py --widget $widget --stylesheet $theme
 $ python test/ui.py --help
 usage: ui.py [-h] [--widget WIDGET] [--stylesheet STYLESHEET] [--style STYLE]
              [--font-size FONT_SIZE] [--font-family FONT_FAMILY] [--width WIDTH]
-             [--height HEIGHT] [--alignment ALIGNMENT] [--compress] [--scale SCALE] [--pyqt6]
+             [--height HEIGHT] [--alignment ALIGNMENT] [--compress] [--scale SCALE]
              [--use-x11]
 
 Configurations for the Qt application.
@@ -471,7 +431,6 @@ options:
                         the layout alignment
   --compress            add stretch on both sides
   --scale SCALE         scale factor for the UI
-  --pyqt6               use PyQt6 rather than PyQt5.
   --use-x11             force the use of x11 on compatible systems
   --print-tests         print all available tests (widget names).
 # Get a complete list of available tests.
@@ -491,7 +450,7 @@ To see the complete list of Qt widgets covered by the unittests, see [Test Cover
 When pushing changes, only the `light` and `dark` themes should be configured, without any extensions. To reset the built resource files to the defaults (this requires `pyrcc5` to be installed), run:
 
 ```bash
-python configure.py --clean --pyqt6 \
+python configure.py --clean \
     --compiled-resource breeze_resources.py
 ```
 
@@ -517,6 +476,26 @@ git add .gitignore
 git commit -m "..."
 ```
 
+# What's changed in this fork?
+
+* Added support for PySide2 and PySide6.
+
+* Removed old PyQt6 packaging system and replaced with an identical process for the four most common Python Qt frameworks.
+    * This is achieved by using PySide6-rcc. New function was added to change import from 'PySide6' to 'PyQt6' when building for PyQt6.
+
+        ```bash
+        python configure.py --compiled-resource=breeze_resources.py --qt-framework=pyqt6
+        ```
+
+* Error message added if required rcc executable is not found.
+
+* Altered '--no-qrc' option. Compiled resources will now still build if this option is selected as long as a qrc file already exists.
+    * Error message presented if no qrc file is present and '--no-qrc' option is selected.
+
+* Removed 'qrc dist' as no longer needed to separate PyQt6 files. All files now built in 'dist'.
+
+* Changed function spacing to align with PEP-8 (two new lines between functions).
+
 # Known Issues and Workarounds
 
 For known issues and workarounds, see [issues](/ISSUES.md).
@@ -532,6 +511,8 @@ Unless you explicitly state otherwise, any contribution intentionally submitted 
 # Acknowledgements
 
 BreezeStyleSheets is a fork of [QDarkStyleSheet](https://github.com/ColinDuquesnoy/QDarkStyleSheet). Some of the icons are modified from [Material UI](https://github.com/google/material-design-icons) and [Material Design Icons](https://materialdesignicons.com/) (both of which use an Apache 2.0 license), and are redistributed under the MIT license.
+
+PyQtBreezeStyleSheets is a further fork of [BreezeStyleSheets](https://github.com/Alexhuszagh/BreezeStyleSheets).
 
 # Contact
 
