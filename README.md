@@ -374,10 +374,10 @@ def main():
 ```
 
 Required rcc for each framework:
-    PyQt5: pyrcc5
-    PyQt6: pyside6-rcc
-    PySide2: pyside2-rcc
-    PySide6: pyside6-rcc
+- PyQt5: `pyrcc5`
+- PyQt6: `pyside6-rcc` (requires `PySide6` installed)
+- PySide2: `pyside2-rcc` (requires Python.10 or earlier)
+- PySide6: `pyside6-rcc`
 
 # Debugging
 
