@@ -25,7 +25,8 @@ GITIGNORE_ENTRIES = [
     '*.pyc',
     # Ignore all resource files except `breeze.qrc`.
     '*.qrc',
-    '!breeze.qrc'
+    '!breeze.qrc',
+    'venv',
 ]
 
 
@@ -145,7 +146,7 @@ def main(argv=None):
     # Update our gitignore entries, and write to file.
     gitignore_entries = list(GITIGNORE_ENTRIES)
     if args.no_track_dist:
-        gitignore_entries += ['dist/', 'breeze_resources.py']
+        gitignore_entries += ['dist/', 'resources/']
     write_gitignore(gitignore_entries)
 
     # Manage any distribution file extras here.
@@ -158,11 +159,13 @@ def main(argv=None):
         elif args.track_dist and exists:
             no_assume_unchanged(git, file)
 
-    dist_files = ['breeze_resources.py']
-    for root, dirs, files in os.walk(f'{home}/dist'):
-        relpath = os.path.relpath(root, home)
-        for file in files:
-            dist_files.append(f'{relpath}/{file}')
+    dist_files = []
+    dist_dirs = [f'{home}/dist', f'{home}/resources']
+    for dist_dir in dist_dirs:
+        for root, dirs, files in os.walk(dist_dir):
+            relpath = os.path.relpath(root, home)
+            for file in files:
+                dist_files.append(f'{relpath}/{file}')
     for file in dist_files:
         update_dist_index(file)
 
