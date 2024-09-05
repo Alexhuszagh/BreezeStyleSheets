@@ -65,16 +65,19 @@ def parse_args(argv=None):
     return parser.parse_args(argv)
 
 
-def call(command):
+def call(command, ignore_errors=True):
     '''Call subprocess command (ignoring output but checking code).'''
 
-    return subprocess.check_call(
-        command,
-        stdin=subprocess.DEVNULL,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        shell=False,
-    )
+    try:
+        return subprocess.check_output(
+            command,
+            stdin=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            shell=False,
+        )
+    except subprocess.CalledProcessError as error:
+        if b'Unable to mark file' not in error.stderr or not ignore_errors:
+            raise
 
 
 def assume_unchanged(git, file):
