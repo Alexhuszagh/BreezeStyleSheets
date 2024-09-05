@@ -368,26 +368,28 @@ def configure(args):
         ]
 
         try:
-            subprocess.check_call(
+            subprocess.check_output(
                 command,
                 stdin=subprocess.DEVNULL,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
                 shell=False,
             )
-        except subprocess.CalledProcessError:
-            print('ERROR: Ensure qrc file exists or deselect "no-qrc" option!')
+        except subprocess.CalledProcessError as error:
+            if b'File does not exist' in error.stderr:
+                print('ERROR: Ensure qrc file exists or deselect "no-qrc" option!', file=sys.stderr)
+            else:
+                print(f'ERROR: Got an unknown errir of "{error.stderr.decode("utf-8")}"!', file=sys.stderr)
             raise SystemExit
         except FileNotFoundError:
             if args.rcc:
-                print("ERROR: rcc path invalid!")
+                print("ERROR: rcc path invalid!", file=sys.stderr)
             else:
-                print('ERROR: Ensure rcc executable exists for chosen framework!')
+                print('ERROR: Ensure rcc executable exists for chosen framework!', file=sys.stderr)
             print('Required rcc for PyQt5: pyrcc5',
                 'Required rcc for PySide6 & PyQt6: PySide6-rcc',
                 'Required rcc for PySide2: PySide2-rcc',
                 '',
-                'if using venv, activate it or provide path to rcc.', sep='\n')
+                'if using venv, activate it or provide path to rcc.', sep='\n', file=sys.stderr)
             raise SystemExit
 
         if args.qt_framework == "pyqt6":
