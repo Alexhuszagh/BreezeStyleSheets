@@ -398,8 +398,8 @@ Then, you can import the resources as follows:
 
 ```python
 import importlib.resources
-from Qt6 import QtWidgets, QtCore
-from Qt6.QtCore import QFile, QTextStream
+from PyQt6 import QtWidgets, QtCore
+from PyQt6.QtCore import QFile, QTextStream
 
 
 def main():
