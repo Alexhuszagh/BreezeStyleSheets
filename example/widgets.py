@@ -159,7 +159,7 @@ class Ui:
         self.tableWidget_2 = QtWidgets.QTableWidget(self.tab_5v2)
         self.tableWidget_2.setColumnCount(100)
         self.tableWidget_2.setRowCount(1)
-        item = QtWidgets.QTableWidgetItem(f'Row 1')
+        item = QtWidgets.QTableWidgetItem('Row 1')
         self.tableWidget_2.setVerticalHeaderItem(0, item)
         for index in range(100):
             item = QtWidgets.QTableWidgetItem(f'Column {index + 1}')

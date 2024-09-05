@@ -186,9 +186,7 @@ class Ui:
             'SP_DialogIgnoreButton',
             'SP_RestoreDefaultsButton',
         ]
-        # QT_VERSION is stored in 0xMMmmpp, each in 16 bit pairs.
-        # Goes major, minor, patch. 393984 is "6.3.0"
-        if QtCore.QT_VERSION >= 393984:
+        if shared.get_version(args) >= (6, 3, 0):
             default_icons.append('SP_TabCloseButton')
         add_standard_buttons(self, self.page2, default_icons)
 
@@ -279,6 +277,7 @@ def main():
 
     shared.set_stylesheet(args, app, compat)
     return shared.exec_app(args, app, window, compat)
+
 
 if __name__ == '__main__':
     sys.exit(main())

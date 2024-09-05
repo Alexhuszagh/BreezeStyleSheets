@@ -29,7 +29,6 @@
     Test styles of a single widget.
 '''
 
-import argparse
 import gc
 import os
 import random
@@ -41,7 +40,7 @@ home = os.path.dirname(tests_dir)
 example_dir = os.path.join(home, 'example')
 sys.path.append(example_dir)
 
-import shared
+import shared  # noqa # pyright: ignore[reportMissingImports]
 
 parser = shared.create_parser()
 parser.add_argument(
@@ -99,6 +98,7 @@ alignment = {
     'center': compat.AlignCenter,
 }
 
+
 def add_widgets(layout, children):
     '''Add 1 or more widgets to the layout.'''
 
@@ -107,6 +107,7 @@ def add_widgets(layout, children):
             layout.addWidget(child)
     else:
         layout.addWidget(children)
+
 
 def abstract_button(
     cls,
@@ -130,31 +131,38 @@ def abstract_button(
     inst.setEnabled(enabled)
     return inst
 
+
 def splash_timer(splash, window):
     '''Non-block timer for a splashscreen.'''
 
     splash.finish(window)
     window.show()
 
+
 def standard_icon(widget, icon):
     '''Get a standard icon depending on the stylesheet.'''
     return shared.standard_icon(args, widget, icon, ICON_MAP)
+
 
 def close_icon(widget):
     '''Get the close icon depending on the stylesheet.'''
     return standard_icon(widget, compat.SP_DockWidgetCloseButton)
 
+
 def reset_icon(widget):
     '''Get the reset icon depending on the stylesheet.'''
     return standard_icon(widget, compat.SP_DialogResetButton)
+
 
 def next_icon(widget):
     '''Get the next icon depending on the stylesheet.'''
     return standard_icon(widget, compat.SP_ArrowRight)
 
+
 def previous_icon(widget):
     '''Get the previous icon depending on the stylesheet.'''
     return standard_icon(widget, compat.SP_ArrowLeft)
+
 
 def test_progressbar_horizontal(widget, *_):
     child = []
@@ -172,6 +180,7 @@ def test_progressbar_horizontal(widget, *_):
     child.append(bar4)
 
     return child
+
 
 def test_progressbar_vertical(widget, *_):
     layout_type = 'horizontal'
@@ -195,6 +204,7 @@ def test_progressbar_vertical(widget, *_):
 
     return child, layout_type
 
+
 def test_progressbar_inverted(widget, *_):
     child = []
     bar1 = QtWidgets.QProgressBar(widget)
@@ -213,6 +223,7 @@ def test_progressbar_inverted(widget, *_):
         bar.setInvertedAppearance(True)
 
     return child
+
 
 def test_progressbar_text(widget, *_):
     layout_type = 'horizontal'
@@ -235,11 +246,13 @@ def test_progressbar_text(widget, *_):
 
     return child, layout_type
 
+
 def test_slider_horizontal(widget, *_):
     child = QtWidgets.QSlider(widget)
     child.setOrientation(compat.Horizontal)
 
     return child
+
 
 def test_slider_vertical(widget, *_):
     layout_type = 'horizontal'
@@ -247,6 +260,7 @@ def test_slider_vertical(widget, *_):
     child.setOrientation(compat.Vertical)
 
     return child, layout_type
+
 
 def test_tick_slider(widget, *_):
     child = QtWidgets.QSlider(widget)
@@ -256,6 +270,7 @@ def test_tick_slider(widget, *_):
 
     return child
 
+
 def test_splitter_horizontal(widget, *_):
     child = QtWidgets.QSplitter(widget)
     child.addWidget(QtWidgets.QListWidget())
@@ -263,6 +278,7 @@ def test_splitter_horizontal(widget, *_):
     child.addWidget(QtWidgets.QTextEdit())
 
     return child
+
 
 def test_splitter_vertical(widget, *_):
     layout_type = 'horizontal'
@@ -274,6 +290,7 @@ def test_splitter_vertical(widget, *_):
 
     return child, layout_type
 
+
 def test_large_handle_splitter(widget, *_):
     child = QtWidgets.QSplitter(widget)
     child.addWidget(QtWidgets.QListWidget())
@@ -282,6 +299,7 @@ def test_large_handle_splitter(widget, *_):
     child.setHandleWidth(child.handleWidth() * 5)
 
     return child
+
 
 def test_nocollapsible_splitter(widget, *_):
     child = QtWidgets.QSplitter(widget)
@@ -292,11 +310,13 @@ def test_nocollapsible_splitter(widget, *_):
 
     return child
 
+
 def test_rubber_band(widget, *_):
     return [
         QtWidgets.QRubberBand(compat.RubberBandLine, widget),
         QtWidgets.QRubberBand(compat.RubberBandRectangle, widget),
     ]
+
 
 def test_plain_text_edit(widget, *_):
     child = [
@@ -313,6 +333,7 @@ def test_plain_text_edit(widget, *_):
     child[4].setReadOnly(True)
 
     return child
+
 
 def test_menu(widget, window, font, width, *_):
     child = QtWidgets.QMenuBar(window)
@@ -354,6 +375,7 @@ def test_menu(widget, window, font, width, *_):
 
     return child
 
+
 def _menu(window, font, width):
     child = QtWidgets.QMenuBar(window)
     child.setGeometry(QtCore.QRect(0, 0, width, int(1.5 * font.pointSize())))
@@ -365,11 +387,13 @@ def _menu(window, font, width):
 
     return child, menu
 
+
 def test_native_menu(_, window, font, width, *__):
     child, _ = _menu(window, font, width)
     child.setNativeMenuBar(True)
 
     return child
+
 
 def test_popup_menu(_, window, font, width, *__):
     child, _ = _menu(window, font, width)
@@ -377,17 +401,20 @@ def test_popup_menu(_, window, font, width, *__):
 
     return child
 
+
 def test_tearoff_menu(_, window, font, width, *__):
     child, menu = _menu(window, font, width)
     menu.setTearOffEnabled(True)
 
     return child
 
+
 def test_icon_menu(widget, window, font, width, *_):
     child, menu = _menu(window, font, width)
     menu.setIcon(close_icon(widget))
 
     return child
+
 
 def test_collapsible_separators_menu(_, window, font, width, *__):
     child = QtWidgets.QMenuBar(window)
@@ -405,6 +432,7 @@ def test_collapsible_separators_menu(_, window, font, width, *__):
 
     return child
 
+
 def test_tooltips_menu(widget, window, font, width, *_):
     child = QtWidgets.QMenuBar(window)
     child.setGeometry(QtCore.QRect(0, 0, width, int(1.5 * font.pointSize())))
@@ -421,6 +449,7 @@ def test_tooltips_menu(widget, window, font, width, *_):
 
     return child
 
+
 def test_mdi_area(widget, *_):
     child = QtWidgets.QMdiArea(widget)
     child.addSubWindow(QtWidgets.QMdiSubWindow())
@@ -433,6 +462,7 @@ def test_mdi_area(widget, *_):
     child.addSubWindow(window)
 
     return child
+
 
 def test_partial_mdi_area(widget, *_):
     child = [
@@ -451,11 +481,13 @@ def test_partial_mdi_area(widget, *_):
 
     return child
 
+
 def test_statusbar(_, window, *__):
     child = QtWidgets.QStatusBar(window)
     window.setStatusBar(child)
 
     return child
+
 
 def test_no_sizegrip_statusbar(_, window, *__):
     child = QtWidgets.QStatusBar(window)
@@ -463,6 +495,7 @@ def test_no_sizegrip_statusbar(_, window, *__):
     window.setStatusBar(child)
 
     return child
+
 
 def test_spinbox(widget, *_):
     layout_type = 'horizontal'
@@ -479,6 +512,7 @@ def test_spinbox(widget, *_):
 
     return child, layout_type
 
+
 def test_double_spinbox(widget, *_):
     layout_type = 'horizontal'
     child = []
@@ -493,6 +527,7 @@ def test_double_spinbox(widget, *_):
     child.append(spin2)
 
     return child, layout_type
+
 
 def test_combobox(widget, *_):
     layout_type = 'horizontal'
@@ -523,6 +558,7 @@ def test_combobox(widget, *_):
 
     return child, layout_type
 
+
 def _test_tabwidget(widget, position):
     child = QtWidgets.QTabWidget(widget)
     child.setTabPosition(position)
@@ -532,17 +568,22 @@ def _test_tabwidget(widget, position):
 
     return child
 
+
 def test_tabwidget_top(widget, *_):
     return _test_tabwidget(widget, compat.North)
+
 
 def test_tabwidget_left(widget, *_):
     return _test_tabwidget(widget, compat.West)
 
+
 def test_tabwidget_right(widget, *_):
     return _test_tabwidget(widget, compat.East)
 
+
 def test_tabwidget_bottom(widget, *_):
     return _test_tabwidget(widget, compat.South)
+
 
 def test_autohide_tabwidget(widget, *_):
     child = []
@@ -559,11 +600,13 @@ def test_autohide_tabwidget(widget, *_):
 
     return child
 
+
 def test_nonexpanding_tabwidget(widget, *_):
     child = _test_tabwidget(widget, compat.North)
     child.tabBar().setExpanding(False)
 
     return child
+
 
 def test_movable_tabwidget(widget, *_):
     child = _test_tabwidget(widget, compat.North)
@@ -571,17 +614,20 @@ def test_movable_tabwidget(widget, *_):
 
     return child
 
+
 def test_closable_tabwidget_top(widget, *_):
     child = _test_tabwidget(widget, compat.North)
     child.setTabsClosable(True)
 
     return child
 
+
 def test_closable_tabwidget_right(widget, *_):
     child = _test_tabwidget(widget, compat.East)
     child.setTabsClosable(True)
 
     return child
+
 
 def test_use_scroll_tabwidget(widget, *_):
     child = QtWidgets.QTabWidget(widget)
@@ -592,6 +638,7 @@ def test_use_scroll_tabwidget(widget, *_):
 
     return child
 
+
 def test_no_scroll_tabwidget(widget, *_):
     child = QtWidgets.QTabWidget(widget)
     child.setTabPosition(compat.North)
@@ -601,11 +648,13 @@ def test_no_scroll_tabwidget(widget, *_):
 
     return child
 
+
 def test_rounded_tabwidget_north(widget, *_):
     child = _test_tabwidget(widget, compat.North)
     child.setTabShape(compat.Rounded)
 
     return child
+
 
 def test_triangle_tabwidget_north(widget, *_):
     child = _test_tabwidget(widget, compat.North)
@@ -613,11 +662,13 @@ def test_triangle_tabwidget_north(widget, *_):
 
     return child
 
+
 def test_rounded_tabwidget_east(widget, *_):
     child = _test_tabwidget(widget, compat.East)
     child.setTabShape(compat.Rounded)
 
     return child
+
 
 def test_triangle_tabwidget_east(widget, *_):
     child = _test_tabwidget(widget, compat.East)
@@ -625,11 +676,13 @@ def test_triangle_tabwidget_east(widget, *_):
 
     return child
 
+
 def test_rounded_tabwidget_west(widget, *_):
     child = _test_tabwidget(widget, compat.West)
     child.setTabShape(compat.Rounded)
 
     return child
+
 
 def test_triangle_tabwidget_west(widget, *_):
     child = _test_tabwidget(widget, compat.West)
@@ -637,17 +690,20 @@ def test_triangle_tabwidget_west(widget, *_):
 
     return child
 
+
 def test_rounded_tabwidget_south(widget, *_):
     child = _test_tabwidget(widget, compat.South)
     child.setTabShape(compat.Rounded)
 
     return child
 
+
 def test_triangle_tabwidget_south(widget, *_):
     child = _test_tabwidget(widget, compat.South)
     child.setTabShape(compat.Triangular)
 
     return child
+
 
 def test_closable_triangle_tabwidget_north(widget, *_):
     child = _test_tabwidget(widget, compat.North)
@@ -656,12 +712,14 @@ def test_closable_triangle_tabwidget_north(widget, *_):
 
     return child
 
+
 def test_closable_triangle_tabwidget_south(widget, *_):
     child = _test_tabwidget(widget, compat.South)
     child.setTabShape(compat.Triangular)
     child.setTabsClosable(True)
 
     return child
+
 
 def test_closable_triangle_tabwidget_east(widget, *_):
     child = _test_tabwidget(widget, compat.East)
@@ -670,12 +728,14 @@ def test_closable_triangle_tabwidget_east(widget, *_):
 
     return child
 
+
 def test_closable_triangle_tabwidget_west(widget, *_):
     child = _test_tabwidget(widget, compat.West)
     child.setTabShape(compat.Triangular)
     child.setTabsClosable(True)
 
     return child
+
 
 def test_button_position_tabwidget(widget, *_):
     child = QtWidgets.QTabWidget(widget)
@@ -691,12 +751,14 @@ def test_button_position_tabwidget(widget, *_):
 
     return child
 
+
 def test_text_browser(widget, *_):
     child = QtWidgets.QTextBrowser(widget)
     child.setOpenExternalLinks(True)
     child.setMarkdown('[QTextBrowser](https://doc.qt.io/qt-5/qtextbrowser.html)')
 
     return child
+
 
 def test_dock(_, window, *__):
     dock1 = QtWidgets.QDockWidget('&Dock widget 1', window)
@@ -710,6 +772,7 @@ def test_dock(_, window, *__):
     window.addDockWidget(compat.LeftDockWidgetArea, dock3)
     window.tabifyDockWidget(dock1, dock2)
 
+
 def test_radio(widget, *_):
     child = []
     widget_type = QtWidgets.QRadioButton
@@ -720,6 +783,7 @@ def test_radio(widget, *_):
     child.append(abstract_button(widget_type, widget, 'With Text'))
 
     return child
+
 
 def test_checkbox(widget, _, __, ___, ____, app):
     child = []
@@ -737,6 +801,7 @@ def test_checkbox(widget, _, __, ___, ____, app):
     child[-1].setFont(checkbox_font)
 
     return child
+
 
 def test_table(widget, *_):
     child = QtWidgets.QTableWidget(widget)
@@ -757,11 +822,13 @@ def test_table(widget, *_):
 
     return child
 
+
 def test_sortable_table(widget, *_):
     child = test_table(widget)
     child.setSortingEnabled(True)
 
     return child
+
 
 def test_nocorner_table(widget, *_):
     child = test_table(widget)
@@ -769,17 +836,20 @@ def test_nocorner_table(widget, *_):
 
     return child
 
+
 def test_nogrid_table(widget, *_):
     child = test_table(widget)
     child.setShowGrid(False)
 
     return child
 
+
 def test_gridstyle_table(widget, *_):
     child = test_table(widget)
     child.setGridStyle(compat.DotLine)
 
     return child
+
 
 def test_nohighlight_header_view(widget, *_):
     child = test_table(widget)
@@ -788,6 +858,7 @@ def test_nohighlight_header_view(widget, *_):
 
     return child
 
+
 def test_movable_header_view(widget, *_):
     child = test_table(widget)
     header = child.horizontalHeader()
@@ -795,12 +866,14 @@ def test_movable_header_view(widget, *_):
 
     return child
 
+
 def test_noclick_header_view(widget, *_):
     child = test_table(widget)
     header = child.horizontalHeader()
     header.setSectionsClickable(False)
 
     return child
+
 
 def test_list(widget, *_):
     alignments = [compat.AlignLeft, compat.AlignRight, compat.AlignHCenter]
@@ -817,6 +890,7 @@ def test_list(widget, *_):
 
     return child
 
+
 def test_sortable_list(widget, *_):
     child = QtWidgets.QListWidget(widget)
     child.setSortingEnabled(True)
@@ -825,6 +899,7 @@ def test_sortable_list(widget, *_):
         child.addItem(item)
 
     return child
+
 
 def test_editable_list(widget, *_):
     child = QtWidgets.QListWidget(widget)
@@ -836,8 +911,10 @@ def test_editable_list(widget, *_):
 
     return child
 
+
 def test_key_sequence_edit(widget, *_):
     return QtWidgets.QKeySequenceEdit(widget)
+
 
 def test_completer(widget, *_):
     child = QtWidgets.QLineEdit(widget)
@@ -846,6 +923,7 @@ def test_completer(widget, *_):
 
     return child
 
+
 def test_scrollbar_vertical(widget, *_):
     child = QtWidgets.QListWidget(widget)
     for index in range(100):
@@ -853,17 +931,19 @@ def test_scrollbar_vertical(widget, *_):
 
     return child
 
+
 def test_scrollbar_horizontal(widget, *_):
     child = QtWidgets.QTableWidget(widget)
     child.setColumnCount(100)
     child.setRowCount(1)
-    item = QtWidgets.QTableWidgetItem(f'Row 1')
+    item = QtWidgets.QTableWidgetItem('Row 1')
     child.setVerticalHeaderItem(0, item)
     for index in range(100):
         item = QtWidgets.QTableWidgetItem(f'Column {index + 1}')
         child.setHorizontalHeaderItem(index, item)
 
     return child
+
 
 def test_toolbar(_, window, *__):
     toolbar1 = QtWidgets.QToolBar('Toolbar')
@@ -898,6 +978,7 @@ def test_toolbar(_, window, *__):
     window.setStatusBar(statusbar)
 
     return None, None
+
 
 def test_toolbutton(widget, window, *_):
     layout_type = 'horizontal'
@@ -946,6 +1027,7 @@ def test_toolbutton(widget, window, *_):
 
     return child, layout_type
 
+
 def test_raised_toolbutton(widget, window, *_):
     layout_type = 'horizontal'
     child = [
@@ -965,6 +1047,7 @@ def test_raised_toolbutton(widget, window, *_):
         item.setAutoRaise(True)
 
     return child, layout_type
+
 
 def test_toolbutton_style(widget, window, *_):
     layout_type = 'horizontal'
@@ -1017,6 +1100,7 @@ def test_toolbutton_style(widget, window, *_):
 
     return child, layout_type
 
+
 def test_toolbutton_menu(widget, window, *_):
     layout_type = 'horizontal'
     child = [
@@ -1053,6 +1137,7 @@ def test_toolbutton_menu(widget, window, *_):
 
     return child, layout_type
 
+
 def test_pushbutton(widget, *_):
     layout_type = 'horizontal'
     child = []
@@ -1071,6 +1156,7 @@ def test_pushbutton(widget, *_):
 
     return child, layout_type
 
+
 def test_column_view(widget, *_):
     child = QtWidgets.QColumnView(widget)
     model = compat.QFileSystemModel(widget)
@@ -1080,6 +1166,7 @@ def test_column_view(widget, *_):
 
     return child
 
+
 def test_nosizegrip_column_view(widget, *_):
     child = QtWidgets.QColumnView(widget)
     model = compat.QFileSystemModel(widget)
@@ -1088,6 +1175,7 @@ def test_nosizegrip_column_view(widget, *_):
     child.setResizeGripsVisible(False)
 
     return child
+
 
 def test_comprehensive_frame(widget, *_):
     child = [
@@ -1121,6 +1209,7 @@ def test_comprehensive_frame(widget, *_):
 
     return child
 
+
 def test_tree(widget, *_):
     child = []
     tree1 = QtWidgets.QTreeWidget(widget)
@@ -1150,6 +1239,7 @@ def test_tree(widget, *_):
     child.append(tree2)
 
     return child
+
 
 def test_sortable_tree(widget, *_):
     tree = QtWidgets.QTreeWidget(widget)
@@ -1181,6 +1271,7 @@ def test_sortable_tree(widget, *_):
     tree.setSortingEnabled(True)
 
     return tree
+
 
 def test_editable_tree(widget, *_):
     def new_item(widget, columns):
@@ -1217,6 +1308,7 @@ def test_editable_tree(widget, *_):
 
     return child
 
+
 def test_hidden_header_tree(widget, *_):
     tree = QtWidgets.QTreeWidget(widget)
     tree.setHeaderLabel('Tree 1')
@@ -1227,6 +1319,7 @@ def test_hidden_header_tree(widget, *_):
     tree.setHeaderHidden(True)
 
     return tree
+
 
 def test_indented_tree(widget, *_):
     tree = QtWidgets.QTreeWidget(widget)
@@ -1242,6 +1335,7 @@ def test_indented_tree(widget, *_):
 
     return tree
 
+
 def test_all_focus_tree(widget, *_):
     tree = QtWidgets.QTreeWidget(widget)
     tree.setHeaderLabel('Tree 1')
@@ -1254,6 +1348,7 @@ def test_all_focus_tree(widget, *_):
 
     return tree
 
+
 def test_nonexpandable_tree(widget, *_):
     tree = QtWidgets.QTreeWidget(widget)
     tree.setHeaderLabel('Tree 1')
@@ -1265,6 +1360,7 @@ def test_nonexpandable_tree(widget, *_):
 
     return tree
 
+
 def test_undecorated_tree(widget, *_):
     tree = QtWidgets.QTreeWidget(widget)
     tree.setHeaderLabel('Tree 1')
@@ -1275,6 +1371,7 @@ def test_undecorated_tree(widget, *_):
     tree.setRootIsDecorated(False)
 
     return tree
+
 
 def test_view_scrollarea(widget, *_):
     # For us to have both scrollbars visible.
@@ -1289,6 +1386,7 @@ def test_view_scrollarea(widget, *_):
 
     return child
 
+
 def test_widget_scrollarea(widget, window, *_):
     child = QtWidgets.QProgressBar(widget)
     window.setMinimumSize(300, 100)
@@ -1296,6 +1394,7 @@ def test_widget_scrollarea(widget, window, *_):
     window.resize(30, 30)
 
     return child
+
 
 def test_frame(widget, *_):
     child = []
@@ -1308,6 +1407,7 @@ def test_frame(widget, *_):
     child.append(table)
 
     return child
+
 
 def test_groupbox(widget, *_):
     child = []
@@ -1328,6 +1428,7 @@ def test_groupbox(widget, *_):
 
     return child
 
+
 def test_dial(widget, *_):
     child = [
         QtWidgets.QDial(widget),
@@ -1340,6 +1441,7 @@ def test_dial(widget, *_):
         item.setValue(30)
 
     return child
+
 
 def test_command_link(widget, *_):
     child = QtWidgets.QWidget(widget)
@@ -1359,8 +1461,10 @@ def test_command_link(widget, *_):
 
     return child
 
+
 def test_lineedit(widget, *_):
     return QtWidgets.QLineEdit('Sample label', widget)
+
 
 def test_placeholder_lineedit(widget, *_):
     child = QtWidgets.QLineEdit('Sample label', widget)
@@ -1368,11 +1472,13 @@ def test_placeholder_lineedit(widget, *_):
 
     return child
 
+
 def test_readonly_lineedit(widget, *_):
     child = QtWidgets.QLineEdit('Sample label', widget)
     child.setReadOnly(True)
 
     return child
+
 
 def test_noframe_lineedit(widget, *_):
     child = QtWidgets.QLineEdit('Sample label', widget)
@@ -1380,11 +1486,13 @@ def test_noframe_lineedit(widget, *_):
 
     return child
 
+
 def test_noecho_lineedit(widget, *_):
     child = QtWidgets.QLineEdit('Sample label', widget)
     child.setEchoMode(compat.NoEcho)
 
     return child
+
 
 def test_password_lineedit(widget, *_):
     child = QtWidgets.QLineEdit('Sample label', widget)
@@ -1392,11 +1500,13 @@ def test_password_lineedit(widget, *_):
 
     return child
 
+
 def test_password_edit_lineedit(widget, *_):
     child = QtWidgets.QLineEdit('Sample label', widget)
     child.setEchoMode(compat.PasswordEchoOnEdit)
 
     return child
+
 
 def test_clear_lineedit(widget, *_):
     child = QtWidgets.QLineEdit('Sample label', widget)
@@ -1404,14 +1514,17 @@ def test_clear_lineedit(widget, *_):
 
     return child
 
+
 def test_label(widget, *_):
     return QtWidgets.QLabel('Sample label')
+
 
 def test_indented_label(widget, *_):
     child = QtWidgets.QLabel('Sample label')
     child.setIndent(50)
 
     return child
+
 
 def test_markdown_label(widget, *_):
     child = [
@@ -1427,11 +1540,13 @@ def test_markdown_label(widget, *_):
 
     return child
 
+
 def test_selectable_label(widget, *_):
     child = QtWidgets.QLabel('Selectable label')
     child.setTextInteractionFlags(compat.TextSelectableByMouse)
 
     return child
+
 
 def test_editable_label(widget, *_):
     child = QtWidgets.QLabel('Editable label')
@@ -1439,8 +1554,10 @@ def test_editable_label(widget, *_):
 
     return child
 
+
 def test_font_combobox(widget, *_):
     return QtWidgets.QFontComboBox(widget)
+
 
 def test_toolbox(widget, *_):
     # Test alignment with another item, in a vertical layout.
@@ -1460,6 +1577,7 @@ def test_toolbox(widget, *_):
 
     return child
 
+
 def test_menubutton(widget, window, *_):
     child = QtWidgets.QToolButton(widget)
     child.setText('Menu Toolbutton')
@@ -1471,11 +1589,13 @@ def test_menubutton(widget, window, *_):
 
     return child
 
+
 def test_tooltip(widget, *_):
     child = QtWidgets.QPushButton('Sample Label')
     child.setToolTip('Sample Tooltip')
 
     return child
+
 
 def test_splashscreen(_, window, __, ___, ____, app):
     pixmap = QtGui.QPixmap('assets/Yellowstone.jpg')
@@ -1487,17 +1607,20 @@ def test_splashscreen(_, window, __, ___, ____, app):
 
     return None, None, False
 
+
 def test_calendar(widget, *_):
     child = QtWidgets.QCalendarWidget(widget)
     child.setGridVisible(True)
 
     return child
 
+
 def test_nogrid_calendar(widget, *_):
     child = QtWidgets.QCalendarWidget(widget)
     child.setGridVisible(False)
 
     return child
+
 
 def test_nonavigation_calendar(widget, *_):
     child = QtWidgets.QCalendarWidget(widget)
@@ -1506,20 +1629,25 @@ def test_nonavigation_calendar(widget, *_):
 
     return child
 
+
 def test_time_edit(widget, *_):
     return QtWidgets.QTimeEdit(widget)
+
 
 def test_date_edit(widget, *_):
     return QtWidgets.QDateEdit(widget)
 
+
 def test_datetime_edit(widget, *_):
     return QtWidgets.QDateTimeEdit(widget)
+
 
 def test_popup_datetime_edit(widget, *_):
     child = QtWidgets.QDateTimeEdit(widget)
     child.setCalendarPopup(True)
 
     return child
+
 
 def test_formats_datetime_edit(widget, *_):
     child = [
@@ -1530,6 +1658,7 @@ def test_formats_datetime_edit(widget, *_):
     child[1].setDisplayFormat('MMM d yy')
 
     return child
+
 
 def test_undo_group(widget, *_):
     group = compat.QUndoGroup(widget)
@@ -1551,6 +1680,7 @@ def test_undo_group(widget, *_):
 
     return child
 
+
 def test_undo_stack(widget, *_):
     stack = compat.QUndoStack(widget)
     child = QtWidgets.QUndoView(stack, widget)
@@ -1564,10 +1694,12 @@ def test_undo_stack(widget, *_):
 
     return child
 
+
 def test_lcd_number(widget, *_):
     child = QtWidgets.QLCDNumber(3, widget)
     child.display(15)
     return child
+
 
 def test_hex_lcd_number(widget, *_):
     child = QtWidgets.QLCDNumber(3, widget)
@@ -1575,17 +1707,20 @@ def test_hex_lcd_number(widget, *_):
     child.setHexMode()
     return child
 
+
 def test_outline_lcd_number(widget, *_):
     child = QtWidgets.QLCDNumber(3, widget)
     child.display(15)
     child.setSegmentStyle(compat.LCDOutline)
     return child
 
+
 def test_flat_lcd_number(widget, *_):
     child = QtWidgets.QLCDNumber(3, widget)
     child.display(15)
     child.setSegmentStyle(compat.LCDFlat)
     return child
+
 
 def test_file_icon_provider(widget, *_):
     child = QtWidgets.QPushButton()
@@ -1594,12 +1729,14 @@ def test_file_icon_provider(widget, *_):
 
     return child
 
+
 def test_dialog(_, window, *__):
     dialog = QtWidgets.QDialog(window)
     dialog.setMinimumSize(100, 100)
     shared.execute(args, dialog)
 
     return None, None, False, True
+
 
 def test_modal_dialog(_, window, *__):
     dialog = QtWidgets.QDialog(window)
@@ -1609,6 +1746,7 @@ def test_modal_dialog(_, window, *__):
 
     return None, None, False, True
 
+
 def test_sizegrip_dialog(_, window, *__):
     dialog = QtWidgets.QDialog(window)
     dialog.setMinimumSize(100, 100)
@@ -1617,11 +1755,13 @@ def test_sizegrip_dialog(_, window, *__):
 
     return None, None, False, True
 
+
 def test_colordialog(*_):
     initial = QtGui.QColor()
     QtWidgets.QColorDialog.getColor(initial)
 
     return None, None, False, True
+
 
 def test_alpha_colordialog(*_):
     initial = QtGui.QColor()
@@ -1629,11 +1769,13 @@ def test_alpha_colordialog(*_):
 
     return None, None, False, True
 
+
 def test_nobuttons_colordialog(*_):
     initial = QtGui.QColor()
     QtWidgets.QColorDialog.getColor(initial, options=compat.ColorNoButtons)
 
     return None, None, False, True
+
 
 def test_qt_colordialog(*_):
     initial = QtGui.QColor()
@@ -1641,11 +1783,13 @@ def test_qt_colordialog(*_):
 
     return None, None, False, True
 
+
 def test_fontdialog(*_):
     initial = QtGui.QFont()
     QtWidgets.QFontDialog.getFont(initial)
 
     return None, None, False, True
+
 
 def test_nobuttons_fontdialog(*_):
     initial = QtGui.QFont()
@@ -1653,11 +1797,13 @@ def test_nobuttons_fontdialog(*_):
 
     return None, None, False, True
 
+
 def test_qt_fontdialog(*_):
     initial = QtGui.QFont()
     QtWidgets.QFontDialog.getFont(initial, options=compat.FontDontUseNativeDialog)
 
     return None, None, False, True
+
 
 def test_filedialog(_, window, *__):
     dialog = QtWidgets.QFileDialog(window)
@@ -1666,6 +1812,7 @@ def test_filedialog(_, window, *__):
 
     return None, None, False, True
 
+
 def test_qt_filedialog(_, window, *__):
     dialog = QtWidgets.QFileDialog(window)
     dialog.setOption(compat.FileDontUseNativeDialog)
@@ -1673,12 +1820,14 @@ def test_qt_filedialog(_, window, *__):
 
     return None, None, False, True
 
+
 def test_error_message(widget, *_):
     dialog = QtWidgets.QErrorMessage(widget)
     dialog.showMessage('Error message')
     shared.execute(args, dialog)
 
     return None, None, False, True
+
 
 def test_progress_dialog(_, window, __, ___, ____, app):
     dialog = QtWidgets.QProgressDialog('Text', 'Cancel', 0, 100, window)
@@ -1695,11 +1844,13 @@ def test_progress_dialog(_, window, __, ___, ____, app):
 
     return None, None, False, True
 
+
 def test_input_dialog(_, window, *__):
     dialog = QtWidgets.QInputDialog(window)
     shared.execute(args, dialog)
 
     return None, None, False, True
+
 
 def test_int_input_dialog(_, window, *__):
     dialog = QtWidgets.QInputDialog(window)
@@ -1708,6 +1859,7 @@ def test_int_input_dialog(_, window, *__):
 
     return None, None, False, True
 
+
 def test_double_input_dialog(_, window, *__):
     dialog = QtWidgets.QInputDialog(window)
     dialog.setInputMode(compat.DoubleInput)
@@ -1715,12 +1867,14 @@ def test_double_input_dialog(_, window, *__):
 
     return None, None, False, True
 
+
 def test_combobox_input_dialog(_, window, *__):
     dialog = QtWidgets.QInputDialog(window)
     dialog.setComboBoxItems(['Item 1', 'Item 2'])
     shared.execute(args, dialog)
 
     return None, None, False, True
+
 
 def test_list_input_dialog(_, window, *__):
     dialog = QtWidgets.QInputDialog(window)
@@ -1730,6 +1884,7 @@ def test_list_input_dialog(_, window, *__):
 
     return None, None, False, True
 
+
 def test_nobuttons_input_dialog(_, window, *__):
     dialog = QtWidgets.QInputDialog(window)
     dialog.setComboBoxItems(['Item 1', 'Item 2'])
@@ -1738,12 +1893,16 @@ def test_nobuttons_input_dialog(_, window, *__):
 
     return None, None, False, True
 
+
 def _wizard(widget):
     wizard = QtWidgets.QWizard()
 
     intro = QtWidgets.QWizardPage()
     intro.setTitle('Introduction')
-    intro_label = QtWidgets.QLabel('Some very long text to simulate wrapping of the UI when displayed, because this needs to be done.')
+    intro_label = QtWidgets.QLabel(
+        'Some very long text to simulate wrapping of the UI when displayed,'
+        ' because this needs to be done.'
+    )
     intro_label.setWordWrap(True)
     intro_layout = QtWidgets.QVBoxLayout()
     intro_layout.addWidget(intro_label)
@@ -1778,11 +1937,13 @@ def _wizard(widget):
 
     return wizard
 
+
 def test_wizard(widget, *_):
     wizard = _wizard(widget)
     shared.execute(args, wizard)
 
     return None, None, False, True
+
 
 def test_classic_wizard(widget, *_):
     wizard = _wizard(widget)
@@ -1791,12 +1952,14 @@ def test_classic_wizard(widget, *_):
 
     return None, None, False, True
 
+
 def test_modern_wizard(widget, *_):
     wizard = _wizard(widget)
     wizard.setWizardStyle(compat.ModernStyle)
     shared.execute(args, wizard)
 
     return None, None, False, True
+
 
 def test_mac_wizard(widget, *_):
     wizard = _wizard(widget)
@@ -1805,12 +1968,14 @@ def test_mac_wizard(widget, *_):
 
     return None, None, False, True
 
+
 def test_aero_wizard(widget, *_):
     wizard = _wizard(widget)
     wizard.setWizardStyle(compat.AeroStyle)
     shared.execute(args, wizard)
 
     return None, None, False, True
+
 
 def test_system_tray(widget, window, *_):
     dialog = QtWidgets.QErrorMessage(widget)
@@ -1826,63 +1991,78 @@ def test_system_tray(widget, window, *_):
 
     return None, None, False, True
 
+
 def _test_standard_button(window, app, button):
     message = QtWidgets.QMessageBox(window)
     message.addButton(button)
     message.setMinimumSize(100, 100)
     shared.execute(args, message)
 
+
 def test_ok_button(_, window, __, ___, ____, app):
     _test_standard_button(window, app, compat.MessageOk)
     return None, None, False, True
+
 
 def test_cancel_button(_, window, __, ___, ____, app):
     _test_standard_button(window, app, compat.MessageCancel)
     return None, None, False, True
 
+
 def test_close_button(_, window, __, ___, ____, app):
     _test_standard_button(window, app, compat.MessageClose)
     return None, None, False, True
+
 
 def test_open_button(_, window, __, ___, ____, app):
     _test_standard_button(window, app, compat.MessageOpen)
     return None, None, False, True
 
+
 def test_reset_button(_, window, __, ___, ____, app):
     _test_standard_button(window, app, compat.MessageReset)
     return None, None, False, True
+
 
 def test_save_button(_, window, __, ___, ____, app):
     _test_standard_button(window, app, compat.MessageSave)
     return None, None, False, True
 
+
 def test_saveall_button(_, window, __, ___, ____, app):
     _test_standard_button(window, app, compat.MessageSaveAll)
     return None, None, False, True
+
 
 def test_restoredefaults_button(_, window, __, ___, ____, app):
     _test_standard_button(window, app, compat.MessageRestoreDefaults)
     return None, None, False, True
 
+
 def test_yes_button(_, window, __, ___, ____, app):
     _test_standard_button(window, app, compat.MessageYes)
     return None, None, False, True
+
 
 def test_help_button(_, window, __, ___, ____, app):
     _test_standard_button(window, app, compat.MessageHelp)
     return None, None, False, True
 
+
 def test_no_button(_, window, __, ___, ____, app):
     _test_standard_button(window, app, compat.MessageNo)
     return None, None, False, True
+
 
 def test_apply_button(_, window, __, ___, ____, app):
     _test_standard_button(window, app, compat.MessageApply)
     return None, None, False, True
 
+
 def test_discard_button(_, window, __, ___, ____, app):
     _test_standard_button(window, app, compat.MessageDiscard)
     return None, None, False, True
+
 
 def _test_standard_icon(window, app, icon):
     message = QtWidgets.QMessageBox(window)
@@ -1890,25 +2070,31 @@ def _test_standard_icon(window, app, icon):
     message.setMinimumSize(100, 100)
     shared.execute(args, message)
 
+
 def test_critical_icon(_, window, __, ___, ____, app):
     _test_standard_icon(window, app, compat.MessageCritical)
     return None, None, False, True
+
 
 def test_info_icon(_, window, __, ___, ____, app):
     _test_standard_icon(window, app, compat.MessageInformation)
     return None, None, False, True
 
+
 def test_no_icon(_, window, __, ___, ____, app):
     _test_standard_icon(window, app, compat.MessageNoIcon)
     return None, None, False, True
+
 
 def test_question_icon(_, window, __, ___, ____, app):
     _test_standard_icon(window, app, compat.MessageQuestion)
     return None, None, False, True
 
+
 def test_warning_icon(_, window, __, ___, ____, app):
     _test_standard_icon(window, app, compat.MessageWarning)
     return None, None, False, True
+
 
 def test_horizontal_buttons(widget, *_):
     child = []
@@ -1927,6 +2113,7 @@ def test_horizontal_buttons(widget, *_):
     child.append(dialog)
 
     return child
+
 
 def test_vertical_buttons(widget, *_):
     child = []
@@ -1947,6 +2134,7 @@ def test_vertical_buttons(widget, *_):
 
     return child
 
+
 def test_stacked_widget(widget, *_):
     child = QtWidgets.QStackedWidget(widget)
     child.addWidget(QtWidgets.QLabel('Label 1'))
@@ -1956,6 +2144,7 @@ def test_stacked_widget(widget, *_):
     child.setCurrentIndex(2)
 
     return child
+
 
 def test_disabled_menu(widget, window, font, width, *_):
     child = QtWidgets.QMenuBar(window)
@@ -1988,6 +2177,7 @@ def test_disabled_menu(widget, window, font, width, *_):
 
     return child
 
+
 def test_disabled_menubar(widget, window, font, width, *_):
     child = QtWidgets.QMenuBar(window)
     child.setGeometry(QtCore.QRect(0, 0, width, int(1.5 * font.pointSize())))
@@ -1997,6 +2187,7 @@ def test_disabled_menubar(widget, window, font, width, *_):
     menu.setEnabled(False)
 
     return child
+
 
 def test_issue25(widget, window, font, width, *_):
 
@@ -2110,12 +2301,14 @@ def test_issue25(widget, window, font, width, *_):
 
     return None, None, False, True
 
+
 def test_issue28(_, window, *__):
     dialog = QtWidgets.QFileDialog(window)
     dialog.setFileMode(compat.Directory)
     shared.execute(args, dialog)
 
     return None, None, False, True
+
 
 def test(args, test_widget):
     '''Test a single widget.'''
@@ -2180,6 +2373,7 @@ def test(args, test_widget):
         return app.quit()
     return shared.execute(args, app)
 
+
 def main():
     'Application entry point'
 
@@ -2198,7 +2392,7 @@ def main():
     os.environ['QT_SCALE_FACTOR'] = str(args.scale)
     if args.widget == 'all':
         widgets = widget_names()
-        if args.start != None:
+        if args.start is not None:
             try:
                 index = widgets.index(args.start)
                 widgets = widgets[index:]
@@ -2211,6 +2405,7 @@ def main():
         test(args, args.widget)
 
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

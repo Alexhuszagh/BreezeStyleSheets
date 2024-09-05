@@ -25,7 +25,8 @@ GITIGNORE_ENTRIES = [
     '*.pyc',
     # Ignore all resource files except `breeze.qrc`.
     '*.qrc',
-    '!breeze.qrc'
+    '!breeze.qrc',
+    'venv',
 ]
 
 
@@ -65,16 +66,19 @@ def parse_args(argv=None):
     return parser.parse_args(argv)
 
 
-def call(command):
+def call(command, ignore_errors=True):
     '''Call subprocess command (ignoring output but checking code).'''
 
-    return subprocess.check_call(
-        command,
-        stdin=subprocess.DEVNULL,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        shell=False,
-    )
+    try:
+        return subprocess.check_output(
+            command,
+            stdin=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            shell=False,
+        )
+    except subprocess.CalledProcessError as error:
+        if b'Unable to mark file' not in error.stderr or not ignore_errors:
+            raise
 
 
 def assume_unchanged(git, file):
@@ -142,7 +146,7 @@ def main(argv=None):
     # Update our gitignore entries, and write to file.
     gitignore_entries = list(GITIGNORE_ENTRIES)
     if args.no_track_dist:
-        gitignore_entries += ['dist/', 'breeze_resources.py']
+        gitignore_entries += ['dist/', 'resources/']
     write_gitignore(gitignore_entries)
 
     # Manage any distribution file extras here.
@@ -155,15 +159,18 @@ def main(argv=None):
         elif args.track_dist and exists:
             no_assume_unchanged(git, file)
 
-    dist_files = ['breeze_resources.py']
-    for root, dirs, files in os.walk(f'{home}/dist'):
-        relpath = os.path.relpath(root, home)
-        for file in files:
-            dist_files.append(f'{relpath}/{file}')
+    dist_files = []
+    dist_dirs = [f'{home}/dist', f'{home}/resources']
+    for dist_dir in dist_dirs:
+        for root, dirs, files in os.walk(dist_dir):
+            relpath = os.path.relpath(root, home)
+            for file in files:
+                dist_files.append(f'{relpath}/{file}')
     for file in dist_files:
         update_dist_index(file)
 
     return 0
+
 
 if __name__ == '__main__':
     sys.exit(main())

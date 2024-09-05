@@ -213,14 +213,18 @@ Here are detailed instructions on how to install Breeze Style Sheets for a varie
 
 ## Configuring
 
-By default, BreezeStyleSheets comes with the `dark` and `light` themes pre-built. In order to build all pre-packaged themes including PyQt5 and PyQt6 support, run:
+By default, BreezeStyleSheets comes with the `dark` and `light` themes pre-built in the [resources](/resources/) directory. In order to build all pre-packaged themes including PyQt5 and PyQt6 support, run:
 
 ```bash
-python configure.py --styles=all --extensions=all --qt-resource pyqt6 \
-    --resource breeze.qrc --compiled-resource breeze_resources.py
+# choose only the frameworks you want
+frameworks=("pyqt5" "pyqt6" "pyside2" "pyside6")
+for framework in "${frameworks[@]}"; do
+    python configure.py --styles=all --extensions=all --qt-resource "${framework}" \
+        --resource breeze.qrc --compiled-resource "resources/breeze_${framework}.py"
+done
 ```
 
-All generated themes will be in the [dist](/dist) subdirectory, and the compiled Python resource will be in `breeze_resouces.py`. Note that using the `--compiled-resource` flag requires `pyrcc5` to be installed.
+All generated themes will be in the [dist](/dist) subdirectory, and the compiled Python resource(s) will be in `resources/breeze_{framework}.py` (for example, `resources/breeze_pyqt5.py`). Note that using the `--compiled-resource` flag requires the correct RCC to be installed for the Qt framework (see [PyQt5/6 & PySide2/6 Installation](#pyqt56--pyside26-installation) for the required RCC).
 
 ## CMake Installation
 
@@ -263,14 +267,14 @@ FetchContent_GetProperties(breeze_stylesheets)
 if(NOT breeze_stylesheets_POPULATED)
   FetchContent_Populate(breeze_stylesheets)
 
-  add_library(breeze_themes STATIC "${breeze_stylesheets_SOURCE_DIR}/dist/qrc/breeze.qrc")
+  add_library(breeze_themes STATIC "${breeze_stylesheets_SOURCE_DIR}/dist/breeze.qrc")
 
   add_custom_target(
     run_python_breeze ALL
     COMMAND ${Python_EXECUTABLE} configure.py --extensions=<EXTENSIONS>
             --styles=<STYLES> --resource breeze.qrc
     WORKING_DIRECTORY ${breeze_stylesheets_SOURCE_DIR}
-    BYPRODUCTS "${breeze_stylesheets_SOURCE_DIR}/dist/qrc/breeze.qrc"
+    BYPRODUCTS "${breeze_stylesheets_SOURCE_DIR}/dist/breeze.qrc"
     COMMENT "Generating themes")
 
   add_dependencies(breeze_themes run_python_breeze)
@@ -308,7 +312,7 @@ int main()
 
 ## QMake Installation
 
-Copy the contents of the `dist/qrc` subdirectory into your project directory and add the qrc file to your project file.
+Copy the contents of the `dist` subdirectory into your project directory and add the qrc file to your project file.
 
 For example:
 
@@ -356,6 +360,8 @@ Then load the stylesheet and run the application using:
 ```python
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QFile, QTextStream
+# This must match the name of the file and be in the Python search path.
+# To modify the search path, add the directory containing the file to `sys.path`.
 import breeze_resources
 
 
@@ -374,10 +380,12 @@ def main():
 ```
 
 Required rcc for each framework:
-    PyQt5: pyrcc5
-    PyQt6: pyside6-rcc
-    PySide2: pyside2-rcc
-    PySide6: pyside6-rcc
+- PyQt5: `pyrcc5`
+- PyQt6: `pyside6-rcc` (requires `PySide6` installed)
+- PySide2: `pyside2-rcc` (requires Python.10 or earlier)
+- PySide6: `pyside6-rcc`
+
+You can also use the pre-compiled resources in the [resources](/resources/) directory.
 
 # Debugging
 
@@ -390,7 +398,7 @@ Have an issue with the styles? Here's a few suggestions, prior to filing a bug r
 
 ## Configuring
 
-To configure the assets and the stylesheets, run `python configure.py`. To compile the assets and stylesheets for PyQt5, ensure `pyrcc5` is installed and run:
+To configure the assets and the stylesheets, run `python configure.py`. To compile the assets and stylesheets for PyQt5, ensure `pyrcc5` is installed (for other frameworks, see [PyQt5/6 & PySide2/6 Installation](#pyqt56--pyside26-installation) for the correct RCC) and run:
 
 ```bash
 python configure.py --compiled-resource breeze_resources.py
@@ -407,16 +415,14 @@ $ python test/ui.py --stylesheet $theme
 $ python test/ui.py --widget $widget --stylesheet $theme
 # Get the help options.
 $ python test/ui.py --help
-usage: ui.py [-h] [--widget WIDGET] [--stylesheet STYLESHEET] [--style STYLE]
-             [--font-size FONT_SIZE] [--font-family FONT_FAMILY] [--width WIDTH]
-             [--height HEIGHT] [--alignment ALIGNMENT] [--compress] [--scale SCALE]
-             [--use-x11]
+usage: ui.py [-h] [--stylesheet STYLESHEET] [--style STYLE] [--font-size FONT_SIZE] [--font-family FONT_FAMILY]
+             [--scale SCALE] [--qt-framework {pyqt5,pyqt6,pyside2,pyside6}] [--use-x11] [--widget WIDGET]
+             [--width WIDTH] [--height HEIGHT] [--alignment ALIGNMENT] [--compress] [--print-tests] [--start START]
 
-Configurations for the Qt application.
+Configurations for the Qt5 application.
 
 options:
   -h, --help            show this help message and exit
-  --widget WIDGET       widget to test. can provide `all` to test all widgets
   --stylesheet STYLESHEET
                         stylesheet name (`dark`, `light`, `native`, ...)
   --style STYLE         application style (`Fusion`, `Windows`, `native`, ...)
@@ -424,14 +430,19 @@ options:
                         font size for the application
   --font-family FONT_FAMILY
                         the font family
+  --scale SCALE         scale factor for the UI
+  --qt-framework {pyqt5,pyqt6,pyside2,pyside6}
+                        target framework to build for. Default = pyqt5. Note: building for PyQt6 requires PySide6-rcc
+                        to be installed.
+  --use-x11             force the use of x11 on compatible systems.
+  --widget WIDGET       widget to test. can provide `all` to test all widgets
   --width WIDTH         the window width
   --height HEIGHT       the window height
   --alignment ALIGNMENT
                         the layout alignment
   --compress            add stretch on both sides
-  --scale SCALE         scale factor for the UI
-  --use-x11             force the use of x11 on compatible systems
   --print-tests         print all available tests (widget names).
+  --start START         test widget to start at.
 # Get a complete list of available tests.
 $ python test/ui.py --print-tests
 aero_wizard                                                                                     
@@ -446,7 +457,7 @@ To see the complete list of Qt widgets covered by the unittests, see [Test Cover
 
 ## Distribution Files
 
-When pushing changes, only the `light` and `dark` themes should be configured, without any extensions. To reset the built resource files to the defaults (this requires `pyrcc5` to be installed), run:
+When pushing changes, only the `light` and `dark` themes should be configured, without any extensions. To reset the built resource files to the defaults (this requires the correct RCC to be installed), run:
 
 ```bash
 python configure.py --clean \

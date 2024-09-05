@@ -55,8 +55,10 @@ def parse_args(argv=None):
     )
     parser.add_argument(
         '--qt-framework',
-        help='target framework to build for. Default = pyqt5. '
-            'Note: building for PyQt6 requires PySide6-rcc to be installed.',
+        help=(
+            'target framework to build for. Default = pyqt5. '
+            'Note: building for PyQt6 requires PySide6-rcc to be installed.'
+        ),
         choices=['pyqt5', 'pyqt6', 'pyside2', 'pyside6'],
         default='pyqt5'
     )
@@ -67,9 +69,11 @@ def parse_args(argv=None):
     )
     parser.add_argument(
         '--rcc',
-        help='path to the rcc executable. '
+        help=(
+            'path to the rcc executable. '
             'Overrides rcc of chosen framework. '
             'Only use if system cannot find the rcc exe.'
+        )
     )
     parser.add_argument(
         '--compiled-resource',
@@ -310,7 +314,7 @@ def configure_style(config, style):
         configure_stylesheet(config, style, qt_dist, style_prefix)
 
     # Need to replace the URL paths for loading icons/
-    # assets. This uses the resource system, AKA, 
+    # assets. This uses the resource system, AKA,
     # `url(:/dark/path/to/resource)`.
     if not config['no_qrc']:
         configure_qt(dist, f':/{style}/')
@@ -368,26 +372,29 @@ def configure(args):
         ]
 
         try:
-            subprocess.check_call(
+            subprocess.check_output(
                 command,
                 stdin=subprocess.DEVNULL,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
                 shell=False,
             )
-        except subprocess.CalledProcessError:
-            print('ERROR: Ensure qrc file exists or deselect "no-qrc" option!')
+        except subprocess.CalledProcessError as error:
+            if b'File does not exist' in error.stderr:
+                print('ERROR: Ensure qrc file exists or deselect "no-qrc" option!', file=sys.stderr)
+            else:
+                print(f'ERROR: Got an unknown errir of "{error.stderr.decode("utf-8")}"!', file=sys.stderr)
             raise SystemExit
         except FileNotFoundError:
             if args.rcc:
-                print("ERROR: rcc path invalid!")
+                print("ERROR: rcc path invalid!", file=sys.stderr)
             else:
-                print('ERROR: Ensure rcc executable exists for chosen framework!')
-            print('Required rcc for PyQt5: pyrcc5',
+                print('ERROR: Ensure rcc executable exists for chosen framework!', file=sys.stderr)
+            print(
+                'Required rcc for PyQt5: pyrcc5',
                 'Required rcc for PySide6 & PyQt6: PySide6-rcc',
                 'Required rcc for PySide2: PySide2-rcc',
                 '',
-                'if using venv, activate it or provide path to rcc.', sep='\n')
+                'if using venv, activate it or provide path to rcc.', sep='\n', file=sys.stderr)
             raise SystemExit
 
         if args.qt_framework == "pyqt6":
@@ -423,6 +430,7 @@ def parse_rcc(args):
 def main(argv=None):
     '''Configuration entry point'''
     configure(parse_args(argv))
+
 
 if __name__ == '__main__':
     sys.exit(main())
