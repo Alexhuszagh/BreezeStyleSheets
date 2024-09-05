@@ -51,6 +51,7 @@ def radius(dial):
     '''Get the radius of the dial.'''
     return min(dial.rect.width(), dial.rect.height()) // 2
 
+
 def groove_rect(dial):
     '''Calculate the bounding rectangle for the dial groove.'''
 
@@ -60,6 +61,7 @@ def groove_rect(dial):
 
     return pos.x() + x0, pos.y() + y0
 
+
 def circle_percent(dial):
     '''Calculate the percentage of the dial.'''
 
@@ -67,6 +69,7 @@ def circle_percent(dial):
     offset = dial.sliderPosition - dial.minimum
 
     return offset / distance
+
 
 def circle_position(dial, groove_rect, position, r):
     '''Calculate the (x, y) coordinates based on the position on a circle.'''
@@ -96,13 +99,16 @@ def circle_position(dial, groove_rect, position, r):
 
     return x0 - r * math.cos(theta), y0 - r * math.sin(theta)
 
+
 def handle_position(dial, groove_rect, r):
     '''Calculate the position of the handle.'''
     return circle_position(dial, groove_rect, dial.sliderPosition, r)
 
+
 def default_pen(color, width):
     '''Create a pen with the default styles.'''
     return QtGui.QPen(color, width)
+
 
 def round_pen(color, width):
     '''Create a pen with round join styles.'''
@@ -113,6 +119,7 @@ def round_pen(color, width):
         compat.RoundCap,
         compat.RoundJoin,
     )
+
 
 def event_pos(event):
     '''Determine the event position.'''
@@ -302,6 +309,7 @@ def main():
 
     shared.set_stylesheet(args, app, compat)
     return shared.exec_app(args, app, window, compat)
+
 
 if __name__ == '__main__':
     sys.exit(main())

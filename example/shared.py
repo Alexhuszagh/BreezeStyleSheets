@@ -52,8 +52,10 @@ def create_parser():
     )
     parser.add_argument(
         '--qt-framework',
-        help='target framework to build for. Default = pyqt5. '
-            'Note: building for PyQt6 requires PySide6-rcc to be installed.',
+        help=(
+            'target framework to build for. Default = pyqt5. '
+            'Note: building for PyQt6 requires PySide6-rcc to be installed.'
+        ),
         choices=['pyqt5', 'pyqt6', 'pyside2', 'pyside6'],
         default='pyqt5'
     )
@@ -65,6 +67,7 @@ def create_parser():
     )
 
     return parser
+
 
 def parse_args(parser):
     '''Parse the command-line arguments and hot-patch the args.'''
@@ -81,21 +84,23 @@ def parse_args(parser):
 
     return args, unknown
 
+
 def is_qt6(args):
     '''Get if we're using Qt6 and not Qt5.'''
     return args.qt_framework == 'pyqt6' or args.qt_framework == 'pyside6'
 
+
 def import_qt(args, load_resources=True):
     '''Import the Qt modules'''
-    
+
     if args.qt_framework == 'pyqt6':
-        from PyQt6 import QtCore, QtGui, QtWidgets
+        from PyQt6 import QtCore, QtGui, QtWidgets  # pyright: ignore[reportMissingImports]
     elif args.qt_framework == 'pyside6':
-        from PySide6 import QtCore, QtGui, QtWidgets
+        from PySide6 import QtCore, QtGui, QtWidgets  # pyright: ignore[reportMissingImports]
     elif args.qt_framework == "pyqt5":
-        from PyQt5 import QtCore, QtGui, QtWidgets
+        from PyQt5 import QtCore, QtGui, QtWidgets  # pyright: ignore[reportMissingImports]
     elif args.qt_framework == 'pyside2':
-        from PySide2 import QtCore, QtGui, QtWidgets
+        from PySide2 import QtCore, QtGui, QtWidgets  # pyright: ignore[reportMissingImports]
 
     if load_resources:
         sys.path.insert(0, f'{home}/resources')
@@ -103,13 +108,16 @@ def import_qt(args, load_resources=True):
 
     return QtCore, QtGui, QtWidgets
 
+
 def get_resources(args):
     '''Get the resource format for the Qt application.'''
     return f':/{args.stylesheet}/'
 
+
 def get_stylesheet(resource_format):
     '''Get the path to the stylesheet.'''
     return f'{resource_format}stylesheet.qss'
+
 
 def get_version(args):
     QtCore, _, __ = import_qt(args, load_resources=False)
@@ -119,6 +127,7 @@ def get_version(args):
         return (QtCore.QT_VERSION >> 16, (QtCore.QT_VERSION >> 8) & 0xFF, QtCore.QT_VERSION & 0xFF)
     else:
         return QtCore.__version_info__[:3]
+
 
 def get_compat_definitions(args):
     '''Create our compatibility definitions.'''
@@ -765,6 +774,7 @@ def get_compat_definitions(args):
 
     return ns
 
+
 def get_colors(args, compat):
     '''Create shared colors dependent on the stylesheet.'''
 
@@ -818,6 +828,7 @@ def get_colors(args, compat):
         ns.LinkVisitedColor = compat.QtGui.QColor(204, 70, 200)
 
     return ns
+
 
 def get_icon_map(args, compat):
     '''Create a map of standard icons to resource paths.'''
@@ -907,6 +918,7 @@ def get_icon_map(args, compat):
 
     return icon_map
 
+
 def setup_app(args, unknown, compat, style_class=None, window_class=None):
     '''Setup code for the Qt application.'''
 
@@ -929,7 +941,7 @@ def setup_app(args, unknown, compat, style_class=None, window_class=None):
         window_class = compat.QtWidgets.QMainWindow
     window = window_class()
 
-    # only need to override the font on the first run    
+    # only need to override the font on the first run
     if not is_initial:
         # use the default font size
         font = app.font()
@@ -941,11 +953,13 @@ def setup_app(args, unknown, compat, style_class=None, window_class=None):
 
     return app, window
 
+
 def read_qtext_file(path, compat):
     file = compat.QtCore.QFile(path)
     file.open(compat.ReadOnly | compat.Text)
     stream = compat.QtCore.QTextStream(file)
     return stream.readAll()
+
 
 def set_stylesheet(args, app, compat):
     '''Set the application stylesheet.'''
@@ -955,11 +969,13 @@ def set_stylesheet(args, app, compat):
         stylesheet = get_stylesheet(resource_format)
         app.setStyleSheet(read_qtext_file(stylesheet, compat))
 
+
 def exec_app(args, app, window, compat):
     '''Show and execute the Qt application.'''
 
     window.show()
     return execute(args, app)
+
 
 def execute(args, widget, *params):
     '''Shared code to call `exec()` on a widget.'''
@@ -967,6 +983,7 @@ def execute(args, widget, *params):
     if is_qt6(args):
         return widget.exec(*params)
     return widget.exec_(*params)
+
 
 def single_point_position(args, event):
     '''Shared code to call `pos()` on a single-point event.'''
@@ -976,6 +993,7 @@ def single_point_position(args, event):
         return event.position().toPoint()
     return event.pos()
 
+
 def single_point_global_position(args, event):
     '''Shared code to call `globalPos()` on a single-point event.'''
 
@@ -984,9 +1002,11 @@ def single_point_global_position(args, event):
         return event.globalPosition().toPoint()
     return event.globalPos()
 
+
 def native_icon(style, icon, option=None, widget=None):
     '''Get a standard icon for the native style'''
     return style.standardIcon(icon, option, widget)
+
 
 def stylesheet_icon(args, style, icon, icon_map, option=None, widget=None):
     '''Get a standard icon for the stylesheet style'''
@@ -1000,12 +1020,14 @@ def stylesheet_icon(args, style, icon, icon_map, option=None, widget=None):
         return QtGui.QIcon(resource)
     return QtWidgets.QCommonStyle.standardIcon(style, icon, option, widget)
 
+
 def style_icon(args, style, icon, icon_map, option=None, widget=None):
     '''Get the stylized icon, either native or in the stylesheet.'''
 
     if args.stylesheet == 'native':
         return native_icon(style, icon, option, widget)
     return stylesheet_icon(args, style, icon, icon_map, option, widget)
+
 
 def standard_icon(args, widget, icon, icon_map):
     '''Simplified wrapper to get a standard icon from a widget.'''
