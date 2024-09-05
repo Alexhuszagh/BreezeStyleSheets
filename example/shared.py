@@ -124,14 +124,11 @@ def get_compat_definitions(args):
     '''Create our compatibility definitions.'''
 
     ns = argparse.Namespace()
+    QtCore, QtGui, QtWidgets = import_qt(args, load_resources=False)
+    ns.QtCore = QtCore
+    ns.QtGui = QtGui
+    ns.QtWidgets = QtWidgets
     if is_qt6(args):
-        QtCore, QtGui, QtWidgets = import_qt(args, load_resources=False)
-
-        # Modules
-        ns.QtCore = QtCore
-        ns.QtGui = QtGui
-        ns.QtWidgets = QtWidgets
-
         # Scoped enums.
         ns.Orientation = QtCore.Qt.Orientation
         ns.StandardPixmap = QtWidgets.QStyle.StandardPixmap
@@ -485,13 +482,6 @@ def get_compat_definitions(args):
         ns.SizeIgnored = ns.SizePolicy.Ignored
         ns.SetFixedSize = ns.SizeConstraint.SetFixedSize
     else:
-        from PyQt5 import QtCore, QtGui, QtWidgets
-
-        # Modules
-        ns.QtCore = QtCore
-        ns.QtGui = QtGui
-        ns.QtWidgets = QtWidgets
-
         # QObjects
         ns.QAction = QtWidgets.QAction
         ns.QFileSystemModel = QtWidgets.QFileSystemModel
@@ -925,7 +915,10 @@ def setup_app(args, unknown, compat, style_class=None, window_class=None):
     else:
         os.environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = '1'
 
-    app = compat.QtWidgets.QApplication(sys.argv[:1] + unknown)
+    app = compat.QtWidgets.QApplication.instance()
+    is_initial = app is None
+    if app is None:
+        app = compat.QtWidgets.QApplication(sys.argv[:1] + unknown)
     if args.style != 'native':
         style = compat.QtWidgets.QStyleFactory.create(args.style)
         if style_class is not None:
@@ -936,13 +929,15 @@ def setup_app(args, unknown, compat, style_class=None, window_class=None):
         window_class = compat.QtWidgets.QMainWindow
     window = window_class()
 
-    # use the default font size
-    font = app.font()
-    if args.font_size > 0:
-        font.setPointSizeF(args.font_size)
-    if args.font_family:
-        font.setFamily(args.font_family)
-    app.setFont(font)
+    # only need to override the font on the first run    
+    if not is_initial:
+        # use the default font size
+        font = app.font()
+        if args.font_size > 0:
+            font.setPointSizeF(args.font_size)
+        if args.font_family:
+            font.setFamily(args.font_family)
+        app.setFont(font)
 
     return app, window
 
