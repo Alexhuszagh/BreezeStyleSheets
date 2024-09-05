@@ -117,7 +117,7 @@ def round_pen(color, width):
 def event_pos(event):
     '''Determine the event position.'''
 
-    if args.pyqt6:
+    if shared.is_qt6(args):
         return event.position()
     return event.posF()
 

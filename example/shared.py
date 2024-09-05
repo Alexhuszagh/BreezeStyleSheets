@@ -6,12 +6,14 @@
 '''
 
 import argparse
+import importlib
 import os
 import sys
 
 example_dir = os.path.dirname(os.path.realpath(__file__))
 home = os.path.dirname(example_dir)
 dist = os.path.join(home, 'dist')
+
 
 def create_parser():
     '''Create an argparser with the base settings for all Qt applications.'''
@@ -49,9 +51,11 @@ def create_parser():
         default=1,
     )
     parser.add_argument(
-        '--pyqt6',
-        help='use PyQt6 rather than PyQt5.',
-        action='store_true'
+        '--qt-framework',
+        help='target framework to build for. Default = pyqt5. '
+            'Note: building for PyQt6 requires PySide6-rcc to be installed.',
+        choices=['pyqt5', 'pyqt6', 'pyside2', 'pyside6'],
+        default='pyqt5'
     )
     # Linux or Unix-like only.
     parser.add_argument(
@@ -77,36 +81,51 @@ def parse_args(parser):
 
     return args, unknown
 
-def import_qt(args):
-    '''Import the Qt modules'''
+def is_qt6(args):
+    '''Get if we're using Qt6 and not Qt5.'''
+    return args.qt_framework == 'pyqt6' or args.qt_framework == 'pyside6'
 
-    if args.pyqt6:
+def import_qt(args, load_resources=True):
+    '''Import the Qt modules'''
+    
+    if args.qt_framework == 'pyqt6':
         from PyQt6 import QtCore, QtGui, QtWidgets
-        QtCore.QDir.addSearchPath(args.stylesheet, f'{dist}/pyqt6/{args.stylesheet}/')
-    else:
-        sys.path.insert(0, home)
+    elif args.qt_framework == 'pyside6':
+        from PySide6 import QtCore, QtGui, QtWidgets
+    elif args.qt_framework == "pyqt5":
         from PyQt5 import QtCore, QtGui, QtWidgets
-        import breeze_resources
+    elif args.qt_framework == 'pyside2':
+        from PySide2 import QtCore, QtGui, QtWidgets
+
+    if load_resources:
+        sys.path.insert(0, f'{home}/resources')
+        importlib.import_module(f'breeze_{args.qt_framework}')
 
     return QtCore, QtGui, QtWidgets
 
 def get_resources(args):
     '''Get the resource format for the Qt application.'''
-
-    if args.pyqt6:
-        return f'{args.stylesheet}:'
     return f':/{args.stylesheet}/'
 
 def get_stylesheet(resource_format):
     '''Get the path to the stylesheet.'''
     return f'{resource_format}stylesheet.qss'
 
+def get_version(args):
+    QtCore, _, __ = import_qt(args, load_resources=False)
+    if args.qt_framework == 'pyqt5' or args.qt_framework == 'pyqt6':
+        # QT_VERSION is stored in 0xMMmmpp, each in 8 bit pairs.
+        # Goes major, minor, patch. 393984 is "6.3.0"
+        return (QtCore.QT_VERSION >> 16, (QtCore.QT_VERSION >> 8) & 0xFF, QtCore.QT_VERSION & 0xFF)
+    else:
+        return QtCore.__version_info__[:3]
+
 def get_compat_definitions(args):
     '''Create our compatibility definitions.'''
 
     ns = argparse.Namespace()
-    if args.pyqt6:
-        from PyQt6 import QtCore, QtGui, QtWidgets
+    if is_qt6(args):
+        QtCore, QtGui, QtWidgets = import_qt(args, load_resources=False)
 
         # Modules
         ns.QtCore = QtCore
@@ -179,7 +198,10 @@ def get_compat_definitions(args):
 
         # QObjects
         ns.QAction = QtGui.QAction
-        ns.QFileSystemModel = QtGui.QFileSystemModel
+        if args.qt_framework == 'pyqt6':
+            ns.QFileSystemModel = QtGui.QFileSystemModel
+        else:
+            ns.QFileSystemModel = QtWidgets.QFileSystemModel
         ns.QUndoGroup = QtGui.QUndoGroup
         ns.QUndoStack = QtGui.QUndoStack
         ns.QUndoCommand = QtGui.QUndoCommand
@@ -328,7 +350,7 @@ def get_compat_definitions(args):
         ns.SP_DialogRetryButton = ns.StandardPixmap.SP_DialogRetryButton
         ns.SP_DialogIgnoreButton = ns.StandardPixmap.SP_DialogIgnoreButton
         ns.SP_RestoreDefaultsButton = ns.StandardPixmap.SP_RestoreDefaultsButton
-        if QtCore.QT_VERSION >= 393984:
+        if get_version(args) >= (6, 3, 0):
             ns.SP_TabCloseButton = ns.StandardPixmap.SP_TabCloseButton
         ns.SP_MessageBoxCritical = ns.StandardPixmap.SP_MessageBoxCritical
         ns.SP_MessageBoxInformation = ns.StandardPixmap.SP_MessageBoxInformation
@@ -890,7 +912,7 @@ def get_icon_map(args, compat):
         compat.SP_DialogIgnoreButton: 'dialog_ignore.svg',
         compat.SP_RestoreDefaultsButton: 'restore_defaults.svg',
     }
-    if compat.QtCore.QT_VERSION >= 393984:
+    if get_version(args) > (6, 3, 0):
         icon_map[compat.SP_TabCloseButton] = 'tab_close.svg'
 
     return icon_map
@@ -947,14 +969,14 @@ def exec_app(args, app, window, compat):
 def execute(args, widget, *params):
     '''Shared code to call `exec()` on a widget.'''
 
-    if args.pyqt6:
+    if is_qt6(args):
         return widget.exec(*params)
     return widget.exec_(*params)
 
 def single_point_position(args, event):
     '''Shared code to call `pos()` on a single-point event.'''
 
-    if args.pyqt6:
+    if is_qt6(args):
         # Qt6 returns `QPointF`, which is overkill.
         return event.position().toPoint()
     return event.pos()
@@ -962,7 +984,7 @@ def single_point_position(args, event):
 def single_point_global_position(args, event):
     '''Shared code to call `globalPos()` on a single-point event.'''
 
-    if args.pyqt6:
+    if is_qt6(args):
         # Qt6 returns `QPointF`, which is overkill.
         return event.globalPosition().toPoint()
     return event.globalPos()
@@ -974,10 +996,7 @@ def native_icon(style, icon, option=None, widget=None):
 def stylesheet_icon(args, style, icon, icon_map, option=None, widget=None):
     '''Get a standard icon for the stylesheet style'''
 
-    if args.pyqt6:
-        from PyQt6 import QtCore, QtGui, QtWidgets
-    else:
-        from PyQt5 import QtCore, QtGui, QtWidgets
+    QtCore, QtGui, QtWidgets = import_qt(args, load_resources=False)
 
     path = icon_map[icon]
     resource_format = get_resources(args)
