@@ -5,7 +5,7 @@
     Configure icons, stylesheets, and resource files.
 '''
 
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 
 import argparse
 import glob
@@ -18,11 +18,10 @@ import sys
 
 home = os.path.dirname(os.path.realpath(__file__))
 dist = os.path.join(home, 'dist')
-qrc_dist = os.path.join(dist, 'qrc')
-pyqt6_dist = os.path.join(dist, 'pyqt6')
 template_dir = os.path.join(home, 'template')
 theme_dir = os.path.join(home, 'theme')
 extension_dir = os.path.join(home, 'extension')
+
 
 def parse_args(argv=None):
     '''Parse the command-line options.'''
@@ -46,7 +45,7 @@ def parse_args(argv=None):
     )
     parser.add_argument(
         '--resource',
-        help='output resource file name',
+        help='output qrc resource file name',
         default='breeze.qrc',
     )
     parser.add_argument(
@@ -55,9 +54,11 @@ def parse_args(argv=None):
         action='store_true'
     )
     parser.add_argument(
-        '--pyqt6',
-        help='build PyQt6 resources.',
-        action='store_true'
+        '--qt-framework',
+        help='target framework to build for. Default = pyqt5. '
+            'Note: building for PyQt6 requires PySide6-rcc to be installed.',
+        choices=['pyqt5', 'pyqt6', 'pyside2', 'pyside6'],
+        default='pyqt5'
     )
     parser.add_argument(
         '--clean',
@@ -65,9 +66,10 @@ def parse_args(argv=None):
         action='store_true'
     )
     parser.add_argument(
-        '--pyrcc5',
-        help='name of the pyrcc5 executable. Overridden by the `PYRCC5` envvar.',
-        default='pyrcc5',
+        '--rcc',
+        help='path to the rcc executable. '
+            'Overrides rcc of chosen framework. '
+            'Only use if system cannot find the rcc exe.'
     )
     parser.add_argument(
         '--compiled-resource',
@@ -78,6 +80,7 @@ def parse_args(argv=None):
     parse_extensions(args)
 
     return args
+
 
 def load_json(path):
     '''Read a JSON file with limited comments support.'''
@@ -91,6 +94,7 @@ def load_json(path):
         lines = file.read().splitlines()
     lines = [i for i in lines if not i.strip().startswith('//')]
     return json.loads('\n'.join(lines))
+
 
 def read_template_dir(directory):
     '''Read the template data from a directory'''
@@ -125,11 +129,13 @@ def read_template_dir(directory):
 
     return data
 
+
 def split_csv(string):
     '''Split a list of values provided as comma-separated values.'''
 
     values = string.split(',')
     return [i for i in values if i]
+
 
 def parse_styles(args):
     '''Parse a list of valid styles.'''
@@ -139,6 +145,7 @@ def parse_styles(args):
         files = glob.glob(f'{theme_dir}/*json')
         values = [os.path.splitext(os.path.basename(i))[0] for i in files]
     args.styles = values
+
 
 def parse_extensions(args):
     '''Parse a list of valid extensions.'''
@@ -155,6 +162,7 @@ def parse_extensions(args):
 
     args.extensions = values
 
+
 def parse_hexcolor(color):
     '''Parse a hexadecimal color.'''
 
@@ -170,6 +178,7 @@ def parse_hexcolor(color):
     if len(color) == 8:
         alpha = int(color[6:8], 16) / 100
     return (red, green, blue, alpha)
+
 
 def parse_rgba(color):
     '''Parse an RGBA color.'''
@@ -189,6 +198,7 @@ def parse_rgba(color):
         alpha = float(split[3])
     return (red, green, blue, alpha)
 
+
 def parse_color(color):
     '''Parse a color into the RGBA components.'''
 
@@ -198,12 +208,14 @@ def parse_color(color):
         return parse_rgba(color)
     raise NotImplementedError
 
+
 def icon_basename(icon, extension):
     '''Get the basename for an icon.'''
 
     if extension == 'default':
         return icon
     return f'{icon}_{extension}'
+
 
 def replace_by_name(contents, theme, colors=None):
     '''Replace values by color name.'''
@@ -217,6 +229,7 @@ def replace_by_name(contents, theme, colors=None):
         color = theme[key]
         contents = contents.replace(f'^{key}^', color)
     return contents
+
 
 def replace_by_index(contents, theme, colors):
     '''Replace values by color name.'''
@@ -246,6 +259,7 @@ def replace_by_index(contents, theme, colors):
         contents = contents.replace(sub, value)
     return contents
 
+
 def configure_icons(config, style, qt_dist):
     '''Configure icons for a given style.'''
 
@@ -274,6 +288,7 @@ def configure_icons(config, style, qt_dist):
                 with open(filename, 'w') as file:
                     file.write(contents)
 
+
 def configure_stylesheet(config, style, qt_dist, style_prefix):
     '''Configure the stylesheet for a given style.'''
 
@@ -284,41 +299,38 @@ def configure_stylesheet(config, style, qt_dist, style_prefix):
     with open(f'{qt_dist}/{style}/stylesheet.qss', 'w') as file:
         file.write(contents)
 
+
 def configure_style(config, style):
     '''Configure the icons and stylesheet for a given style.'''
 
     def configure_qt(qt_dist, style_prefix):
         os.makedirs(f'{qt_dist}/{style}', exist_ok=True)
         # Need to pass the qt_dist dir.
-        # also need to set the name scheming: qrc or pyqt6
         configure_icons(config, style, qt_dist)
         configure_stylesheet(config, style, qt_dist, style_prefix)
 
     # Need to replace the URL paths for loading icons/
-    # assets. In C++ Qt and PyQt5, this uses the resource
-    # system, AKA, `url(:/dark/path/to/resource)`. In PyQt6, the
-    # resource system has been replaced to use native
-    # Python packaging, so we define a user-friendly name
-    # based on the theme name, so `url(dark:path/to/resource)`.
+    # assets. This uses the resource system, AKA, 
+    # `url(:/dark/path/to/resource)`.
     if not config['no_qrc']:
-        configure_qt(qrc_dist, f':/{style}/')
-    if config['pyqt6']:
-        configure_qt(pyqt6_dist, f'{style}:')
+        configure_qt(dist, f':/{style}/')
+
 
 def write_qrc(config):
     '''Simple QRC writer.'''
 
     resources = []
     for style in config['themes'].keys():
-        files = os.listdir(f'{qrc_dist}/{style}')
+        files = os.listdir(f'{dist}/{style}')
         resources += [f'{style}/{i}' for i in files]
-    with open(f'{qrc_dist}/{config["resource"]}', 'w') as file:
+    with open(f'{dist}/{config["resource"]}', 'w') as file:
         print('<RCC>', file=file)
         print('  <qresource>', file=file)
         for resource in sorted(resources):
             print(f'    <file>{resource}</file>', file=file)
         print('  </qresource>', file=file)
         print('</RCC>', file=file)
+
 
 def configure(args):
     '''Configure all styles and write the files to a QRC file.'''
@@ -331,7 +343,6 @@ def configure(args):
         'themes': {},
         'templates': [],
         'no_qrc': args.no_qrc,
-        'pyqt6': args.pyqt6,
         'resource': args.resource
     }
     config['templates'].append(read_template_dir(template_dir))
@@ -344,24 +355,70 @@ def configure(args):
         configure_style(config, style)
 
     # Create and compile our resource files.
-    # resource files aren't used in PyQt6: no rcc6 anyway.
     if not args.no_qrc:
         write_qrc(config)
-    if not args.no_qrc and args.compiled_resource is not None:
-        pyrcc5 = os.environ.get('PYRCC5', args.pyrcc5)
+    if args.compiled_resource is not None:
+        rcc = parse_rcc(args)
+
         command = [
-            pyrcc5,
-            f'{qrc_dist}/{args.resource}',
+            rcc,
+            f'{dist}/{args.resource}',
             '-o',
             f'{home}/{args.compiled_resource}'
         ]
-        subprocess.check_call(
-            command,
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            shell=False,
-        )
+
+        try:
+            subprocess.check_call(
+                command,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                shell=False,
+            )
+        except subprocess.CalledProcessError:
+            print('ERROR: Ensure qrc file exists or deselect "no-qrc" option!')
+            raise SystemExit
+        except FileNotFoundError:
+            if args.rcc:
+                print("ERROR: rcc path invalid!")
+            else:
+                print('ERROR: Ensure rcc executable exists for chosen framework!')
+            print('Required rcc for PyQt5: pyrcc5',
+                'Required rcc for PySide6 & PyQt6: PySide6-rcc',
+                'Required rcc for PySide2: PySide2-rcc',
+                '',
+                'if using venv, activate it or provide path to rcc.', sep='\n')
+            raise SystemExit
+
+        if args.qt_framework == "pyqt6":
+            fix_qt6_import(f'{home}/{args.compiled_resource}')
+
+
+def fix_qt6_import(compiled_file):
+    '''Fix import after using PySide6-rcc to compile for PyQt6'''
+
+    with open(compiled_file, "r") as file:
+        text = file.read()
+    text = text.replace("PySide6", "PyQt6")
+    with open(compiled_file, "w") as file:
+        file.write(text)
+
+
+def parse_rcc(args):
+    '''Get rcc required for chosen framework'''
+
+    if args.rcc:
+        rcc = args.rcc
+    else:
+        if args.qt_framework == 'pyqt6' or args.qt_framework == 'pyside6':
+            rcc = 'pyside6-rcc'
+        elif args.qt_framework == "pyqt5":
+            rcc = 'pyrcc5'
+        elif args.qt_framework == 'pyside2':
+            rcc = 'pyside2-rcc'
+
+    return rcc
+
 
 def main(argv=None):
     '''Configuration entry point'''
