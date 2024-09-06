@@ -1688,8 +1688,8 @@ QDockWidget
  *  around the rest of the dock widget, which the remaining border
  *  cannot be removed.
  *
- *  There is a bug in non-Breeze styles, where the icons are small. It 
- *  doesn't change if we use `image` instead of `border-image`, nor if 
+ *  There is a bug in non-Breeze styles, where the icons are small. It
+ *  doesn't change if we use `image` instead of `border-image`, nor if
  *  we use `qproperty-icon`, etc. The icon seem to be half the size
  *  of our desired values.
  */
@@ -2466,7 +2466,7 @@ QWidget[isTitlebar="true"] *
 }
 
 /**
- *  Special rules for creating a border around a top-level frame of a window. 
+ *  Special rules for creating a border around a top-level frame of a window.
  *  This can only work when setting the Qt property `isWindow` to `true`.
  *  We've manually enumerated border widths from 1-5 below.
  */
