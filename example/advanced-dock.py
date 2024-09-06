@@ -69,7 +69,7 @@ def main():
     window.setCentralWidget(widget)
 
     if args.focus_highlighting:
-        QtAds.CDockManager.setConfigFlag(QtAds.CDockManager.FocusHighlighting, False)
+        QtAds.CDockManager.setConfigFlag(QtAds.CDockManager.FocusHighlighting, True)
 
     dock_manager = QtAds.CDockManager(window)
     DockArea = QtAds.DockWidgetArea

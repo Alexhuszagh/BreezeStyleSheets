@@ -192,3 +192,20 @@ ads--CDockOverlayCross
     qproperty-iconArrowColor: ^foreground^;
     qproperty-iconShadowColor: transparent;
 }
+
+/**
+ *  This adds support for the focus highlighting feature of the ADS.
+ *  https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/blob/master/doc/user-guide.md#focushighlighting
+ */
+ads--CDockWidgetTab[focused="true"]
+{
+    background-color: ^ads-tab:focused^;
+    border-color: ^ads-border:focused^;
+    border-top-color: ^highlight^;
+}
+
+ads--CDockWidgetTab[focused="true"] QLabel,
+ads--CDockWidgetTab[focused="true"] #tabCloseButton
+{
+    background-color: transparent;
+}
