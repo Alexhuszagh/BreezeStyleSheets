@@ -164,7 +164,7 @@ ads--CDockWidgetTab[activeTab="true"]
     border-top: 0.09em solid ^highlight^;
     border-left: 0.04em solid ^midtone^;
     border-right: 0.04em solid ^midtone^;
-    border-bottom: 0.04em tansparent ^midtone^;
+    border-bottom: 0.04em transparent ^midtone^;
 }
 
 ads--CDockWidgetTab QLabel
