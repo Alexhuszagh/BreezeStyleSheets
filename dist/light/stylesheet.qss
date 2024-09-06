@@ -1368,6 +1368,18 @@ QTabBar::tab:top:only-one
     border-bottom-right-radius: 0em;
 }
 
+QTabBar::tab:top:first,
+QTabBar::tab:top:only-one
+{
+    margin-left: 0.04em;
+}
+
+QTabBar::tab:top:last,
+QTabBar::tab:top:only-one
+{
+    margin-right: 0.04em;
+}
+
 QTabBar::tab:top:!selected
 {
     color: #31363b;
@@ -1419,6 +1431,18 @@ QTabBar::tab:bottom:only-one
     border-radius: 0.09em;
     border-top-left-radius: 0em;
     border-top-right-radius: 0em;
+}
+
+QTabBar::tab:bottom:first,
+QTabBar::tab:bottom:only-one
+{
+    margin-left: 0.08em;
+}
+
+QTabBar::tab:bottom:last,
+QTabBar::tab:bottom:only-one
+{
+    margin-right: 0.08em;
 }
 
 QTabBar::tab:bottom:!selected
@@ -1474,6 +1498,18 @@ QTabBar::tab:left:only-one
     border-bottom-right-radius: 0em;
 }
 
+QTabBar::tab:left:first,
+QTabBar::tab:left:only-one
+{
+    margin-top: 0.08em;
+}
+
+QTabBar::tab:left:last,
+QTabBar::tab:left:only-one
+{
+    margin-bottom: 0.08em;
+}
+
 QTabBar::tab:left:!selected
 {
     color: #31363b;
@@ -1525,6 +1561,18 @@ QTabBar::tab:right:only-one
     border-radius: 0.09em;
     border-top-left-radius: 0em;
     border-bottom-left-radius: 0em;
+}
+
+QTabBar::tab:right:first,
+QTabBar::tab:right:only-one
+{
+    margin-top: 0.08em;
+}
+
+QTabBar::tab:right:last,
+QTabBar::tab:right:only-one
+{
+    margin-bottom: 0.08em;
 }
 
 QTabBar::tab:right:!selected
@@ -1688,8 +1736,8 @@ QDockWidget
  *  around the rest of the dock widget, which the remaining border
  *  cannot be removed.
  *
- *  There is a bug in non-Breeze styles, where the icons are small. It 
- *  doesn't change if we use `image` instead of `border-image`, nor if 
+ *  There is a bug in non-Breeze styles, where the icons are small. It
+ *  doesn't change if we use `image` instead of `border-image`, nor if
  *  we use `qproperty-icon`, etc. The icon seem to be half the size
  *  of our desired values.
  */
@@ -2466,7 +2514,7 @@ QWidget[isTitlebar="true"] *
 }
 
 /**
- *  Special rules for creating a border around a top-level frame of a window. 
+ *  Special rules for creating a border around a top-level frame of a window.
  *  This can only work when setting the Qt property `isWindow` to `true`.
  *  We've manually enumerated border widths from 1-5 below.
  */
@@ -2510,3 +2558,214 @@ QFrame[frameShape][isWindow="true"][windowFrame="5"]
     border: 5px solid #d9d8d7;
     border-radius: 3px;
 }
+
+/**
+ *  ADVANCED DOCKING SYSTEM STYLESHEET
+ *  ----------------------------------
+ */
+
+/**
+ *  The general approach is as follows:
+ *  1. Turn `qproperty-icon` off.
+ *      This avoids having a weird background, preventing our desired icon.
+ *      This is presumably because ADS uses `qproperty-icon`.
+ *  2. Ensure the background is set.
+ *      This is to avoid any QToolButton styling hints when the
+ *      widget is clicked.
+ *  3. Set the QTOolButton width and height.
+ *      This gives us consistent icon sizes without compression.
+ *  4. Undo the border.
+ *      Must keep the border width identical to before (0.04em),
+ *      to avoid moving the widgets on pressed/hover events.
+ */
+
+#tabCloseButton,
+#dockAreaCloseButton,
+#tabsMenuButton,
+#detachGroupButton,
+#floatingTitleCloseButton,
+#floatingTitleMaximizeButton
+{
+    qproperty-icon: url(:/light/transparent.svg);
+    background: #eff0f1;
+    width: 1.2em;
+    height: 1.2em;
+    padding: 0em;
+    margin: 0em;
+    border: 0.04em transparent black;
+}
+
+#tabsMenuButton,
+#floatingTitleMaximizeButton
+{
+    /* Need to make the icon smaller, or else it's unusually large. */
+    width: 0.8em;
+}
+
+#tabCloseButton:hover,
+#dockAreaCloseButton:hover,
+#tabsMenuButton:hover,
+#detachGroupButton:hover,
+#floatingTitleCloseButton:hover,
+#floatingTitleMaximizeButton:hover,
+#tabCloseButton:pressed,
+#dockAreaCloseButton:pressed,
+#tabsMenuButton:pressed,
+#detachGroupButton:pressed,
+#floatingTitleCloseButton:pressed,
+#floatingTitleMaximizeButton:pressed
+{
+    background: #eff0f1;
+}
+
+#tabCloseButton,
+#dockAreaCloseButton,
+#floatingTitleCloseButton
+{
+    image: url(:/light/ads_close.svg);
+}
+
+#tabCloseButton:hover,
+#dockAreaCloseButton:hover,
+#floatingTitleCloseButton:hover
+{
+    image: url(:/light/ads_close_hover.svg);
+}
+
+#tabCloseButton:pressed,
+#dockAreaCloseButton:pressed,
+#floatingTitleCloseButton:pressed
+{
+    image: url(:/light/ads_close_pressed.svg);
+}
+
+#tabsMenuButton
+{
+    image: url(:/light/ads_menu_button.svg);
+}
+
+#tabsMenuButton:hover
+{
+    image: url(:/light/ads_menu_button_hover.svg);
+}
+
+#tabsMenuButton:pressed
+{
+    image: url(:/light/ads_menu_button_pressed.svg);
+}
+
+#tabsMenuButton::menu-indicator
+{
+    image: none;
+}
+
+#detachGroupButton
+{
+    image: url(:/light/ads_detach.svg);
+}
+
+#detachGroupButton:hover
+{
+    image: url(:/light/ads_detach_hover.svg);
+}
+
+#detachGroupButton:pressed
+{
+    image: url(:/light/ads_detach_hover_pressed.svg);
+}
+
+/* FLOATING */
+/* Disable the default icons when the dock is floating. */
+ads--CFloatingWidgetTitleBar
+{
+    qproperty-maximizeIcon: url(:/light/transparent.svg);
+    qproperty-normalIcon: url(:/light/transparent.svg);
+}
+
+#floatingTitleMaximizeButton
+{
+    image: url(:/light/ads_maximize.svg);
+}
+
+#floatingTitleMaximizeButton:hover
+{
+    image: url(:/light/ads_maximize_hover.svg);
+}
+
+#floatingTitleMaximizeButton:pressed
+{
+    image: url(:/light/ads_maximize_pressed.svg);
+}
+
+/**
+ *  Using the `maximized="true"`, `isMaximized="true"`, or other attribute
+ *  selectors don't work, and since the maximize button and minimize
+ *  button are always the same...
+ *
+ *  To get a nicer looking UI, just use the same maximize and restore
+ *  buttons.
+ */
+
+/* TABS */
+ads--CDockWidgetTab
+{
+    border: 0.04em solid #bab9b8;
+    border-top: 0.09em solid #bab9b8;
+    background-color: #d9d8d7;
+    padding: 0.23em;
+    min-width: 50px;
+    border-radius: 0.09em;
+    border-bottom-left-radius: 0em;
+    border-bottom-right-radius: 0em;
+}
+
+ads--CDockWidgetTab[activeTab="true"]
+{
+    background-color: #eff0f1;
+    border-top: 0.09em solid rgba(51, 164, 223, 0.5);
+    border-left: 0.04em solid #bab9b8;
+    border-right: 0.04em solid #bab9b8;
+    border-bottom: 0.04em transparent #bab9b8;
+}
+
+ads--CDockWidgetTab QLabel
+{
+    background-color: #d9d8d7;
+}
+
+ads--CDockWidgetTab[activeTab="true"] QLabel
+{
+    background-color: #eff0f1;
+}
+
+/**
+ *  CDockWidgetTab doesn't seem to have the concept of `::next-selected`
+ *  and `::previous-selected`, so we just draw the borders for everything.
+ *  It's not nearly as pretty, but it's not bad either.
+ */
+
+/* OVERLAY */
+ads--CDockOverlayCross
+{
+    qproperty-iconFrameColor: rgba(51, 164, 223, 0.5);
+    qproperty-iconBackgroundColor: #eff0f1;
+    qproperty-iconOverlayColor: rgba(51, 164, 223, 0.5);
+    qproperty-iconArrowColor: #31363b;
+    qproperty-iconShadowColor: transparent;
+}
+
+/**
+ *  QDOCKWIDGET TOOLTIP STYLESHEET
+ *  ------------------------------
+ */
+
+QAbstractButton#qt_dockwidget_closebutton
+{
+    qproperty-toolTip: "Close";
+}
+
+QAbstractButton#qt_dockwidget_floatbutton
+{
+    qproperty-toolTip: "Detach";
+}
+

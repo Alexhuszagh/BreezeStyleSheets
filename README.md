@@ -111,7 +111,7 @@ Here is a sample theme, with the color descriptions annotated. Please note that 
     "checkbox:light": "#58d3ff",
     // Color for a disabled or unchecked/unhovered QCheckBox or QRadioButton.
     "checkbox:disabled": "#c8c9ca",
-    // Color for the handle of a scrollbar. Due to limitations of 
+    // Color for the handle of a scrollbar. Due to limitations of
     // Qt stylesheets, any handle of a scrollbar must be treated
     // like it's hovered.
     "scrollbar:hover": "#3daee9",
@@ -219,7 +219,7 @@ By default, BreezeStyleSheets comes with the `dark` and `light` themes pre-built
 # choose only the frameworks you want
 frameworks=("pyqt5" "pyqt6" "pyside2" "pyside6")
 for framework in "${frameworks[@]}"; do
-    python configure.py --styles=all --extensions=all --qt-resource "${framework}" \
+    python configure.py --styles=all --extensions=all --qt-framework "${framework}" \
         --resource breeze.qrc --compiled-resource "resources/breeze_${framework}.py"
 done
 ```
@@ -445,8 +445,8 @@ options:
   --start START         test widget to start at.
 # Get a complete list of available tests.
 $ python test/ui.py --print-tests
-aero_wizard                                                                                     
-all_focus_tree                                                                                  
+aero_wizard
+all_focus_tree
 alpha_colordialog
 ...
 wizard
@@ -526,5 +526,5 @@ PyQtBreezeStyleSheets is a further fork of [BreezeStyleSheets](https://github.co
 
 # Contact
 
-Email: ahuszagh@gmail.com  
+Email: ahuszagh@gmail.com
 Twitter: KardOnIce
