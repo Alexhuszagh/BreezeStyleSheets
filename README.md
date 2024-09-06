@@ -209,7 +209,7 @@ For an example of using QCommonStyle to override standard icons in a PyQt applic
 
 # Installing
 
-Here are detailed instructions on how to install Breeze Style Sheets for a variety of build systems and programming languages.
+Here are detailed instructions on how to install Breeze Style Sheets for a variety of build systems and programming languages. This will require a Qt installation with QtCore, QtGui, QtWidgets, and QtSvg installed.
 
 ## Configuring
 
