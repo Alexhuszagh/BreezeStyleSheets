@@ -2755,6 +2755,22 @@ ads--CDockOverlayCross
 }
 
 /**
+ *  This adds support for the focus highlighting feature of the ADS.
+ *  https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/blob/master/doc/user-guide.md#focushighlighting
+ */
+ads--CDockWidgetTab[focused="true"]
+{
+    background-color: rgba(61, 173, 232, 0.1);
+    border-color: rgba(61, 173, 232, 0.15);
+    border-top-color: #3daee9;
+}
+
+ads--CDockWidgetTab[focused="true"] QLabel,
+ads--CDockWidgetTab[focused="true"] #tabCloseButton
+{
+    background-color: transparent;
+}
+/**
  *  QDOCKWIDGET TOOLTIP STYLESHEET
  *  ------------------------------
  */

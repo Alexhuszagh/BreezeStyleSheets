@@ -45,5 +45,8 @@
     "critical": "#80404a",
     "information": "#406880",
     "question": "#634d80",
-    "warning": "#99995C"
+    "warning": "#99995C",
+    // These are extension-specific
+    "ads-tab:focused": "rgba(63, 232, 63, 0.1)",
+    "ads-border:focused": "rgba(63, 232, 63, 0.15)"
 }

@@ -150,7 +150,11 @@ Here is a sample theme, with the color descriptions annotated. Please note that 
     // Background color for the QMessageBox question icon.
     "question": "#634d80",
     // Background color for the QMessageBox warning icon.
-    "warning": "#99995C"
+    "warning": "#99995C",
+    // These are extension-specific
+    // The background color for an Advanced Docking System Tab
+    "ads-tab:focused": "rgba(61, 173, 232, 0.1)",
+    "ads-border:focused": "rgba(61, 173, 232, 0.15)"
 }
 ```
 
