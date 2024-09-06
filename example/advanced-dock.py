@@ -42,7 +42,12 @@ args, unknown = shared.parse_args(parser)
 QtCore, QtGui, QtWidgets = shared.import_qt(args)
 compat = shared.get_compat_definitions(args)
 
-from PyQtAds import QtAds
+if args.qt_framework == 'pyqt5':
+    from PyQtAds import QtAds  # pyright: ignore[reportMissingImports]
+elif args.qt_framework == 'pyside6':
+    import PySide6QtAds as QtAds  # pyright: ignore[reportMissingImports]
+else:
+    raise ValueError('Only the Qt frameworks "pyqt5" and "pyside6" are supported.')
 
 
 def main():
@@ -90,6 +95,7 @@ def main():
     window.setWindowState(compat.WindowMaximized)
     shared.set_stylesheet(args, app, compat)
     return shared.exec_app(args, app, window, compat)
+
 
 if __name__ == '__main__':
     sys.exit(main())

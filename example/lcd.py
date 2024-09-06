@@ -31,7 +31,6 @@
     supports highlighting the handle on the active or hovered dial.
 '''
 
-import math
 import shared
 import sys
 
@@ -45,6 +44,7 @@ args, unknown = shared.parse_args(parser)
 QtCore, QtGui, QtWidgets = shared.import_qt(args)
 compat = shared.get_compat_definitions(args)
 colors = shared.get_colors(args, compat)
+
 
 class LCD(QtWidgets.QLCDNumber):
     '''QLCDNumber with a custom palette.'''
@@ -66,6 +66,7 @@ class LCD(QtWidgets.QLCDNumber):
         palette.setColor(compat.LightPalette, colors.Selected)
         palette.setColor(compat.DarkPalette, colors.Notch)
         self.setPalette(palette)
+
 
 class Ui:
     '''Main class for the user interface.'''
@@ -118,6 +119,7 @@ def main():
 
     shared.set_stylesheet(args, app, compat)
     return shared.exec_app(args, app, window, compat)
+
 
 if __name__ == '__main__':
     sys.exit(main())

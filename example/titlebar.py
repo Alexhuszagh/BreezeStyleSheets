@@ -184,6 +184,7 @@ if not args.default_window_frame and USE_WAYLAND_FRAME:
     print('Applications in Wayland cannot set their own position.', file=sys.stderr)
     print('Defaulting to the system title bar instead.', file=sys.stderr)
 
+
 class MinimizeLocation(enum.IntEnum):
     '''Location where to place minimized widgets.'''
 
@@ -191,6 +192,7 @@ class MinimizeLocation(enum.IntEnum):
     TopRight = 1
     BottomLeft = 2
     BottomRight = 3
+
 
 class WindowEdge(enum.IntEnum):
     '''Enumerations for window edge positions.'''
@@ -205,51 +207,63 @@ class WindowEdge(enum.IntEnum):
     BottomLeft = 7
     BottomRight = 8
 
+
 MINIMIZE_LOCATION = getattr(MinimizeLocation, args.minimize_location)
 TOP_EDGES = (WindowEdge.Top, WindowEdge.TopLeft, WindowEdge.TopRight)
 BOTTOM_EDGES = (WindowEdge.Bottom, WindowEdge.BottomLeft, WindowEdge.BottomRight)
 LEFT_EDGES = (WindowEdge.Left, WindowEdge.TopLeft, WindowEdge.BottomLeft)
 RIGHT_EDGES = (WindowEdge.Right, WindowEdge.TopRight, WindowEdge.BottomRight)
 
+
 def standard_icon(widget, icon):
     '''Get a standard icon.'''
     return shared.standard_icon(args, widget, icon, ICON_MAP)
+
 
 def menu_icon(widget):
     '''Get the menu icon depending on the stylesheet.'''
     return standard_icon(widget, compat.SP_TitleBarMenuButton)
 
+
 def minimize_icon(widget):
     '''Get the minimize icon depending on the stylesheet.'''
     return standard_icon(widget, compat.SP_TitleBarMinButton)
+
 
 def maximize_icon(widget):
     '''Get the maximize icon depending on the stylesheet.'''
     return standard_icon(widget, compat.SP_TitleBarMaxButton)
 
+
 def restore_icon(widget):
     '''Get the restore icon depending on the stylesheet.'''
     return standard_icon(widget, compat.SP_TitleBarNormalButton)
+
 
 def help_icon(widget):
     '''Get the help icon depending on the stylesheet.'''
     return standard_icon(widget, compat.SP_TitleBarContextHelpButton)
 
+
 def shade_icon(widget):
     '''Get the shade icon depending on the stylesheet.'''
     return standard_icon(widget, compat.SP_TitleBarShadeButton)
+
 
 def unshade_icon(widget):
     '''Get the unshade icon depending on the stylesheet.'''
     return standard_icon(widget, compat.SP_TitleBarUnshadeButton)
 
+
 def close_icon(widget):
     '''Get the close icon depending on the stylesheet.'''
     return standard_icon(widget, compat.SP_TitleBarCloseButton)
 
+
 def transparent_icon(widget):
     '''Create a transparent icon.'''
     return QtGui.QIcon()
+
 
 def action(text, parent=None, icon=None, checkable=None):
     '''Create a custom QAction.'''
@@ -262,9 +276,11 @@ def action(text, parent=None, icon=None, checkable=None):
 
     return value
 
+
 def size_greater(x, y):
     '''Compare 2 sizes, determining if any bounds of x are greater than y.'''
     return x.width() > y.width() or x.height() > y.height()
+
 
 def size_less(x, y):
     '''Compare 2 sizes, determining if any bounds of x are less than y.'''
@@ -272,6 +288,7 @@ def size_less(x, y):
 
 # UI WIDGETS
 # These are just to populate the views: these could be anything.
+
 
 class LargeTable(QtWidgets.QTableWidget):
     '''Table with a large number of elements.'''
@@ -286,6 +303,7 @@ class LargeTable(QtWidgets.QTableWidget):
             self.setVerticalHeaderItem(index, row)
             column = QtWidgets.QTableWidgetItem(f'Column {index + 1}')
             self.setHorizontalHeaderItem(index, column)
+
 
 class SortableTree(QtWidgets.QTreeWidget):
     '''Tree with checkboxes and a sort indicator on the header.'''
@@ -318,6 +336,7 @@ class SortableTree(QtWidgets.QTreeWidget):
         self.topLevelItem(0).setText(0, 'qzd')
         self.topLevelItem(1).setText(0, 'effefe')
         self.setSortingEnabled(True)
+
 
 class SettingTabs(QtWidgets.QTabWidget):
     '''Sample setting widget with a tab view.'''
@@ -410,13 +429,16 @@ class SettingTabs(QtWidgets.QTabWidget):
 
 # RESIZE HELPERS
 
+
 def border_size(self):
     '''Get the size of the border, regardless if present.'''
     return QtCore.QSize(2 * self._border, 2 * self._border)
 
+
 def minimized_content_size(self):
     '''Get the minimum content size of the widget.'''
     return self._titlebar_size
+
 
 def minimized_size(self):
     '''Get the minimum size of the widget, with the size grips hidden.'''
@@ -425,6 +447,7 @@ def minimized_size(self):
     if self._border:
         size = size + self.border_size
     return size
+
 
 def minimum_size(self):
     '''Get the minimum size for the widget.'''
@@ -439,9 +462,11 @@ def minimum_size(self):
 
     return size
 
+
 def get_larger_size(x, y):
     '''Get the larger of the two sizes, for both the height and width.'''
     return QtCore.QSize(max(x.width(), y.width()), max(x.height(), y.height()))
+
 
 def set_minimum_size(self):
     '''Sets the minimum size of the window and the titlebar, with clobbering.'''
@@ -450,6 +475,7 @@ def set_minimum_size(self):
     self._titlebar.set_minimum_size()
     self._titlebar_size = self._titlebar.minimumSize()
     self.setMinimumSize(self.minimum_size)
+
 
 def set_larger_minimum_size(self):
     '''Sets the minimum size of the window and the titlebar, without clobbering.'''
@@ -460,6 +486,7 @@ def set_larger_minimum_size(self):
     self._titlebar_size = self._titlebar.minimumSize()
     size = get_larger_size(self.minimum_size, self.minimumSize())
     self.setMinimumSize(size)
+
 
 def move_to(self, position):
     '''Move the window to the desired position'''
@@ -478,6 +505,7 @@ def move_to(self, position):
     if rect is not None:
         rect.moveTo(position)
 
+
 def set_geometry(self, rect):
     '''Set the window geometry.'''
 
@@ -489,6 +517,7 @@ def set_geometry(self, rect):
 
     move_to(self, rect.topLeft())
 
+
 def shade(self, size, grip_type):
     '''Shade the window, hiding the main widget and size grip.'''
 
@@ -497,6 +526,7 @@ def shade(self, size, grip_type):
         getattr(self, f'_{grip_type}').hide()
     self.set_minimum_size()
     self.resize(size)
+
 
 def unshade(self, rect, grip_type):
     '''Unshade the window, showing the main widget and size grip.'''
@@ -507,9 +537,11 @@ def unshade(self, rect, grip_type):
     self.set_larger_minimum_size()
     self.set_geometry(rect)
 
+
 def start_drag(self, event, window_type):
     '''Start the window drag state.'''
     setattr(self, f'_{window_type}_drag', event.pos())
+
 
 def handle_drag(self, event, window, window_type):
     '''Handle the window drag event.'''
@@ -517,9 +549,11 @@ def handle_drag(self, event, window, window_type):
     position = event.pos() - getattr(self, f'_{window_type}_drag')
     window.move_to(window.mapToParent(position))
 
+
 def end_drag(self, window_type):
     '''End the window drag state.'''
     setattr(self, f'_{window_type}_drag', None)
+
 
 def start_move(self, widget, window_type):
     '''Start the window move state.'''
@@ -527,13 +561,16 @@ def start_move(self, widget, window_type):
     setattr(self, f'_{window_type}_move', widget)
     widget.menu_move_to(QtGui.QCursor.pos())
 
+
 def handle_move(self, position, window_type):
     '''Handle the window move event.'''
     getattr(self, f'_{window_type}_move').menu_move_to(position)
 
+
 def end_move(self, window_type):
     '''End the window move state.'''
     setattr(self, f'_{window_type}_move', None)
+
 
 def start_resize(self, window, window_type):
     '''Start the window resize state.'''
@@ -553,9 +590,11 @@ def start_resize(self, window, window_type):
     if not IS_TRUE_WAYLAND and not sys.platform == 'darwin':
         self.window().grabMouse()
 
+
 def handle_resize(self, position):
     '''Handle the window resize event.'''
     self.menu_size_to(position)
+
 
 def end_resize(self, window_type):
     '''End the window resize state.'''
@@ -569,9 +608,11 @@ def end_resize(self, window_type):
     if not IS_TRUE_WAYLAND and not sys.platform == 'darwin':
         self.window().releaseMouse()
 
+
 def start_frame(self, frame, window_type):
     '''Start the window frame resize state.'''
     setattr(self, f'_{window_type}_frame', frame)
+
 
 def handle_frame(self, window, event, window_type):
     '''Handle the window frame resize event.'''
@@ -588,11 +629,13 @@ def handle_frame(self, window, event, window_type):
     elif not frame.is_active and getattr(self, f'_{window_type}_frame'):
         end_frame(self, window_type)
 
+
 def end_frame(self, window_type):
     '''End the window frame resize state.'''
     setattr(self, f'_{window_type}_frame', None)
 
 # EVENT HANDLES
+
 
 def window_resize_event(self, event):
     '''Ensure titlebar text elides normally.'''
@@ -622,6 +665,7 @@ def window_show_event(self, event, grip_type):
 
     super(type(self), self).showEvent(event)
 
+
 def window_mouse_double_click_event(self, event):
     '''Override the mouse double click, and don't call the press event.'''
 
@@ -643,6 +687,7 @@ def window_mouse_double_click_event(self, event):
     else:
         widget.maximize()
 
+
 def window_mouse_press_event(self, event, window, window_type):
     '''Override a mouse click on the titlebar to allow a move.'''
 
@@ -662,6 +707,7 @@ def window_mouse_press_event(self, event, window, window_type):
             shared.execute(args, widget._main_menu, position)
     return super(type(self), self).mousePressEvent(event)
 
+
 def window_mouse_move_event(self, event, window, window_type):
     '''Reposition the window on the move event.'''
 
@@ -671,6 +717,7 @@ def window_mouse_move_event(self, event, window, window_type):
         handle_drag(window, event, self, window_type)
     return super(type(self), self).mouseMoveEvent(event)
 
+
 def window_mouse_release_event(self, event, window, window_type):
     '''End the drag event.'''
 
@@ -678,6 +725,7 @@ def window_mouse_release_event(self, event, window, window_type):
     return super(type(self), self).mouseReleaseEvent(event)
 
 # WINDOW WIDGETS
+
 
 class Label(QtWidgets.QLabel):
     '''Custom QLabel-like class that allows text elision.'''
@@ -729,6 +777,7 @@ class Label(QtWidgets.QLabel):
         elided = metrics.elidedText(self._text, self._elide, width)
         super().setText(elided)
 
+
 class TitleButton(QtWidgets.QToolButton):
     '''An icon-only button, without borders, for the titlebar.'''
 
@@ -736,6 +785,7 @@ class TitleButton(QtWidgets.QToolButton):
         super().__init__()
         self.setIcon(icon)
         self.setAutoRaise(True)
+
 
 class TitleBar(QtWidgets.QFrame):
     '''Custom instance of a QTitlebar'''
@@ -772,7 +822,7 @@ class TitleBar(QtWidgets.QFrame):
         self._title = Label('', self, compat.ElideRight, self.title_width)
         self._min = TitleButton(minimize_icon(self))
         self._max = TitleButton(maximize_icon(self))
-        self._restore= TitleButton(restore_icon(self))
+        self._restore = TitleButton(restore_icon(self))
         self._close = TitleButton(close_icon(self))
         if self._has_help:
             self._help = TitleButton(help_icon(self))
@@ -782,7 +832,7 @@ class TitleBar(QtWidgets.QFrame):
 
         # Add actions to our menu.
         self._menu.setPopupMode(compat.InstantPopup)
-        self._main_menu = menu = QtWidgets.QMenu(self)
+        self._main_menu = QtWidgets.QMenu(self)
         self._restore_action = action('&Restore', self, restore_icon(self))
         self._restore_action.triggered.connect(self.restore)
         self._move_action = action('&Move', self, transparent_icon(self))
@@ -1170,6 +1220,7 @@ class TitleBar(QtWidgets.QFrame):
             self._unshade.hide()
             self._shade.show()
 
+
 class SizeFrame(QtCore.QObject):
     '''An invisible frame for resizing events around a window.'''
 
@@ -1495,12 +1546,14 @@ class SizeFrame(QtCore.QObject):
         position = shared.single_point_position(args, event)
         self.update_cursor(self._window.mapToGlobal(position))
 
+
 class SubWindow(QtWidgets.QMdiSubWindow):
     '''Base subclass for a QMdiSubwindow.'''
 
     def __init__(self, parent=None, flags=QtCore.Qt.WindowType(0)):
         super().__init__(parent, flags=flags)
         super().setWidget(QtWidgets.QWidget())
+
 
 class DefaultSubWindow(SubWindow):
     '''Default subwindow with a window frame.'''
@@ -1512,6 +1565,7 @@ class DefaultSubWindow(SubWindow):
         sizegrip=False,
     ):
         super().__init__(parent, flags=flags)
+
 
 class FramelessSubWindow(SubWindow):
     '''Custom subwindow instance without a window frame.'''
@@ -1721,6 +1775,7 @@ class FramelessSubWindow(SubWindow):
         '''Overload since we use a custom maximized for our subwindow.'''
         return self._titlebar.isMaximized()
 
+
 class MdiArea(QtWidgets.QMdiArea):
     '''Override the QMdiArea for window minimization and background color.'''
 
@@ -1817,6 +1872,7 @@ class MdiArea(QtWidgets.QMdiArea):
 
             window.move(point)
             point = shift_row(point, width)
+
 
 class Window(QtWidgets.QMainWindow):
     '''Base subclass for a QMainWindow.'''
@@ -1933,16 +1989,16 @@ class Window(QtWidgets.QMainWindow):
         # widgets since they might not be present (if using Wayland).
 
         has_state = False
-        if has_state or getattr(self, f'_window_frame', None) is not None:
+        if has_state or getattr(self, '_window_frame', None) is not None:
             end_resize(self, 'window')
             has_state = True
-        if has_state or getattr(self, f'_window_resize', None) is not None:
+        if has_state or getattr(self, '_window_resize', None) is not None:
             end_move(self, 'window')
             has_state = True
-        if has_state or getattr(self, f'_window_move', None) is not None:
+        if has_state or getattr(self, '_window_move', None) is not None:
             end_drag(self, 'window')
             has_state = True
-        if has_state or getattr(self, f'_window_drag', None) is not None:
+        if has_state or getattr(self, '_window_drag', None) is not None:
             end_frame(self, 'window')
             has_state = True
         if has_state or self._subwindow_frame is not None:
@@ -2019,6 +2075,7 @@ class Window(QtWidgets.QMainWindow):
 
         return super().eventFilter(obj, event)
 
+
 class DefaultWindow(Window):
     '''Default main window with a window frame.'''
 
@@ -2041,6 +2098,7 @@ class DefaultWindow(Window):
             self.setStatusBar(self._statusbar)
 
         self.setup()
+
 
 class FramelessWindow(Window):
     '''Main window with a custom event filter for all events.'''
@@ -2250,6 +2308,7 @@ class FramelessWindow(Window):
         else:
             self._titlebar.restore()
 
+
 def main():
     'Application entry point'
 
@@ -2263,6 +2322,7 @@ def main():
 
     shared.set_stylesheet(args, app, compat)
     return shared.exec_app(args, app, window, compat)
+
 
 if __name__ == '__main__':
     sys.exit(main())
