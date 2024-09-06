@@ -35,7 +35,14 @@ BreezeStyleSheets is a set of beautiful light and dark stylesheets that render c
 
 Example user interface using the Breeze and BreezeDark stylesheets side-by-side.
 
-![BreezeDark](/assets/Breeze.gif)
+<table cellspacing="0" cellpadding="0">
+  <tbody>
+    <tr>
+      <td><img src="./assets/Breeze Dark.gif" alt="The dark stylesheet demo." ></td>
+      <td><img src="./assets/Breeze Light.gif" alt="The light stylesheet demo." ></td>
+    </tr>
+  </tbody>
+</table>
 
 For an extensive view of screenshots of the theme, see the [gallery](assets/gallery.md).
 
