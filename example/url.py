@@ -57,6 +57,7 @@ def set_palette(widget, role, color):
     palette.setColor(role, color)
     widget.setPalette(palette)
 
+
 def set_link_palette(widget):
     set_palette(widget, compat.Link, colors.LinkColor)
     set_palette(widget, compat.LinkVisited, colors.LinkVisitedColor)
@@ -106,6 +107,7 @@ class Ui:
             set_link_palette(self.issues)
             set_link_palette(self.pulls)
 
+
 def main():
     'Application entry point'
 
@@ -120,6 +122,7 @@ def main():
 
     shared.set_stylesheet(args, app, compat)
     return shared.exec_app(args, app, window, compat)
+
 
 if __name__ == '__main__':
     sys.exit(main())

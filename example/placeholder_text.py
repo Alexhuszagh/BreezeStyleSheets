@@ -60,6 +60,7 @@ def set_palette(widget, role, color):
     palette.setColor(role, color)
     widget.setPalette(palette)
 
+
 def set_placeholder_palette(widget):
     set_palette(widget, compat.PlaceholderText, colors.PlaceholderColor)
 
@@ -97,6 +98,7 @@ class Ui:
             set_placeholder_palette(self.plainTextEdit)
             set_placeholder_palette(self.lineEdit)
 
+
 def main():
     'Application entry point'
 
@@ -111,6 +113,7 @@ def main():
 
     shared.set_stylesheet(args, app, compat)
     return shared.exec_app(args, app, window, compat)
+
 
 if __name__ == '__main__':
     sys.exit(main())

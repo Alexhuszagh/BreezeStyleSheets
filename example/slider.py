@@ -121,5 +121,6 @@ def main():
     shared.set_stylesheet(args, app, compat)
     return shared.exec_app(args, app, window, compat)
 
+
 if __name__ == '__main__':
     sys.exit(main())

@@ -38,11 +38,23 @@ parser.add_argument(
     help='''use the dock manager internal stylesheet.''',
     action='store_true'
 )
+# https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/blob/master/doc/user-guide.md#configuration-flags
+parser.add_argument(
+    '--focus-highlighting',
+    help='''use the focus highlighting (and other configuration flags).''',
+    action='store_true'
+)
+# setConfigFlag
 args, unknown = shared.parse_args(parser)
 QtCore, QtGui, QtWidgets = shared.import_qt(args)
 compat = shared.get_compat_definitions(args)
 
-from PyQtAds import QtAds
+if args.qt_framework == 'pyqt5':
+    from PyQtAds import QtAds  # pyright: ignore[reportMissingImports]
+elif args.qt_framework == 'pyside6':
+    import PySide6QtAds as QtAds  # pyright: ignore[reportMissingImports]
+else:
+    raise ValueError('Only the Qt frameworks "pyqt5" and "pyside6" are supported.')
 
 
 def main():
@@ -55,8 +67,11 @@ def main():
     window.resize(1068, 824)
     widget = QtWidgets.QWidget(window)
     window.setCentralWidget(widget)
-    dock_manager = QtAds.CDockManager(window)
 
+    if args.focus_highlighting:
+        QtAds.CDockManager.setConfigFlag(QtAds.CDockManager.FocusHighlighting, False)
+
+    dock_manager = QtAds.CDockManager(window)
     DockArea = QtAds.DockWidgetArea
 
     # add widgets to the dock manager
@@ -83,6 +98,16 @@ def main():
     table_widget.setMinimumSizeHintMode(QtAds.CDockWidget.MinimumSizeHintFromDockWidget)
     dock_manager.addDockWidget(DockArea.RightDockWidgetArea, table_widget, dock_area)
 
+    tab_widget = QtAds.CDockWidget('Tab Widget')
+    tab = QtWidgets.QTabWidget()
+    tab.setTabPosition(compat.North)
+    tab.addTab(QtWidgets.QWidget(), 'Tab 1')
+    tab.addTab(QtWidgets.QWidget(), 'Tab 2')
+    tab.addTab(QtWidgets.QWidget(), 'Tab 3')
+    tab_widget.setWidget(tab)
+    tab_widget.setMinimumSizeHintMode(QtAds.CDockWidget.MinimumSizeHintFromDockWidget)
+    dock_manager.addDockWidget(DockArea.BottomDockWidgetArea, tab_widget, dock_area)
+
     if not args.use_internal:
         dock_manager.setStyleSheet('')
 
@@ -90,6 +115,7 @@ def main():
     window.setWindowState(compat.WindowMaximized)
     shared.set_stylesheet(args, app, compat)
     return shared.exec_app(args, app, window, compat)
+
 
 if __name__ == '__main__':
     sys.exit(main())
