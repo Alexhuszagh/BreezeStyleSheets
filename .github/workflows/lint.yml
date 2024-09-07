@@ -1,0 +1,76 @@
+name: Linters
+
+on: [push, pull_request]
+
+jobs:
+  lint-version-python:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.11", "3.12"]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylint flake8 pyright
+    - name: Analysing the code with pylint
+      run: |
+        scripts/lint.sh
+
+  lint-os-python:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.10"]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylint flake8 pyright
+    - name: Analysing the code with pylint
+      run: |
+        scripts/lint.sh
+
+  lint-cpp:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]  # TODO: Restore macos-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install clang-tidy
+    - name: Analysing the code with clang-tidy
+      shell: bash
+      run: |
+        set -eux pipefail
+
+        # Windows oddly requires C++20 support due to internal bugs.
+        if [[ "${RUNNER_OS}" == "Windows" ]]; then
+          extra_args="-extra-arg=-std=c++20"
+          passthrough=""
+        elif [[ "${RUNNER_OS}" == "macOS" ]]; then
+          # NOTE: The search paths aren't added by default, and we need C then C++ by default
+          # for our search. This makes the process easier.
+          extra_args="-extra-arg=-std=c++17 -extra-arg=--stdlib=libc++"
+          location="$(xcrun --show-sdk-path)"
+          passthrough="-I${location}/usr/include/c++/v1 -I${location}/usr/include"
+        else
+          extra_args="-extra-arg=-std=c++17"
+          passthrough=""
+        fi
+        clang-tidy -checks=-*,clang-analyzer-*,-clang-analyzer-cplusplus* ${extra_args} example/breeze_theme.hpp -- ${passthrough}

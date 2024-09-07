@@ -1,0 +1,59 @@
+name: Theme
+
+on: [push, pull_request]
+
+jobs:
+  theme-python:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.10"]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        if [[ "${RUNNER_OS}" == "Windows" ]]; then
+          python -m pip install winrt-Windows.UI.ViewManagement winrt-Windows.UI
+        fi
+    - name: Checking our Python imports.
+      run: |
+        scripts/theme.sh
+
+  theme-cpp:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]  # TODO: Restore macos-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Checking our C++ theme detection.
+      shell: bash
+      run: |
+        mkdir -p dist
+        cd dist
+        if [[ "${RUNNER_OS}" == "macOS" ]]; then
+          clang++ ../scripts/test_theme.cpp -o test_theme -std=c++17
+          ./test_theme
+        else
+          g++ ../scripts/test_theme.cpp -o test_theme -std=c++17
+          ./test_theme
+        fi
+
+  theme-cpp-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: ilammy/msvc-dev-cmd@v1
+    - name: Checking our C++ theme detection.
+      run: |
+        mkdir dist -ErrorAction SilentlyContinue
+        cd dist
+        cl ..\scripts\test_theme.cpp /std:c++17 /EHsc /link Advapi32.lib OleAut32.lib
+        .\test_theme.exe

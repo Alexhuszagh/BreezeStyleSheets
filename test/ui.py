@@ -81,7 +81,7 @@ parser.add_argument(
 args, unknown = shared.parse_args(parser)
 QtCore, QtGui, QtWidgets = shared.import_qt(args)
 compat = shared.get_compat_definitions(args)
-ICON_MAP = shared.get_icon_map(args, compat)
+ICON_MAP = shared.get_icon_map(compat)
 
 layout = {
     'vertical': QtWidgets.QVBoxLayout,
@@ -97,6 +97,11 @@ alignment = {
     'right': compat.AlignRight,
     'center': compat.AlignCenter,
 }
+
+
+def is_headless():
+    '''Get if the scripts are running in test mode, that is offscreen.'''
+    return os.environ.get('QT_QPA_PLATFORM') == 'offscreen'
 
 
 def add_widgets(layout, children):
@@ -1731,6 +1736,8 @@ def test_file_icon_provider(widget, *_):
 
 
 def test_dialog(_, window, *__):
+    if is_headless():
+        return None, None, False, False
     dialog = QtWidgets.QDialog(window)
     dialog.setMinimumSize(100, 100)
     shared.execute(args, dialog)
@@ -1739,6 +1746,8 @@ def test_dialog(_, window, *__):
 
 
 def test_modal_dialog(_, window, *__):
+    if is_headless():
+        return None, None, False, False
     dialog = QtWidgets.QDialog(window)
     dialog.setMinimumSize(100, 100)
     dialog.setModal(True)
@@ -1748,6 +1757,8 @@ def test_modal_dialog(_, window, *__):
 
 
 def test_sizegrip_dialog(_, window, *__):
+    if is_headless():
+        return None, None, False, False
     dialog = QtWidgets.QDialog(window)
     dialog.setMinimumSize(100, 100)
     dialog.setSizeGripEnabled(True)
@@ -1757,6 +1768,8 @@ def test_sizegrip_dialog(_, window, *__):
 
 
 def test_colordialog(*_):
+    if is_headless():
+        return None, None, False, False
     initial = QtGui.QColor()
     QtWidgets.QColorDialog.getColor(initial)
 
@@ -1764,6 +1777,8 @@ def test_colordialog(*_):
 
 
 def test_alpha_colordialog(*_):
+    if is_headless():
+        return None, None, False, False
     initial = QtGui.QColor()
     QtWidgets.QColorDialog.getColor(initial, options=compat.ColorShowAlphaChannel)
 
@@ -1771,6 +1786,8 @@ def test_alpha_colordialog(*_):
 
 
 def test_nobuttons_colordialog(*_):
+    if is_headless():
+        return None, None, False, False
     initial = QtGui.QColor()
     QtWidgets.QColorDialog.getColor(initial, options=compat.ColorNoButtons)
 
@@ -1778,6 +1795,8 @@ def test_nobuttons_colordialog(*_):
 
 
 def test_qt_colordialog(*_):
+    if is_headless():
+        return None, None, False, False
     initial = QtGui.QColor()
     QtWidgets.QColorDialog.getColor(initial, options=compat.ColorDontUseNativeDialog)
 
@@ -1785,6 +1804,8 @@ def test_qt_colordialog(*_):
 
 
 def test_fontdialog(*_):
+    if is_headless():
+        return None, None, False, False
     initial = QtGui.QFont()
     QtWidgets.QFontDialog.getFont(initial)
 
@@ -1792,6 +1813,8 @@ def test_fontdialog(*_):
 
 
 def test_nobuttons_fontdialog(*_):
+    if is_headless():
+        return None, None, False, False
     initial = QtGui.QFont()
     QtWidgets.QFontDialog.getFont(initial, options=compat.FontNoButtons)
 
@@ -1799,6 +1822,8 @@ def test_nobuttons_fontdialog(*_):
 
 
 def test_qt_fontdialog(*_):
+    if is_headless():
+        return None, None, False, False
     initial = QtGui.QFont()
     QtWidgets.QFontDialog.getFont(initial, options=compat.FontDontUseNativeDialog)
 
@@ -1806,6 +1831,8 @@ def test_qt_fontdialog(*_):
 
 
 def test_filedialog(_, window, *__):
+    if is_headless():
+        return None, None, False, False
     dialog = QtWidgets.QFileDialog(window)
     dialog.setFileMode(compat.Directory)
     shared.execute(args, dialog)
@@ -1814,6 +1841,8 @@ def test_filedialog(_, window, *__):
 
 
 def test_qt_filedialog(_, window, *__):
+    if is_headless():
+        return None, None, False, False
     dialog = QtWidgets.QFileDialog(window)
     dialog.setOption(compat.FileDontUseNativeDialog)
     shared.execute(args, dialog)
@@ -1822,6 +1851,8 @@ def test_qt_filedialog(_, window, *__):
 
 
 def test_error_message(widget, *_):
+    if is_headless():
+        return None, None, False, False
     dialog = QtWidgets.QErrorMessage(widget)
     dialog.showMessage('Error message')
     shared.execute(args, dialog)
@@ -1834,7 +1865,8 @@ def test_progress_dialog(_, window, __, ___, ____, app):
     dialog.setMinimumDuration(0)
     dialog.setMinimumSize(300, 100)
     dialog.show()
-    for i in range(1, 101):
+    count = 5 if is_headless() else 100
+    for i in range(1, count + 1):
         dialog.setValue(i)
         app.processEvents()
         time.sleep(0.02)
@@ -1846,6 +1878,8 @@ def test_progress_dialog(_, window, __, ___, ____, app):
 
 
 def test_input_dialog(_, window, *__):
+    if is_headless():
+        return None, None, False, False
     dialog = QtWidgets.QInputDialog(window)
     shared.execute(args, dialog)
 
@@ -1853,6 +1887,8 @@ def test_input_dialog(_, window, *__):
 
 
 def test_int_input_dialog(_, window, *__):
+    if is_headless():
+        return None, None, False, False
     dialog = QtWidgets.QInputDialog(window)
     dialog.setInputMode(compat.IntInput)
     shared.execute(args, dialog)
@@ -1861,6 +1897,8 @@ def test_int_input_dialog(_, window, *__):
 
 
 def test_double_input_dialog(_, window, *__):
+    if is_headless():
+        return None, None, False, False
     dialog = QtWidgets.QInputDialog(window)
     dialog.setInputMode(compat.DoubleInput)
     shared.execute(args, dialog)
@@ -1869,6 +1907,8 @@ def test_double_input_dialog(_, window, *__):
 
 
 def test_combobox_input_dialog(_, window, *__):
+    if is_headless():
+        return None, None, False, False
     dialog = QtWidgets.QInputDialog(window)
     dialog.setComboBoxItems(['Item 1', 'Item 2'])
     shared.execute(args, dialog)
@@ -1877,6 +1917,8 @@ def test_combobox_input_dialog(_, window, *__):
 
 
 def test_list_input_dialog(_, window, *__):
+    if is_headless():
+        return None, None, False, False
     dialog = QtWidgets.QInputDialog(window)
     dialog.setComboBoxItems(['Item 1', 'Item 2'])
     dialog.setOption(compat.UseListViewForComboBoxItems)
@@ -1886,6 +1928,8 @@ def test_list_input_dialog(_, window, *__):
 
 
 def test_nobuttons_input_dialog(_, window, *__):
+    if is_headless():
+        return None, None, False, False
     dialog = QtWidgets.QInputDialog(window)
     dialog.setComboBoxItems(['Item 1', 'Item 2'])
     dialog.setOption(compat.InputNoButtons)
@@ -1939,6 +1983,8 @@ def _wizard(widget):
 
 
 def test_wizard(widget, *_):
+    if is_headless():
+        return None, None, False, False
     wizard = _wizard(widget)
     shared.execute(args, wizard)
 
@@ -1946,6 +1992,8 @@ def test_wizard(widget, *_):
 
 
 def test_classic_wizard(widget, *_):
+    if is_headless():
+        return None, None, False, False
     wizard = _wizard(widget)
     wizard.setWizardStyle(compat.ClassicStyle)
     shared.execute(args, wizard)
@@ -1954,6 +2002,8 @@ def test_classic_wizard(widget, *_):
 
 
 def test_modern_wizard(widget, *_):
+    if is_headless():
+        return None, None, False, False
     wizard = _wizard(widget)
     wizard.setWizardStyle(compat.ModernStyle)
     shared.execute(args, wizard)
@@ -1962,6 +2012,8 @@ def test_modern_wizard(widget, *_):
 
 
 def test_mac_wizard(widget, *_):
+    if is_headless():
+        return None, None, False, False
     wizard = _wizard(widget)
     wizard.setWizardStyle(compat.MacStyle)
     shared.execute(args, wizard)
@@ -1970,6 +2022,8 @@ def test_mac_wizard(widget, *_):
 
 
 def test_aero_wizard(widget, *_):
+    if is_headless():
+        return None, None, False, False
     wizard = _wizard(widget)
     wizard.setWizardStyle(compat.AeroStyle)
     shared.execute(args, wizard)
@@ -1978,6 +2032,8 @@ def test_aero_wizard(widget, *_):
 
 
 def test_system_tray(widget, window, *_):
+    if is_headless():
+        return None, None, False, False
     dialog = QtWidgets.QErrorMessage(widget)
     dialog.showMessage('Hey! System tray icon.')
 
@@ -1993,6 +2049,8 @@ def test_system_tray(widget, window, *_):
 
 
 def _test_standard_button(window, app, button):
+    if is_headless():
+        return None, None, False, False
     message = QtWidgets.QMessageBox(window)
     message.addButton(button)
     message.setMinimumSize(100, 100)
@@ -2065,6 +2123,8 @@ def test_discard_button(_, window, __, ___, ____, app):
 
 
 def _test_standard_icon(window, app, icon):
+    if is_headless():
+        return None, None, False, False
     message = QtWidgets.QMessageBox(window)
     message.setIcon(icon)
     message.setMinimumSize(100, 100)
@@ -2190,6 +2250,8 @@ def test_disabled_menubar(widget, window, font, width, *_):
 
 
 def test_issue25(widget, window, font, width, *_):
+    if is_headless():
+        return None, None, False, False
 
     def launch_filedialog(folder):
         dialog = QtWidgets.QFileDialog()
@@ -2303,6 +2365,8 @@ def test_issue25(widget, window, font, width, *_):
 
 
 def test_issue28(_, window, *__):
+    if is_headless():
+        return
     dialog = QtWidgets.QFileDialog(window)
     dialog.setFileMode(compat.Directory)
     shared.execute(args, dialog)
@@ -2369,9 +2433,12 @@ def test(args, test_widget):
     # run
     if show_window:
         window.show()
-    if quit:
+    if is_headless():
+        window.close()
+    if quit or is_headless():
         return app.quit()
-    return shared.execute(args, app)
+    elif not is_headless():
+        return shared.execute(args, app)
 
 
 def main():

@@ -5,6 +5,8 @@
     Shared imports and compatibility definitions between Qt5 and Qt6.
 '''
 
+# pylint: disable=import-error
+
 import argparse
 import importlib
 import logging
@@ -22,9 +24,7 @@ IS_DARK = None
 def create_parser():
     '''Create an argparser with the base settings for all Qt applications.'''
 
-    parser = argparse.ArgumentParser(
-        description='Configurations for the Qt5 application.'
-    )
+    parser = argparse.ArgumentParser(description='Configurations for the Qt5 application.')
     parser.add_argument(
         '--stylesheet',
         help='stylesheet name (`dark`, `light`, `native`, `auto`, ...)',
@@ -38,16 +38,8 @@ def create_parser():
         help='application style (`Fusion`, `Windows`, `native`, ...)',
         default='native',
     )
-    parser.add_argument(
-        '--font-size',
-        help='font size for the application',
-        type=float,
-        default=-1
-    )
-    parser.add_argument(
-        '--font-family',
-        help='the font family'
-    )
+    parser.add_argument('--font-size', help='font size for the application', type=float, default=-1)
+    parser.add_argument('--font-family', help='the font family')
     parser.add_argument(
         '--scale',
         help='scale factor for the UI',
@@ -61,14 +53,10 @@ def create_parser():
             'Note: building for PyQt6 requires PySide6-rcc to be installed.'
         ),
         choices=['pyqt5', 'pyqt6', 'pyside2', 'pyside6'],
-        default='pyqt5'
+        default='pyqt5',
     )
     # Linux or Unix-like only.
-    parser.add_argument(
-        '--use-x11',
-        help='force the use of x11 on compatible systems.',
-        action='store_true'
-    )
+    parser.add_argument('--use-x11', help='force the use of x11 on compatible systems.', action='store_true')
 
     return parser
 
@@ -102,7 +90,7 @@ def parse_args(parser):
 
 def is_qt6(args):
     '''Get if we're using Qt6 and not Qt5.'''
-    return args.qt_framework == 'pyqt6' or args.qt_framework == 'pyside6'
+    return args.qt_framework in ('pyqt6', 'pyside6')
 
 
 def import_qt(args, load_resources=True):
@@ -116,6 +104,8 @@ def import_qt(args, load_resources=True):
         from PyQt5 import QtCore, QtGui, QtWidgets  # pyright: ignore[reportMissingImports]
     elif args.qt_framework == 'pyside2':
         from PySide2 import QtCore, QtGui, QtWidgets  # pyright: ignore[reportMissingImports]
+    else:
+        raise ValueError(f'Got an invalid Qt framework of "{args.qt_framework}".')
 
     if load_resources:
         sys.path.insert(0, f'{home}/resources')
@@ -135,16 +125,16 @@ def get_stylesheet(resource_format):
 
 
 def get_version(args):
+    '''Get the current version of the Qt library.'''
     QtCore, _, __ = import_qt(args, load_resources=False)
-    if args.qt_framework == 'pyqt5' or args.qt_framework == 'pyqt6':
+    if args.qt_framework in ('pyqt5', 'pyqt6'):
         # QT_VERSION is stored in 0xMMmmpp, each in 8 bit pairs.
         # Goes major, minor, patch. 393984 is "6.3.0"
         return (QtCore.QT_VERSION >> 16, (QtCore.QT_VERSION >> 8) & 0xFF, QtCore.QT_VERSION & 0xFF)
-    else:
-        return QtCore.__version_info__[:3]
+    return QtCore.__version_info__[:3]
 
 
-def get_compat_definitions(args):
+def get_compat_definitions(args):  # pylint: disable=too-many-statements
     '''Create our compatibility definitions.'''
 
     ns = argparse.Namespace()
@@ -154,7 +144,7 @@ def get_compat_definitions(args):
     ns.QtWidgets = QtWidgets
 
     # ensure we store the QT_VERSION
-    if args.qt_framework == 'pyqt5' or args.qt_framework == 'pyqt6':
+    if args.qt_framework in ('pyqt5', 'pyqt6'):
         # QT_VERSION is stored in 0xMMmmpp, each in 8 bit pairs.
         # Goes major, minor, patch. 393984 is "6.3.0"
         ns.QT_VERSION = (QtCore.QT_VERSION >> 16, (QtCore.QT_VERSION >> 8) & 0xFF, QtCore.QT_VERSION & 0xFF)
@@ -854,7 +844,7 @@ def get_colors(args, compat):
     return ns
 
 
-def get_icon_map(args, compat):
+def get_icon_map(compat):
     '''Create a map of standard icons to resource paths.'''
 
     icon_map = {
@@ -1006,6 +996,8 @@ def is_dark_mode(compat, reinitialize=False):
 
 
 def read_qtext_file(path, compat):
+    '''Read the Qt text resource.'''
+
     file = compat.QtCore.QFile(path)
     file.open(compat.ReadOnly | compat.Text)
     stream = compat.QtCore.QTextStream(file)
@@ -1021,10 +1013,12 @@ def set_stylesheet(args, app, compat):
         app.setStyleSheet(read_qtext_file(stylesheet, compat))
 
 
-def exec_app(args, app, window, compat):
+def exec_app(args, app, window):
     '''Show and execute the Qt application.'''
 
     window.show()
+    if os.environ.get('QT_QPA_PLATFORM') == 'offscreen':
+        return app.quit()
     return execute(args, app)
 
 

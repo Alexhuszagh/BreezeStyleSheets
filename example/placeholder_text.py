@@ -33,19 +33,20 @@
     and palette edits correctly affect styles in Qt5, but not Qt6.
 '''
 
-import shared
+# pylint: disable=duplicate-code
+
 import sys
+
+import shared
 
 parser = shared.create_parser()
 parser.add_argument(
-    '--set-app-palette',
-    help='''set the placeholder text palette globally.''',
-    action='store_true'
+    '--set-app-palette', help='''set the placeholder text palette globally.''', action='store_true'
 )
 parser.add_argument(
     '--set-widget-palette',
     help='''set the placeholder text palette for the affected widgets.''',
-    action='store_true'
+    action='store_true',
 )
 args, unknown = shared.parse_args(parser)
 QtCore, QtGui, QtWidgets = shared.import_qt(args)
@@ -54,7 +55,7 @@ colors = shared.get_colors(args, compat)
 
 
 def set_palette(widget, role, color):
-    '''Set the palette for the placeholder text. This only works in Qt5.'''
+    '''Set the palette for a widget.'''
 
     palette = widget.palette()
     palette.setColor(role, color)
@@ -62,6 +63,7 @@ def set_palette(widget, role, color):
 
 
 def set_placeholder_palette(widget):
+    '''Set the palette for the placeholder text. This only works in Qt5.'''
     set_palette(widget, compat.PlaceholderText, colors.PlaceholderColor)
 
 
@@ -69,6 +71,8 @@ class Ui:
     '''Main class for the user interface.'''
 
     def setup(self, MainWindow):
+        '''Setup our main window for the UI.'''
+
         MainWindow.setObjectName('MainWindow')
         MainWindow.resize(1068, 824)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -112,7 +116,7 @@ def main():
     window.setWindowTitle('Stylized Placeholder Text.')
 
     shared.set_stylesheet(args, app, compat)
-    return shared.exec_app(args, app, window, compat)
+    return shared.exec_app(args, app, window)
 
 
 if __name__ == '__main__':

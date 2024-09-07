@@ -31,14 +31,13 @@
     supports highlighting the handle on the active or hovered dial.
 '''
 
-import shared
 import sys
+
+import shared
 
 parser = shared.create_parser()
 parser.add_argument(
-    '--no-align',
-    help='''allow larger widgets without forcing alignment.''',
-    action='store_true'
+    '--no-align', help='''allow larger widgets without forcing alignment.''', action='store_true'
 )
 args, unknown = shared.parse_args(parser)
 QtCore, QtGui, QtWidgets = shared.import_qt(args)
@@ -72,6 +71,8 @@ class Ui:
     '''Main class for the user interface.'''
 
     def setup(self, MainWindow):
+        '''Setup our main window for the UI.'''
+
         MainWindow.setObjectName('MainWindow')
         MainWindow.resize(1068, 824)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -118,7 +119,7 @@ def main():
     window.setWindowTitle('QLCDNumber')
 
     shared.set_stylesheet(args, app, compat)
-    return shared.exec_app(args, app, window, compat)
+    return shared.exec_app(args, app, window)
 
 
 if __name__ == '__main__':
