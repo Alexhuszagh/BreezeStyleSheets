@@ -273,7 +273,7 @@ _advapi32: typing.Optional['ctypes.CDLL'] = None
 # region macos
 
 
-def macos_supported_version() -> bool:
+def _macos_supported_version() -> bool:
     '''Determine if we use a support macOS version.'''
 
     # NOTE: This is typically 10.14.2 or 12.3
@@ -292,8 +292,14 @@ def macos_supported_version() -> bool:
 def _get_theme_macos() -> Theme:
     '''Get the current theme, as light or dark, for the system on macOS.'''
 
+    # old macOS versions were always light
+    if not _macos_supported_version():
+        return Theme.LIGHT
+
     # NOTE: This can segfault on M1 and M2 Macs on Big Sur 11.4+. So, we also
-    # try reading directly using subprocess.
+    # try reading directly using subprocess. Specifically, it's documented that
+    # if dark mode is set, this command returns `Dark`, otherwise it returns
+    # that the key pair doesn't exist.
     try:
         command = ['defaults', 'read', '-globalDomain', 'AppleInterfaceStyle']
         process = subprocess.run(command, capture_output=True, check=True)
@@ -538,7 +544,7 @@ def listener(callback: CallbackFn) -> None:
 def register_functions() -> tuple[ThemeFn, ListenerFn]:
     '''Register our global functions for our themes and listeners.'''
 
-    if sys.platform == 'darwin' and macos_supported_version():
+    if sys.platform == 'darwin':
         return (_get_theme_macos, _listener_macos)
     if sys.platform == 'win32' and platform.release().isdigit() and int(platform.release()) >= 10:
         # Checks if running Windows 10 version 10.0.14393 (Anniversary Update) OR HIGHER.
