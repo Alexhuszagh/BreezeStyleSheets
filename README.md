@@ -45,6 +45,17 @@ Example user interface using the Breeze and BreezeDark stylesheets side-by-side.
   </tbody>
 </table>
 
+Alternative themes - Change QTableWidget hover behavior to highlight whole row, instead of individual cells.
+
+<table cellspacing="0" cellpadding="0">
+  <tbody>
+    <tr>
+      <td><img src="./assets/dark-blue.png" alt="Dark blue standard demo" ></td>
+      <td><img src="./assets/dark-blue-alt.png" alt="Dark blue alt demo" ></td>
+    </tr>
+  </tbody>
+</table>
+
 For an extensive view of screenshots of the theme, see the [gallery](assets/gallery.md).
 
 # Customization
