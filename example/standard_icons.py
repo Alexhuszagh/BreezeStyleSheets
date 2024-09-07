@@ -186,7 +186,7 @@ class Ui:
             'SP_DialogIgnoreButton',
             'SP_RestoreDefaultsButton',
         ]
-        if shared.get_version(args) >= (6, 3, 0):
+        if compat.QT_VERSION >= (6, 3, 0):
             default_icons.append('SP_TabCloseButton')
         add_standard_buttons(self, self.page2, default_icons)
 

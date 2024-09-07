@@ -9,6 +9,7 @@ BreezeStyleSheets is a set of beautiful light and dark stylesheets that render c
 
 - [Gallery](#gallery)
 - [Customization](#customization)
+- [Examples](#examples)
 - [Features](#features)
   - [Extensions](#extensions)
 - [Extending Stylesheets](#extending-stylesheets)
@@ -183,6 +184,18 @@ python configure.py --extensions=advanced-docking-system --resource custom.qrc
 ```
 
 Like with styles, `--extensions` takes a comma-separated list of values, or `all`, which will add every extension present in the [extensions](/extension) directory. For a detailed introduction to creating your own extensions, see the extensions [tutorial](/extension/README.md).
+
+# Examples
+
+Many examples of widgets using [custom themes](/example/widgets.py), including with the [Advanced Docking System](/example/advanced-dock.py), [custom icons](/example/standard_icons.py), and [titlebars](/example/titlebar.py) can be found in the [example](/example/) directory.
+
+The support stylesheets include:
+- `dark`
+- `light`
+- `auto`
+- `native` (the system native theme)
+
+And any `-purple`, `-green`, etc. variants can also be used. `auto` will automatically detect if the system theme is light or dark and select the correct theme accordingly.
 
 # Features
 

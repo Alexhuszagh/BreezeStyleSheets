@@ -7,12 +7,16 @@
 
 import argparse
 import importlib
+import logging
 import os
 import sys
+
+import breeze_theme
 
 example_dir = os.path.dirname(os.path.realpath(__file__))
 home = os.path.dirname(example_dir)
 dist = os.path.join(home, 'dist')
+IS_DARK = None
 
 
 def create_parser():
@@ -23,7 +27,7 @@ def create_parser():
     )
     parser.add_argument(
         '--stylesheet',
-        help='stylesheet name (`dark`, `light`, `native`, ...)',
+        help='stylesheet name (`dark`, `light`, `native`, `auto`, ...)',
         default='native',
     )
     # Know working styles include:
@@ -82,6 +86,17 @@ def parse_args(parser):
         os.environ['XDG_SESSION_TYPE'] = 'x11'
         os.environ['QT_QPA_PLATFORM'] = 'xcb'
 
+    # now we need to normalize our theme
+    if args.stylesheet.startswith('auto'):
+        theme = breeze_theme.theme()
+        if theme == breeze_theme.Theme.DARK:
+            args.stylesheet = args.stylesheet.replace('auto', 'dark', 1)
+        elif theme == breeze_theme.Theme.LIGHT:
+            args.stylesheet = args.stylesheet.replace('auto', 'light', 1)
+        else:
+            logging.warning('Unknown an unknown system theme, falling back to the system native theme.')
+            args.stylesheet = 'native'
+
     return args, unknown
 
 
@@ -137,6 +152,15 @@ def get_compat_definitions(args):
     ns.QtCore = QtCore
     ns.QtGui = QtGui
     ns.QtWidgets = QtWidgets
+
+    # ensure we store the QT_VERSION
+    if args.qt_framework == 'pyqt5' or args.qt_framework == 'pyqt6':
+        # QT_VERSION is stored in 0xMMmmpp, each in 8 bit pairs.
+        # Goes major, minor, patch. 393984 is "6.3.0"
+        ns.QT_VERSION = (QtCore.QT_VERSION >> 16, (QtCore.QT_VERSION >> 8) & 0xFF, QtCore.QT_VERSION & 0xFF)
+    else:
+        ns.QT_VERSION = QtCore.__version_info__[:3]
+
     if is_qt6(args):
         # Scoped enums.
         ns.Orientation = QtCore.Qt.Orientation
@@ -356,7 +380,7 @@ def get_compat_definitions(args):
         ns.SP_DialogRetryButton = ns.StandardPixmap.SP_DialogRetryButton
         ns.SP_DialogIgnoreButton = ns.StandardPixmap.SP_DialogIgnoreButton
         ns.SP_RestoreDefaultsButton = ns.StandardPixmap.SP_RestoreDefaultsButton
-        if get_version(args) >= (6, 3, 0):
+        if ns.QT_VERSION >= (6, 3, 0):
             ns.SP_TabCloseButton = ns.StandardPixmap.SP_TabCloseButton
         ns.SP_MessageBoxCritical = ns.StandardPixmap.SP_MessageBoxCritical
         ns.SP_MessageBoxInformation = ns.StandardPixmap.SP_MessageBoxInformation
@@ -790,7 +814,7 @@ def get_colors(args, compat):
     ns.ViewBackground = compat.QtGui.QColor(0, 0, 0)
     ns.TabBackground = compat.QtGui.QColor(0, 0, 0)
     ns.HighLightDark = compat.QtGui.QColor(255, 0, 0)
-    if 'dark' in args.stylesheet:
+    if args.stylesheet.startswith('dark'):
         ns.Background = compat.QtGui.QColor(49, 54, 59)
         ns.Foreground = compat.QtGui.QColor(239, 240, 241)
         ns.GrooveBackground = compat.QtGui.QColor(98, 101, 104)
@@ -808,7 +832,7 @@ def get_colors(args, compat):
         ns.HighLightDark = compat.QtGui.QColor(42, 121, 163)
         ns.LinkColor = compat.QtGui.QColor(88, 166, 255)
         ns.LinkVisitedColor = compat.QtGui.QColor(255, 88, 250)
-    elif 'light' in args.stylesheet:
+    elif args.stylesheet.startswith('light'):
         ns.Background = compat.QtGui.QColor(239, 240, 241)
         ns.Foreground = compat.QtGui.QColor(49, 54, 59)
         ns.GrooveBackground = compat.QtGui.QColor(106, 105, 105, 179)
@@ -913,7 +937,7 @@ def get_icon_map(args, compat):
         compat.SP_DialogIgnoreButton: 'dialog_ignore.svg',
         compat.SP_RestoreDefaultsButton: 'restore_defaults.svg',
     }
-    if get_version(args) > (6, 3, 0):
+    if compat.QT_VERSION > (6, 3, 0):
         icon_map[compat.SP_TabCloseButton] = 'tab_close.svg'
 
     return icon_map
@@ -931,6 +955,8 @@ def setup_app(args, unknown, compat, style_class=None, window_class=None):
     is_initial = app is None
     if app is None:
         app = compat.QtWidgets.QApplication(sys.argv[:1] + unknown)
+        # NOTE: Need to detect if the style is dark mode here
+        _ = is_dark_mode(compat)
     if args.style != 'native':
         style = compat.QtWidgets.QStyleFactory.create(args.style)
         if style_class is not None:
@@ -952,6 +978,31 @@ def setup_app(args, unknown, compat, style_class=None, window_class=None):
         app.setFont(font)
 
     return app, window
+
+
+def is_dark_mode(compat, reinitialize=False):
+    '''Determine if the system theme is in dark mode.'''
+
+    global IS_DARK
+
+    if IS_DARK is not None and not reinitialize:
+        return IS_DARK
+
+    app = compat.QtWidgets.QApplication.instance()
+    if app is None:
+        raise RuntimeError('Must initialize the global application prior to getting dark mode.')
+
+    if compat.QT_VERSION >= (6, 5, 0):
+        color_scheme = app.styleHints().colorScheme()
+        IS_DARK = color_scheme == color_scheme.__class__.Dark
+    else:
+        # NOTE: This does not work, it only gives the default app color
+        # which on early versions of Qt defaults to the application style.
+        text = app.palette().windowText().color()
+        window = app.palette().window().color()
+        IS_DARK = window.lightness() > text.lightness()
+
+    return IS_DARK
 
 
 def read_qtext_file(path, compat):
