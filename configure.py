@@ -328,10 +328,15 @@ def configure_style(config, style, qt_dist):
 def write_qrc(config, qt_dist):
     '''Simple QRC writer.'''
 
+    # NOTE: We also want to create aliases for light-blue and dark-blue from our
+    # light and dark. See:
+    #   https://github.com/Alexhuszagh/BreezeStyleSheets/pull/101#issuecomment-2336476041
     resources = []
     for style in config['themes'].keys():
         files = os.listdir(f'{qt_dist}/{style}')
         resources += [f'{style}/{i}' for i in files]
+    resources += ['dark-blue/stylesheet.qss', 'light-blue/stylesheet.qss']
+
     qrc_path = config['resource']
     if not os.path.isabs(qrc_path):
         qrc_path = f'{qt_dist}/{qrc_path}'
@@ -406,6 +411,14 @@ def configure(args):
     args.output_dir.mkdir(parents=True, exist_ok=True)
     for style in config['themes']:
         configure_style(config, style, str(args.output_dir))
+
+    # create aliases for our light and dark styles to light-blue and dark-blue
+    # FIXME: Invert the order: light should be an alias of light-blue, etc.
+    for theme in ('dark', 'light'):
+        source = args.output_dir / theme / 'stylesheet.qss'
+        destination = args.output_dir / f'{theme}-blue' / 'stylesheet.qss'
+        destination.parent.mkdir(exist_ok=True)
+        shutil.copy2(source, destination)
 
     # Create and compile our resource files.
     if not args.no_qrc:
