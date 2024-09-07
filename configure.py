@@ -15,12 +15,14 @@ import re
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
-home = os.path.dirname(os.path.realpath(__file__))
-dist = os.path.join(home, 'dist')
-template_dir = os.path.join(home, 'template')
-theme_dir = os.path.join(home, 'theme')
-extension_dir = os.path.join(home, 'extension')
+home_dir = os.path.dirname(os.path.realpath(__file__))
+dist_dir = os.path.join(home_dir, 'dist')
+resources_dir = os.path.join(home_dir, 'resources')
+template_dir = os.path.join(home_dir, 'template')
+theme_dir = os.path.join(home_dir, 'theme')
+extension_dir = os.path.join(home_dir, 'extension')
 
 
 def parse_args(argv=None):
@@ -51,7 +53,13 @@ def parse_args(argv=None):
     parser.add_argument(
         '--no-qrc',
         help='do not build QRC resources.',
-        action='store_true'
+        action='store_true',
+    )
+    parser.add_argument(
+        '--output-dir',
+        help='the default output directory path',
+        default=Path(dist_dir),
+        type=Path,
     )
     parser.add_argument(
         '--qt-framework',
@@ -304,7 +312,7 @@ def configure_stylesheet(config, style, qt_dist, style_prefix):
         file.write(contents)
 
 
-def configure_style(config, style):
+def configure_style(config, style, qt_dist):
     '''Configure the icons and stylesheet for a given style.'''
 
     def configure_qt(qt_dist, style_prefix):
@@ -317,17 +325,20 @@ def configure_style(config, style):
     # assets. This uses the resource system, AKA,
     # `url(:/dark/path/to/resource)`.
     if not config['no_qrc']:
-        configure_qt(dist, f':/{style}/')
+        configure_qt(qt_dist, f':/{style}/')
 
 
-def write_qrc(config):
+def write_qrc(config, qt_dist):
     '''Simple QRC writer.'''
 
     resources = []
     for style in config['themes'].keys():
-        files = os.listdir(f'{dist}/{style}')
+        files = os.listdir(f'{qt_dist}/{style}')
         resources += [f'{style}/{i}' for i in files]
-    with open(f'{dist}/{config["resource"]}', 'w') as file:
+    qrc_path = config['resource']
+    if not os.path.isabs(qrc_path):
+        qrc_path = f'{qt_dist}/{qrc_path}'
+    with open(qrc_path, 'w') as file:
         print('<RCC>', file=file)
         print('  <qresource>', file=file)
         for resource in sorted(resources):
@@ -340,7 +351,7 @@ def configure(args):
     '''Configure all styles and write the files to a QRC file.'''
 
     if args.clean:
-        shutil.rmtree(dist, ignore_errors=True)
+        shutil.rmtree(args.output_dir, ignore_errors=True)
 
     # Need to convert our styles accordingly.
     config = {
@@ -355,22 +366,23 @@ def configure(args):
     for extension in args.extensions:
         config['templates'].append(read_template_dir(f'{extension_dir}/{extension}'))
 
+    args.output_dir.mkdir(parents=True, exist_ok=True)
     for style in config['themes'].keys():
-        configure_style(config, style)
+        configure_style(config, style, str(args.output_dir))
 
     # Create and compile our resource files.
     if not args.no_qrc:
-        write_qrc(config)
+        write_qrc(config, str(args.output_dir))
     if args.compiled_resource is not None:
         rcc = parse_rcc(args)
+        resource_path = args.resource
+        compiled_resource_path = args.compiled_resource
+        if not os.path.isabs(resource_path):
+            resource_path = f'{args.output_dir}/{resource_path}'
+        if not os.path.isabs(compiled_resource_path):
+            compiled_resource_path = f'{resources_dir}/{compiled_resource_path}'
 
-        command = [
-            rcc,
-            f'{dist}/{args.resource}',
-            '-o',
-            f'{home}/{args.compiled_resource}'
-        ]
-
+        command = [rcc, resource_path, '-o', compiled_resource_path]
         try:
             subprocess.check_output(
                 command,
@@ -398,7 +410,7 @@ def configure(args):
             raise SystemExit
 
         if args.qt_framework == "pyqt6":
-            fix_qt6_import(f'{home}/{args.compiled_resource}')
+            fix_qt6_import(compiled_resource_path)
 
 
 def fix_qt6_import(compiled_file):
