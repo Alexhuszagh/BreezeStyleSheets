@@ -11,8 +11,7 @@
  *  This currently supports:
  *  - Windows
  *  - Linux
- *
- *  Enhancements for macOS would be greatly appreciated.
+ *  - macOS
  *
  *  This is subject to the following license terms:
  *
@@ -96,14 +95,17 @@
 
 #include <algorithm>
 #include <array>
+#include <cctype>
 #include <cstdio>
 #include <cstdint>
 #include <filesystem>
 #include <iostream>
+#include <locale>
 #include <memory>
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -156,6 +158,8 @@ namespace breeze_stylesheets
             start = end + 1;
             end = value.find(delimiter, start);
         }
+        if (start != end)
+            result.emplace_back(value.substr(start, end - start));
 
         return result;
     }
@@ -167,6 +171,41 @@ namespace breeze_stylesheets
     _to_ascii_lowercase(char c)
     {
         return (c <= 'Z' && c >= 'A') ? c - ('Z' - 'z') : c;
+    }
+
+    /// @brief Trim from the start (in place).
+    /// @param s The string to trim.
+    inline void
+    _ltrim(::std::string &s)
+    {
+        s.erase(s.begin(), ::std::find_if(s.begin(), s.end(), [](unsigned char ch)  { return !::std::isspace(ch); }));
+    }
+
+    /// @brief Trim from the end (in place).
+    /// @param s The string to trim.
+    inline void
+    _rtrim(::std::string &s)
+    {
+        s.erase(::std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !::std::isspace(ch); }).base(), s.end());
+    }
+
+    /// @brief Trim from both ends (in place).
+    /// @param s The string to trim.
+    inline void
+    _trim(::std::string &s)
+    {
+        _rtrim(s);
+        _ltrim(s);
+    }
+
+    /// @brief Check if a string contains a substring.
+    /// @param value The full string to search.
+    /// @param substr The substring to search for.
+    /// @return If value contains substr.
+    inline bool
+    _contains(const ::std::string &value, const ::std::string &substr)
+    {
+        return value.find(substr) != ::std::string::npos;
     }
 
     #if __APPLE__ || __linux__
@@ -362,7 +401,7 @@ namespace breeze_stylesheets
         return ::std::make_tuple(
             int32_t(major),
             int32_t(minor),
-            std::stoi(build),
+            ::std::stoi(build),
             int32_t(platformId),
             int32_t(0),
             int32_t(0)
@@ -408,10 +447,81 @@ namespace breeze_stylesheets
     }
 
     #elif __APPLE__
-    #   error "macOS not yet supported."
-    #elif __linux__
 
-    /// @brief Get the current system theme. This requires Windows 10+.
+    /// @brief Get if the macOS version supports theme detection.
+    /// @return If the macOS version supports theme detection.
+    inline bool
+    _macos_supported_version()
+    {
+        // This gives an output similar to:
+        //  ProductName:    Mac OS X
+        //  ProductVersion: 10.12.5
+        //  BuildVersion:   16F73
+        auto [stdout, code] = _run_command("sw_vers r");
+        if (code != EXIT_SUCCESS)
+            return false;
+        auto lines = _split(stdout.value(), '\n');
+        const ::std::string version_key = "ProductVersion:";
+        for (auto &line : lines)
+        {
+            // find if we have a matching line and get the right value.
+            if (line.rfind(version_key, 0) != 0)
+                continue;
+            auto version = line.substr(version_key.length());
+            _trim(version);
+            auto parts = _split(version, '.');
+            auto major = ::std::stoi(parts.at(0));
+            auto minor = ::std::stoi(parts.at(1));
+            if (major < 10)
+                return false;
+            if (major >= 11)
+                return true;
+            return minor >= 14;
+        }
+        return false;
+    }
+
+    /// @brief Get the current system theme.
+    /// @return The type of the system theme.
+    inline ::breeze_stylesheets::theme
+    get_theme()
+    {
+        // old macOS versions were always light
+        if (!_macos_supported_version())
+            return ::breeze_stylesheets::theme::light;
+
+        // we could technically work through the Obj-C API but this is
+        // a lot of work for a machine I can't test on when we can directly
+        // get the results anyway via popen. It's way easier, no worries about
+        // segfaults. there's no good way to capture stderr so we just redirect
+        // it to stdout, knowing we get stdout on success (dark) and stderr
+        // otherwise.
+        auto [stdout, code] = _run_command("defaults read -globalDomain AppleInterfaceStyle 2>&1");
+
+        // if we had an error getting our response, leave early.
+        if (!stdout.has_value())
+            return ::breeze_stylesheets::theme::unknown;
+
+        // had a successful response. normally this only occurs on a dark theme
+        auto output = stdout.value();
+        _trim(output);
+        if (code == EXIT_SUCCESS)
+            return output == "Dark" ? ::breeze_stylesheets::theme::dark : ::breeze_stylesheets::theme::light;
+
+        // if we've had an error, it's generally because the key pair wasn't set.
+        auto not_exist = _contains(output, "does not exist");
+        auto any_app = _contains(output, "kCFPreferencesAnyApplication");
+        auto interface_style = _contains(output, "AppleInterfaceStyle");
+        if (not_exist && any_app && interface_style)
+            return ::breeze_stylesheets::theme::light;
+
+        // no idea, fall back to unknown
+        return ::breeze_stylesheets::theme::unknown;
+    }
+
+#elif __linux__
+
+    /// @brief Get the current system theme.
     /// @return The type of the system theme.
     inline ::breeze_stylesheets::theme
     get_theme()
@@ -439,8 +549,7 @@ namespace breeze_stylesheets
 
         auto value = stdout.value();
         ::std::transform(value.begin(), value.end(), value.begin(), _to_ascii_lowercase);
-        auto is_dark = value.find("-dark") != ::std::string::npos;
-        return is_dark ? ::breeze_stylesheets::theme::dark : ::breeze_stylesheets::theme::light;
+        return _contains(value, "-dark") ? ::breeze_stylesheets::theme::dark : ::breeze_stylesheets::theme::light;
     }
 
     #else
