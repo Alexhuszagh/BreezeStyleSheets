@@ -1,6 +1,6 @@
 name: Ui
 
-on: [push]
+on: [workflow_dispatch]
 
 jobs:
   ui:

@@ -48,6 +48,8 @@ for script in example/*.py; do
 done
 
 # now we need to run our tests
+# NOTE: We run each test separately just because it simplifies the logic.
+# Some tests don't work in headless mode so we skip them.
 widgets=$(${PYTHON} -c "import os; os.chdir('test'); import ui; print(' '.join([i[5:] for i in dir(ui) if i.startswith('test_')]))")
 for widget in ${widgets[@]}; do
     for framework in "${frameworks[@]}"; do
