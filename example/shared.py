@@ -88,7 +88,7 @@ def parse_args(parser):
 
     # now we need to normalize our theme
     if args.stylesheet.startswith('auto'):
-        theme = breeze_theme.theme()
+        theme = breeze_theme.get_theme()
         if theme == breeze_theme.Theme.DARK:
             args.stylesheet = args.stylesheet.replace('auto', 'dark', 1)
         elif theme == breeze_theme.Theme.LIGHT:

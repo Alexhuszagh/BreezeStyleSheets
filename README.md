@@ -195,7 +195,7 @@ The support stylesheets include:
 - `auto`
 - `native` (the system native theme)
 
-And any `-purple`, `-green`, etc. variants can also be used. `auto` will automatically detect if the system theme is light or dark and select the correct theme accordingly.
+And any `-purple`, `-green`, etc. variants can also be used. `auto` will automatically detect if the system theme is light or dark and select the correct theme accordingly. The cross-platform way to detect the correct theme is using `get_theme` in either [Python](/example/breeze_theme.py) or [C++](/example/breeze_theme.hpp). Just include those stand-alone files in your project and you can select the desired theme based on the user's profile settings at startup.
 
 # Features
 

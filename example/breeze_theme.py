@@ -2,14 +2,18 @@
     breeze_theme
     ============
 
-    Detect if the system theme is dark. This is taken and modified from:
+    Get the current system them information. This is adapted from darkdetect
+    and is subject to the license terms below:
         https://github.com/albertosottile/darkdetect
 
-    The files have been modified to be merged into a single file and add
-    support for Qt6.5 dark detection. This is distributed under a
-    3-clause BSD license.
+    The files have been modified to be merged into a single file. This is
+    distributed under a 3-clause BSD license. On Windows, the fallback
+    path for the theme detection requires the `winrt-Windows.UI.ViewManagement`
+    and `winrt-Windows.UI` libraries installed.
 
-    ---
+    darkdetect
+    ==========
+    https://github.com/albertosottile/darkdetect
 
     Copyright (c) 2019, Alberto Sottile
     All rights reserved.
@@ -105,7 +109,7 @@ def is_light_color(r: int, g: int, b: int) -> bool:
 # region windows
 
 
-def _theme_windows() -> Theme:
+def _get_theme_windows() -> Theme:
     '''Get the current theme, as light or dark, for the system on Windows.'''
 
     from winreg import HKEY_CURRENT_USER, OpenKey, QueryValueEx
@@ -281,12 +285,12 @@ def macos_supported_version() -> bool:
     return minor >= 14
 
 
-def _theme_macos() -> Theme:
+def _get_theme_macos() -> Theme:
     '''Get the current theme, as light or dark, for the system on macOS.'''
 
     global _theme_macos_impl
     if _theme_macos_impl is None:
-        _theme_macos_impl = _get_theme_macos()
+        _theme_macos_impl = _get_theme_macos_impl()
     return _theme_macos_impl()
 
 
@@ -305,7 +309,7 @@ def _get_class(objc: ctypes.CDLL, name: bytes | str) -> 'ctypes._NamedFuncPointe
     return objc.objc_getClass(_as_utf8(name))
 
 
-def _get_theme_macos() -> ThemeFn:
+def _get_theme_macos_impl() -> ThemeFn:
     '''Create the theme callback for macOS.'''
 
     # NOTE: We do this so we don't need imports at the global level.
@@ -406,7 +410,7 @@ _theme_macos_impl: ThemeFn | None = None
 # region linux
 
 
-def _theme_linux() -> Theme:
+def _get_theme_linux() -> Theme:
     '''Get the current theme, as light or dark, for the system on Linux OSes.'''
 
     try:
@@ -476,7 +480,7 @@ _gsettings: str | None = None
 # region dummy
 
 
-def _theme_dummy() -> Theme:
+def _get_theme_dummy() -> Theme:
     '''Get the current theme, as light or dark, for the system (always unknown).'''
     return Theme.UNKNOWN
 
@@ -488,19 +492,19 @@ def _listener_dummy(callback: CallbackFn) -> None:
 # endregion
 
 
-def theme() -> Theme:
+def get_theme() -> Theme:
     '''Get the current theme, as light or dark, for the system.'''
-    return _theme()
+    return _get_theme()
 
 
 def is_dark() -> bool:
     '''Get if the current theme is a dark color.'''
-    return theme() == Theme.DARK
+    return get_theme() == Theme.DARK
 
 
 def is_light() -> bool:
     '''Get if the current theme is a light color.'''
-    return theme() == Theme.LIGHT
+    return get_theme() == Theme.LIGHT
 
 
 def listener(callback: CallbackFn) -> None:
@@ -512,21 +516,21 @@ def register_functions() -> tuple[ThemeFn, ListenerFn]:
     '''Register our global functions for our themes and listeners.'''
 
     if sys.platform == 'darwin' and macos_supported_version():
-        return (_theme_macos, _listener_macos)
+        return (_get_theme_macos, _listener_macos)
     elif sys.platform == 'win32' and platform.release().isdigit() and int(platform.release()) >= 10:
         # Checks if running Windows 10 version 10.0.14393 (Anniversary Update) OR HIGHER.
         # The getwindowsversion method returns a tuple. The third item is the build number
         # that we can use to check if the user has a new enough version of Windows.
         winver = int(platform.version().split('.')[2])
         if winver >= 14393:
-            return (_theme_windows, _listener_windows)
+            return (_get_theme_windows, _listener_windows)
         else:
-            return (_theme_dummy, _listener_dummy)
+            return (_get_theme_dummy, _listener_dummy)
     elif sys.platform == "linux":
-        return (_theme_linux, _listener_linux)
+        return (_get_theme_linux, _listener_linux)
     else:
-        return (_theme_dummy, _listener_dummy)
+        return (_get_theme_dummy, _listener_dummy)
 
 
 # register these callbacks once
-_theme, _listener = register_functions()
+_get_theme, _listener = register_functions()
