@@ -1017,6 +1017,8 @@ def exec_app(args, app, window):
     '''Show and execute the Qt application.'''
 
     window.show()
+    if os.environ.get('QT_QPA_PLATFORM') == 'offscreen':
+        return app.quit()
     return execute(args, app)
 
 
