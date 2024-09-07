@@ -1,6 +1,6 @@
 name: Configure
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   theme-python:
