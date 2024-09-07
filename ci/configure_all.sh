@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 #
 # Run each configure for all supported frameworks, and store them in `dist/ci`.
-#
+# This requires the correct frameworks to be installed:
+#   - PyQt5
+#   - PyQt6
+#   - PySide6
+# And if using Python 3.10 or earlier:
+#   - PySide2
 
 set -eux pipefail
 
