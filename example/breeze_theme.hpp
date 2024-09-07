@@ -423,17 +423,18 @@ namespace breeze_stylesheets
         // this will return something like `prefer - dark`, which is the true value.
         // valid values are 'default', 'prefer-dark', 'prefer-light'.
         const ::std::string command = "gsettings get org.gnome.desktop.interface ";
-        auto [stdout, code] = ::breeze_stylesheets::_run_command(command + "color-scheme");
-        if (code != EXIT_SUCCESS)
+        auto result = ::breeze_stylesheets::_run_command(command + "color-scheme");
+        if (::std::get<1>(result) != EXIT_SUCCESS)
         {
             // NOTE: We always assume this is due to invalid key, which might not be true
             // since we don't check if gsettings exists first.
             // if not found then trying older gtk-theme method
             // this relies on the theme not lying to you : if the theme is dark, it ends in `- dark`.
-            auto [stdout, code] = ::breeze_stylesheets::_run_command(command + "gtk-theme");
+            result = ::breeze_stylesheets::_run_command(command + "gtk-theme");
         }
 
-        if (code != EXIT_SUCCESS || !stdout.has_value())
+        auto stdout = ::std::get<0>(result);
+        if (::std::get<1>(result) != EXIT_SUCCESS || !stdout.has_value())
             throw new ::std::runtime_error("Unable to get response for the current system theme.");
 
         auto value = stdout.value();
