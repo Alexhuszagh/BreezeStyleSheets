@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.qss.in": "qss",
+        "*.svg.in": "xml",
+        "stdexcept": "cpp"
+    }
+}
