@@ -42,3 +42,17 @@ jobs:
     - name: Analysing the code with pylint
       run: |
         scripts/lint.sh
+
+  lint-cpp:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install clang-tidy -y
+    - name: Analysing the code with clang-tidy
+      shell: bash
+      run: |
+        set -eux pipefail
+        clang-tidy -checks=-*,clang-analyzer-*,-clang-analyzer-cplusplus* example/breeze_theme.hpp --
