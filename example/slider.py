@@ -31,8 +31,9 @@
     get customized styling behavior with a QSlider.
 '''
 
-import shared
 import sys
+
+import shared
 
 parser = shared.create_parser()
 args, unknown = shared.parse_args(parser)
@@ -44,10 +45,10 @@ colors = shared.get_colors(args, compat)
 class Slider(QtWidgets.QSlider):
     '''QSlider with a custom paint event.'''
 
-    def __init__(self, *args, **kwds):
+    def __init__(self, *args, **kwds):  # pylint: disable=useless-parent-delegation,redefined-outer-name
         super().__init__(*args, **kwds)
 
-    def paintEvent(self, event):
+    def paintEvent(self, event):  # pylint: disable=unused-argument,(too-many-locals
         '''Override the paint event to ensure the ticks are painted.'''
 
         painter = QtWidgets.QStylePainter(self)
@@ -73,10 +74,10 @@ class Slider(QtWidgets.QSlider):
                 width = (self.width() - handle.width()) + handle.width() / 2
                 x = int(percent * width)
                 h = 4
-                if position == compat.TicksBothSides or position == compat.TicksAbove:
+                if position in (compat.TicksBothSides, compat.TicksAbove):
                     y = self.rect().top()
                     painter.drawLine(x, y, x, y + h)
-                if position == compat.TicksBothSides or position == compat.TicksBelow:
+                if position in (compat.TicksBothSides, compat.TicksBelow):
                     y = self.rect().bottom()
                     painter.drawLine(x, y, x, y - h)
 
@@ -91,6 +92,8 @@ class Ui:
     '''Main class for the user interface.'''
 
     def setup(self, MainWindow):
+        '''Setup our main window for the UI.'''
+
         MainWindow.setObjectName('MainWindow')
         MainWindow.resize(1068, 824)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -119,7 +122,7 @@ def main():
     window.setWindowTitle('QSlider with Ticks.')
 
     shared.set_stylesheet(args, app, compat)
-    return shared.exec_app(args, app, window, compat)
+    return shared.exec_app(args, app, window)
 
 
 if __name__ == '__main__':

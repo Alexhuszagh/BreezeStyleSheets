@@ -29,12 +29,7 @@ def parse_args(argv=None):
     '''Parse the command-line options.'''
 
     parser = argparse.ArgumentParser(description='Styles to configure for a Qt application.')
-    parser.add_argument(
-        '-v',
-        '--version',
-        action='version',
-        version=f'%(prog)s {__version__}'
-    )
+    parser.add_argument('-v', '--version', action='version', version=f'%(prog)s {__version__}')
     parser.add_argument(
         '--styles',
         help='comma-separate list of styles to configure. pass `all` to build all themes',
@@ -68,12 +63,10 @@ def parse_args(argv=None):
             'Note: building for PyQt6 requires PySide6-rcc to be installed.'
         ),
         choices=['pyqt5', 'pyqt6', 'pyside2', 'pyside6'],
-        default='pyqt5'
+        default='pyqt5',
     )
     parser.add_argument(
-        '--clean',
-        help='clean dist directory prior to configuring themes.',
-        action='store_true'
+        '--clean', help='clean dist directory prior to configuring themes.', action='store_true'
     )
     parser.add_argument(
         '--rcc',
@@ -81,7 +74,7 @@ def parse_args(argv=None):
             'path to the rcc executable. '
             'Overrides rcc of chosen framework. '
             'Only use if system cannot find the rcc exe.'
-        )
+        ),
     )
     parser.add_argument(
         '--compiled-resource',
@@ -102,7 +95,7 @@ def load_json(path):
     # we don't want to prevent code from working without
     # a complex parser, so we do something very simple:
     # only remove lines starting with '//'.
-    with open(path) as file:
+    with open(path, encoding='utf-8') as file:
         lines = file.read().splitlines()
     lines = [i for i in lines if not i.strip().startswith('//')]
     return json.loads('\n'.join(lines))
@@ -115,7 +108,8 @@ def read_template_dir(directory):
     stylesheet = ''
     stylesheet_path = f'{directory}/stylesheet.qss.in'
     if os.path.exists(stylesheet_path):
-        stylesheet = open(f'{directory}/stylesheet.qss.in').read()
+        with open(f'{directory}/stylesheet.qss.in', encoding='utf-8') as style_file:
+            stylesheet = style_file.read()
     data = {
         'stylesheet': stylesheet,
         'icons': [],
@@ -125,7 +119,8 @@ def read_template_dir(directory):
     else:
         icon_data = {}
     for file in glob.glob(f'{directory}/*.svg.in'):
-        svg = open(file).read()
+        with open(file, encoding='utf-8') as svg_file:
+            svg = svg_file.read()
         name = os.path.splitext(os.path.splitext(os.path.basename(file))[0])[0]
         if name in icon_data:
             replacements = icon_data[name]
@@ -133,11 +128,13 @@ def read_template_dir(directory):
             # Need to find all the values inside the image.
             keys = re.findall(r'\^[0-9a-zA-Z_-]+\^', svg)
             replacements = [i[1:-1] for i in keys]
-        data['icons'].append({
-            'name': name,
-            'svg': svg,
-            'replacements': replacements,
-        })
+        data['icons'].append(
+            {
+                'name': name,
+                'svg': svg,
+                'replacements': replacements,
+            }
+        )
 
     return data
 
@@ -216,7 +213,7 @@ def parse_color(color):
 
     if color.startswith('#'):
         return parse_hexcolor(color)
-    elif color.startswith('rgb'):
+    if color.startswith('rgb'):
         return parse_rgba(color)
     raise NotImplementedError
 
@@ -260,11 +257,11 @@ def replace_by_index(contents, theme, colors):
         # parse the color, get the correct value, and use only that
         # for the replacement.
         if key.endswith(':hex'):
-            color = theme[key[:-len(':hex')]]
-            rgb = [f"{i:02x}" for i in parse_color(color)[:3]]
+            color = theme[key[: -len(':hex')]]
+            rgb = [f'{i:02x}' for i in parse_color(color)[:3]]
             value = f'#{"".join(rgb)}'
         elif key.endswith(':opacity'):
-            color = theme[key[:-len(':opacity')]]
+            color = theme[key[: -len(':opacity')]]
             value = str(parse_color(color)[3])
         else:
             value = theme[key]
@@ -288,7 +285,7 @@ def configure_icons(config, style, qt_dist):
                 for ext, colors in replacements.items():
                     contents = replace_by_index(icon['svg'], theme, colors)
                     filename = f'{qt_dist}/{style}/{icon_basename(name, ext)}.svg'
-                    with open(filename, 'w') as file:
+                    with open(filename, 'w', encoding='utf-8') as file:
                         file.write(contents)
             else:
                 # Then we just have a list of replacements for the
@@ -297,7 +294,7 @@ def configure_icons(config, style, qt_dist):
                 assert isinstance(replacements, list)
                 contents = replace_by_name(icon['svg'], theme, replacements)
                 filename = f'{qt_dist}/{style}/{name}.svg'
-                with open(filename, 'w') as file:
+                with open(filename, 'w', encoding='utf-8') as file:
                     file.write(contents)
 
 
@@ -308,7 +305,7 @@ def configure_stylesheet(config, style, qt_dist, style_prefix):
     contents = replace_by_name(contents, config['themes'][style])
     contents = contents.replace('^style^', style_prefix)
 
-    with open(f'{qt_dist}/{style}/stylesheet.qss', 'w') as file:
+    with open(f'{qt_dist}/{style}/stylesheet.qss', 'w', encoding='utf-8') as file:
         file.write(contents)
 
 
@@ -338,13 +335,58 @@ def write_qrc(config, qt_dist):
     qrc_path = config['resource']
     if not os.path.isabs(qrc_path):
         qrc_path = f'{qt_dist}/{qrc_path}'
-    with open(qrc_path, 'w') as file:
+    with open(qrc_path, 'w', encoding='utf-8') as file:
         print('<RCC>', file=file)
         print('  <qresource>', file=file)
         for resource in sorted(resources):
             print(f'    <file>{resource}</file>', file=file)
         print('  </qresource>', file=file)
         print('</RCC>', file=file)
+
+
+def compile_resource(args):
+    '''Compile our resource file to a standalone Python file.'''
+
+    rcc = parse_rcc(args)
+    resource_path = args.resource
+    compiled_resource_path = args.compiled_resource
+    if not os.path.isabs(resource_path):
+        resource_path = f'{args.output_dir}/{resource_path}'
+    if not os.path.isabs(compiled_resource_path):
+        compiled_resource_path = f'{resources_dir}/{compiled_resource_path}'
+
+    command = [rcc, resource_path, '-o', compiled_resource_path]
+    try:
+        subprocess.check_output(
+            command,
+            stdin=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            shell=False,
+        )
+    except subprocess.CalledProcessError as error:
+        if b'File does not exist' in error.stderr:
+            print('ERROR: Ensure qrc file exists or deselect "no-qrc" option!', file=sys.stderr)
+        else:
+            print(f'ERROR: Got an unknown error of "{error.stderr.decode("utf-8")}"!', file=sys.stderr)
+        raise SystemExit from error
+    except FileNotFoundError as error:
+        if args.rcc:
+            print('ERROR: rcc path invalid!', file=sys.stderr)
+        else:
+            print('ERROR: Ensure rcc executable exists for chosen framework!', file=sys.stderr)
+        print(
+            'Required rcc for PyQt5: pyrcc5',
+            'Required rcc for PySide6 & PyQt6: PySide6-rcc',
+            'Required rcc for PySide2: PySide2-rcc',
+            '',
+            'if using venv, activate it or provide path to rcc.',
+            sep='\n',
+            file=sys.stderr,
+        )
+        raise SystemExit from error
+
+    if args.qt_framework == 'pyqt6':
+        fix_qt6_import(compiled_resource_path)
 
 
 def configure(args):
@@ -354,12 +396,7 @@ def configure(args):
         shutil.rmtree(args.output_dir, ignore_errors=True)
 
     # Need to convert our styles accordingly.
-    config = {
-        'themes': {},
-        'templates': [],
-        'no_qrc': args.no_qrc,
-        'resource': args.resource
-    }
+    config = {'themes': {}, 'templates': [], 'no_qrc': args.no_qrc, 'resource': args.resource}
     config['templates'].append(read_template_dir(template_dir))
     for style in args.styles:
         config['themes'][style] = load_json(f'{theme_dir}/{style}.json')
@@ -367,59 +404,23 @@ def configure(args):
         config['templates'].append(read_template_dir(f'{extension_dir}/{extension}'))
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    for style in config['themes'].keys():
+    for style in config['themes']:
         configure_style(config, style, str(args.output_dir))
 
     # Create and compile our resource files.
     if not args.no_qrc:
         write_qrc(config, str(args.output_dir))
     if args.compiled_resource is not None:
-        rcc = parse_rcc(args)
-        resource_path = args.resource
-        compiled_resource_path = args.compiled_resource
-        if not os.path.isabs(resource_path):
-            resource_path = f'{args.output_dir}/{resource_path}'
-        if not os.path.isabs(compiled_resource_path):
-            compiled_resource_path = f'{resources_dir}/{compiled_resource_path}'
-
-        command = [rcc, resource_path, '-o', compiled_resource_path]
-        try:
-            subprocess.check_output(
-                command,
-                stdin=subprocess.DEVNULL,
-                stderr=subprocess.PIPE,
-                shell=False,
-            )
-        except subprocess.CalledProcessError as error:
-            if b'File does not exist' in error.stderr:
-                print('ERROR: Ensure qrc file exists or deselect "no-qrc" option!', file=sys.stderr)
-            else:
-                print(f'ERROR: Got an unknown errir of "{error.stderr.decode("utf-8")}"!', file=sys.stderr)
-            raise SystemExit
-        except FileNotFoundError:
-            if args.rcc:
-                print("ERROR: rcc path invalid!", file=sys.stderr)
-            else:
-                print('ERROR: Ensure rcc executable exists for chosen framework!', file=sys.stderr)
-            print(
-                'Required rcc for PyQt5: pyrcc5',
-                'Required rcc for PySide6 & PyQt6: PySide6-rcc',
-                'Required rcc for PySide2: PySide2-rcc',
-                '',
-                'if using venv, activate it or provide path to rcc.', sep='\n', file=sys.stderr)
-            raise SystemExit
-
-        if args.qt_framework == "pyqt6":
-            fix_qt6_import(compiled_resource_path)
+        compile_resource(args)
 
 
 def fix_qt6_import(compiled_file):
     '''Fix import after using PySide6-rcc to compile for PyQt6'''
 
-    with open(compiled_file, "r") as file:
+    with open(compiled_file, 'r', encoding='utf-8') as file:
         text = file.read()
-    text = text.replace("PySide6", "PyQt6")
-    with open(compiled_file, "w") as file:
+    text = text.replace('PySide6', 'PyQt6')
+    with open(compiled_file, 'w', encoding='utf-8') as file:
         file.write(text)
 
 
@@ -427,16 +428,15 @@ def parse_rcc(args):
     '''Get rcc required for chosen framework'''
 
     if args.rcc:
-        rcc = args.rcc
-    else:
-        if args.qt_framework == 'pyqt6' or args.qt_framework == 'pyside6':
-            rcc = 'pyside6-rcc'
-        elif args.qt_framework == "pyqt5":
-            rcc = 'pyrcc5'
-        elif args.qt_framework == 'pyside2':
-            rcc = 'pyside2-rcc'
+        return args.rcc
+    if args.qt_framework in ('pyqt6', 'pyside6'):
+        return 'pyside6-rcc'
+    if args.qt_framework == 'pyqt5':
+        return 'pyrcc5'
+    if args.qt_framework == 'pyside2':
+        return 'pyside2-rcc'
 
-    return rcc
+    raise ValueError(f'Got an unsupported Qt framework of "{args.qt_framework}".')
 
 
 def main(argv=None):

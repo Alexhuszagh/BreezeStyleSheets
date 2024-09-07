@@ -81,7 +81,7 @@ parser.add_argument(
 args, unknown = shared.parse_args(parser)
 QtCore, QtGui, QtWidgets = shared.import_qt(args)
 compat = shared.get_compat_definitions(args)
-ICON_MAP = shared.get_icon_map(args, compat)
+ICON_MAP = shared.get_icon_map(compat)
 
 layout = {
     'vertical': QtWidgets.QVBoxLayout,

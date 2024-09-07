@@ -30,8 +30,9 @@
     since it cannot be modified via stylesheets.
 '''
 
-import shared
 import sys
+
+import shared
 
 parser = shared.create_parser()
 args, unknown = shared.parse_args(parser)
@@ -44,6 +45,8 @@ class Ui:
     '''Main class for the user interface.'''
 
     def setup(self, MainWindow):
+        '''Setup our main window for the UI.'''
+
         MainWindow.setObjectName('MainWindow')
         MainWindow.resize(1068, 824)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -78,7 +81,7 @@ def main():
     window.setWindowTitle('Stylized QWhatsThis.')
 
     shared.set_stylesheet(args, app, compat)
-    return shared.exec_app(args, app, window, compat)
+    return shared.exec_app(args, app, window)
 
 
 if __name__ == '__main__':

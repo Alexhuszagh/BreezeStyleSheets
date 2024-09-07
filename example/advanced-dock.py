@@ -29,20 +29,21 @@
     Simple PyQt application using the advanced-docking-system.
 '''
 
-import shared
+# pylint: disable=no-name-in-module,import-error
+
 import sys
+
+import shared
 
 parser = shared.create_parser()
 parser.add_argument(
-    '--use-internal',
-    help='''use the dock manager internal stylesheet.''',
-    action='store_true'
+    '--use-internal', help='''use the dock manager internal stylesheet.''', action='store_true'
 )
 # https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/blob/master/doc/user-guide.md#configuration-flags
 parser.add_argument(
     '--focus-highlighting',
     help='''use the focus highlighting (and other configuration flags).''',
-    action='store_true'
+    action='store_true',
 )
 # setConfigFlag
 args, unknown = shared.parse_args(parser)
@@ -114,7 +115,7 @@ def main():
     # run
     window.setWindowState(compat.WindowMaximized)
     shared.set_stylesheet(args, app, compat)
-    return shared.exec_app(args, app, window, compat)
+    return shared.exec_app(args, app, window)
 
 
 if __name__ == '__main__':

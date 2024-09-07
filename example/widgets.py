@@ -30,14 +30,17 @@
     Simple example showing numerous built-in widgets.
 '''
 
-import shared
+# pylint: disable=duplicate-code
+
 import sys
+
+import shared
 
 parser = shared.create_parser()
 args, unknown = shared.parse_args(parser)
 QtCore, QtGui, QtWidgets = shared.import_qt(args)
 compat = shared.get_compat_definitions(args)
-ICON_MAP = shared.get_icon_map(args, compat)
+ICON_MAP = shared.get_icon_map(compat)
 
 
 def close_icon(widget):
@@ -48,7 +51,10 @@ def close_icon(widget):
 class Ui:
     '''Main class for the user interface.'''
 
-    def setup(self, MainWindow):
+    def setup(self, MainWindow):  # pylint: disable=too-many-statements,too-many-locals
+        '''Setup our main window for the UI.'''
+
+        # pylint: disable=unused-variable
         MainWindow.setObjectName('MainWindow')
         MainWindow.resize(1068, 824)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -421,8 +427,11 @@ class Ui:
         MainWindow.setTabOrder(self.verticalSlider, self.tabWidget)
         MainWindow.setTabOrder(self.tabWidget, self.lineEdit)
         MainWindow.setTabOrder(self.lineEdit, self.listWidget)
+        # pylint: enable=unused-variable
 
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self, MainWindow):  # pylint: disable=too-many-statements
+        '''Retranslate our UI after initializing some of our base modules.'''
+
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate('MainWindow', 'MainWindow'))
         self.groupBox.setTitle(_translate('MainWindow', 'ToolBox'))
@@ -502,9 +511,11 @@ class Ui:
         self.actionAction_C.setText(_translate('MainWindow', 'Action &C'))
 
     def about(self):
+        '''Load our Qt about window.'''
         QtWidgets.QMessageBox.aboutQt(self.centralwidget, 'About Menu')
 
     def critical(self):
+        '''Launch a critical message box.'''
         QtWidgets.QMessageBox.critical(self.centralwidget, 'Error', 'Critical Error')
 
 
@@ -516,18 +527,9 @@ def main():
     # setup ui
     ui = Ui()
     ui.setup(window)
-    ui.bt_delay_popup.addActions([
-        ui.actionAction,
-        ui.actionAction_C
-    ])
-    ui.bt_instant_popup.addActions([
-        ui.actionAction,
-        ui.actionAction_C
-    ])
-    ui.bt_menu_button_popup.addActions([
-        ui.actionAction,
-        ui.actionAction_C
-    ])
+    ui.bt_delay_popup.addActions([ui.actionAction, ui.actionAction_C])
+    ui.bt_instant_popup.addActions([ui.actionAction, ui.actionAction_C])
+    ui.bt_menu_button_popup.addActions([ui.actionAction, ui.actionAction_C])
     window.setWindowTitle('Sample BreezeStyleSheets application.')
 
     # Add event triggers
@@ -538,7 +540,7 @@ def main():
     window.tabifyDockWidget(ui.dockWidget1, ui.dockWidget2)
 
     shared.set_stylesheet(args, app, compat)
-    return shared.exec_app(args, app, window, compat)
+    return shared.exec_app(args, app, window)
 
 
 if __name__ == '__main__':

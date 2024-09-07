@@ -22,23 +22,30 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+'''
+    branchless
+    ==========
+
+    Simple PyQt application without branches for our QTreeViews.
+'''
+
 import os
 import sys
 
 HOME = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, os.path.dirname(HOME))
 
-import widgets
-import shared
+import shared  # noqa  # pylint: disable=wrong-import-position,import-error
+import widgets  # noqa  # pylint: disable=wrong-import-position,import-error
 
 parser = shared.create_parser()
 args, unknown = shared.parse_args(parser)
 QtCore, QtGui, QtWidgets = shared.import_qt(args)
 compat = shared.get_compat_definitions(args)
-ICON_MAP = shared.get_icon_map(args, compat)
+ICON_MAP = shared.get_icon_map(compat)
 
 
-def set_stylesheet(args, app, compat):
+def set_stylesheet(app):
     '''Set the application stylesheet.'''
 
     if args.stylesheet != 'native':
@@ -46,11 +53,13 @@ def set_stylesheet(args, app, compat):
         qt_path = shared.get_stylesheet(resource_format)
         ext_path = os.path.join(HOME, 'stylesheet.qss.in')
         stylesheet = shared.read_qtext_file(qt_path, compat)
-        stylesheet += '\n' + open(ext_path, 'r').read()
+        with open(ext_path, 'r', encoding='utf-8') as file:
+            stylesheet += '\n' + file.read()
         app.setStyleSheet(stylesheet)
 
 
 def get_treeviews(parent, depth=1000):
+    '''Recursively get all tree views.'''
     for child in parent.children():
         if isinstance(child, QtWidgets.QTreeView):
             yield child
@@ -68,18 +77,9 @@ def main():
     # setup ui
     ui = widgets.Ui()
     ui.setup(window)
-    ui.bt_delay_popup.addActions([
-        ui.actionAction,
-        ui.actionAction_C
-    ])
-    ui.bt_instant_popup.addActions([
-        ui.actionAction,
-        ui.actionAction_C
-    ])
-    ui.bt_menu_button_popup.addActions([
-        ui.actionAction,
-        ui.actionAction_C
-    ])
+    ui.bt_delay_popup.addActions([ui.actionAction, ui.actionAction_C])
+    ui.bt_instant_popup.addActions([ui.actionAction, ui.actionAction_C])
+    ui.bt_menu_button_popup.addActions([ui.actionAction, ui.actionAction_C])
     window.setWindowTitle('Sample BreezeStyleSheets application.')
 
     # Add event triggers
@@ -93,8 +93,8 @@ def main():
     for tree in get_treeviews(window):
         tree.setObjectName("branchless")
 
-    set_stylesheet(args, app, compat)
-    return shared.exec_app(args, app, window, compat)
+    set_stylesheet(app)
+    return shared.exec_app(args, app, window)
 
 
 if __name__ == '__main__':

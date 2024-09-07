@@ -32,14 +32,13 @@
 '''
 
 import math
-import shared
 import sys
+
+import shared
 
 parser = shared.create_parser()
 parser.add_argument(
-    '--no-align',
-    help='''allow larger widgets without forcing alignment.''',
-    action='store_true'
+    '--no-align', help='''allow larger widgets without forcing alignment.''', action='store_true'
 )
 args, unknown = shared.parse_args(parser)
 QtCore, QtGui, QtWidgets = shared.import_qt(args)
@@ -71,11 +70,11 @@ def circle_percent(dial):
     return offset / distance
 
 
-def circle_position(dial, groove_rect, position, r):
+def circle_position(dial, rect, position, r):
     '''Calculate the (x, y) coordinates based on the position on a circle.'''
 
     # Get our center and the percent we've gone alone the dial.
-    center = groove_rect.center()
+    center = rect.center()
     x0 = center.x()
     y0 = center.y()
     distance = dial.maximum - dial.minimum
@@ -100,9 +99,9 @@ def circle_position(dial, groove_rect, position, r):
     return x0 - r * math.cos(theta), y0 - r * math.sin(theta)
 
 
-def handle_position(dial, groove_rect, r):
+def handle_position(dial, rect, r):
     '''Calculate the position of the handle.'''
-    return circle_position(dial, groove_rect, dial.sliderPosition, r)
+    return circle_position(dial, rect, dial.sliderPosition, r)
 
 
 def default_pen(color, width):
@@ -160,7 +159,7 @@ class Dial(QtWidgets.QDial):
         self.handle = (0, 0)
         self.is_hovered = False
 
-    def paintEvent(self, event):
+    def paintEvent(self, event):  # pylint: disable=too-many-locals
         '''Override the paint event to ensure the ticks are painted.'''
 
         if args.stylesheet == 'native':
@@ -240,6 +239,8 @@ class Dial(QtWidgets.QDial):
         handle_pos = QtCore.QPointF(hx, hy)
         painter.drawEllipse(handle_pos, self.handle_radius, self.handle_radius)
 
+        return None
+
     def eventFilter(self, obj, event):
         '''Override the color when we have a hover event.'''
 
@@ -275,6 +276,8 @@ class Ui:
     '''Main class for the user interface.'''
 
     def setup(self, MainWindow):
+        '''Setup our main window for the UI.'''
+
         MainWindow.setObjectName('MainWindow')
         MainWindow.resize(1068, 824)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -308,7 +311,7 @@ def main():
     window.setWindowTitle('QDial')
 
     shared.set_stylesheet(args, app, compat)
-    return shared.exec_app(args, app, window, compat)
+    return shared.exec_app(args, app, window)
 
 
 if __name__ == '__main__':

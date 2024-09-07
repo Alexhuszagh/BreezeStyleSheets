@@ -41,6 +41,8 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 '''
 
+# pylint: disable=import-error,no-member
+
 import typing
 import ctypes
 import ctypes.util
@@ -75,7 +77,7 @@ class Theme(enum.IntEnum):
         value = value.lower()
         if value == 'dark':
             return Theme.DARK
-        elif value == 'light':
+        if value == 'light':
             return Theme.LIGHT
         raise ValueError(f'Got an invalid theme value of "{value}".')
 
@@ -85,9 +87,9 @@ class Theme(enum.IntEnum):
         # NOTE: This is for Py3.10 and earlier support.
         if self == Theme.DARK:
             return 'Dark'
-        elif self == Theme.LIGHT:
+        if self == Theme.LIGHT:
             return 'Light'
-        elif self == Theme.UNKNOWN:
+        if self == Theme.UNKNOWN:
             return 'Unknown'
         raise ValueError(f'Got an invalid theme value of "{self}".')
 
@@ -104,7 +106,8 @@ def is_light_color(r: int, g: int, b: int) -> bool:
     Returns:
         If the color is perceived as light.
     '''
-    return (((5 * g) + (2 * r) + b) > (8 * 128))
+    return ((5 * g) + (2 * r) + b) > (8 * 128)
+
 
 # region windows
 
@@ -112,7 +115,7 @@ def is_light_color(r: int, g: int, b: int) -> bool:
 def _get_theme_windows() -> Theme:
     '''Get the current theme, as light or dark, for the system on Windows.'''
 
-    from winreg import HKEY_CURRENT_USER, OpenKey, QueryValueEx
+    from winreg import HKEY_CURRENT_USER, OpenKey, QueryValueEx  # pyright: ignore[reportAttributeAccessIssue]
 
     # In HKEY_CURRENT_USER, get the Personalisation Key.
     try:
@@ -125,10 +128,10 @@ def _get_theme_windows() -> Theme:
         # some headless Windows instances (e.g. GitHub Actions or Docker images) do not have this key
         # this is also not present if the user has never set the value. however, more recent Windows
         # installs will have this, starting at `10.0.10240.0`:
-        #   https://learn.microsoft.com/en-us/windows/apps/desktop/modernize/ui/apply-windows-themes#know-when-dark-mode-is-enabled
+        #   https://learn.microsoft.com/en-us/windows/apps/desktop/modernize/ui/apply-windows-themes#know-when-dark-mode-is-enabled  # noqa  # pylint: disable=line-too-long
         #
         # Note that the documentation is inverted: if the foreground is light, we are using DARK mode.
-        winver = sys.getwindowsversion()
+        winver = sys.getwindowsversion()  # pyright: ignore[reportAttributeAccessIssue]
         if winver[:4] < (10, 0, 10240, 0):
             return Theme.UNKNOWN
         try:
@@ -144,7 +147,7 @@ def _get_theme_windows() -> Theme:
 
     if use_light == 0:
         return Theme.DARK
-    elif use_light == 1:
+    if use_light == 1:
         return Theme.LIGHT
     return Theme.UNKNOWN
 
@@ -152,13 +155,14 @@ def _get_theme_windows() -> Theme:
 def _listener_windows(callback: CallbackFn) -> None:
     '''Register an event listener for dark/light theme changes.'''
 
-    import ctypes.wintypes  # pyright: ignore[reportMissingImports]
+    import ctypes.wintypes  # pyright: ignore[reportMissingImports]  # pylint: disable=redefined-outer-name
 
     global _advapi32
 
     if _advapi32 is None:
         _advapi32 = _initialize_advapi32()
     advapi32 = _advapi32
+    assert advapi32 is not None
 
     hkey = ctypes.wintypes.HKEY()
     advapi32.RegOpenKeyExA(
@@ -169,16 +173,16 @@ def _listener_windows(callback: CallbackFn) -> None:
         ctypes.byref(hkey),
     )
 
-    dwSize = ctypes.wintypes.DWORD(ctypes.sizeof(ctypes.wintypes.DWORD))
-    queryValueLast = ctypes.wintypes.DWORD()
-    queryValue = ctypes.wintypes.DWORD()
+    size = ctypes.wintypes.DWORD(ctypes.sizeof(ctypes.wintypes.DWORD))
+    query_last_value = ctypes.wintypes.DWORD()
+    query_value = ctypes.wintypes.DWORD()
     advapi32.RegQueryValueExA(
         hkey,
         ctypes.wintypes.LPCSTR(b'AppsUseLightTheme'),
         ctypes.wintypes.LPDWORD(),
         ctypes.wintypes.LPDWORD(),
-        ctypes.cast(ctypes.byref(queryValueLast), ctypes.wintypes.LPBYTE),
-        ctypes.byref(dwSize),
+        ctypes.cast(ctypes.byref(query_last_value), ctypes.wintypes.LPBYTE),
+        ctypes.byref(size),
     )
 
     while True:
@@ -194,20 +198,20 @@ def _listener_windows(callback: CallbackFn) -> None:
             ctypes.wintypes.LPCSTR(b'AppsUseLightTheme'),
             ctypes.wintypes.LPDWORD(),
             ctypes.wintypes.LPDWORD(),
-            ctypes.cast(ctypes.byref(queryValue), ctypes.wintypes.LPBYTE),
-            ctypes.byref(dwSize),
+            ctypes.cast(ctypes.byref(query_value), ctypes.wintypes.LPBYTE),
+            ctypes.byref(size),
         )
-        if queryValueLast.value != queryValue.value:
-            queryValueLast.value = queryValue.value
-            callback(Theme.LIGHT if queryValue.value else Theme.DARK)
+        if query_last_value.value != query_value.value:
+            query_last_value.value = query_value.value
+            callback(Theme.LIGHT if query_value.value else Theme.DARK)
 
 
-def _initialize_advapi32() -> 'ctypes.WinDLL':
+def _initialize_advapi32() -> ctypes.CDLL:
     '''Initialize our advapi32 library.'''
 
-    import ctypes.wintypes  # pyright: ignore[reportMissingImports]
+    import ctypes.wintypes  # pyright: ignore[reportMissingImports]  # pylint: disable=redefined-outer-name
 
-    advapi32 = ctypes.windll.advapi32
+    advapi32 = ctypes.windll.advapi32  # pyright: ignore[reportAttributeAccessIssue]
 
     # LSTATUS RegOpenKeyExA(
     #     HKEY hKey,
@@ -262,7 +266,7 @@ def _initialize_advapi32() -> 'ctypes.WinDLL':
     return advapi32
 
 
-_advapi32: typing.Optional['ctypes.WinDLL'] = None
+_advapi32: typing.Optional['ctypes.CDLL'] = None
 
 # endregion
 
@@ -277,7 +281,7 @@ def macos_supported_version() -> bool:
     major = int(sysver.split('.')[0])
     if major < 10:
         return False
-    elif major >= 11:
+    if major >= 11:
         return True
 
     # have a macOS10 version
@@ -288,10 +292,55 @@ def macos_supported_version() -> bool:
 def _get_theme_macos() -> Theme:
     '''Get the current theme, as light or dark, for the system on macOS.'''
 
-    global _theme_macos_impl
-    if _theme_macos_impl is None:
-        _theme_macos_impl = _get_theme_macos_impl()
-    return _theme_macos_impl()
+    # NOTE: This can segfault on M1 and M2 Macs on Big Sur 11.4+. So, we also
+    # try reading directly using subprocess.
+    try:
+        command = ['defaults', 'read', '-globalDomain', 'AppleInterfaceStyle']
+        process = subprocess.run(command, capture_output=True, check=True)
+        try:
+            result = process.stdout.decode('utf-8').strip()
+            return Theme.DARK if result == 'Dark' else Theme.LIGHT
+        except UnicodeDecodeError:
+            return Theme.LIGHT
+    except subprocess.CalledProcessError as error:
+        # If this keypair does not exist, then it's a specific error because the style
+        # hasn't been set before, so then it specifically is a light theme. this can
+        # affect no-UI systems like CI.
+        not_exist = b'does not exist' in error.stderr
+        any_app = b'kCFPreferencesAnyApplication' in error.stderr
+        interface_style = b'AppleInterfaceStyle' in error.stderr
+        if not_exist and any_app and interface_style:
+            return Theme.LIGHT
+
+    # NOTE: We do this so we don't need imports at the global level.
+    try:
+        # macOS Big Sur+ use "a built-in dynamic linker cache of all system-provided libraries"
+        objc = ctypes.cdll.LoadLibrary('libobjc.dylib')
+    except OSError:
+        # revert to full path for older OS versions and hardened programs
+        obc_name = ctypes.util.find_library('objc')
+        assert obc_name is not None
+        objc = ctypes.cdll.LoadLibrary(obc_name)
+
+    # See https://docs.python.org/3/library/ctypes.html#function-prototypes for arguments description
+    msg_prototype = ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p)
+    msg = msg_prototype(('objc_msgSend', objc), ((1, '', None), (1, '', None), (1, '', None)))
+    auto_release_pool = _get_class(objc, 'NSAutoreleasePool')
+    user_defaults = _get_class(objc, 'NSUserDefaults')
+    ns_string = _get_class(objc, 'NSString')
+
+    pool = msg(auto_release_pool, _register_name(objc, 'alloc'))
+    pool = msg(pool, _register_name(objc, 'init'))
+    std_user_defaults = msg(user_defaults, _register_name(objc, 'standardUserDefaults'))
+
+    key = msg(ns_string, _register_name(objc, "stringWithUTF8String:"), _as_utf8('AppleInterfaceStyle'))
+    appearance_ns = msg(std_user_defaults, _register_name(objc, 'stringForKey:'), ctypes.c_void_p(key))
+    appearance_c = msg(appearance_ns, _register_name(objc, 'UTF8String'))
+
+    out = ctypes.string_at(appearance_c) if appearance_c is not None else None
+    msg(pool, _register_name(objc, 'release'))
+
+    return Theme.from_string(out.decode('utf-8')) if out is not None else Theme.LIGHT
 
 
 def _as_utf8(value: bytes | str) -> bytes:
@@ -309,45 +358,15 @@ def _get_class(objc: ctypes.CDLL, name: bytes | str) -> 'ctypes._NamedFuncPointe
     return objc.objc_getClass(_as_utf8(name))
 
 
-def _get_theme_macos_impl() -> ThemeFn:
-    '''Create the theme callback for macOS.'''
-
-    # NOTE: We do this so we don't need imports at the global level.
-    try:
-        # macOS Big Sur+ use "a built-in dynamic linker cache of all system-provided libraries"
-        objc = ctypes.cdll.LoadLibrary('libobjc.dylib')
-    except OSError:
-        # revert to full path for older OS versions and hardened programs
-        objc = ctypes.cdll.LoadLibrary(ctypes.util.find_library('objc'))
-
-    # See https://docs.python.org/3/library/ctypes.html#function-prototypes for arguments description
-    msg_prototype = ctypes.CFUNCTYPE(ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_void_p)
-    msg = msg_prototype(('objc_msgSend', objc), ((1, '', None), (1, '', None), (1, '', None)))
-
-    auto_release_pool = _get_class(objc, 'NSAutoreleasePool')
-    pool = msg(auto_release_pool, _register_name(objc, 'alloc'))
-    pool = msg(pool, _register_name(objc, 'init'))
-
-    user_defaults = _get_class(objc, 'NSUserDefaults')
-    std_user_defaults = msg(user_defaults, _register_name(objc, 'standardUserDefaults'))
-
-    ns_string = _get_class(objc, 'NSString')
-    key = msg(ns_string, _register_name(objc, "stringWithUTF8String:"), _as_utf8('AppleInterfaceStyle'))
-    appearance_ns = msg(std_user_defaults, _register_name(objc, 'stringForKey:'), ctypes.c_void_p(key))
-    appearance_c = msg(appearance_ns, _register_name(objc, 'UTF8String'))
-
-    out = ctypes.string_at(appearance_c) if appearance_c is not None else None
-    msg(pool, _register_name(objc, 'release'))
-    return Theme.from_string(out.decode('utf-8')) if out is not None else Theme.LIGHT
-
-
 def _listener_macos(callback: CallbackFn) -> None:
     '''Register an event listener for dark/light theme changes.'''
 
     try:
-        from Foundation import NSKeyValueObservingOptionNew as _  # noqa # pyright: ignore[reportMissingImports]
-    except (ImportError, ModuleNotFoundError):
-        raise RuntimeError('Missing the required Foundation modules: cannot listen.')
+        from Foundation import (  # noqa # pyright: ignore[reportMissingImports] # pylint: disable
+            NSKeyValueObservingOptionNew as _,
+        )
+    except (ImportError, ModuleNotFoundError) as error:
+        raise RuntimeError('Missing the required Foundation modules: cannot listen.') from error
 
     # now need to register a child event
     path = Path(__file__)
@@ -358,7 +377,7 @@ def _listener_macos(callback: CallbackFn) -> None:
         universal_newlines=True,
         cwd=path.parent,
     ) as process:
-        for line in process.stdout:
+        for line in typing.cast(str, process.stdout):
             callback(Theme.from_string(line.strip()))
 
 
@@ -368,20 +387,26 @@ def _listen_child_macos() -> None:
     # NOTE: We do this so we don't need imports at the global level.
     try:
         from Foundation import (  # pyright: ignore[reportMissingImports]
-            NSObject, NSKeyValueObservingOptionNew, NSKeyValueChangeNewKey, NSUserDefaults
+            NSKeyValueChangeNewKey,
+            NSKeyValueObservingOptionNew,
+            NSObject,
+            NSUserDefaults,
         )
         from PyObjCTools import AppHelper  # pyright: ignore[reportMissingImports]
-    except ModuleNotFoundError:
-        raise RuntimeError('Missing the required Foundation modules: cannot listen.')
+    except ModuleNotFoundError as error:
+        raise RuntimeError('Missing the required Foundation modules: cannot listen.') from error
 
     signal.signal(signal.SIGINT, signal.SIG_IGN)
 
     class Observer(NSObject):
-        def observeValueForKeyPath_ofObject_change_context_(
-            self, path, object, changeDescription, context
+        '''Custom namespace key observer.'''
+
+        def observeValueForKeyPath_ofObject_change_context_(  # pylint: disable=invalid-name
+            self, path, obj, changeDescription, context
         ):
+            '''Observe our key to detect the light/dark status.'''
             _ = path
-            _ = object
+            _ = obj
             _ = context
             result = changeDescription[NSKeyValueChangeNewKey]
             try:
@@ -402,8 +427,6 @@ def _listen_child_macos() -> None:
 
     AppHelper.runConsoleEventLoop()
 
-
-_theme_macos_impl: ThemeFn | None = None
 
 # endregion
 
@@ -431,7 +454,7 @@ def _listener_linux(callback: CallbackFn) -> None:
     command = [gsettings, 'monitor', 'org.gnome.desktop.interface', schema]
     # this has rhe same restrictions as above
     with subprocess.Popen(command, stdout=subprocess.PIPE, universal_newlines=True) as process:
-        for line in process.stdout:
+        for line in typing.cast(str, process.stdout):
             value = line.removeprefix(f"{schema}: '").removesuffix("'")
             callback(Theme.DARK if '-dark' in value.lower() else Theme.LIGHT)
 
@@ -439,23 +462,22 @@ def _listener_linux(callback: CallbackFn) -> None:
 def _get_gsettings_schema() -> tuple[str, str]:
     '''Get the schema to use when monitoring via gsettings.'''
     # This follows the gsettings followed here:
-    #   https://github.com/GNOME/gsettings-desktop-schemas/blob/master/schemas/org.gnome.desktop.interface.gschema.xml.in
+    #   https://github.com/GNOME/gsettings-desktop-schemas/blob/master/schemas/org.gnome.desktop.interface.gschema.xml.in  # noqa  # pylint: disable=line-too-long
 
     gsettings = _get_gsettings()
     command = [gsettings, 'get', 'org.gnome.desktop.interface']
     # using the freedesktop specifications for checking dark mode
     # this will return something like `prefer-dark`, which is the true value.
     #   valid values are 'default', 'prefer-dark', 'prefer-light'.
-    process = subprocess.run(command + ['color-scheme'], capture_output=True)
+    process = subprocess.run(command + ['color-scheme'], capture_output=True, check=False)
     if process.returncode == 0:
         return ('color-scheme', process.stdout.decode('utf-8'))
-    elif b'No such key' not in process.stderr:
+    if b'No such key' not in process.stderr:
         raise RuntimeError('Unable to get our color-scheme from our gsettings.')
 
     # if not found then trying older gtk-theme method
     # this relies on the theme not lying to you: if the theme is dark, it ends in `-dark`.
-    process = subprocess.run(command + ['gtk-theme'], capture_output=True)
-    process.check_returncode()
+    process = subprocess.run(command + ['gtk-theme'], capture_output=True, check=True)
     return ('gtk-theme', process.stdout.decode('utf-8'))
 
 
@@ -489,6 +511,7 @@ def _listener_dummy(callback: CallbackFn) -> None:
     '''Register an event listener for dark/light theme changes (always unimplemented).'''
     _ = callback
 
+
 # endregion
 
 
@@ -517,19 +540,17 @@ def register_functions() -> tuple[ThemeFn, ListenerFn]:
 
     if sys.platform == 'darwin' and macos_supported_version():
         return (_get_theme_macos, _listener_macos)
-    elif sys.platform == 'win32' and platform.release().isdigit() and int(platform.release()) >= 10:
+    if sys.platform == 'win32' and platform.release().isdigit() and int(platform.release()) >= 10:
         # Checks if running Windows 10 version 10.0.14393 (Anniversary Update) OR HIGHER.
         # The getwindowsversion method returns a tuple. The third item is the build number
         # that we can use to check if the user has a new enough version of Windows.
         winver = int(platform.version().split('.')[2])
         if winver >= 14393:
             return (_get_theme_windows, _listener_windows)
-        else:
-            return (_get_theme_dummy, _listener_dummy)
-    elif sys.platform == "linux":
-        return (_get_theme_linux, _listener_linux)
-    else:
         return (_get_theme_dummy, _listener_dummy)
+    if sys.platform == "linux":
+        return (_get_theme_linux, _listener_linux)
+    return (_get_theme_dummy, _listener_dummy)
 
 
 # register these callbacks once

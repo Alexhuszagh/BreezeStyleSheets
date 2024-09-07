@@ -233,12 +233,7 @@ def parse_args(argv=None):
     '''Parse the command-line options.'''
 
     parser = argparse.ArgumentParser(description='Git configuration changes.')
-    parser.add_argument(
-        '-v',
-        '--version',
-        action='version',
-        version=f'%(prog)s {__version__}'
-    )
+    parser.add_argument('-v', '--version', action='version', version=f'%(prog)s {__version__}')
     dist = parser.add_mutually_exclusive_group()
     dist.add_argument(
         '--track-dist',
@@ -278,35 +273,41 @@ def call(command, ignore_errors=True):
     except subprocess.CalledProcessError as error:
         if b'Unable to mark file' not in error.stderr or not ignore_errors:
             raise
+        return None
 
 
 def assume_unchanged(git, file):
     '''Assume a version-controlled file is unchanged.'''
 
-    return call([
-        git,
-        'update-index',
-        '--assume-unchanged',
-        file,
-    ])
+    return call(
+        [
+            git,
+            'update-index',
+            '--assume-unchanged',
+            file,
+        ]
+    )
 
 
 def no_assume_unchanged(git, file):
     '''No longer assume a version-controlled file is unchanged.'''
 
-    return call([
-        git,
-        'update-index',
-        '--no-assume-unchanged',
-        file,
-    ])
+    return call(
+        [
+            git,
+            'update-index',
+            '--no-assume-unchanged',
+            file,
+        ]
+    )
 
 
 def write_gitignore(entries):
     '''Write to ignore ignore file using the provided entries.'''
 
-    with open(os.path.join(home, '.gitignore'), 'w') as file:
-        file.write(f'{"\n".join(entries)}\n{PYTHON_GITIGNORE}\n{CPP_GITIGNORE}\n')
+    with open(os.path.join(home, '.gitignore'), 'w', encoding='utf-8') as file:
+        custom = '\n'.join(entries)
+        file.write(f'{custom}\n{PYTHON_GITIGNORE}\n{CPP_GITIGNORE}\n')
 
 
 def main(argv=None):
@@ -361,7 +362,7 @@ def main(argv=None):
     dist_files = []
     dist_dirs = [f'{home}/dist', f'{home}/resources']
     for dist_dir in dist_dirs:
-        for root, dirs, files in os.walk(dist_dir):
+        for root, _, files in os.walk(dist_dir):
             relpath = os.path.relpath(root, home)
             for file in files:
                 dist_files.append(f'{relpath}/{file}')

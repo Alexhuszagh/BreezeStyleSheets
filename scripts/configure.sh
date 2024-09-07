@@ -10,23 +10,25 @@
 
 set -eux pipefail
 
-ci_home="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
-project_home="$(dirname "${ci_home}")"
+scripts_home="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+project_home="$(dirname "${scripts_home}")"
 mkdir -p "${project_home}/dist/ci"
 cd "${project_home}"
+# shellcheck source=/dev/null
+. "${scripts_home}/shared.sh"
 
 # pop them into dist since it's ignored anyway
-if [[ ! -v PYTHON ]]; then
+if ! is-set PYTHON; then
     PYTHON=python
 fi
 frameworks=("pyqt5" "pyqt6" "pyside6")
-have_pyside=$(PYTHON -c 'import sys; print(sys.version_info < (3, 11))')
+have_pyside=$(${PYTHON} -c 'import sys; print(sys.version_info < (3, 11))')
 if [[ "${have_pyside}" == "True" ]]; then
     frameworks+=("pyside2")
 fi
 
 # NOTE: We need to make sure the scripts directory is added to the path
-python_home=$(PYTHON -c 'import site; print(site.getsitepackages()[0])')
+python_home=$(${PYTHON} -c 'import site; print(site.getsitepackages()[0])')
 scripts_dir="${python_home}/scripts"
 uname_s="$(uname -s)"
 if [[ "${uname_s}" == MINGW* ]]; then
@@ -35,7 +37,7 @@ if [[ "${uname_s}" == MINGW* ]]; then
 fi
 export PATH="${scripts_dir}:${PATH}"
 for framework in "${frameworks[@]}"; do
-    "${PYTHON}" "${project_home}/configure.py" \
+    ${PYTHON} "${project_home}/configure.py" \
         --styles=all \
         --extensions=all \
         --qt-framework "${framework}" \
@@ -43,5 +45,5 @@ for framework in "${frameworks[@]}"; do
         --resource "breeze_${framework}.qrc" \
         --compiled-resource "${project_home}/dist/ci/breeze_${framework}.py"
     # this will auto-fail due to pipefail, checks the imports work
-    "${PYTHON}" -c "import os; os.chdir('dist/ci'); import breeze_${framework}"
+    ${PYTHON} -c "import os; os.chdir('dist/ci'); import breeze_${framework}"
 done

@@ -30,19 +30,20 @@
     cannot be modified in stylesheets.
 '''
 
-import shared
+# pylint: disable=duplicate-code
+
 import sys
+
+import shared
 
 parser = shared.create_parser()
 parser.add_argument(
-    '--set-app-palette',
-    help='''set the placeholder text palette globally.''',
-    action='store_true'
+    '--set-app-palette', help='''set the placeholder text palette globally.''', action='store_true'
 )
 parser.add_argument(
     '--set-widget-palette',
     help='''set the placeholder text palette for the affected widgets.''',
-    action='store_true'
+    action='store_true',
 )
 args, unknown = shared.parse_args(parser)
 QtCore, QtGui, QtWidgets = shared.import_qt(args)
@@ -59,6 +60,7 @@ def set_palette(widget, role, color):
 
 
 def set_link_palette(widget):
+    '''Set the palette for a link type.'''
     set_palette(widget, compat.Link, colors.LinkColor)
     set_palette(widget, compat.LinkVisited, colors.LinkVisitedColor)
 
@@ -67,6 +69,8 @@ class Ui:
     '''Main class for the user interface.'''
 
     def setup(self, MainWindow):
+        '''Setup our main window for the UI.'''
+
         url = 'https://github.com/Alexhuszagh/BreezeStyleSheets'
         MainWindow.setObjectName('MainWindow')
         MainWindow.resize(400, 200)
@@ -121,7 +125,7 @@ def main():
     window.setWindowTitle('Stylized URL colors.')
 
     shared.set_stylesheet(args, app, compat)
-    return shared.exec_app(args, app, window, compat)
+    return shared.exec_app(args, app, window)
 
 
 if __name__ == '__main__':

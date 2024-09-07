@@ -107,12 +107,14 @@
     - Windows 10
 '''
 
+# pylint: disable=protected-access
+
 import enum
 import os
-import shared
 import sys
-
 from pathlib import Path
+
+import shared
 
 parser = shared.create_parser()
 parser.add_argument(
@@ -157,7 +159,7 @@ args, unknown = shared.parse_args(parser)
 QtCore, QtGui, QtWidgets = shared.import_qt(args)
 compat = shared.get_compat_definitions(args)
 colors = shared.get_colors(args, compat)
-ICON_MAP = shared.get_icon_map(args, compat)
+ICON_MAP = shared.get_icon_map(compat)
 # 100ms between repaints, so we avoid over-repainting.
 # Allows us to avoid glitchy motion during drags/
 REPAINT_TIMER = 100
@@ -262,6 +264,7 @@ def close_icon(widget):
 
 def transparent_icon(widget):
     '''Create a transparent icon.'''
+    _ = widget
     return QtGui.QIcon()
 
 
@@ -285,6 +288,7 @@ def size_greater(x, y):
 def size_less(x, y):
     '''Compare 2 sizes, determining if any bounds of x are less than y.'''
     return x.width() < y.width() or x.height() < y.height()
+
 
 # UI WIDGETS
 # These are just to populate the views: these could be anything.
@@ -341,7 +345,7 @@ class SortableTree(QtWidgets.QTreeWidget):
 class SettingTabs(QtWidgets.QTabWidget):
     '''Sample setting widget with a tab view.'''
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None):  # pylint: disable=too-many-statements
         super().__init__(parent)
 
         self.setTabPosition(compat.North)
@@ -421,11 +425,13 @@ class SettingTabs(QtWidgets.QTabWidget):
             self.data_folder.setText(dialog.selectedFiles()[0])
 
     def launch_fontdialog(self, edit):
+        '''Launch our font selection disablog.'''
         initial = QtGui.QFont()
         initial.setFamily(edit.text())
         font, ok = QtWidgets.QFontDialog.getFont(initial)
         if ok:
             edit.setText(font.family())
+
 
 # RESIZE HELPERS
 
@@ -587,7 +593,7 @@ def start_resize(self, window, window_type):
     # and track hover events outside the app. This doesn't
     # work on Wayland or on macOS.
     #   https://doc.qt.io/qt-5/qwidget.html#grabMouse
-    if not IS_TRUE_WAYLAND and not sys.platform == 'darwin':
+    if not IS_TRUE_WAYLAND and sys.platform != 'darwin':
         self.window().grabMouse()
 
 
@@ -605,7 +611,7 @@ def end_resize(self, window_type):
 
     setattr(self, f'_{window_type}_resize', None)
     window.window().unsetCursor()
-    if not IS_TRUE_WAYLAND and not sys.platform == 'darwin':
+    if not IS_TRUE_WAYLAND and sys.platform != 'darwin':
         self.window().releaseMouse()
 
 
@@ -633,6 +639,7 @@ def handle_frame(self, window, event, window_type):
 def end_frame(self, window_type):
     '''End the window frame resize state.'''
     setattr(self, f'_{window_type}_frame', None)
+
 
 # EVENT HANDLES
 
@@ -679,13 +686,12 @@ def window_mouse_double_click_event(self, event):
     if not widget.underMouse() or event.button() != compat.LeftButton:
         return super(type(self), self).mouseDoubleClickEvent(event)
     if widget._is_shaded:
-        widget.unshade()
-    elif widget.isMinimized() or widget.isMaximized():
-        widget.restore()
-    elif widget._has_shade:
-        widget.shade()
-    else:
-        widget.maximize()
+        return widget.unshade()
+    if widget.isMinimized() or widget.isMaximized():
+        return widget.restore()
+    if widget._has_shade:
+        return widget.shade()
+    return widget.maximize()
 
 
 def window_mouse_press_event(self, event, window, window_type):
@@ -714,7 +720,7 @@ def window_mouse_move_event(self, event, window, window_type):
     if getattr(window, f'_{window_type}_frame') is not None:
         end_drag(window, window_type)
     if getattr(window, f'_{window_type}_drag') is not None:
-        handle_drag(window, event, self, window_type)
+        handle_drag(self, event, window, window_type)
     return super(type(self), self).mouseMoveEvent(event)
 
 
@@ -723,6 +729,7 @@ def window_mouse_release_event(self, event, window, window_type):
 
     end_drag(window, window_type)
     return super(type(self), self).mouseReleaseEvent(event)
+
 
 # WINDOW WIDGETS
 
@@ -763,6 +770,7 @@ class Label(QtWidgets.QLabel):
         return self._elide
 
     def setElideMode(self, elide):
+        '''Set the elide mode for the label.'''
         self._elide = elide
 
     def elide(self):
@@ -783,6 +791,7 @@ class TitleButton(QtWidgets.QToolButton):
 
     def __init__(self, icon, parent=None):
         super().__init__()
+        _ = parent
         self.setIcon(icon)
         self.setAutoRaise(True)
 
@@ -790,7 +799,7 @@ class TitleButton(QtWidgets.QToolButton):
 class TitleBar(QtWidgets.QFrame):
     '''Custom instance of a QTitlebar'''
 
-    def __init__(self, window, parent=None, flags=None):
+    def __init__(self, window, parent=None, flags=None):  # pylint: disable=(too-many-statements
         super().__init__(parent)
 
         # Get and set some properties.
@@ -847,14 +856,16 @@ class TitleBar(QtWidgets.QFrame):
         self._top_action.toggled.connect(self.toggle_keep_above)
         self._close_action = action('&Close', self, close_icon(self))
         self._close_action.triggered.connect(self._window.close)
-        self._main_menu.addActions([
-            self._restore_action,
-            self._move_action,
-            self._size_action,
-            self._min_action,
-            self._max_action,
-            self._top_action,
-        ])
+        self._main_menu.addActions(
+            [
+                self._restore_action,
+                self._move_action,
+                self._size_action,
+                self._min_action,
+                self._max_action,
+                self._top_action,
+            ]
+        )
         self._main_menu.addSeparator()
         self._main_menu.addAction(self._close_action)
         self._menu.setMenu(self._main_menu)
@@ -1248,93 +1259,93 @@ class SizeFrame(QtCore.QObject):
     def is_on_top(self, pos, rect):
         '''Determine if the cursor is on the top of the widget.'''
         return (
-            pos.x() >= rect.x() + self._border_width and
-            pos.x() <= rect.x() + rect.width() - self._border_width and
-            pos.y() >= rect.y() and
-            pos.y() <= rect.y() + self._border_width
+            pos.x() >= rect.x() + self._border_width
+            and pos.x() <= rect.x() + rect.width() - self._border_width
+            and pos.y() >= rect.y()
+            and pos.y() <= rect.y() + self._border_width
         )
 
     def is_on_bottom(self, pos, rect):
         '''Determine if the cursor is on the bottom of the widget.'''
         return (
-            pos.x() >= rect.x() + self._border_width and
-            pos.x() <= rect.x() + rect.width() - self._border_width and
-            pos.y() >= rect.y() + rect.height() - self._border_width and
-            pos.y() <= rect.y() + rect.height()
+            pos.x() >= rect.x() + self._border_width
+            and pos.x() <= rect.x() + rect.width() - self._border_width
+            and pos.y() >= rect.y() + rect.height() - self._border_width
+            and pos.y() <= rect.y() + rect.height()
         )
 
     def is_on_left(self, pos, rect):
         '''Determine if the cursor is on the left of the widget.'''
         return (
-            pos.x() >= rect.x() - self._border_width and
-            pos.x() <= rect.x() + self._border_width and
-            pos.y() >= rect.y() + self._border_width and
-            pos.y() <= rect.y() + rect.height() - self._border_width
+            pos.x() >= rect.x() - self._border_width
+            and pos.x() <= rect.x() + self._border_width
+            and pos.y() >= rect.y() + self._border_width
+            and pos.y() <= rect.y() + rect.height() - self._border_width
         )
 
     def is_on_right(self, pos, rect):
         '''Determine if the cursor is on the right of the widget.'''
         return (
-            pos.x() >= rect.x() + rect.width() - self._border_width and
-            pos.x() <= rect.x() + rect.width() and
-            pos.y() >= rect.y() + self._border_width and
-            pos.y() <= rect.y() + rect.height() - self._border_width
+            pos.x() >= rect.x() + rect.width() - self._border_width
+            and pos.x() <= rect.x() + rect.width()
+            and pos.y() >= rect.y() + self._border_width
+            and pos.y() <= rect.y() + rect.height() - self._border_width
         )
 
     def is_on_top_left(self, pos, rect):
         '''Determine if the cursor is on the top left of the widget.'''
         return (
-            pos.x() >= rect.x() and
-            pos.x() <= rect.x() + self._border_width and
-            pos.y() >= rect.y() and
-            pos.y() <= rect.y() + self._border_width
+            pos.x() >= rect.x()
+            and pos.x() <= rect.x() + self._border_width
+            and pos.y() >= rect.y()
+            and pos.y() <= rect.y() + self._border_width
         )
 
     def is_on_top_right(self, pos, rect):
         '''Determine if the cursor is on the top right of the widget.'''
         return (
-            pos.x() >= rect.x() + rect.width() - self._border_width and
-            pos.x() <= rect.x() + rect.width() and
-            pos.y() >= rect.y() and
-            pos.y() <= rect.y() + self._border_width
+            pos.x() >= rect.x() + rect.width() - self._border_width
+            and pos.x() <= rect.x() + rect.width()
+            and pos.y() >= rect.y()
+            and pos.y() <= rect.y() + self._border_width
         )
 
     def is_on_bottom_left(self, pos, rect):
         '''Determine if the cursor is on the bottom left of the widget.'''
         return (
-            pos.x() >= rect.x() and
-            pos.x() <= rect.x() + self._border_width and
-            pos.y() >= rect.y() + rect.height() - self._border_width and
-            pos.y() <= rect.y() + rect.height()
+            pos.x() >= rect.x()
+            and pos.x() <= rect.x() + self._border_width
+            and pos.y() >= rect.y() + rect.height() - self._border_width
+            and pos.y() <= rect.y() + rect.height()
         )
 
     def is_on_bottom_right(self, pos, rect):
         '''Determine if the cursor is on the bottom right of the widget.'''
         return (
-            pos.x() >= rect.x() + rect.width() - self._border_width and
-            pos.x() <= rect.x() + rect.width() and
-            pos.y() >= rect.y() + rect.height() - self._border_width and
-            pos.y() <= rect.y() + rect.height()
+            pos.x() >= rect.x() + rect.width() - self._border_width
+            and pos.x() <= rect.x() + rect.width()
+            and pos.y() >= rect.y() + rect.height() - self._border_width
+            and pos.y() <= rect.y() + rect.height()
         )
 
-    def cursor_position(self, pos, rect):
+    def cursor_position(self, pos, rect):  # pylint: disable=too-many-return-statements)
         '''Calculate the cursor position inside the window.'''
 
         if self.is_on_left(pos, rect):
             return WindowEdge.Left
-        elif self.is_on_right(pos, rect):
+        if self.is_on_right(pos, rect):
             return WindowEdge.Right
-        elif self.is_on_bottom(pos, rect):
+        if self.is_on_bottom(pos, rect):
             return WindowEdge.Bottom
-        elif self.is_on_top(pos, rect):
+        if self.is_on_top(pos, rect):
             return WindowEdge.Top
-        elif self.is_on_bottom_left(pos, rect):
+        if self.is_on_bottom_left(pos, rect):
             return WindowEdge.BottomLeft
-        elif self.is_on_bottom_right(pos, rect):
+        if self.is_on_bottom_right(pos, rect):
             return WindowEdge.BottomRight
-        elif self.is_on_top_right(pos, rect):
+        if self.is_on_top_right(pos, rect):
             return WindowEdge.TopRight
-        elif self.is_on_top_left(pos, rect):
+        if self.is_on_top_left(pos, rect):
             return WindowEdge.TopLeft
 
         return WindowEdge.NoEdge
@@ -1390,27 +1401,27 @@ class SizeFrame(QtCore.QObject):
 
         self._window.setCursor(self._cursor)
 
-    def resize(self, position, rect):
+    def resize(self, position, rect):  # pylint: disable=too-many-branches
         '''Resize our window to the adjusted dimensions.'''
 
         # Get our new frame dimensions.
         if self._press_edge == WindowEdge.NoEdge:
             return
-        elif self._press_edge == WindowEdge.Top:
+        if self._press_edge == WindowEdge.Top:
             rect.setTop(position.y())
-        elif self._press_edge == WindowEdge.Bottom:
+        if self._press_edge == WindowEdge.Bottom:
             rect.setBottom(position.y())
-        elif self._press_edge == WindowEdge.Left:
+        if self._press_edge == WindowEdge.Left:
             rect.setLeft(position.x())
-        elif self._press_edge == WindowEdge.Right:
+        if self._press_edge == WindowEdge.Right:
             rect.setRight(position.x())
-        elif self._press_edge == WindowEdge.TopLeft:
+        if self._press_edge == WindowEdge.TopLeft:
             rect.setTopLeft(position)
-        elif self._press_edge == WindowEdge.TopRight:
+        if self._press_edge == WindowEdge.TopRight:
             rect.setTopRight(position)
-        elif self._press_edge == WindowEdge.BottomLeft:
+        if self._press_edge == WindowEdge.BottomLeft:
             rect.setBottomLeft(position)
-        elif self._press_edge == WindowEdge.BottomRight:
+        if self._press_edge == WindowEdge.BottomRight:
             rect.setBottomRight(position)
 
         # Ensure we don't drag the widgets if we go below min sizes.
@@ -1507,7 +1518,7 @@ class SizeFrame(QtCore.QObject):
 
     def leave(self, event):
         '''Handle the leaveEvent of the window.'''
-
+        _ = event
         if not self._pressed:
             self.unset_cursor()
 
@@ -1564,6 +1575,7 @@ class DefaultSubWindow(SubWindow):
         flags=QtCore.Qt.WindowType(0),
         sizegrip=False,
     ):
+        _ = sizegrip
         super().__init__(parent, flags=flags)
 
 
@@ -1810,7 +1822,7 @@ class MdiArea(QtWidgets.QMdiArea):
         self._minimized.remove(subwindow)
         self.move_minimized()
 
-    def move_minimized(self):
+    def move_minimized(self):  # pylint: disable=too-many-locals
         '''Move the minimized windows.'''
 
         # No need to set the geometry of our minimized windows.
@@ -1863,9 +1875,8 @@ class MdiArea(QtWidgets.QMdiArea):
 
         # Now, need to place them accordingly.
         # Need to handle unshifts, if they occur, due to the
-        for index in range(len(self._minimized)):
+        for index, window in enumerate(self._minimized):
             # Calculate our new column, only storing if it is a new column.
-            window = self._minimized[index]
             is_new_column = index % row_count == 0
             if index != 0 and is_new_column:
                 point = new_column(point)
@@ -2023,6 +2034,7 @@ class Window(QtWidgets.QMainWindow):
     def resize_event(self, obj, event, window_type):
         '''Handle window resize events.'''
 
+        _ = obj
         # NOTE: If we're on Wayland, we cant' track hover events outside the
         # main widget, and we can't guess intermittently since if the mouse
         # doesn't move, we won't get an `Enter` or `HoverEnter` event, and
@@ -2245,7 +2257,8 @@ class FramelessWindow(Window):
         '''Restore the window, showing the main widget and size grip.'''
         self.showNormal()
 
-    def showNormal(self):
+    def showNormal(self):  # pylint: disable=useless-parent-delegation
+        '''Show the normal titlebar view.'''
         super().showNormal()
 
     def shade(self, size):
@@ -2321,7 +2334,7 @@ def main():
     app.installEventFilter(window)
 
     shared.set_stylesheet(args, app, compat)
-    return shared.exec_app(args, app, window, compat)
+    return shared.exec_app(args, app, window)
 
 
 if __name__ == '__main__':

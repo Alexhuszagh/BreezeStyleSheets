@@ -29,21 +29,25 @@
     Example overriding QCommonStyle for custom standard icons.
 '''
 
-import shared
 import sys
+
+import shared
 
 parser = shared.create_parser()
 args, unknown = shared.parse_args(parser)
 QtCore, QtGui, QtWidgets = shared.import_qt(args)
 compat = shared.get_compat_definitions(args)
-ICON_MAP = shared.get_icon_map(args, compat)
+ICON_MAP = shared.get_icon_map(compat)
 
 
 def style_icon(style, icon, option=None, widget=None):
+    '''Helper to provide arguments for setting a style icon.'''
     return shared.style_icon(args, style, icon, ICON_MAP, option, widget)
 
 
 class ApplicationStyle(QtWidgets.QCommonStyle):
+    '''A custom application style overriding standard icons.'''
+
     def __init__(self, style):
         super().__init__()
         self.style = style
@@ -74,6 +78,7 @@ def add_standard_button(ui, layout, icon, index):
 def add_standard_buttons(ui, page, icons):
     '''Create and add QToolButtons with standard icons to the UI.'''
 
+    _ = ui
     for icon_name in icons:
         icon_enum = getattr(compat, icon_name)
         icon = style_icon(page.style(), icon_enum, widget=page)
@@ -84,7 +89,9 @@ def add_standard_buttons(ui, page, icons):
 class Ui:
     '''Main class for the user interface.'''
 
-    def setup(self, MainWindow):
+    def setup(self, MainWindow):  # pylint: disable=too-many-statements
+        '''Setup our main window for the UI.'''
+
         MainWindow.setObjectName('MainWindow')
         MainWindow.resize(1068, 824)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -99,22 +106,26 @@ class Ui:
         self.tool_box.addItem(self.page1, 'Overwritten Icons')
         self.layout.addWidget(self.tool_box)
 
-        add_standard_buttons(self, self.page1, [
-            'SP_ArrowLeft',
-            'SP_ArrowDown',
-            'SP_ArrowRight',
-            'SP_ArrowUp',
-            'SP_DockWidgetCloseButton',
-            'SP_DialogCancelButton',
-            'SP_DialogCloseButton',
-            'SP_DialogDiscardButton',
-            'SP_DialogHelpButton',
-            'SP_DialogNoButton',
-            'SP_DialogOkButton',
-            'SP_DialogOpenButton',
-            'SP_DialogResetButton',
-            'SP_DialogSaveButton',
-        ])
+        add_standard_buttons(
+            self,
+            self.page1,
+            [
+                'SP_ArrowLeft',
+                'SP_ArrowDown',
+                'SP_ArrowRight',
+                'SP_ArrowUp',
+                'SP_DockWidgetCloseButton',
+                'SP_DialogCancelButton',
+                'SP_DialogCloseButton',
+                'SP_DialogDiscardButton',
+                'SP_DialogHelpButton',
+                'SP_DialogNoButton',
+                'SP_DialogOkButton',
+                'SP_DialogOpenButton',
+                'SP_DialogResetButton',
+                'SP_DialogSaveButton',
+            ],
+        )
 
         self.page2 = QtWidgets.QListWidget()
         self.tool_box.addItem(self.page2, 'Default Icons')
@@ -248,6 +259,8 @@ class Ui:
         self.retranslateUi(MainWindow)
 
     def retranslateUi(self, MainWindow):
+        '''Retranslate our UI after initializing some of our base modules.'''
+
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate('MainWindow', 'MainWindow'))
         self.menuMenu.setTitle(_translate('MainWindow', '&Menu'))
@@ -255,9 +268,11 @@ class Ui:
         self.actionAction_C.setText(_translate('MainWindow', 'Action &C'))
 
     def about(self):
+        '''Load our Qt about window.'''
         QtWidgets.QMessageBox.aboutQt(self.centralwidget, 'About Menu')
 
     def critical(self):
+        '''Launch a critical message box.'''
         QtWidgets.QMessageBox.critical(self.centralwidget, 'Error', 'Critical Error')
 
 
@@ -276,7 +291,7 @@ def main():
     ui.actionAction_C.triggered.connect(ui.critical)
 
     shared.set_stylesheet(args, app, compat)
-    return shared.exec_app(args, app, window, compat)
+    return shared.exec_app(args, app, window)
 
 
 if __name__ == '__main__':
