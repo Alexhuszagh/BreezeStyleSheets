@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning].
 - Configurable stylesheets via themes.
 - Custom extension support, such as the advanced docking system.
 - Compile Qt resource files (from [chaosink]).
+- Documented support for CMake builds (from [ruilvo]).
 
 ### Changed
 
@@ -61,3 +62,4 @@ and this project adheres to [Semantic Versioning].
 [Inverted-E]: https://github.com/Inverted-E/
 [eblade]: https://github.com/eblade/
 [chaosink]: https://github.com/chaosink/
+[ruilvo]: https://github.com/ruilvo/

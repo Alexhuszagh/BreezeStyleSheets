@@ -21,7 +21,6 @@ mkdir -p "${build_dir}/"{qt5,qt6}
 # we xcb installed for our headless running, so exit if we don't have it
 if ! hash xvfb-run &>/dev/null; then
     >&2 echo "Do not have xvfb installed..."
-    exit 1
 fi
 
 # first, try Qt5
@@ -31,16 +30,20 @@ export QT_QPA_PLATFORM=offscreen
 cd "${build_dir}/qt5"
 cmake "${project_home}/example/cmake" -D QT_VERSION=Qt5
 make -j
-timeout 1 xvfb-run -a ./testing || error_code=$?
-if [[ "${error_code}" != 124 ]]; then
-    exit "${error_code}"
+if hash xvfb-run &>/dev/null; then
+    timeout 1 xvfb-run -a ./testing || error_code=$?
+    if [[ "${error_code}" != 124 ]]; then
+        exit "${error_code}"
+    fi
 fi
 
 # first, try Qt6
 cd "${build_dir}/qt6"
 cmake "${project_home}/example/cmake" -D QT_VERSION=Qt6
 make -j
-timeout 1 xvfb-run -a ./testing || error_code=$?
-if [[ "${error_code}" != 124 ]]; then
-    exit "${error_code}"
+if hash xvfb-run &>/dev/null; then
+    timeout 1 xvfb-run -a ./testing || error_code=$?
+    if [[ "${error_code}" != 124 ]]; then
+        exit "${error_code}"
+    fi
 fi

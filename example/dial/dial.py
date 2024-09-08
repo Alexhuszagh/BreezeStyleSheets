@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # The MIT License (MIT)
 #
 # Copyright (c) <2022-Present> <Alex Huszagh>
@@ -32,9 +30,13 @@
 '''
 
 import math
+import os
 import sys
 
-import shared
+EXAMPLE = os.path.dirname(os.path.realpath(__file__))
+sys.path.insert(0, os.path.dirname(EXAMPLE))
+
+import shared  # noqa  # pylint: disable=wrong-import-position,import-error
 
 parser = shared.create_parser()
 parser.add_argument(
@@ -270,49 +272,3 @@ class Dial(QtWidgets.QDial):
             self.repaint()
 
         return super().eventFilter(obj, event)
-
-
-class Ui:
-    '''Main class for the user interface.'''
-
-    def setup(self, MainWindow):
-        '''Setup our main window for the UI.'''
-
-        MainWindow.setObjectName('MainWindow')
-        MainWindow.resize(1068, 824)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName('centralwidget')
-        self.layout = QtWidgets.QHBoxLayout(self.centralwidget)
-        self.layout.setObjectName('layout')
-        if not args.no_align:
-            self.layout.setAlignment(compat.AlignVCenter)
-        MainWindow.setCentralWidget(self.centralwidget)
-
-        self.dial1 = Dial(self.centralwidget)
-        self.layout.addWidget(self.dial1)
-
-        self.dial2 = Dial(self.centralwidget)
-        self.dial2.setNotchesVisible(True)
-        self.layout.addWidget(self.dial2)
-
-        self.dial3 = Dial(self.centralwidget)
-        self.dial3.setWrapping(True)
-        self.layout.addWidget(self.dial3)
-
-
-def main():
-    'Application entry point'
-
-    app, window = shared.setup_app(args, unknown, compat)
-
-    # setup ui
-    ui = Ui()
-    ui.setup(window)
-    window.setWindowTitle('QDial')
-
-    shared.set_stylesheet(args, app, compat)
-    return shared.exec_app(args, app, window)
-
-
-if __name__ == '__main__':
-    sys.exit(main())

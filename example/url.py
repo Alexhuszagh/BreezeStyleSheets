@@ -123,6 +123,7 @@ def main():
     ui = Ui()
     ui.setup(window)
     window.setWindowTitle('Stylized URL colors.')
+    window.resize(200, 100)
 
     shared.set_stylesheet(args, app, compat)
     return shared.exec_app(args, app, window)

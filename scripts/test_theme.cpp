@@ -3,7 +3,7 @@
 */
 
 #include <iostream>
-#include "../example/breeze_theme.hpp"
+#include "../example/detect/system_theme.hpp"
 
 int main()
 {

@@ -148,6 +148,7 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/Alexhuszagh/BreezeStyleSheets.git
   GIT_TAG origin/main
   GIT_PROGRESS ON
+  GIT_SHALLOW 1
   USES_TERMINAL_DOWNLOAD TRUE)
 
 FetchContent_GetProperties(breeze_stylesheets)
@@ -252,7 +253,7 @@ The support stylesheets include:
 - `auto`
 - `native` (the system native theme)
 
-And any `-purple`, `-green`, etc. variants can also be used. `auto` will automatically detect if the system theme is light or dark and select the correct theme accordingly. The cross-platform way to detect the correct theme is using `get_theme` in either [Python](/example/breeze_theme.py) or [C++](/example/breeze_theme.hpp). Just include those stand-alone files in your project and you can select the desired theme based on the user's profile settings at startup.
+And any `-purple`, `-green`, etc. variants can also be used. `auto` will automatically detect if the system theme is light or dark and select the correct theme accordingly. A recipe for a cross-platform way to detect the correct theme in Python or C++ is shown in our [System Theme Detection](/example/README.md#system-theme-detection).
 
 ## Features
 

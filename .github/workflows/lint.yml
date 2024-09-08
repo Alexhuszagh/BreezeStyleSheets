@@ -73,4 +73,4 @@ jobs:
           extra_args="-extra-arg=-std=c++17"
           passthrough=""
         fi
-        clang-tidy -checks=-*,clang-analyzer-*,-clang-analyzer-cplusplus* ${extra_args} example/breeze_theme.hpp -- ${passthrough}
+        clang-tidy -checks=-*,clang-analyzer-*,-clang-analyzer-cplusplus* ${extra_args} example/detect/system_theme.hpp -- ${passthrough}

@@ -16,10 +16,10 @@ cd "${project_home}"
 # on the path by default.
 if ! is-set PYTHON; then
     pylint ./*.py example/*.py example/**/*.py
-    pyright example/breeze_theme.py
+    pyright example/detect/system_theme.py
     flake8
 else
     ${PYTHON} -m pylint ./*.py example/*.py example/**/*.py
-    ${PYTHON} -m pyright example/breeze_theme.py
+    ${PYTHON} -m pyright example/detect/system_theme.py
     ${PYTHON} -m flake8
 fi

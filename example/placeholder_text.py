@@ -114,6 +114,7 @@ def main():
     ui = Ui()
     ui.setup(window)
     window.setWindowTitle('Stylized Placeholder Text.')
+    window.resize(400, 150)
 
     shared.set_stylesheet(args, app, compat)
     return shared.exec_app(args, app, window)

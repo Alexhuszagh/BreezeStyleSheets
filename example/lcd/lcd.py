@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # The MIT License (MIT)
 #
 # Copyright (c) <2022-Present> <Alex Huszagh>
@@ -23,24 +21,29 @@
 # THE SOFTWARE.
 
 '''
-    dial
-    ====
+    lcd
+    ===
 
     Example showing how to override the `paintEvent` and `eventFilter`
-    for a `QDial`, creating a visually consistent, stylish `QDial` that
-    supports highlighting the handle on the active or hovered dial.
+    for a `QLCDNumber`, creating a visually consistent, stylish
+    `QLCDNumber` that supports highlighting the handle on the active
+    or hovered number.
 '''
 
+import os
 import sys
 
-import shared
+EXAMPLE = os.path.dirname(os.path.realpath(__file__))
+sys.path.insert(0, os.path.dirname(EXAMPLE))
+
+import shared  # noqa  # pylint: disable=wrong-import-position,import-error
 
 parser = shared.create_parser()
 parser.add_argument(
     '--no-align', help='''allow larger widgets without forcing alignment.''', action='store_true'
 )
 args, unknown = shared.parse_args(parser)
-QtCore, QtGui, QtWidgets = shared.import_qt(args)
+_, __, QtWidgets = shared.import_qt(args)
 compat = shared.get_compat_definitions(args)
 colors = shared.get_colors(args, compat)
 
@@ -65,62 +68,3 @@ class LCD(QtWidgets.QLCDNumber):
         palette.setColor(compat.LightPalette, colors.Selected)
         palette.setColor(compat.DarkPalette, colors.Notch)
         self.setPalette(palette)
-
-
-class Ui:
-    '''Main class for the user interface.'''
-
-    def setup(self, MainWindow):
-        '''Setup our main window for the UI.'''
-
-        MainWindow.setObjectName('MainWindow')
-        MainWindow.resize(1068, 824)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.layout = QtWidgets.QHBoxLayout(self.centralwidget)
-        self.layout.setSpacing(0)
-        if not args.no_align:
-            self.layout.setAlignment(compat.AlignVCenter)
-        MainWindow.setCentralWidget(self.centralwidget)
-
-        self.lcd1 = LCD(self.centralwidget)
-        self.lcd1.display(15)
-        self.lcd1.setDigitCount(2)
-        self.layout.addWidget(self.lcd1)
-
-        self.lcd2 = LCD(self.centralwidget)
-        self.lcd2.display(31)
-        self.lcd2.setHexMode()
-        self.lcd2.setDigitCount(2)
-        self.layout.addWidget(self.lcd2)
-
-        self.lcd3 = LCD(self.centralwidget)
-        self.lcd3.display(15)
-        self.lcd3.setSegmentStyle(compat.LCDOutline)
-        self.lcd3.setFrameShape(compat.NoFrame)
-        self.lcd3.setDigitCount(2)
-        self.layout.addWidget(self.lcd3)
-
-        self.lcd4 = LCD(self.centralwidget)
-        self.lcd4.display(15)
-        self.lcd4.setSegmentStyle(compat.LCDFlat)
-        self.lcd4.setFrameShape(compat.NoFrame)
-        self.lcd4.setDigitCount(2)
-        self.layout.addWidget(self.lcd4)
-
-
-def main():
-    'Application entry point'
-
-    app, window = shared.setup_app(args, unknown, compat)
-
-    # setup ui
-    ui = Ui()
-    ui.setup(window)
-    window.setWindowTitle('QLCDNumber')
-
-    shared.set_stylesheet(args, app, compat)
-    return shared.exec_app(args, app, window)
-
-
-if __name__ == '__main__':
-    sys.exit(main())
