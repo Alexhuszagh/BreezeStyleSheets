@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning].
 - Documented support for CMake builds (from [ruilvo]).
 - Add additional alternate themes for common styles (from [Inverted-E]).
 - Add additional a red theme (from [Inverted-E]).
+- Compress resource files by default.
 
 ### Changed
 
