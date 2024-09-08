@@ -1,5 +1,4 @@
-BreezeStyleSheets
-=================
+# BreezeStyleSheets
 
 Configurable Breeze and BreezeDark-like stylesheets for Qt Applications.
 
@@ -7,33 +6,35 @@ BreezeStyleSheets is a set of beautiful light and dark stylesheets that render c
 
 **Table of Contents**
 
-- [Gallery](#gallery)
-- [Customization](#customization)
-- [Examples](#examples)
-- [Features](#features)
-  - [Extensions](#extensions)
-- [Extending Stylesheets](#extending-stylesheets)
-- [Installing](#installing)
-  - [CMake Installation](#cmake-installation)
-  - [QMake Installation](#qmake-installation)
-  - [PyQt5/6 & PySide2/6 Installation](#pyqt56--pyside26-installation)
-- [Debugging](#debugging)
-- [Development Guide](#development-guide)
-  - [Configuring](#configuring)
-  - [Testing](#testing)
-  - [Distribution Files](#distribution-files)
-  - [Git Ignore](#git-ignore)
-- [What's changed in this fork?](#whats-changed-in-this-fork)
-- [Known Issues and Workarounds](#known-issues-and-workarounds)
-- [Developing](#developing)
-- [License](#license)
-- [Contributing](#contributing)
-- [Acknowledgements](#acknowledgements)
-- [Contact](#contact)
+1. [Gallery](#gallery)
+2. [Getting Started](#getting-started)
+    - [Building Styles](#building-styles)
+    - [Python Installation](#python-installation)
+    - [CMake Installation](#cmake-installation)
+    - [QMake Installation](#qmake-installation)
+3. [Examples](#examples)
+4. [Features](#features)
+    - [Extensions](#extensions)
+5. [Customization](#customization)
+6. [Extending Stylesheets](#extending-stylesheets)
+7. [Debugging](#debugging)
+8. [Development Guide](#development-guide)
+    - [Git Hooks](#git-hooks)
+    - [Configuring Styles](#configuring-styles)
+    - [Testing](#testing)
+    - [Linting and Type Checks](#linting-and-type-checks)
+    - [Distribution Files](#distribution-files)
+    - [Git Ignore](#git-ignore)
+9. [What's changed in this fork?](#whats-changed-in-this-fork)
+10. [Known Issues and Workarounds](#known-issues-and-workarounds)
+11. [License](#license)
+12. [Contributing](#contributing)
+13. [Acknowledgements](#acknowledgements)
+14. [Contact](#contact)
 
-# Gallery
+## Gallery
 
-**Breeze/BreezeDark**
+### Breeze/BreezeDark
 
 Example user interface using the Breeze and BreezeDark stylesheets side-by-side.
 
@@ -59,11 +60,220 @@ Alternative themes - Change QTableWidget hover behavior to highlight whole row, 
 
 For an extensive view of screenshots of the theme, see the [gallery](assets/gallery.md).
 
-# Customization
+## Getting Started
+
+Here are detailed instructions on how to install Breeze Style Sheets for a variety of build systems and programming languages. This will require a Qt installation with QtCore, QtGui, QtWidgets, and QtSvg installed.
+
+### Building Styles
+
+By default, BreezeStyleSheets comes with the `dark` and `light` themes pre-built in the [resources](/resources/) directory. In order to build all pre-packaged themes including PyQt5 and PyQt6 support, run:
+
+```bash
+# choose only the frameworks you want
+frameworks=("pyqt5" "pyqt6" "pyside2" "pyside6")
+for framework in "${frameworks[@]}"; do
+    python configure.py --styles=all --extensions=all --qt-framework "${framework}" \
+        --resource breeze.qrc --compiled-resource "breeze_${framework}.py"
+done
+```
+
+All generated themes will be in the [dist](/dist) subdirectory, and the compiled Python resource(s) will be in `resources/breeze_{framework}.py` (for example, `resources/breeze_pyqt5.py`). Note that using the `--compiled-resource` flag requires the correct RCC to be installed for the Qt framework (see [Python Installation](#python-installation) for the required RCC).
+
+### Python Installation
+
+To compile the stylesheet for use with PyQt5, PyQt6, PySide2 or PySide6, ensure you configure with the `--compiled-resource` flag (which requires the rcc executable for your chosen framework to be installed - see below for details). The compiled resource Python file now contains all the stylesheet data. To load and set the stylesheet in a PyQt5/6 or PySide2/6 application, import that file, load the contents using QFile and read the data. For example, to load BreezeDark, first configure using:
+
+```bash
+python configure.py --compiled-resource breeze_resources.py
+```
+
+Then load the stylesheet and run the application using:
+
+```python
+from PyQt5 import QtWidgets
+from PyQt5.QtCore import QFile, QTextStream
+# This must match the name of the file and be in the Python search path.
+# To modify the search path, add the directory containing the file to `sys.path`.
+import breeze_resources
+
+
+def main():
+    app = QtWidgets.QApplication(sys.argv)
+
+    # set stylesheet
+    file = QFile(":/dark/stylesheet.qss")
+    file.open(QFile.ReadOnly | QFile.Text)
+    stream = QTextStream(file)
+    app.setStyleSheet(stream.readAll())
+
+    # code goes here
+
+    app.exec_()
+```
+
+The required Qt resource compilers (RCC) for each framework are:
+- PyQt5: `pyrcc5`
+- PyQt6: `pyside6-rcc` (requires `PySide6` installed)
+- PySide2: `pyside2-rcc` (requires Python.10 or earlier)
+- PySide6: `pyside6-rcc`
+
+You can also use the pre-compiled resources in the [resources](/resources/) directory.
+
+### CMake Installation
+
+Using CMake, you can download, configure, and compile the resources as part part of the build process. The following configurations are provided by @ruilvo. You can see a full example in [example](/example/cmake/). First, save the following as `breeze.cmake`.
+
+```cmake
+# Setup Qt: this works with both Qt5 and Qt6
+# NOTE: We use cached strings to specify the options for these.
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+find_package(
+  ${QT_VERSION}
+  COMPONENTS Core Gui Widgets
+  REQUIRED)
+# -------------------
+
+# Get Python to compile the stylesheets.
+# Fetch the repository, configure, compile the stylesheets.
+find_package(Python COMPONENTS Interpreter)
+
+include(FetchContent)
+
+set(FETCHCONTENT_QUIET OFF CACHE BOOL "Silence fetch content" FORCE)
+
+FetchContent_Declare(
+  breeze_stylesheets
+  GIT_REPOSITORY https://github.com/Alexhuszagh/BreezeStyleSheets.git
+  GIT_TAG origin/main
+  GIT_PROGRESS ON
+  USES_TERMINAL_DOWNLOAD TRUE)
+
+FetchContent_GetProperties(breeze_stylesheets)
+if(NOT breeze_stylesheets_POPULATED)
+  FetchContent_Populate(breeze_stylesheets)
+
+  add_library(breeze STATIC "${breeze_stylesheets_SOURCE_DIR}/dist/breeze.qrc")
+
+  add_custom_target(
+    run_python_breeze ALL
+    COMMAND ${Python_EXECUTABLE} configure.py --extensions=${BREEZE_EXTENSIONS}
+            --styles=${BREEZE_STYLES} --resource breeze.qrc
+    WORKING_DIRECTORY ${breeze_stylesheets_SOURCE_DIR}
+    BYPRODUCTS "${breeze_stylesheets_SOURCE_DIR}/dist/breeze.qrc"
+    COMMENT "Generating themes")
+
+  add_dependencies(breeze run_python_breeze)
+endif()
+```
+
+Next, make sure the path to `breeze.cmake` is in your module search [path](https://cgold.readthedocs.io/en/latest/tutorials/cmake-sources/includes.html), and add the following to your CMakeLists.txt:
+
+```cmake
+set(QT_VERSION Qt5 CACHE STRING "The Qt version framework to use (Qt5 or Qt6).")
+set(BREEZE_EXTENSIONS all CACHE STRING "The extensions to include in our stylesheets.")
+set(BREEZE_STYLES all CACHE STRING "The styles to include in our stylesheets.")
+
+include(breeze)
+
+add_executable(myapp WIN32 MACOSX_BUNDLE "main.cpp")
+target_link_libraries(myapp PRIVATE Qt${QT_VERSION_MAJOR}::Widgets breeze)
+```
+
+And then in your application start point, add the following:
+
+```cpp
+#include <QApplication>
+#include <QFile>
+#include <QTextStream>
+
+int main(int argc, char *argv[])
+{
+    QApplication app(argc, argv);
+
+    // Need to initialize the resource, since we're using an external
+    // build system and this isn't automatically handled by CMake.
+    Q_INIT_RESOURCE(breeze);
+    QFile file(":/dark/stylesheet.qss");
+    file.open(QFile::ReadOnly | QFile::Text);
+    QTextStream stream(&file);
+    app.setStyleSheet(stream.readAll());
+
+    // code goes here
+
+    return app.exec();
+}
+```
+
+### QMake Installation
+
+Copy the contents of the `dist` subdirectory into your project directory and add the qrc file to your project file.
+
+For example:
+
+```qmake
+TARGET = app
+SOURCES = main.cpp
+RESOURCES = breeze.qrc
+```
+
+To load the stylesheet in C++, load the file using QFile and read the data. For example, to load BreezeDark, run:
+
+```cpp
+#include <QApplication>
+#include <QFile>
+#include <QTextStream>
+
+
+int main(int argc, char *argv[])
+{
+    QApplication app(argc, argv);
+
+    // set stylesheet
+    QFile file(":/dark/stylesheet.qss");
+    file.open(QFile::ReadOnly | QFile::Text);
+    QTextStream stream(&file);
+    app.setStyleSheet(stream.readAll());
+
+    // code goes here
+
+    return app.exec();
+}
+```
+
+## Examples
+
+Many examples of widgets using [custom themes](/example/widgets.py), including with the [Advanced Docking System](/example/advanced-dock.py), [custom icons](/example/standard_icons.py), and [titlebars](/example/titlebar.py) can be found in the [example](/example/) directory.
+
+The support stylesheets include:
+- `dark`
+- `light`
+- `auto`
+- `native` (the system native theme)
+
+And any `-purple`, `-green`, etc. variants can also be used. `auto` will automatically detect if the system theme is light or dark and select the correct theme accordingly. The cross-platform way to detect the correct theme is using `get_theme` in either [Python](/example/breeze_theme.py) or [C++](/example/breeze_theme.hpp). Just include those stand-alone files in your project and you can select the desired theme based on the user's profile settings at startup.
+
+## Features
+
+- Complete stylesheet for all Qt widgets, including esoteric widgets like `QCalendarWidget`.
+- Customizable, beautiful light and dark themes.
+- Cross-platform icon packs for standard icons.
+- Extensible stylesheets: add your own extensions or rules and automatically configure them using the same configuration syntax.
+
+### Extensions
+
+The supported extensions can be found in the [extensions](/extension/README.md) directory and include theme support for:
+- [Advanced Docking System](/extension/README.md#advanced-docking-system)
+- [QDockWidget Tooltips](/extension/README.md#qdockwidget-tooltips)
+- [Complete Standard Icon Set](/extension/README.md#standard-icons)
+
+## Customization
 
 It's easy to design your own themes using `configure.py`. First, add the styles you want into [theme](/theme/), then run configure with a list of styles you want to include.
 
-**Theme**
+### Theme
 
 Here is a sample theme, with the color descriptions annotated. Please note that although there are nearly 40 possibilities, for most applications, you should use less than 20, and ~10 different hues.
 
@@ -181,11 +391,11 @@ Then, you can use `custom.qrc`, along with the generated icons and stylesheets i
 
 The `--styles` command flag takes a comma-separated list of values, or `all`, which will configure every theme present in the [themes](/theme) directory.
 
-**Generating Colors**
+#### Generating Colors
 
 As a reference point, see the pre-generated [themes](/theme). In general, to create a good theme, modify only the highlight colors (blues, greens, purples) to a new color, such that the saturation and lightness stay the same (only the hue changes). For example, the color `rgba(51, 164, 223, 0.5)` becomes `rgba(164, 51, 223, 0.5)`.
 
-**Extensions**
+#### Adding Extensions
 
 We also allow customizable extensions to extend the default stylesheets with additional style rules, using the colors defined in your theme. This also enables the integration of third-party Qt extensions/widgets into the generated stylesheets.
 
@@ -197,33 +407,7 @@ python configure.py --extensions=advanced-docking-system --resource custom.qrc
 
 Like with styles, `--extensions` takes a comma-separated list of values, or `all`, which will add every extension present in the [extensions](/extension) directory. For a detailed introduction to creating your own extensions, see the extensions [tutorial](/extension/README.md).
 
-# Examples
-
-Many examples of widgets using [custom themes](/example/widgets.py), including with the [Advanced Docking System](/example/advanced-dock.py), [custom icons](/example/standard_icons.py), and [titlebars](/example/titlebar.py) can be found in the [example](/example/) directory.
-
-The support stylesheets include:
-- `dark`
-- `light`
-- `auto`
-- `native` (the system native theme)
-
-And any `-purple`, `-green`, etc. variants can also be used. `auto` will automatically detect if the system theme is light or dark and select the correct theme accordingly. The cross-platform way to detect the correct theme is using `get_theme` in either [Python](/example/breeze_theme.py) or [C++](/example/breeze_theme.hpp). Just include those stand-alone files in your project and you can select the desired theme based on the user's profile settings at startup.
-
-# Features
-
-- Complete stylesheet for all Qt widgets, including esoteric widgets like `QCalendarWidget`.
-- Customizable, beautiful light and dark themes.
-- Cross-platform icon packs for standard icons.
-- Extensible stylesheets: add your own extensions or rules and automatically configure them using the same configuration syntax.
-
-## Extensions
-
-The supported extensions can be found in the [extensions](/extension/README.md) directory and include theme support for:
-- [Advanced Docking System](/extension/README.md#advanced-docking-system)
-- [QDockWidget Tooltips](/extension/README.md#qdockwidget-tooltips)
-- [Complete Standard Icon Set](/extension/README.md#standard-icons)
-
-# Extending Stylesheets
+## Extending Stylesheets
 
 There are some limitations of using Qt stylesheets in general, which cannot be solved by stylesheets. To get more fine-grained style control, you should subclass `QCommonStyle`:
 
@@ -243,207 +427,31 @@ The limitations of stylesheets include:
 
 For an example of using QCommonStyle to override standard icons in a PyQt application, see [standard_icons.py](/example/standard_icons.py). An extensive reference can be found [here](https://doc.qt.io/qt-6/style-reference.html). A reference of QStyle, and the default styles Qt provides can be found [here](https://doc.qt.io/qt-6/qstyle.html).
 
-# Installing
-
-Here are detailed instructions on how to install Breeze Style Sheets for a variety of build systems and programming languages. This will require a Qt installation with QtCore, QtGui, QtWidgets, and QtSvg installed.
-
-## Configuring
-
-By default, BreezeStyleSheets comes with the `dark` and `light` themes pre-built in the [resources](/resources/) directory. In order to build all pre-packaged themes including PyQt5 and PyQt6 support, run:
-
-```bash
-# choose only the frameworks you want
-frameworks=("pyqt5" "pyqt6" "pyside2" "pyside6")
-for framework in "${frameworks[@]}"; do
-    python configure.py --styles=all --extensions=all --qt-framework "${framework}" \
-        --resource breeze.qrc --compiled-resource "breeze_${framework}.py"
-done
-```
-
-All generated themes will be in the [dist](/dist) subdirectory, and the compiled Python resource(s) will be in `resources/breeze_{framework}.py` (for example, `resources/breeze_pyqt5.py`). Note that using the `--compiled-resource` flag requires the correct RCC to be installed for the Qt framework (see [PyQt5/6 & PySide2/6 Installation](#pyqt56--pyside26-installation) for the required RCC).
-
-## CMake Installation
-
-Using CMake, you can download, configure, and compile the resources as part part of the build process. The following configurations are provided by @ruilvo. You can see a full example in [example](/example/cmake/). First, save the following as `breeze.cmake`.
-
-```cmake
-# Setup Qt: this works with both Qt5 and Qt6
-# NOTE: We use cached strings to specify the options for these.
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
-
-find_package(
-  ${QT_VERSION}
-  COMPONENTS Core Gui Widgets
-  REQUIRED)
-# -------------------
-
-# Get Python to compile the stylesheets.
-# Fetch the repository, configure, compile the stylesheets.
-find_package(Python COMPONENTS Interpreter)
-
-include(FetchContent)
-
-set(FETCHCONTENT_QUIET OFF CACHE BOOL "Silence fetch content" FORCE)
-
-FetchContent_Declare(
-  breeze_stylesheets
-  GIT_REPOSITORY https://github.com/Alexhuszagh/BreezeStyleSheets.git
-  GIT_TAG origin/main
-  GIT_PROGRESS ON
-  USES_TERMINAL_DOWNLOAD TRUE)
-
-FetchContent_GetProperties(breeze_stylesheets)
-if(NOT breeze_stylesheets_POPULATED)
-  FetchContent_Populate(breeze_stylesheets)
-
-  add_library(breeze STATIC "${breeze_stylesheets_SOURCE_DIR}/dist/breeze.qrc")
-
-  add_custom_target(
-    run_python_breeze ALL
-    COMMAND ${Python_EXECUTABLE} configure.py --extensions=${BREEZE_EXTENSIONS}
-            --styles=${BREEZE_STYLES} --resource breeze.qrc
-    WORKING_DIRECTORY ${breeze_stylesheets_SOURCE_DIR}
-    BYPRODUCTS "${breeze_stylesheets_SOURCE_DIR}/dist/breeze.qrc"
-    COMMENT "Generating themes")
-
-  add_dependencies(breeze run_python_breeze)
-endif()
-```
-
-Next, make sure the path to `breeze.cmake` is in your module search [path](https://cgold.readthedocs.io/en/latest/tutorials/cmake-sources/includes.html), and add the following to your CMakeLists.txt:
-
-```cmake
-set(QT_VERSION Qt5 CACHE STRING "The Qt version framework to use (Qt5 or Qt6).")
-set(BREEZE_EXTENSIONS all CACHE STRING "The extensions to include in our stylesheets.")
-set(BREEZE_STYLES all CACHE STRING "The styles to include in our stylesheets.")
-
-include(breeze)
-
-add_executable(myapp WIN32 MACOSX_BUNDLE "main.cpp")
-target_link_libraries(myapp PRIVATE Qt${QT_VERSION_MAJOR}::Widgets breeze)
-```
-
-And then in your application start point, add the following:
-
-```cpp
-#include <QApplication>
-#include <QFile>
-#include <QTextStream>
-
-int main(int argc, char *argv[])
-{
-    QApplication app(argc, argv);
-
-    // Need to initialize the resource, since we're using an external
-    // build system and this isn't automatically handled by CMake.
-    Q_INIT_RESOURCE(breeze);
-    QFile file(":/dark/stylesheet.qss");
-    file.open(QFile::ReadOnly | QFile::Text);
-    QTextStream stream(&file);
-    app.setStyleSheet(stream.readAll());
-
-    // code goes here
-
-    return app.exec();
-}
-```
-
-## QMake Installation
-
-Copy the contents of the `dist` subdirectory into your project directory and add the qrc file to your project file.
-
-For example:
-
-```qmake
-TARGET = app
-SOURCES = main.cpp
-RESOURCES = breeze.qrc
-```
-
-To load the stylesheet in C++, load the file using QFile and read the data. For example, to load BreezeDark, run:
-
-```cpp
-#include <QApplication>
-#include <QFile>
-#include <QTextStream>
-
-
-int main(int argc, char *argv[])
-{
-    QApplication app(argc, argv);
-
-    // set stylesheet
-    QFile file(":/dark/stylesheet.qss");
-    file.open(QFile::ReadOnly | QFile::Text);
-    QTextStream stream(&file);
-    app.setStyleSheet(stream.readAll());
-
-    // code goes here
-
-    return app.exec();
-}
-```
-
-## PyQt5/6 & PySide2/6 Installation
-
-To compile the stylesheet for use with PyQt5, PyQt6, PySide2 or PySide6, ensure you configure with the `--compiled-resource` flag (which requires the rcc executable for your chosen framework to be installed - see below for details). The compiled resource Python file now contains all the stylesheet data. To load and set the stylesheet in a PyQt5/6 or PySide2/6 application, import that file, load the contents using QFile and read the data. For example, to load BreezeDark, first configure using:
-
-```bash
-python configure.py --compiled-resource breeze_resources.py
-```
-
-Then load the stylesheet and run the application using:
-
-```python
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import QFile, QTextStream
-# This must match the name of the file and be in the Python search path.
-# To modify the search path, add the directory containing the file to `sys.path`.
-import breeze_resources
-
-
-def main():
-    app = QtWidgets.QApplication(sys.argv)
-
-    # set stylesheet
-    file = QFile(":/dark/stylesheet.qss")
-    file.open(QFile.ReadOnly | QFile.Text)
-    stream = QTextStream(file)
-    app.setStyleSheet(stream.readAll())
-
-    # code goes here
-
-    app.exec_()
-```
-
-Required rcc for each framework:
-- PyQt5: `pyrcc5`
-- PyQt6: `pyside6-rcc` (requires `PySide6` installed)
-- PySide2: `pyside2-rcc` (requires Python.10 or earlier)
-- PySide6: `pyside6-rcc`
-
-You can also use the pre-compiled resources in the [resources](/resources/) directory.
-
-# Debugging
+## Debugging
 
 Have an issue with the styles? Here's a few suggestions, prior to filing a bug report:
-
 - Modified the application font? Make sure you do **before** setting the application stylesheet.
 - Modified the application style? Make sure you do **after** you creating a `QApplication instance` but **before** you show the window or add widgets.
 
-# Development Guide
+## Development Guide
 
-## Configuring
+### Git Hooks
 
-To configure the assets and the stylesheets, run `python configure.py`. To compile the assets and stylesheets for PyQt5, ensure `pyrcc5` is installed (for other frameworks, see [PyQt5/6 & PySide2/6 Installation](#pyqt56--pyside26-installation) for the correct RCC) and run:
+Contributors to BreezeStylesheets should make use of [vcs](/vcs.py) and [scripts](/scripts/) to both install Git hooks and run local tests and typechecking. After cloning the repository, developers should first install a pre-commit hook, to ensure their code is formatted and linted prior to commiting:
+
+```bash
+python vcs.py --install-hooks
+```
+
+### Configuring Styles
+
+To configure the assets and the stylesheets, run `python configure.py`. To compile the assets and stylesheets for PyQt5, ensure `pyrcc5` is installed (for other frameworks, see [Python Installation](#python-installation) for the correct RCC) and run:
 
 ```bash
 python configure.py --compiled-resource breeze_resources.py
 ```
 
-## Testing
+### Testing
 
 The unittest suite is [ui.py](test/ui.py). By default, the suite runs every test, so to test changes to a specific widget, pass the `--widget $widget` flag. To test other configurations, see the options for `--stylesheet`, `--widget`, `--font-size`, and `--font-family`, and then run the tests with the complete UI in [widgets.py](/example/widgets.py). If the widget you fixed the style for does not exist in the test suite or [widgets.py](/example/widgets.py), please add it.
 
@@ -494,7 +502,28 @@ yes_button
 
 To see the complete list of Qt widgets covered by the unittests, see [Test Coverage](Test%20Coverage.md).
 
-## Distribution Files
+### Linting and Type Checks
+
+You can check code quality using static typecheckers and code linters.
+
+```bash
+# format python code to a standard style.
+# requires `black` and `isort` to be installed.
+scripts/fmt.sh
+# run linters and static typecheckers
+# requires `pylint`, `pyright`, and `flake8` to be installed
+scripts/lint.sh
+# check if the system can automatically determine the theme
+# on windows, this requires `winrt-Windows.UI.ViewManagement`
+# and `winrt-Windows.UI` to be installed.
+scripts/theme.sh
+# run more involved, comprehensive tests. these assume a Linux
+# environment and detail the install scripts to use them.
+scripts/cmake.sh
+scripts/headless.sh
+```
+
+### Distribution Files
 
 When pushing changes, only the `light` and `dark` themes should be configured, without any extensions. To reset the built resource files to the defaults (this requires the correct RCC to be installed), run:
 
@@ -515,7 +544,7 @@ To turn back on tracking, run:
 python vcs.py --track-dist
 ```
 
-## Git Ignore
+### Git Ignore
 
 Note that the `.gitignore` is auto-generated via `vcs.py`, and the scripts to track or untrack distribution files turn off `.gitignore` tracking. Any changes should be made in `vcs.py`, and ensure that `.gitignore` is tracked, and commit any changes:
 
@@ -525,81 +554,40 @@ git add .gitignore
 git commit -m "..."
 ```
 
-# What's changed in this fork?
+## What's changed in this fork?
 
-* Added support for PySide2 and PySide6.
+- Added support for PySide2 and PySide6.
+- Removed old PyQt6 packaging system and replaced with an identical process for the four most common Python Qt frameworks.
+  - This is achieved by using PySide6-rcc. New function was added to change import from 'PySide6' to 'PyQt6' when building for PyQt6.
+- Error message added if required rcc executable is not found.
+- Altered '--no-qrc' option. Compiled resources will now still build if this option is selected as long as a qrc file already exists.
+  - Error message presented if no qrc file is present and '--no-qrc' option is selected.
+- Removed 'qrc dist' as no longer needed to separate PyQt6 files. All files now built in 'dist'.
+- Changed function spacing to align with PEP-8 (two new lines between functions).
 
-* Removed old PyQt6 packaging system and replaced with an identical process for the four most common Python Qt frameworks.
-    * This is achieved by using PySide6-rcc. New function was added to change import from 'PySide6' to 'PyQt6' when building for PyQt6.
+```bash
+python configure.py --compiled-resource=breeze_resources.py --qt-framework=pyqt6
+```
 
-        ```bash
-        python configure.py --compiled-resource=breeze_resources.py --qt-framework=pyqt6
-        ```
-
-* Error message added if required rcc executable is not found.
-
-* Altered '--no-qrc' option. Compiled resources will now still build if this option is selected as long as a qrc file already exists.
-    * Error message presented if no qrc file is present and '--no-qrc' option is selected.
-
-* Removed 'qrc dist' as no longer needed to separate PyQt6 files. All files now built in 'dist'.
-
-* Changed function spacing to align with PEP-8 (two new lines between functions).
-
-# Known Issues and Workarounds
+## Known Issues and Workarounds
 
 For known issues and workarounds, see [issues](/ISSUES.md).
 
-# Developing
-
-Contributors to BreezeStylesheets should make use of [vcs](/vcs.py) and [scripts](/scripts/) to both install Git hooks and run local tests and typechecking. After cloning the repository, developers should first install a pre-commit hook, to ensure their code is formatted and linted prior to commiting:
-
-```bash
-python vcs.py --install-hooks
-```
-
-You can also manually run each check independently:
-
-```bash
-# format python code to a standard style.
-# requires `black` and `isort` to be installed.
-scripts/fmt.sh
-# run linters and static typecheckers
-# requires `pylint`, `pyright`, and `flake8` to be installed
-scripts/lint.sh
-# check if the system can automatically determine the theme
-# on windows, this requires `winrt-Windows.UI.ViewManagement`
-# and `winrt-Windows.UI` to be installed.
-scripts/theme.sh
-# run more involved, comprehensive tests. these assume a Linux
-# environment and detail the install scripts to use them.
-scripts/cmake.sh
-scripts/headless.sh
-```
-
-You should also stop tracking changes to generated files from source control until desired. This avoids large commits for minor changes that are reverted later.
-
-```bash
-# don't track changes to generated file, like in dist
-python vcs.py --no-track-dist
-# retrack changes to these files.
-python vcs.py --track-dist
-```
-
-# License
+## License
 
 MIT, see [license](/LICENSE.md).
 
-# Contributing
+## Contributing
 
 Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in BreezeStyleSheets by you shall be licensed under the MIT license without any additional terms or conditions.
 
-# Acknowledgements
+## Acknowledgements
 
 BreezeStyleSheets is a fork of [QDarkStyleSheet](https://github.com/ColinDuquesnoy/QDarkStyleSheet). Some of the icons are modified from [Material UI](https://github.com/google/material-design-icons) and [Material Design Icons](https://materialdesignicons.com/) (both of which use an Apache 2.0 [license](/MaterialUi.LICENSE)), and are redistributed under the MIT license.
 
 PyQtBreezeStyleSheets is a further fork of [BreezeStyleSheets](https://github.com/Alexhuszagh/BreezeStyleSheets).
 
-# Contact
+## Contact
 
-Email: ahuszagh@gmail.com
+Email: [ahuszagh@gmail.com](mailto:ahuszagh@gmail.com)
 Twitter: KardOnIce
