@@ -8,6 +8,16 @@
 #   - PySide6
 # And if using Python 3.10 or earlier:
 #   - PySide2
+#
+# On Ubuntu, this requires the following install logic:
+#   python -m pip install --upgrade pip
+#   pip install PySide2 PySide6 PyQt5 PyQt6
+#   sudo apt-get update
+#   sudo apt-get install xvfb
+#   sudo apt-get install build-essential libgl1-mesa-dev libgstreamer-gl1.0-0 libpulse-dev \
+#       libxcb-glx0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 \
+#       libxcb-render0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-util1 libxcb-xfixes0 \
+#       libxcb-xinerama0 libxcb1 libxkbcommon-dev libxkbcommon-x11-0 libxcb-xkb-dev
 
 set -eux pipefail
 

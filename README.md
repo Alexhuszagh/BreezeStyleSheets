@@ -252,21 +252,18 @@ All generated themes will be in the [dist](/dist) subdirectory, and the compiled
 
 ## CMake Installation
 
-Using CMake, you can download, configure, and compile the resources as part part of the build process. The following configurations are provided by @ruilvo. First, save the following as `BreezeThemes.cmake`
+Using CMake, you can download, configure, and compile the resources as part part of the build process. The following configurations are provided by @ruilvo. You can see a full example in [example](/example/cmake/). First, save the following as `breeze.cmake`.
 
 ```cmake
 # Setup Qt: this works with both Qt5 and Qt6
+# NOTE: We use cached strings to specify the options for these.
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 find_package(
-  QT NAMES Qt6 Qt5
-  COMPONENTS Core
-  REQUIRED)
-find_package(
-  Qt${QT_VERSION_MAJOR}
-  COMPONENTS ${AE_REQUIRED_QT_COMPONENTS}
+  ${QT_VERSION}
+  COMPONENTS Core Gui Widgets
   REQUIRED)
 # -------------------
 
@@ -276,9 +273,7 @@ find_package(Python COMPONENTS Interpreter)
 
 include(FetchContent)
 
-set(FETCHCONTENT_QUIET
-    OFF
-    CACHE BOOL "Silence fetch content" FORCE)
+set(FETCHCONTENT_QUIET OFF CACHE BOOL "Silence fetch content" FORCE)
 
 FetchContent_Declare(
   breeze_stylesheets
@@ -291,46 +286,55 @@ FetchContent_GetProperties(breeze_stylesheets)
 if(NOT breeze_stylesheets_POPULATED)
   FetchContent_Populate(breeze_stylesheets)
 
-  add_library(breeze_themes STATIC "${breeze_stylesheets_SOURCE_DIR}/dist/breeze.qrc")
+  add_library(breeze STATIC "${breeze_stylesheets_SOURCE_DIR}/dist/breeze.qrc")
 
   add_custom_target(
     run_python_breeze ALL
-    COMMAND ${Python_EXECUTABLE} configure.py --extensions=<EXTENSIONS>
-            --styles=<STYLES> --resource breeze.qrc
+    COMMAND ${Python_EXECUTABLE} configure.py --extensions=${BREEZE_EXTENSIONS}
+            --styles=${BREEZE_STYLES} --resource breeze.qrc
     WORKING_DIRECTORY ${breeze_stylesheets_SOURCE_DIR}
     BYPRODUCTS "${breeze_stylesheets_SOURCE_DIR}/dist/breeze.qrc"
     COMMENT "Generating themes")
 
-  add_dependencies(breeze_themes run_python_breeze)
+  add_dependencies(breeze run_python_breeze)
 endif()
 ```
 
-Next, make sure the path to `breeze_themes.cmake` is in your module search [path](https://cgold.readthedocs.io/en/latest/tutorials/cmake-sources/includes.html), and add the following to your CMakeLists.txt:
+Next, make sure the path to `breeze.cmake` is in your module search [path](https://cgold.readthedocs.io/en/latest/tutorials/cmake-sources/includes.html), and add the following to your CMakeLists.txt:
 
 ```cmake
-include(BreezeThemes)
+set(QT_VERSION Qt5 CACHE STRING "The Qt version framework to use (Qt5 or Qt6).")
+set(BREEZE_EXTENSIONS all CACHE STRING "The extensions to include in our stylesheets.")
+set(BREEZE_STYLES all CACHE STRING "The styles to include in our stylesheets.")
+
+include(breeze)
 
 add_executable(myapp WIN32 MACOSX_BUNDLE "main.cpp")
-target_link_libraries(myapp PRIVATE Qt${QT_VERSION_MAJOR}::Widgets breeze_themes)
+target_link_libraries(myapp PRIVATE Qt${QT_VERSION_MAJOR}::Widgets breeze)
 ```
 
 And then in your application start point, add the following:
 
 ```cpp
-int main()
+#include <QApplication>
+#include <QFile>
+#include <QTextStream>
+
+int main(int argc, char *argv[])
 {
-    // ...
     QApplication app(argc, argv);
 
     // Need to initialize the resource, since we're using an external
     // build system and this isn't automatically handled by CMake.
-    Q_INIT_RESOURCE(breeze_themes);
-    QFile file(":/dark-green/stylesheet.qss");
+    Q_INIT_RESOURCE(breeze);
+    QFile file(":/dark/stylesheet.qss");
     file.open(QFile::ReadOnly | QFile::Text);
     QTextStream stream(&file);
     app.setStyleSheet(stream.readAll());
 
-    // ...
+    // code goes here
+
+    return app.exec();
 }
 ```
 
@@ -349,7 +353,6 @@ RESOURCES = breeze.qrc
 To load the stylesheet in C++, load the file using QFile and read the data. For example, to load BreezeDark, run:
 
 ```cpp
-
 #include <QApplication>
 #include <QFile>
 #include <QTextStream>
