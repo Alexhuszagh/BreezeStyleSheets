@@ -8,7 +8,7 @@ scripts_home="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 project_home="$(dirname "${scripts_home}")"
 cd "${project_home}/example/detect"
 # shellcheck source=/dev/null
-. "${scripts_home}/../shared.sh"
+. "${scripts_home}/shared.sh"
 
 if ! is-set PYTHON; then
     PYTHON=python

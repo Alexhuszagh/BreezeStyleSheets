@@ -18,11 +18,14 @@ and this project adheres to [Semantic Versioning].
 - Custom extension support, such as the advanced docking system.
 - Compile Qt resource files (from [chaosink]).
 - Documented support for CMake builds (from [ruilvo]).
+- Add additional alternate themes for common styles (from [Inverted-E]).
+- Add additional a red theme (from [Inverted-E]).
 
 ### Changed
 
 - Stylesheets to match KDE-like Breeze and Breeze dark themes.
 - Icons to match KDE-like Breeze and Breeze dark themes.
+- Make `dark` and `light` aliases for `dark-blue` and `light-blue`, respectively.
 
 ### Deprecated
 
