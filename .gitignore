@@ -1,6 +1,8 @@
 # NOTE: this file is auto-generated via `vcs.py`
 # DO NOT MANUALLY EDIT THIS FILE.
 TODO.md
+dist/
+resources/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -14,7 +16,6 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/

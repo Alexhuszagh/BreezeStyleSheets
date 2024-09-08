@@ -8,8 +8,11 @@
 __version__ = '0.2.0'
 
 import argparse
+import ast
+import binascii
 import glob
 import json
+import lzma
 import os
 import re
 import shutil
@@ -79,6 +82,11 @@ def parse_args(argv=None):
     parser.add_argument(
         '--compiled-resource',
         help='output compiled python resource file.',
+    )
+    parser.add_argument(
+        '--use-default-compression',
+        help='use the default Qt compression rather than the more efficient custom compression.',
+        action='store_true',
     )
     args = parser.parse_args(argv)
     parse_styles(args)
@@ -364,6 +372,8 @@ def compile_resource(args):
         compiled_resource_path = f'{resources_dir}/{compiled_resource_path}'
 
     command = [rcc, resource_path, '-o', compiled_resource_path]
+    if not args.use_default_compression:
+        command.append('-no-compress')
     try:
         subprocess.check_output(
             command,
@@ -395,6 +405,55 @@ def compile_resource(args):
 
     if args.qt_framework == 'pyqt6':
         fix_qt6_import(compiled_resource_path)
+
+    if not args.use_default_compression:
+        compress_resource(compiled_resource_path)
+
+
+def compress(data):
+    '''Compress an array to a smaller amount, and then split it along lines.'''
+    raise NotImplementedError('TODO')
+
+
+def compress_and_replace(module, prefix):
+    '''Extract data from a resource module, then replace the data with compress values.'''
+
+    # first, get and compress our data
+    # this pattern is always safe since there will never be any internal `"`
+    # characters due to how compilation/quoting is done, even escaped ones.
+    pattern = fr'(?P<prefix>{prefix}\s*=\s*)(?P<data>b".*?")'
+    match = re.search(pattern, module, flags=re.DOTALL)
+    if match is None and prefix == 'qt_resource_struct':
+        # NOTE: some older versions use v1/v2 structs
+        v1 = compress_and_replace(module, 'qt_resource_struct_v1')
+        v2 = compress_and_replace(v1, 'qt_resource_struct_v2')
+        return v2
+    decompressed = ast.literal_eval(match.group('data'))
+    compressed = lzma.compress(decompressed)
+
+    # NOTE: to avoid any issues with `"` or `'` characters, we always escape it
+    hexlified = binascii.hexlify(compressed).decode('ascii').upper()
+    escaped = ''.join([f'\\x{hexlified[i:i+2]}' for i in range(0, len(hexlified), 2)])
+    lzma_replace = f'{prefix} = lzma.decompress(_{prefix})'
+    replacement = f'_{prefix} = b"{escaped}"\n{lzma_replace}\n'
+
+    return module[: match.start()] + replacement + module[match.end() + 1 :]
+
+
+def compress_resource(path):
+    '''Compress the data within a Qt resource module.'''
+
+    # want to minimize the file size, let's use custom gzip compression
+    with open(path, encoding='utf-8') as file:
+        module = file.read()
+    module = module.replace('import QtCore', 'import QtCore\nimport lzma', 1)
+    # NOTE: these should never be none or we have an error
+    module = compress_and_replace(module, 'qt_resource_data')
+    module = compress_and_replace(module, 'qt_resource_name')
+    module = compress_and_replace(module, 'qt_resource_struct')
+
+    with open(path, 'w', encoding='utf-8') as file:
+        file.write(module)
 
 
 def configure(args):
@@ -436,7 +495,7 @@ def fix_qt6_import(compiled_file):
 
     with open(compiled_file, 'r', encoding='utf-8') as file:
         text = file.read()
-    text = text.replace('PySide6', 'PyQt6')
+    text = text.replace('PySide6', 'PyQt6', 1)
     with open(compiled_file, 'w', encoding='utf-8') as file:
         file.write(text)
 
