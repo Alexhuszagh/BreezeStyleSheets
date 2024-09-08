@@ -1,0 +1,14 @@
+[*]
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+tab_width = 4
+trim_trailing_whitespace = true
+
+[*.{cpp,hpp,sh,in,svg,qss,txt,cmake,py,json}]
+charset = utf-8
+
+[{package.json,.github/workflows/*.yml}]
+indent_style = space
+indent_size = 2
