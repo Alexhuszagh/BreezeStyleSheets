@@ -9,6 +9,9 @@ trim_trailing_whitespace = true
 [*.{cpp,hpp,sh,in,svg,qss,txt,cmake,py,json}]
 charset = utf-8
 
+[*.md]
+indent_size = 2
+
 [{package.json,.github/workflows/*.yml}]
 indent_style = space
 indent_size = 2

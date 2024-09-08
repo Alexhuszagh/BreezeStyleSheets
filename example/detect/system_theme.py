@@ -1,5 +1,5 @@
 '''
-    breeze_theme
+    system_theme
     ============
 
     Get the current system them information. This is adapted from darkdetect

@@ -13,12 +13,13 @@ import logging
 import os
 import sys
 
-import breeze_theme
-
 example_dir = os.path.dirname(os.path.realpath(__file__))
 home = os.path.dirname(example_dir)
 dist = os.path.join(home, 'dist')
-IS_DARK = None
+sys.path.append(home)
+THEME = None
+
+from example.detect import system_theme  # noqa  # pylint: disable=wrong-import-position,import-error
 
 
 def create_parser():
@@ -81,20 +82,21 @@ def parse_args(parser):
 def normalize_stylesheet(stylesheet):
     '''Normalize the stylesheet, removing and normalizing any aliases.'''
 
-    # now we need to normalize our theme
+    # now we need to normalize our theme. we don't use Qt6 features
+    # so we can differentiat between light/dark/unknown.
     if stylesheet.startswith('auto'):
-        theme = breeze_theme.get_theme()
-        if theme == breeze_theme.Theme.DARK:
+        theme = system_theme.get_theme()
+        if theme == system_theme.Theme.DARK:
             stylesheet = stylesheet.replace('auto', 'dark', 1)
-        elif theme == breeze_theme.Theme.LIGHT:
+        elif theme == system_theme.Theme.LIGHT:
             stylesheet = stylesheet.replace('auto', 'light', 1)
         else:
             logging.warning('Unknown an unknown system theme, falling back to the system native theme.')
             stylesheet = 'native'
 
     # Needed so we remove any aliases. See #106.
-    if stylesheet in ('dark-blue', 'light-blue'):
-        stylesheet = stylesheet[: len('-blue') - 1]
+    if stylesheet in ('dark', 'light'):
+        stylesheet += '-blue'
     return stylesheet
 
 
@@ -956,7 +958,7 @@ def setup_app(args, unknown, compat, style_class=None, window_class=None):
     if app is None:
         app = compat.QtWidgets.QApplication(sys.argv[:1] + unknown)
         # NOTE: Need to detect if the style is dark mode here
-        _ = is_dark_mode(compat)
+        _ = get_theme(compat)
     if args.style != 'native':
         style = compat.QtWidgets.QStyleFactory.create(args.style)
         if style_class is not None:
@@ -980,13 +982,13 @@ def setup_app(args, unknown, compat, style_class=None, window_class=None):
     return app, window
 
 
-def is_dark_mode(compat, reinitialize=False):
+def get_theme(compat, reinitialize=False):
     '''Determine if the system theme is in dark mode.'''
 
-    global IS_DARK
+    global THEME
 
-    if IS_DARK is not None and not reinitialize:
-        return IS_DARK
+    if THEME is not None and not reinitialize:
+        return THEME
 
     app = compat.QtWidgets.QApplication.instance()
     if app is None:
@@ -994,15 +996,17 @@ def is_dark_mode(compat, reinitialize=False):
 
     if compat.QT_VERSION >= (6, 5, 0):
         color_scheme = app.styleHints().colorScheme()
-        IS_DARK = color_scheme == color_scheme.__class__.Dark
+        theme_cls = color_scheme.__class__
+        if color_scheme == theme_cls.Unknown:
+            THEME = system_theme.Theme.UNKNOWN
+        elif color_scheme == theme_cls.Light:
+            THEME = system_theme.Theme.LIGHT
+        else:
+            THEME = system_theme.Theme.DARK
     else:
-        # NOTE: This does not work, it only gives the default app color
-        # which on early versions of Qt defaults to the application style.
-        text = app.palette().windowText().color()
-        window = app.palette().window().color()
-        IS_DARK = window.lightness() > text.lightness()
+        THEME = system_theme.get_theme()
 
-    return IS_DARK
+    return THEME
 
 
 def read_qtext_file(path, compat):

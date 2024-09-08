@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-#
 # The MIT License (MIT)
 #
 # Copyright (c) <2022-Present> <Alex Huszagh>
@@ -114,7 +112,10 @@ import os
 import sys
 from pathlib import Path
 
-import shared
+HOME = os.path.dirname(os.path.realpath(__file__))
+sys.path.insert(0, os.path.dirname(HOME))
+
+import shared  # noqa  # pylint: disable=wrong-import-position,import-error
 
 parser = shared.create_parser()
 parser.add_argument(
@@ -179,12 +180,6 @@ IS_X11 = os.environ.get('XDG_SESSION_TYPE') == 'x11'
 # features like mouse grabbing, so we don't use it here.
 IS_TRUE_WAYLAND = 'WAYLAND_DISPLAY' in os.environ
 USE_WAYLAND_FRAME = IS_WAYLAND and not args.wayland_testing
-
-# Add a warning if we're using Wayland with a custom titlebar.
-if not args.default_window_frame and USE_WAYLAND_FRAME:
-    print('WARNING: Wayland does not support custom title bars.', file=sys.stderr)
-    print('Applications in Wayland cannot set their own position.', file=sys.stderr)
-    print('Defaulting to the system title bar instead.', file=sys.stderr)
 
 
 class MinimizeLocation(enum.IntEnum):
@@ -589,8 +584,9 @@ def start_resize(self, window, window_type):
 
     # Grab the mouse so we can intercept the click event,
     # and track hover events outside the app. This doesn't
-    # work on Wayland or on macOS.
-    #   https://doc.qt.io/qt-5/qwidget.html#grabMouse
+    # work on Wayland or on macOS. On Windows, it only works
+    # within the window owned by the process.
+    #   https://doc.qt.io/qt-6/qwidget.html#grabMouse
     if not IS_TRUE_WAYLAND and sys.platform != 'darwin':
         self.window().grabMouse()
 
@@ -2086,30 +2082,6 @@ class Window(QtWidgets.QMainWindow):
         return super().eventFilter(obj, event)
 
 
-class DefaultWindow(Window):
-    '''Default main window with a window frame.'''
-
-    def __init__(self, parent=None, flags=QtCore.Qt.WindowType(0)):
-        if args.window_help:
-            flags |= compat.WindowContextHelpButtonHint
-        if args.window_shade:
-            flags |= compat.WindowShadeButtonHint
-        super().__init__(parent, flags)
-
-        self._central = QtWidgets.QFrame(self)
-        self._layout = QtWidgets.QVBoxLayout(self._central)
-        self.setCentralWidget(self._central)
-        self._widget = QtWidgets.QWidget(self._central)
-        self._widget.setLayout(QtWidgets.QVBoxLayout())
-        self._central.layout().addWidget(self._widget, 10)
-
-        if args.status_bar:
-            self._statusbar = QtWidgets.QStatusBar(self._central)
-            self.setStatusBar(self._statusbar)
-
-        self.setup()
-
-
 class FramelessWindow(Window):
     '''Main window with a custom event filter for all events.'''
 
@@ -2318,22 +2290,3 @@ class FramelessWindow(Window):
             self._titlebar.maximize()
         else:
             self._titlebar.restore()
-
-
-def main():
-    'Application entry point'
-
-    window_class = FramelessWindow
-    # Wayland does not allow windows to reposition themselves: therefore,
-    # we cannot use the custom titlebar at the application level.
-    if args.default_window_frame or USE_WAYLAND_FRAME:
-        window_class = DefaultWindow
-    app, window = shared.setup_app(args, unknown, compat, window_class=window_class)
-    app.installEventFilter(window)
-
-    shared.set_stylesheet(args, app, compat)
-    return shared.exec_app(args, app, window)
-
-
-if __name__ == '__main__':
-    sys.exit(main())

@@ -1,5 +1,5 @@
 /**
- *  breeze_theme
+ *  system_theme
  *  ============
  *
  *  Determine if the system theme is light or dark, supporting many platforms.

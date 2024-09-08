@@ -760,7 +760,7 @@ def test_button_position_tabwidget(widget, *_):
 def test_text_browser(widget, *_):
     child = QtWidgets.QTextBrowser(widget)
     child.setOpenExternalLinks(True)
-    child.setMarkdown('[QTextBrowser](https://doc.qt.io/qt-5/qtextbrowser.html)')
+    child.setMarkdown('[QTextBrowser](https://doc.qt.io/qt-6/qtextbrowser.html)')
 
     return child
 

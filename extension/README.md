@@ -1,5 +1,4 @@
-Extensions
-==========
+# Extensions
 
 Extensions enable the creation of stylesheets using the same, customizable themes of the original stylesheet. This both allows refining the generated stylesheet and supporting third-party Qt extensions/widgets.
 
@@ -7,7 +6,7 @@ Extensions are optionally added to the generated stylesheets, allowing you to ex
 
 Furthermore, this simplifies making local, application-specific changes, without having to deal with merge conflicts when fetching updates.
 
-# Pre-Packaged Extensions
+## Pre-Packaged Extensions
 
 ### Advanced Docking System
 
@@ -22,34 +21,34 @@ python configure.py --extensions=advanced-docking-system
 And make sure to [disable](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/blob/master/doc/user-guide.md#disabling-the-internal-style-sheet) the internal stylesheet in the dock manager.
 
 <figure>
-    <img 
+    <img
         alt="Advanced Docking System View 1"
-        src="/assets/advanced_docking_system1.png" 
-        title="AdvancedDockingSystem1" 
+        src="/assets/advanced_docking_system1.png"
+        title="AdvancedDockingSystem1"
     />
 </figure>
 
 <figure>
-    <img 
+    <img
         alt="Advanced Docking System View 2"
-        src="/assets/advanced_docking_system2.png" 
-        title="AdvancedDockingSystem2" 
+        src="/assets/advanced_docking_system2.png"
+        title="AdvancedDockingSystem2"
     />
 </figure>
 
 <figure>
-    <img 
+    <img
         alt="Advanced Docking System View 3"
-        src="/assets/advanced_docking_system3.png" 
-        title="AdvancedDockingSystem3" 
+        src="/assets/advanced_docking_system3.png"
+        title="AdvancedDockingSystem3"
     />
 </figure>
 
 <figure>
-    <img 
+    <img
         alt="Advanced Docking System View 4"
-        src="/assets/advanced_docking_system4.png" 
-        title="AdvancedDockingSystem4" 
+        src="/assets/advanced_docking_system4.png"
+        title="AdvancedDockingSystem4"
     />
 </figure>
 
@@ -64,10 +63,10 @@ python configure.py --extensions=dock-tooltips
 ```
 
 <figure>
-    <img 
+    <img
         alt="Dock Tooltips"
-        src="/assets/dock_tooltips.png" 
-        title="DockTooltips" 
+        src="/assets/dock_tooltips.png"
+        title="DockTooltips"
     />
 </figure>
 
@@ -168,7 +167,7 @@ The following is a 1:1 mapping of the standard icon enumerated name and the icon
 }
 ```
 
-# Creating Extensions
+## Creating Extensions
 
 Creating extensions extends the existing stylesheet configurations, and adds custom rules to the stylesheet, which can then be configured for all themes. This supports custom icons, rules, and more.
 
@@ -211,7 +210,7 @@ Next, let's create an SVG template for the icon, at `icon.svg.in`:
 </svg>
 ```
 
-Here, `^0^` signifies index-based replacement, so we must define an entry in 
+Here, `^0^` signifies index-based replacement, so we must define an entry in
 `icons.json` to specify how we should do the replacement.
 
 ```json

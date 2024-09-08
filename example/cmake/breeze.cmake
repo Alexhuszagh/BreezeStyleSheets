@@ -23,6 +23,7 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/Alexhuszagh/BreezeStyleSheets.git
   GIT_TAG origin/main
   GIT_PROGRESS ON
+  GIT_SHALLOW 1
   USES_TERMINAL_DOWNLOAD TRUE)
 
 FetchContent_GetProperties(breeze_stylesheets)
