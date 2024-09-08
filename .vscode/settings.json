@@ -4,5 +4,6 @@
         "*.svg.in": "xml",
         "stdexcept": "cpp"
     },
-    "cmake.ignoreCMakeListsMissing": true
+    "cmake.ignoreCMakeListsMissing": true,
+    "python.REPL.enableREPLSmartSend": false
 }
