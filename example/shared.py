@@ -95,8 +95,8 @@ def normalize_stylesheet(stylesheet):
             stylesheet = 'native'
 
     # Needed so we remove any aliases. See #106.
-    if stylesheet in ('dark-blue', 'light-blue'):
-        stylesheet = stylesheet[: len('-blue') - 1]
+    if stylesheet in ('dark', 'light'):
+        stylesheet += '-blue'
     return stylesheet
 
 
