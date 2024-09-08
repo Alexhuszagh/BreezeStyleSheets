@@ -241,7 +241,7 @@ The limitations of stylesheets include:
 - QToolButton cannot control the icon size without also affecting the arrow size.
 - Close and dock float icon sizes scale poorly with font size.
 
-For an example of using QCommonStyle to override standard icons in a PyQt application, see [standard_icons.py](/example/standard_icons.py). An extensive reference can be found [here](https://doc.qt.io/qt-5/style-reference.html). A reference of QStyle, and the default styles Qt provides can be found [here](https://doc.qt.io/qt-5/qstyle.html).
+For an example of using QCommonStyle to override standard icons in a PyQt application, see [standard_icons.py](/example/standard_icons.py). An extensive reference can be found [here](https://doc.qt.io/qt-6/style-reference.html). A reference of QStyle, and the default styles Qt provides can be found [here](https://doc.qt.io/qt-6/qstyle.html).
 
 # Installing
 

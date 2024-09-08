@@ -589,8 +589,9 @@ def start_resize(self, window, window_type):
 
     # Grab the mouse so we can intercept the click event,
     # and track hover events outside the app. This doesn't
-    # work on Wayland or on macOS.
-    #   https://doc.qt.io/qt-5/qwidget.html#grabMouse
+    # work on Wayland or on macOS. On Windows, it only works
+    # within the window owned by the process.
+    #   https://doc.qt.io/qt-6/qwidget.html#grabMouse
     if not IS_TRUE_WAYLAND and sys.platform != 'darwin':
         self.window().grabMouse()
 
