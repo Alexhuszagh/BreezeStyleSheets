@@ -10,6 +10,7 @@ __version__ = '0.1.0'
 import argparse
 import errno
 import os
+import shlex
 import shutil
 import subprocess
 import sys
@@ -222,23 +223,24 @@ CPP_GITIGNORE = '''
 
 EXTRAS_GITIGNORE = [
     # Comments
-    '# NOTE: this file is auto-generated via `git.py`',
+    '# NOTE: this file is auto-generated via `vcs.py`',
     '# DO NOT MANUALLY EDIT THIS FILE.',
     # extra entries
     'TODO.md',
 ]
 
-HOOK_SCRIPT = '''
+HOOK_SCRIPT = f'''
 #!/usr/bin/env bash
 #
 # A custom Git hook.
 
 set -eux pipefail
 
-hooks_home="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
-git_home="$(dirname "${hooks_home}")"
-project_home="$(dirname "${git_home}")"
+hooks_home="$(dirname "$(realpath "${{BASH_SOURCE[0]}}")")"
+git_home="$(dirname "${{hooks_home}}")"
+project_home="$(dirname "${{git_home}}")"
 
+export PYTHON={shlex.quote(sys.executable)}
 '''
 
 
