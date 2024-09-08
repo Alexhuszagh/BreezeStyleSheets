@@ -33,7 +33,7 @@ def parse_args(argv=None):
     parser.add_argument(
         '--styles',
         help='comma-separate list of styles to configure. pass `all` to build all themes',
-        default='light,dark',
+        default='light-blue,dark-blue',
     )
     parser.add_argument(
         '--extensions',
@@ -335,7 +335,10 @@ def write_qrc(config, qt_dist):
     for style in config['themes'].keys():
         files = os.listdir(f'{qt_dist}/{style}')
         resources += [f'{style}/{i}' for i in files]
-    resources += ['dark-blue/stylesheet.qss', 'light-blue/stylesheet.qss']
+    if 'dark-blue' in config['themes'].keys():
+        resources.append('dark/stylesheet.qss')
+    if 'light-blue' in config['themes'].keys():
+        resources.append('light/stylesheet.qss')
 
     qrc_path = config['resource']
     if not os.path.isabs(qrc_path):
@@ -412,11 +415,12 @@ def configure(args):
     for style in config['themes']:
         configure_style(config, style, str(args.output_dir))
 
-    # create aliases for our light and dark styles to light-blue and dark-blue
-    # FIXME: Invert the order: light should be an alias of light-blue, etc.
-    for theme in ('dark', 'light'):
+    # Create aliases for our light-blue and dark-blue styles to light and dark.
+    # Only create aliases if light-blue and/or dark-blue are to be built.
+    themes = [theme for theme in args.styles if theme == 'dark-blue' or theme == 'light-blue']
+    for theme in themes:
         source = args.output_dir / theme / 'stylesheet.qss'
-        destination = args.output_dir / f'{theme}-blue' / 'stylesheet.qss'
+        destination = args.output_dir / theme.split('-')[0] / 'stylesheet.qss'
         destination.parent.mkdir(exist_ok=True)
         shutil.copy2(source, destination)
 

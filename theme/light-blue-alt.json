@@ -13,7 +13,7 @@
     "midtone:dark": "rgba(106, 105, 105, 0.7)",
     "midtone:hover": "#787876",
     "view:checked": "#b9dae7",
-    "view:hover": "None",
+    "view:hover": "",
     "toolbar:horizontal:background": "#eff0f1",
     "toolbar:vertical:background": "#eff0f1",
     "view:corner": "#eff0f1",
@@ -45,5 +45,8 @@
     "critical": "#ff8c9f",
     "information": "#8cd5ff",
     "question": "#c08cff",
-    "warning": "#ffff8c"
+    "warning": "#ffff8c",
+    // These are extension-specific
+    "ads-tab:focused": "rgba(61, 173, 232, 0.2)",
+    "ads-border:focused": "rgba(61, 173, 232, 0.25)"
 }
