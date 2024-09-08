@@ -25,6 +25,7 @@ BreezeStyleSheets is a set of beautiful light and dark stylesheets that render c
   - [Git Ignore](#git-ignore)
 - [What's changed in this fork?](#whats-changed-in-this-fork)
 - [Known Issues and Workarounds](#known-issues-and-workarounds)
+- [Developing](#developing)
 - [License](#license)
 - [Contributing](#contributing)
 - [Acknowledgements](#acknowledgements)
@@ -255,7 +256,7 @@ By default, BreezeStyleSheets comes with the `dark` and `light` themes pre-built
 frameworks=("pyqt5" "pyqt6" "pyside2" "pyside6")
 for framework in "${frameworks[@]}"; do
     python configure.py --styles=all --extensions=all --qt-framework "${framework}" \
-        --resource breeze.qrc --compiled-resource "resources/breeze_${framework}.py"
+        --resource breeze.qrc --compiled-resource "breeze_${framework}.py"
 done
 ```
 
@@ -263,21 +264,18 @@ All generated themes will be in the [dist](/dist) subdirectory, and the compiled
 
 ## CMake Installation
 
-Using CMake, you can download, configure, and compile the resources as part part of the build process. The following configurations are provided by @ruilvo. First, save the following as `BreezeThemes.cmake`
+Using CMake, you can download, configure, and compile the resources as part part of the build process. The following configurations are provided by @ruilvo. You can see a full example in [example](/example/cmake/). First, save the following as `breeze.cmake`.
 
 ```cmake
 # Setup Qt: this works with both Qt5 and Qt6
+# NOTE: We use cached strings to specify the options for these.
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 find_package(
-  QT NAMES Qt6 Qt5
-  COMPONENTS Core
-  REQUIRED)
-find_package(
-  Qt${QT_VERSION_MAJOR}
-  COMPONENTS ${AE_REQUIRED_QT_COMPONENTS}
+  ${QT_VERSION}
+  COMPONENTS Core Gui Widgets
   REQUIRED)
 # -------------------
 
@@ -287,9 +285,7 @@ find_package(Python COMPONENTS Interpreter)
 
 include(FetchContent)
 
-set(FETCHCONTENT_QUIET
-    OFF
-    CACHE BOOL "Silence fetch content" FORCE)
+set(FETCHCONTENT_QUIET OFF CACHE BOOL "Silence fetch content" FORCE)
 
 FetchContent_Declare(
   breeze_stylesheets
@@ -302,46 +298,55 @@ FetchContent_GetProperties(breeze_stylesheets)
 if(NOT breeze_stylesheets_POPULATED)
   FetchContent_Populate(breeze_stylesheets)
 
-  add_library(breeze_themes STATIC "${breeze_stylesheets_SOURCE_DIR}/dist/breeze.qrc")
+  add_library(breeze STATIC "${breeze_stylesheets_SOURCE_DIR}/dist/breeze.qrc")
 
   add_custom_target(
     run_python_breeze ALL
-    COMMAND ${Python_EXECUTABLE} configure.py --extensions=<EXTENSIONS>
-            --styles=<STYLES> --resource breeze.qrc
+    COMMAND ${Python_EXECUTABLE} configure.py --extensions=${BREEZE_EXTENSIONS}
+            --styles=${BREEZE_STYLES} --resource breeze.qrc
     WORKING_DIRECTORY ${breeze_stylesheets_SOURCE_DIR}
     BYPRODUCTS "${breeze_stylesheets_SOURCE_DIR}/dist/breeze.qrc"
     COMMENT "Generating themes")
 
-  add_dependencies(breeze_themes run_python_breeze)
+  add_dependencies(breeze run_python_breeze)
 endif()
 ```
 
-Next, make sure the path to `breeze_themes.cmake` is in your module search [path](https://cgold.readthedocs.io/en/latest/tutorials/cmake-sources/includes.html), and add the following to your CMakeLists.txt:
+Next, make sure the path to `breeze.cmake` is in your module search [path](https://cgold.readthedocs.io/en/latest/tutorials/cmake-sources/includes.html), and add the following to your CMakeLists.txt:
 
 ```cmake
-include(BreezeThemes)
+set(QT_VERSION Qt5 CACHE STRING "The Qt version framework to use (Qt5 or Qt6).")
+set(BREEZE_EXTENSIONS all CACHE STRING "The extensions to include in our stylesheets.")
+set(BREEZE_STYLES all CACHE STRING "The styles to include in our stylesheets.")
+
+include(breeze)
 
 add_executable(myapp WIN32 MACOSX_BUNDLE "main.cpp")
-target_link_libraries(myapp PRIVATE Qt${QT_VERSION_MAJOR}::Widgets breeze_themes)
+target_link_libraries(myapp PRIVATE Qt${QT_VERSION_MAJOR}::Widgets breeze)
 ```
 
 And then in your application start point, add the following:
 
 ```cpp
-int main()
+#include <QApplication>
+#include <QFile>
+#include <QTextStream>
+
+int main(int argc, char *argv[])
 {
-    // ...
     QApplication app(argc, argv);
 
     // Need to initialize the resource, since we're using an external
     // build system and this isn't automatically handled by CMake.
-    Q_INIT_RESOURCE(breeze_themes);
-    QFile file(":/dark-green/stylesheet.qss");
+    Q_INIT_RESOURCE(breeze);
+    QFile file(":/dark/stylesheet.qss");
     file.open(QFile::ReadOnly | QFile::Text);
     QTextStream stream(&file);
     app.setStyleSheet(stream.readAll());
 
-    // ...
+    // code goes here
+
+    return app.exec();
 }
 ```
 
@@ -360,7 +365,6 @@ RESOURCES = breeze.qrc
 To load the stylesheet in C++, load the file using QFile and read the data. For example, to load BreezeDark, run:
 
 ```cpp
-
 #include <QApplication>
 #include <QFile>
 #include <QTextStream>
@@ -544,6 +548,42 @@ git commit -m "..."
 # Known Issues and Workarounds
 
 For known issues and workarounds, see [issues](/ISSUES.md).
+
+# Developing
+
+Contributors to BreezeStylesheets should make use of [vcs](/vcs.py) and [scripts](/scripts/) to both install Git hooks and run local tests and typechecking. After cloning the repository, developers should first install a pre-commit hook, to ensure their code is formatted and linted prior to commiting:
+
+```bash
+python vcs.py --install-hooks
+```
+
+You can also manually run each check independently:
+
+```bash
+# format python code to a standard style.
+# requires `black` and `isort` to be installed.
+scripts/fmt.sh
+# run linters and static typecheckers
+# requires `pylint`, `pyright`, and `flake8` to be installed
+scripts/lint.sh
+# check if the system can automatically determine the theme
+# on windows, this requires `winrt-Windows.UI.ViewManagement`
+# and `winrt-Windows.UI` to be installed.
+scripts/theme.sh
+# run more involved, comprehensive tests. these assume a Linux
+# environment and detail the install scripts to use them.
+scripts/cmake.sh
+scripts/headless.sh
+```
+
+You should also stop tracking changes to generated files from source control until desired. This avoids large commits for minor changes that are reverted later.
+
+```bash
+# don't track changes to generated file, like in dist
+python vcs.py --no-track-dist
+# retrack changes to these files.
+python vcs.py --track-dist
+```
 
 # License
 

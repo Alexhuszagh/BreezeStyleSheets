@@ -3,5 +3,7 @@
         "*.qss.in": "qss",
         "*.svg.in": "xml",
         "stdexcept": "cpp"
-    }
+    },
+    "cmake.ignoreCMakeListsMissing": true,
+    "python.REPL.enableREPLSmartSend": false
 }

@@ -74,18 +74,28 @@ def parse_args(parser):
         os.environ['XDG_SESSION_TYPE'] = 'x11'
         os.environ['QT_QPA_PLATFORM'] = 'xcb'
 
+    args.stylesheet = normalize_stylesheet(args.stylesheet)
+    return args, unknown
+
+
+def normalize_stylesheet(stylesheet):
+    '''Normalize the stylesheet, removing and normalizing any aliases.'''
+
     # now we need to normalize our theme
-    if args.stylesheet.startswith('auto'):
+    if stylesheet.startswith('auto'):
         theme = breeze_theme.get_theme()
         if theme == breeze_theme.Theme.DARK:
-            args.stylesheet = args.stylesheet.replace('auto', 'dark', 1)
+            stylesheet = stylesheet.replace('auto', 'dark', 1)
         elif theme == breeze_theme.Theme.LIGHT:
-            args.stylesheet = args.stylesheet.replace('auto', 'light', 1)
+            stylesheet = stylesheet.replace('auto', 'light', 1)
         else:
             logging.warning('Unknown an unknown system theme, falling back to the system native theme.')
-            args.stylesheet = 'native'
+            stylesheet = 'native'
 
-    return args, unknown
+    # Needed so we remove any aliases. See #106.
+    if stylesheet in ('dark-blue', 'light-blue'):
+        stylesheet = stylesheet[: len('-blue') - 1]
+    return stylesheet
 
 
 def is_qt6(args):
