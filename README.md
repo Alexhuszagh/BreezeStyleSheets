@@ -25,12 +25,11 @@ BreezeStyleSheets is a set of beautiful light and dark stylesheets that render c
     - [Linting and Type Checks](#linting-and-type-checks)
     - [Distribution Files](#distribution-files)
     - [Git Ignore](#git-ignore)
-9. [What's changed in this fork?](#whats-changed-in-this-fork)
-10. [Known Issues and Workarounds](#known-issues-and-workarounds)
-11. [License](#license)
-12. [Contributing](#contributing)
-13. [Acknowledgements](#acknowledgements)
-14. [Contact](#contact)
+9. [Known Issues and Workarounds](#known-issues-and-workarounds)
+10. [License](#license)
+11. [Contributing](#contributing)
+12. [Acknowledgements](#acknowledgements)
+13. [Contact](#contact)
 
 ## Gallery
 
@@ -554,21 +553,6 @@ git add .gitignore
 git commit -m "..."
 ```
 
-## What's changed in this fork?
-
-- Added support for PySide2 and PySide6.
-- Removed old PyQt6 packaging system and replaced with an identical process for the four most common Python Qt frameworks.
-  - This is achieved by using PySide6-rcc. New function was added to change import from 'PySide6' to 'PyQt6' when building for PyQt6.
-- Error message added if required rcc executable is not found.
-- Altered '--no-qrc' option. Compiled resources will now still build if this option is selected as long as a qrc file already exists.
-  - Error message presented if no qrc file is present and '--no-qrc' option is selected.
-- Removed 'qrc dist' as no longer needed to separate PyQt6 files. All files now built in 'dist'.
-- Changed function spacing to align with PEP-8 (two new lines between functions).
-
-```bash
-python configure.py --compiled-resource=breeze_resources.py --qt-framework=pyqt6
-```
-
 ## Known Issues and Workarounds
 
 For known issues and workarounds, see [issues](/ISSUES.md).
@@ -579,13 +563,16 @@ MIT, see [license](/LICENSE.md).
 
 ## Contributing
 
-Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in BreezeStyleSheets by you shall be licensed under the MIT license without any additional terms or conditions.
+Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in BreezeStyleSheets by you shall be licensed under the MIT license without any additional terms or conditions. See the [changelog](/CHANGELOG.md) for changes and contributors to the project.
 
 ## Acknowledgements
 
 BreezeStyleSheets is a fork of [QDarkStyleSheet](https://github.com/ColinDuquesnoy/QDarkStyleSheet). Some of the icons are modified from [Material UI](https://github.com/google/material-design-icons) and [Material Design Icons](https://materialdesignicons.com/) (both of which use an Apache 2.0 [license](/MaterialUi.LICENSE)), and are redistributed under the MIT license.
 
 PyQtBreezeStyleSheets is a further fork of [BreezeStyleSheets](https://github.com/Alexhuszagh/BreezeStyleSheets).
+
+Major contributions to the project have made by:
+- [Inverted-E](https://github.com/Inverted-E/)
 
 ## Contact
 
