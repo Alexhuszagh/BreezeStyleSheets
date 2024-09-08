@@ -53,7 +53,20 @@ for script in example/*.py; do
     fi
     for framework in "${frameworks[@]}"; do
         echo "Running '${script}' for framework '${framework}'."
-        xvfb-run -a "${PYTHON}" "${script}" --qt-framework "${framework}"
+        xvfb-run -a "${PYTHON}" "${script}" --qt-framework "${framework}" --stylesheet dark
+    done
+done
+
+# ensure that our styles compressed properly
+# if they didn't, Qt could segfault on initialization
+# if a style doesn't exist, it simply won't be read
+# which is fine
+export QT_QPA_PLATFORM=offscreen
+styles=("dark-red" "dark-blue" "dark-purple" "dark-green" "light-red" "light-blue" "light-purple" "light-green")
+for framework in "${frameworks[@]}"; do
+    for style in "${styles[@]}"; do
+        echo "Running widgets test for framework '${framework}' an style '${style}'."
+        xvfb-run -a "${PYTHON}" "example/widgets.py" --qt-framework "${framework}" --stylesheet "${style}"
     done
 done
 
@@ -64,6 +77,6 @@ widgets=$(${PYTHON} -c "import os; os.chdir('test'); import ui; print(' '.join([
 for widget in ${widgets[@]}; do
     for framework in "${frameworks[@]}"; do
         echo "Running test for widget '${widget}' for framework '${framework}'."
-        xvfb-run -a "${PYTHON}" test/ui.py --widget "${widget}" --qt-framework "${framework}"
+        xvfb-run -a "${PYTHON}" test/ui.py --widget "${widget}" --qt-framework "${framework}" --stylesheet dark
     done
 done
