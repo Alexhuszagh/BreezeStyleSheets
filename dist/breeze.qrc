@@ -1,5 +1,17 @@
 <RCC>
   <qresource>
+    <file>dark-blue/ads_close.svg</file>
+    <file>dark-blue/ads_close_hover.svg</file>
+    <file>dark-blue/ads_close_pressed.svg</file>
+    <file>dark-blue/ads_detach.svg</file>
+    <file>dark-blue/ads_detach_hover.svg</file>
+    <file>dark-blue/ads_detach_hover_pressed.svg</file>
+    <file>dark-blue/ads_maximize.svg</file>
+    <file>dark-blue/ads_maximize_hover.svg</file>
+    <file>dark-blue/ads_maximize_pressed.svg</file>
+    <file>dark-blue/ads_menu_button.svg</file>
+    <file>dark-blue/ads_menu_button_hover.svg</file>
+    <file>dark-blue/ads_menu_button_pressed.svg</file>
     <file>dark-blue/branch_closed.svg</file>
     <file>dark-blue/branch_closed_hover.svg</file>
     <file>dark-blue/branch_end.svg</file>
@@ -8,6 +20,8 @@
     <file>dark-blue/branch_more_arrow.svg</file>
     <file>dark-blue/branch_open.svg</file>
     <file>dark-blue/branch_open_hover.svg</file>
+    <file>dark-blue/browser_refresh.svg</file>
+    <file>dark-blue/browser_refresh_stop.svg</file>
     <file>dark-blue/calendar_next.svg</file>
     <file>dark-blue/calendar_previous.svg</file>
     <file>dark-blue/checkbox_checked.svg</file>
@@ -22,15 +36,20 @@
     <file>dark-blue/close_pressed.svg</file>
     <file>dark-blue/computer.svg</file>
     <file>dark-blue/desktop.svg</file>
+    <file>dark-blue/dialog_apply.svg</file>
     <file>dark-blue/dialog_cancel.svg</file>
     <file>dark-blue/dialog_close.svg</file>
     <file>dark-blue/dialog_discard.svg</file>
     <file>dark-blue/dialog_help.svg</file>
+    <file>dark-blue/dialog_ignore.svg</file>
     <file>dark-blue/dialog_no.svg</file>
     <file>dark-blue/dialog_ok.svg</file>
     <file>dark-blue/dialog_open.svg</file>
     <file>dark-blue/dialog_reset.svg</file>
+    <file>dark-blue/dialog_retry.svg</file>
     <file>dark-blue/dialog_save.svg</file>
+    <file>dark-blue/dialog_save_all.svg</file>
+    <file>dark-blue/dialog_yes_to_all.svg</file>
     <file>dark-blue/disc_drive.svg</file>
     <file>dark-blue/down_arrow.svg</file>
     <file>dark-blue/down_arrow_disabled.svg</file>
@@ -47,10 +66,12 @@
     <file>dark-blue/folder.svg</file>
     <file>dark-blue/folder_link.svg</file>
     <file>dark-blue/folder_open.svg</file>
+    <file>dark-blue/folder_open_link.svg</file>
     <file>dark-blue/hard_drive.svg</file>
     <file>dark-blue/help.svg</file>
     <file>dark-blue/hmovetoolbar.svg</file>
     <file>dark-blue/home_directory.svg</file>
+    <file>dark-blue/horizontal_extension.svg</file>
     <file>dark-blue/hseptoolbar.svg</file>
     <file>dark-blue/left_arrow.svg</file>
     <file>dark-blue/left_arrow_disabled.svg</file>
@@ -63,17 +84,26 @@
     <file>dark-blue/message_warning.svg</file>
     <file>dark-blue/minimize.svg</file>
     <file>dark-blue/network_drive.svg</file>
+    <file>dark-blue/pause.svg</file>
+    <file>dark-blue/play.svg</file>
     <file>dark-blue/radio_checked.svg</file>
     <file>dark-blue/radio_checked_disabled.svg</file>
     <file>dark-blue/radio_unchecked.svg</file>
     <file>dark-blue/radio_unchecked_disabled.svg</file>
     <file>dark-blue/restore.svg</file>
+    <file>dark-blue/restore_defaults.svg</file>
     <file>dark-blue/right_arrow.svg</file>
     <file>dark-blue/right_arrow_disabled.svg</file>
     <file>dark-blue/right_arrow_hover.svg</file>
+    <file>dark-blue/seek_backward.svg</file>
+    <file>dark-blue/seek_forward.svg</file>
     <file>dark-blue/shade.svg</file>
     <file>dark-blue/sizegrip.svg</file>
+    <file>dark-blue/skip_backward.svg</file>
+    <file>dark-blue/skip_forward.svg</file>
+    <file>dark-blue/stop.svg</file>
     <file>dark-blue/stylesheet.qss</file>
+    <file>dark-blue/tab_close.svg</file>
     <file>dark-blue/transparent.svg</file>
     <file>dark-blue/trash.svg</file>
     <file>dark-blue/undock.svg</file>
@@ -83,11 +113,27 @@
     <file>dark-blue/up_arrow.svg</file>
     <file>dark-blue/up_arrow_disabled.svg</file>
     <file>dark-blue/up_arrow_hover.svg</file>
+    <file>dark-blue/vertical_extension.svg</file>
+    <file>dark-blue/vista_shield.svg</file>
     <file>dark-blue/vline.svg</file>
     <file>dark-blue/vmovetoolbar.svg</file>
+    <file>dark-blue/volume.svg</file>
+    <file>dark-blue/volume_muted.svg</file>
     <file>dark-blue/vseptoolbar.svg</file>
     <file>dark-blue/window_close.svg</file>
     <file>dark/stylesheet.qss</file>
+    <file>light-blue/ads_close.svg</file>
+    <file>light-blue/ads_close_hover.svg</file>
+    <file>light-blue/ads_close_pressed.svg</file>
+    <file>light-blue/ads_detach.svg</file>
+    <file>light-blue/ads_detach_hover.svg</file>
+    <file>light-blue/ads_detach_hover_pressed.svg</file>
+    <file>light-blue/ads_maximize.svg</file>
+    <file>light-blue/ads_maximize_hover.svg</file>
+    <file>light-blue/ads_maximize_pressed.svg</file>
+    <file>light-blue/ads_menu_button.svg</file>
+    <file>light-blue/ads_menu_button_hover.svg</file>
+    <file>light-blue/ads_menu_button_pressed.svg</file>
     <file>light-blue/branch_closed.svg</file>
     <file>light-blue/branch_closed_hover.svg</file>
     <file>light-blue/branch_end.svg</file>
@@ -96,6 +142,8 @@
     <file>light-blue/branch_more_arrow.svg</file>
     <file>light-blue/branch_open.svg</file>
     <file>light-blue/branch_open_hover.svg</file>
+    <file>light-blue/browser_refresh.svg</file>
+    <file>light-blue/browser_refresh_stop.svg</file>
     <file>light-blue/calendar_next.svg</file>
     <file>light-blue/calendar_previous.svg</file>
     <file>light-blue/checkbox_checked.svg</file>
@@ -110,15 +158,20 @@
     <file>light-blue/close_pressed.svg</file>
     <file>light-blue/computer.svg</file>
     <file>light-blue/desktop.svg</file>
+    <file>light-blue/dialog_apply.svg</file>
     <file>light-blue/dialog_cancel.svg</file>
     <file>light-blue/dialog_close.svg</file>
     <file>light-blue/dialog_discard.svg</file>
     <file>light-blue/dialog_help.svg</file>
+    <file>light-blue/dialog_ignore.svg</file>
     <file>light-blue/dialog_no.svg</file>
     <file>light-blue/dialog_ok.svg</file>
     <file>light-blue/dialog_open.svg</file>
     <file>light-blue/dialog_reset.svg</file>
+    <file>light-blue/dialog_retry.svg</file>
     <file>light-blue/dialog_save.svg</file>
+    <file>light-blue/dialog_save_all.svg</file>
+    <file>light-blue/dialog_yes_to_all.svg</file>
     <file>light-blue/disc_drive.svg</file>
     <file>light-blue/down_arrow.svg</file>
     <file>light-blue/down_arrow_disabled.svg</file>
@@ -135,10 +188,12 @@
     <file>light-blue/folder.svg</file>
     <file>light-blue/folder_link.svg</file>
     <file>light-blue/folder_open.svg</file>
+    <file>light-blue/folder_open_link.svg</file>
     <file>light-blue/hard_drive.svg</file>
     <file>light-blue/help.svg</file>
     <file>light-blue/hmovetoolbar.svg</file>
     <file>light-blue/home_directory.svg</file>
+    <file>light-blue/horizontal_extension.svg</file>
     <file>light-blue/hseptoolbar.svg</file>
     <file>light-blue/left_arrow.svg</file>
     <file>light-blue/left_arrow_disabled.svg</file>
@@ -151,17 +206,26 @@
     <file>light-blue/message_warning.svg</file>
     <file>light-blue/minimize.svg</file>
     <file>light-blue/network_drive.svg</file>
+    <file>light-blue/pause.svg</file>
+    <file>light-blue/play.svg</file>
     <file>light-blue/radio_checked.svg</file>
     <file>light-blue/radio_checked_disabled.svg</file>
     <file>light-blue/radio_unchecked.svg</file>
     <file>light-blue/radio_unchecked_disabled.svg</file>
     <file>light-blue/restore.svg</file>
+    <file>light-blue/restore_defaults.svg</file>
     <file>light-blue/right_arrow.svg</file>
     <file>light-blue/right_arrow_disabled.svg</file>
     <file>light-blue/right_arrow_hover.svg</file>
+    <file>light-blue/seek_backward.svg</file>
+    <file>light-blue/seek_forward.svg</file>
     <file>light-blue/shade.svg</file>
     <file>light-blue/sizegrip.svg</file>
+    <file>light-blue/skip_backward.svg</file>
+    <file>light-blue/skip_forward.svg</file>
+    <file>light-blue/stop.svg</file>
     <file>light-blue/stylesheet.qss</file>
+    <file>light-blue/tab_close.svg</file>
     <file>light-blue/transparent.svg</file>
     <file>light-blue/trash.svg</file>
     <file>light-blue/undock.svg</file>
@@ -171,8 +235,12 @@
     <file>light-blue/up_arrow.svg</file>
     <file>light-blue/up_arrow_disabled.svg</file>
     <file>light-blue/up_arrow_hover.svg</file>
+    <file>light-blue/vertical_extension.svg</file>
+    <file>light-blue/vista_shield.svg</file>
     <file>light-blue/vline.svg</file>
     <file>light-blue/vmovetoolbar.svg</file>
+    <file>light-blue/volume.svg</file>
+    <file>light-blue/volume_muted.svg</file>
     <file>light-blue/vseptoolbar.svg</file>
     <file>light-blue/window_close.svg</file>
     <file>light/stylesheet.qss</file>

@@ -1,8 +1,6 @@
 # NOTE: this file is auto-generated via `vcs.py`
 # DO NOT MANUALLY EDIT THIS FILE.
 TODO.md
-dist/
-resources/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
