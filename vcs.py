@@ -228,12 +228,26 @@ EXTRAS_GITIGNORE = [
     'TODO.md',
 ]
 
+HOOK_SCRIPT = '''
+#!/usr/bin/env bash
+#
+# A custom Git hook.
+
+set -eux pipefail
+
+hooks_home="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+git_home="$(dirname "${hooks_home}")"
+project_home="$(dirname "${git_home}")"
+
+'''
+
 
 def parse_args(argv=None):
     '''Parse the command-line options.'''
 
     parser = argparse.ArgumentParser(description='Git configuration changes.')
     parser.add_argument('-v', '--version', action='version', version=f'%(prog)s {__version__}')
+
     dist = parser.add_mutually_exclusive_group()
     dist.add_argument(
         '--track-dist',
@@ -245,6 +259,7 @@ def parse_args(argv=None):
         help='do not track changes to distribution files',
         action='store_true',
     )
+
     gitignore = parser.add_mutually_exclusive_group()
     gitignore.add_argument(
         '--track-gitignore',
@@ -254,6 +269,18 @@ def parse_args(argv=None):
     gitignore.add_argument(
         '--no-track-gitignore',
         help='do not track changes to `.gitignore`',
+        action='store_true',
+    )
+
+    hooks = parser.add_mutually_exclusive_group()
+    hooks.add_argument(
+        '--install-hooks',
+        help='install our git hooks',
+        action='store_true',
+    )
+    hooks.add_argument(
+        '--uninstall-hooks',
+        help='uninstall our git hooks',
         action='store_true',
     )
 
@@ -310,6 +337,48 @@ def write_gitignore(entries):
         file.write(f'{custom}\n{PYTHON_GITIGNORE}\n{CPP_GITIGNORE}\n')
 
 
+def pip_install(packages):
+    '''Install our PIP dependencies.'''
+    subprocess.check_call(
+        [sys.executable, '-m', 'pip', 'install'] + packages + ['--user'],
+        stdin=subprocess.DEVNULL,
+        shell=False,
+    )
+
+
+def chmod(mode, *args):
+    '''Modify our permissions for one or more files.'''
+    subprocess.check_call(
+        ['chmod', mode, *args],
+        stdin=subprocess.DEVNULL,
+        shell=False,
+    )
+
+
+def install_hooks():
+    '''Install our Git hooks.'''
+
+    pip_install(['pylint', 'pyright', 'flake8', 'isort', 'black'])
+    if os.name == 'nt':
+        pip_install(['winrt-Windows.UI.ViewManagement', 'winrt-Windows.UI'])
+    scripts = ['lint', 'fmt', 'configure']
+    precommit = HOOK_SCRIPT + '\n'.join([f'scripts/{i}.sh' for i in scripts])
+    path = f'{home}/.git/hooks/pre-commit'
+    with open(path, 'w', encoding='utf8') as file:
+        file.write(precommit)
+    chmod('+x', path)
+
+
+def uninstall_hooks():
+    '''Uninstall our Git hooks.'''
+
+    path = f'{home}/.git/hooks/pre-commit'
+    try:
+        os.unlink(path)
+    except FileNotFoundError:
+        pass
+
+
 def main(argv=None):
     '''Configuration entry point'''
 
@@ -328,13 +397,19 @@ def main(argv=None):
     if git is None:
         raise FileNotFoundError(errno.ENOENT, "No such file or directory: 'git'")
 
+    # if we're installing our hooks, do it quickly.
+    if args.install_hooks:
+        install_hooks()
+    elif args.uninstall_hooks:
+        uninstall_hooks()
+
     # Determine if we need to assume unchanged gitignore,
     # and then update our track dist. This is since normally
     # we assume tracking/untracking dist should ignore
     # our gitignore file.
     if args.track_gitignore:
         no_assume_unchanged(git, '.gitignore')
-    else:
+    elif args.no_track_gitignore:
         assume_unchanged(git, '.gitignore')
 
     # Determine if we need to update our gitignore.
