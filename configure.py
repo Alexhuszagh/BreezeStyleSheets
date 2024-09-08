@@ -436,7 +436,7 @@ def fix_qt6_import(compiled_file):
 
     with open(compiled_file, 'r', encoding='utf-8') as file:
         text = file.read()
-    text = text.replace('PySide6', 'PyQt6')
+    text = text.replace('PySide6', 'PyQt6', count=1)
     with open(compiled_file, 'w', encoding='utf-8') as file:
         file.write(text)
 
