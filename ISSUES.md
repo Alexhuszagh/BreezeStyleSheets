@@ -81,7 +81,7 @@ Custom padding for triangular QTabBars on the bottom is ignored. All other tab p
 
 # QTextDocument
 
-### Placeholder Text 
+### Placeholder Text
 
 For the widgets `QTextEdit`, `QPlainTextEdit`, and `QLineEdit`, which use an internal `QTextDocument`, you can set placeholder text for when no text is present. In Qt5, this is correctly grayed out when the placeholder text is present, which is not respected in Qt6 (as of Qt version 6.3.0).
 
@@ -96,7 +96,7 @@ An example workaround setting the placeholder text at palette at the application
 #include <QColor>
 #include <QPalette>
 
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
 
@@ -154,7 +154,7 @@ However, this won't work with markdown input, and requires you to modify any exi
 #include <QColor>
 #include <QPalette>
 
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
 
@@ -206,7 +206,7 @@ A simple example of creating a `QToolButton` with text and with no menu drop-dow
 #include <QString>
 #include <QToolButton>
 
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
 
@@ -369,12 +369,12 @@ def main():
     # Install our custom style globally. QCommonStyle, unlike QProxyStyle,
     # actually works nicely with stylesheets. `Fusion` is available
     # on all platforms, but you can use any style you want. We
-    # just need a created style, because `app.style()` will be 
+    # just need a created style, because `app.style()` will be
     # deleted by he garbage collector.
     style = QtWidgets.QStyleFactory.create('Fusion')
     app.setStyle(ApplicationStyle(style))
 
-    # Set our stylesheet. 
+    # Set our stylesheet.
     # NOTE: this must occur after setting the application style.
     file = QtCore.QFile('dark:stylesheet.qss')
     file.open(OpenModeFlag.ReadOnly | OpenModeFlag.Text)

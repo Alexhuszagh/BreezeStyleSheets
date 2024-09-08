@@ -25,6 +25,7 @@ BreezeStyleSheets is a set of beautiful light and dark stylesheets that render c
   - [Git Ignore](#git-ignore)
 - [What's changed in this fork?](#whats-changed-in-this-fork)
 - [Known Issues and Workarounds](#known-issues-and-workarounds)
+- [Developing](#developing)
 - [License](#license)
 - [Contributing](#contributing)
 - [Acknowledgements](#acknowledgements)
@@ -536,6 +537,42 @@ git commit -m "..."
 # Known Issues and Workarounds
 
 For known issues and workarounds, see [issues](/ISSUES.md).
+
+# Developing
+
+Contributors to BreezeStylesheets should make use of [vcs](/vcs.py) and [scripts](/scripts/) to both install Git hooks and run local tests and typechecking. After cloning the repository, developers should first install a pre-commit hook, to ensure their code is formatted and linted prior to commiting:
+
+```bash
+python vcs.py --install-hooks
+```
+
+You can also manually run each check independently:
+
+```bash
+# format python code to a standard style.
+# requires `black` and `isort` to be installed.
+scripts/fmt.sh
+# run linters and static typecheckers
+# requires `pylint`, `pyright`, and `flake8` to be installed
+scripts/lint.sh
+# check if the system can automatically determine the theme
+# on windows, this requires `winrt-Windows.UI.ViewManagement`
+# and `winrt-Windows.UI` to be installed.
+scripts/theme.sh
+# run more involved, comprehensive tests. these assume a Linux
+# environment and detail the install scripts to use them.
+scripts/cmake.sh
+scripts/headless.sh
+```
+
+You should also stop tracking changes to generated files from source control until desired. This avoids large commits for minor changes that are reverted later.
+
+```bash
+# don't track changes to generated file, like in dist
+python vcs.py --no-track-dist
+# retrack changes to these files.
+python vcs.py --track-dist
+```
 
 # License
 
