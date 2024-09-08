@@ -551,9 +551,8 @@ def start_drag(self, event, window_type):
 
 def handle_drag(self, event, window, window_type):
     '''Handle the window drag event.'''
-
-    position = event.pos() - getattr(self, f'_{window_type}_drag')
-    window.move_to(window.mapToParent(position))
+    position = event.pos() - getattr(window, f'_{window_type}_drag')
+    self.move_to(self.mapToParent(position))
 
 
 def end_drag(self, window_type):
@@ -563,7 +562,6 @@ def end_drag(self, window_type):
 
 def start_move(self, widget, window_type):
     '''Start the window move state.'''
-
     setattr(self, f'_{window_type}_move', widget)
     widget.menu_move_to(QtGui.QCursor.pos())
 
