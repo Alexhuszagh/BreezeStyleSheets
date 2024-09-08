@@ -417,7 +417,7 @@ def configure(args):
 
     # Create aliases for our light-blue and dark-blue styles to light and dark.
     # Only create aliases if light-blue and/or dark-blue are to be built.
-    themes = [theme for theme in args.styles if theme == 'dark-blue' or theme == 'light-blue']
+    themes = [theme for theme in args.styles if theme in ('dark-blue', 'light-blue')]
     for theme in themes:
         source = args.output_dir / theme / 'stylesheet.qss'
         destination = args.output_dir / theme.split('-')[0] / 'stylesheet.qss'
