@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+## [0.0.1] 2024-09-08
+
 ### Added
 
 - Detection of system theme (light or dark mode).
@@ -28,8 +30,6 @@ and this project adheres to [Semantic Versioning].
 - Icons to match KDE-like Breeze and Breeze dark themes.
 - Make `dark` and `light` aliases for `dark-blue` and `light-blue`, respectively.
 
-### Deprecated
-
 ### Removed
 
 - Old PyQt6 packaging system to match the standard Qt5 and Qt6 approach using resource compilers (from [Inverted-E]).
@@ -44,15 +44,17 @@ and this project adheres to [Semantic Versioning].
 - Qt6 support.
 - Branch indicators for QTreeView and QTreeWidget (from [eblade]).
 
-<!-- Unused Sections -->
-<!-- ### Security -->
-
-<!-- Initial release
-
 ## [0.0.1] - 2024-09-08
 
-- Initial release
--->
+Initial release.
+
+<!-- All Sections -->
+<!-- ### Added -->
+<!-- ### Changed -->
+<!-- ### Deprecated -->
+<!-- ### Removed -->
+<!-- ### Fixed -->
+<!-- ### Security -->
 
 <!-- Links -->
 [Keep A Changelog]: https://keepachangelog.com/en/1.0.0/
