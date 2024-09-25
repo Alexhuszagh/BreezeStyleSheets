@@ -46,13 +46,25 @@ Example user interface using the Breeze and BreezeDark stylesheets side-by-side.
   </tbody>
 </table>
 
-Alternative themes - Change QTableWidget hover behavior to highlight whole row, instead of individual cells.
+### Alternative themes
+
+Change QTableWidget hover behavior to highlight whole row, instead of individual cells.
+Also changes background color of light themes to a light gray and applies theme color to radio buttons and checkboxes.
 
 <table cellspacing="0" cellpadding="0">
   <tbody>
     <tr>
       <td><img src="./assets/dark-blue.png" alt="Dark blue standard demo" ></td>
       <td><img src="./assets/dark-blue-alt.png" alt="Dark blue alt demo" ></td>
+    </tr>
+  </tbody>
+</table>
+
+<table cellspacing="0" cellpadding="0">
+  <tbody>
+    <tr>
+      <td><img src="./assets/light-blue.png" alt="Light blue standard demo" ></td>
+      <td><img src="./assets/light-blue-alt.png" alt="Light blue alt demo" ></td>
     </tr>
   </tbody>
 </table>
@@ -570,9 +582,7 @@ Unless you explicitly state otherwise, any contribution intentionally submitted 
 
 BreezeStyleSheets is a fork of [QDarkStyleSheet](https://github.com/ColinDuquesnoy/QDarkStyleSheet). Some of the icons are modified from [Material UI](https://github.com/google/material-design-icons) and [Material Design Icons](https://materialdesignicons.com/) (both of which use an Apache 2.0 [license](/MaterialUi.LICENSE)), and are redistributed under the MIT license.
 
-PyQtBreezeStyleSheets is a further fork of [BreezeStyleSheets](https://github.com/Alexhuszagh/BreezeStyleSheets).
-
-Major contributions to the project have made by:
+Major contributions to the project have been made by:
 - [Inverted-E](https://github.com/Inverted-E/)
 
 ## Contact
