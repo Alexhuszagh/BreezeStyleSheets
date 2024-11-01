@@ -42,7 +42,7 @@
     "close:pressed": "#b33eb3",
     "dock:background": "#eaebec",
     "dock:float": "#a2a2a2",
-    "critical": "#ff8cff",
+    "critical": "#ff8c9f",
     "information": "#8cd5ff",
     "question": "#c08cff",
     "warning": "#ffff8c",
