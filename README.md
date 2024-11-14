@@ -588,4 +588,3 @@ Major contributions to the project have been made by:
 ## Contact
 
 Email: [ahuszagh@gmail.com](mailto:ahuszagh@gmail.com)
-Twitter: KardOnIce
