@@ -12,6 +12,7 @@ BreezeStyleSheets is a set of beautiful light and dark stylesheets that render c
     - [Python Installation](#python-installation)
     - [CMake Installation](#cmake-installation)
     - [QMake Installation](#qmake-installation)
+    - [Qt Components](#qt-components)
 3. [Examples](#examples)
 4. [Features](#features)
     - [Extensions](#extensions)
@@ -143,7 +144,7 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(
   ${QT_VERSION}
-  COMPONENTS Core Gui Widgets
+  COMPONENTS Core Gui Widgets Svg
   REQUIRED)
 # -------------------
 
@@ -254,6 +255,10 @@ int main(int argc, char *argv[])
     return app.exec();
 }
 ```
+
+### Qt Components
+
+If using a minimal installation of Qt, ensure [`QtSvg`](https://doc.qt.io/qt-6/qtsvg-index.html) is installed (along with [`QtCore`](https://doc.qt.io/qt-6/qtcore-index.html), [`QtGui`](https://doc.qt.io/qt-6/qtgui-index.html), and [`QtWidgets`](https://doc.qt.io/qt-6/qtwidgets-index.html)). SVG support is required to correctly display the widget icons.
 
 ## Examples
 
