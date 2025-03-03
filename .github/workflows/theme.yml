@@ -42,6 +42,7 @@ jobs:
           clang++ ../scripts/test_theme.cpp -o test_theme -std=c++17
           ./test_theme
         else
+          sudo apt install gsettings-desktop-schemas
           g++ ../scripts/test_theme.cpp -o test_theme -std=c++17
           ./test_theme
         fi

@@ -5,5 +5,6 @@
         "stdexcept": "cpp"
     },
     "cmake.ignoreCMakeListsMissing": true,
-    "python.REPL.enableREPLSmartSend": false
+    "python.REPL.enableREPLSmartSend": false,
+    "files.eol": "\n"
 }
