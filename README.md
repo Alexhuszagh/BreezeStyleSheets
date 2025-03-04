@@ -220,6 +220,12 @@ int main(int argc, char *argv[])
 }
 ```
 
+If you get an issue with copy relocations against a non-copyable protected [symbol](https://github.com/Alexhuszagh/BreezeStyleSheets/issues/121), ensure the `POSITION_INDEPENDENT_CODE` is set to `ON`. For the example above, add the following line:
+
+```cmake
+set_property(TARGET myapp PROPERTY POSITION_INDEPENDENT_CODE ON)
+```
+
 ### QMake Installation
 
 Copy the contents of the `dist` subdirectory into your project directory and add the qrc file to your project file.
