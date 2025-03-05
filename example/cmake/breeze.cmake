@@ -17,6 +17,9 @@ find_package(Python COMPONENTS Interpreter)
 include(FetchContent)
 
 set(FETCHCONTENT_QUIET OFF CACHE BOOL "Silence fetch content" FORCE)
+set(PREFER_PIE OFF CACHE BOOL "If to prefer position-independent code, if the compiler supports it.")
+set(BREEZE_EXTENSIONS all CACHE STRING "The extensions to include in our stylesheets.")
+set(BREEZE_STYLES all CACHE STRING "The styles to include in our stylesheets.")
 
 FetchContent_Declare(
   breeze_stylesheets
@@ -41,4 +44,13 @@ if(NOT breeze_stylesheets_POPULATED)
     COMMENT "Generating themes")
 
   add_dependencies(breeze run_python_breeze)
+endif()
+
+# Prefer position independent code, if the compiler supports it.
+if(PREFER_PIE)
+  include(CheckPIESupported)
+  check_pie_supported(LANGUAGES CXX OUTPUT_VARIABLE pie-supported)
+  if(CMAKE_C_LINK_PIE_SUPPORTED)
+    set_property(TARGET breeze PROPERTY POSITION_INDEPENDENT_CODE ON)
+  endif()
 endif()
