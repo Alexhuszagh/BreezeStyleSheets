@@ -2,6 +2,7 @@
     "files.associations": {
         "*.qss.in": "qss",
         "*.svg.in": "xml",
+        "*.json": "jsonc",
         "stdexcept": "cpp"
     },
     "cmake.ignoreCMakeListsMissing": true,
