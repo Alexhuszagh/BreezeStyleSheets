@@ -226,7 +226,7 @@ class CommentsDecoder(json.JSONDecoder):
         return typing.cast('JSONValue', super().decode('\n'.join(lines)))
 
 
-def load(path: 'os.PathLike') -> 'Config':
+def load(path: 'str | os.PathLike[str]') -> 'Config':
     '''
     Load the stylesheet configuration settings from file.
 
@@ -402,7 +402,7 @@ def _transform_nested(v: 'JSONObject') -> 'dict[str, str]':
 @contextlib.contextmanager
 def _parse_block(
     data: 'str | bytes | bytearray | None' = None,
-    path: 'os.PathLike | None' = None,
+    path: 'str | os.PathLike[str] | None' = None,
 ) -> 'typing.Iterator[None]':
     '''A helper to parse the config data within a context block.'''
     try:
