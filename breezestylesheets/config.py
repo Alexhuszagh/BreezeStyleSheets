@@ -147,14 +147,36 @@ class Config(BaseModel):
     slider_handle_background: 'ColorType' = Field(validation_alias=_alias_choices('slider.handle.background'))
     '''Background color for the handle of a QSlider.'''
 
-    menu_disabled: 'ColorType' = Field(validation_alias=_alias_choices('menu.disabled'))
-    '''Color for a disabled menubar/menu item.'''
+    menu_disabled_impl: 'ColorType' = Field(validation_alias=_alias_choices('menu.disabled'))
+    '''Internal helper for `menu_disabled`. Do not use directly.'''
+
+    @property
+    def menu_disabled(self) -> 'Color':
+        '''Color for a disabled menubar/menu item.'''
+        if not self.menu_disabled_impl:
+            self.menu_disabled_impl = constants.DISABLED[self.is_dark]
+        return self.menu_disabled_impl
+
+    @menu_disabled.setter
+    def menu_disabled(self, value: 'ColorType') -> None:
+        self.menu_disabled_impl = value
 
     checkbox_light: 'ColorType' = Field(validation_alias=_alias_choices('checkbox.light'))
     '''Color for a checked/hovered QCheckBox or QRadioButton.'''
 
-    checkbox_disabled: 'ColorType' = Field(validation_alias=_alias_choices('checkbox.disabled'))
-    '''Color for a disabled or unchecked/unhovered QCheckBox or QRadioButton.'''
+    checkbox_disabled_impl: 'ColorType' = Field(validation_alias=_alias_choices('checkbox.disabled'))
+    '''Internal helper for `checkbox_disabled`. Do not use directly.'''
+
+    @property
+    def checkbox_disabled(self) -> 'Color':
+        '''Color for a disabled or unchecked/unhovered QCheckBox or QRadioButton.'''
+        if not self.checkbox_disabled_impl:
+            self.checkbox_disabled_impl = constants.DISABLED[self.is_dark]
+        return self.checkbox_disabled_impl
+
+    @checkbox_disabled.setter
+    def checkbox_disabled(self, value: 'ColorType') -> None:
+        self.checkbox_disabled_impl = value
 
     scrollbar_hover: 'ColorType' = Field(validation_alias=_alias_choices('scrollbar.hover'))
     '''
@@ -184,9 +206,19 @@ class Config(BaseModel):
     button_checked: 'ColorType' = Field(validation_alias=_alias_choices('button.checked'))
     '''Background for a checked QPushButton.'''
 
-    # TODO: Make the disabled ones optional, using defaults if computed
-    button_disabled: 'Color' = Field(validation_alias=_alias_choices('button.disabled'))
-    '''Background for a disabled QPushButton, or fallthrough for disabled QWidgets.'''
+    button_disabled_impl: 'ColorType' = Field(validation_alias=_alias_choices('button.disabled'))
+    '''Internal helper for `button_disabled`. Do not use directly.'''
+
+    @property
+    def button_disabled(self) -> 'Color':
+        '''Background for a disabled QPushButton, or fallthrough for disabled QWidgets.'''
+        if not self.button_disabled_impl:
+            self.button_disabled_impl = constants.DISABLED[self.is_dark]
+        return self.button_disabled_impl
+
+    @button_disabled.setter
+    def button_disabled(self, value: 'ColorType') -> None:
+        self.button_disabled_impl = value
 
     close_hover: 'ColorType' = Field(validation_alias=_alias_choices('close.hover'))
     '''Color of a dock/tab close icon when hovered.'''
