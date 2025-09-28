@@ -6,10 +6,10 @@ indent_size = 4
 tab_width = 4
 trim_trailing_whitespace = true
 
-[*.{cpp,hpp,sh,in,svg,qss,txt,cmake,py,json,md}]
+[*.{cpp,hpp,sh,in,svg,qss,txt,cmake,py,json,md,toml}]
 charset = utf-8
 
-[*.{md,json}]
+[*.{md,json,toml}]
 indent_size = 2
 
 [{package.json,.github/workflows/*.yml}]
