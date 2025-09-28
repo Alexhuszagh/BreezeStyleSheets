@@ -23,7 +23,8 @@ JSONArray: 'typing.TypeAlias' = Sequence['JSONPrimitive | JSONArray | JSONObject
 JSONObject: 'typing.TypeAlias' = Mapping['JSONKey', 'JSONPrimitive | JSONArray | JSONObject']
 
 __all__ = ['Config', 'load', 'loads']
-ColorType: 'typing.TypeAlias' = 'Color | typing.Literal[""]'
+# NOTE: Union is required for 3.9 support in our base models.
+ColorType: 'typing.TypeAlias' = typing.Union[Color, typing.Literal[""]]
 
 
 def _expand_alias_choices(value: 'str') -> 'tuple[str, ...]':
@@ -299,12 +300,12 @@ class Config(BaseModel):
     '''The background color for an Advanced Docking System border.'''
 
     @property
-    def is_light(self) -> bool:
+    def is_light(self) -> 'bool':
         '''Get if the color scheme is a light theme.'''
-        return color.is_light_color(self.background)
+        return color.is_light(self.background)
 
     @property
-    def is_dark(self) -> bool:
+    def is_dark(self) -> 'bool':
         '''Get if the color scheme is a dark theme.'''
         return not self.is_light
 
