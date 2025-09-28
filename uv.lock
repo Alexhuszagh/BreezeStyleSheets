@@ -88,6 +88,7 @@ lint = [
     { name = "flake8", marker = "python_full_version >= '3.11'" },
     { name = "isort", marker = "python_full_version >= '3.11'" },
     { name = "pylint", marker = "python_full_version >= '3.11'" },
+    { name = "pyproject-pyupgrade", marker = "python_full_version >= '3.11'" },
     { name = "pyupgrade", marker = "python_full_version >= '3.11'" },
     { name = "ruff", marker = "python_full_version >= '3.11'" },
 ]
@@ -121,6 +122,7 @@ lint = [
     { name = "flake8", marker = "python_full_version >= '3.11'", specifier = ">=7.0.0,<8.0.0" },
     { name = "isort", marker = "python_full_version >= '3.11'", specifier = ">=5.11.5,<6.0.0" },
     { name = "pylint", marker = "python_full_version >= '3.11'", specifier = ">=3.3.8,<4.0.0" },
+    { name = "pyproject-pyupgrade", marker = "python_full_version >= '3.11'", specifier = ">=0.1.1,<0.2.0" },
     { name = "pyupgrade", marker = "python_full_version >= '3.11'", specifier = ">=3.20.0,<4.0.0" },
     { name = "ruff", marker = "python_full_version >= '3.11'", specifier = ">=0.13.2,<0.14.0" },
 ]
@@ -684,6 +686,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/19/fd/437901c891f58a7b9096511750247535e891d2d5a5a6eefbc9386a2b41d5/pyproject_api-1.9.1.tar.gz", hash = "sha256:43c9918f49daab37e302038fc1aed54a8c7a91a9fa935d00b9a485f37e0f5335", size = 22710, upload-time = "2025-05-12T14:41:58.025Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ef/e6/c293c06695d4a3ab0260ef124a74ebadba5f4c511ce3a4259e976902c00b/pyproject_api-1.9.1-py3-none-any.whl", hash = "sha256:7d6238d92f8962773dd75b5f0c4a6a27cce092a14b623b811dba656f3b628948", size = 13158, upload-time = "2025-05-12T14:41:56.217Z" },
+]
+
+[[package]]
+name = "pyproject-pyupgrade"
+version = "0.1.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyupgrade", marker = "python_full_version >= '3.11'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/06/68/2050a3325079a652e5690c84ae40f64292d7a27dca8088ee4f8dc86c95e5/pyproject_pyupgrade-0.1.1.tar.gz", hash = "sha256:f9f810666ddff91cbd697c948aabb1f1bbad115508d9b0be1b2f3828d0d2c298", size = 3964, upload-time = "2024-02-19T22:16:39.913Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0e/2c/e68dc8843b40e81f49457e755b8f42ab1c58e857e79f8754f4fe50c74aea/pyproject_pyupgrade-0.1.1-py3-none-any.whl", hash = "sha256:29b1551dbe9feec33a3d3f1df8778c05ab45319cc5b38002e8da3c520fae5b49", size = 5080, upload-time = "2024-02-19T22:16:38.476Z" },
 ]
 
 [[package]]

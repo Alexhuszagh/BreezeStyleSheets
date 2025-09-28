@@ -49,6 +49,7 @@ lint = [
     "flake8>=7.0.0,<8.0.0",
     "isort>=5.11.5,<6.0.0",
     "pylint>=3.3.8,<4.0.0",
+    "pyproject-pyupgrade>=0.1.1,<0.2.0",
     "pyupgrade>=3.20.0,<4.0.0",
     "ruff>=0.13.2,<0.14.0",
 ]
@@ -226,10 +227,14 @@ minversion = "6.0"
 addopts = "--cov=breezestylesheets --cov-report html"
 
 [tool.pyright]
-include = ["breezestylesheets"] # TODO: "example", "test" once base has been implemented
+include = ["breezestylesheets", "test"] # TODO: "example", once base has been implemented
 
 [tool.mypy]
-packages = ["breezestylesheets"]
+packages = ["breezestylesheets", "test"] # TODO: "example", once base has been implemented
+
+[tool.pyupgrade]
+py39-plus = true
+pyproject-pyupgrade-debug = true
 
 [tool.ruff]
 line-length = 110
@@ -253,21 +258,21 @@ isolated_build = true
 
 [tool.tox.env_run_base]
 description = "Run test suite under {base_python}"
-commands = []  # TODO: Fix to support ["pytest"], bug with UTF8 start byte
+commands = [["pytest"]]
 dependency_groups = ["test"]
 
 [tool.tox.env.type]
 description = "Run test suite under {base_python}"
-commands = [["pyright"]]  # TODO: Fix the `, ["mypy"]
-dependency_groups = ["test", "type"]
+commands = [["pyright"], ["mypy"]]
+dependency_groups = ["type"]
 
 [tool.tox.env.lint]
 description = "Run test suite under {base_python}"
 commands = [
-  ["black", "--check", "breezestylesheets/"],  # TODO: "example/", "test/"
-  ["isort", "--check-only", "breezestylesheets/"], # TODO: "example/", "test/"
-  ["ruff", "check", "breezestylesheets/"], # TODO: "example/", "test/"
-  ["pylint", "breezestylesheets/"], # TODO: "example/", "test/"
+  ["black", "--check", "breezestylesheets/", "test/"],  # TODO: "example/",
+  ["isort", "--check-only", "breezestylesheets/", "test/"], # TODO: "example/"
+  ["ruff", "check", "breezestylesheets/", "test/"], # TODO: "example/"
+  ["pylint", "breezestylesheets/", "test/"], # TODO: "example/"
   ["flake8"],
 ]
-dependency_groups = ["test", "lint"]
+dependency_groups = ["lint"]
