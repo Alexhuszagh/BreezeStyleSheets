@@ -1,5 +1,8 @@
+# NOTE: flake8 does not yet support `pyproject.toml`, it is
+# actively rejecting it. Migrate to `pyproject.toml` when
+# it is possible.
 [flake8]
-exclude = .git, __pycache__, build, dist
+exclude = .git, __pycache__, build, dist, .venv, .tox
 # NOTE: E203 and E226 are not PEP8-compliant.
 ignore = E203 E226 W503
 max-line-length = 110

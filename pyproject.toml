@@ -1,14 +1,38 @@
 [project]
 name = "breezestylesheets"
-version = "0.0.1"
+version = "0.2.0"
 description = "Configurable Breeze and BreezeDark-like stylesheets for Qt Applications."
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 dependencies = [
     "pydantic>=2.5.3,<3.0.0",
+    "pydantic-extra-types>=2.3.0,<3.0.0",
 ]
+authors = [
+  {name = "Colin Duquesnoy"},
+  { name = "Alex Huszagh", email = "ahuszagh@gmail.com" },
+]
+maintainers = [
+  { name = "Alex Huszagh", email = "ahuszagh@gmail.com" },
+]
+license = { "file" = "LICENSE.md" }
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Environment :: X11 Applications :: Qt",
+]
+keywords = ["qt", "gui", "stylesheets"]
+
+[project.urls]
+Homepage = "https://github.com/Alexhuszagh/BreezeStyleSheets"
+Documentation = "https://readthedocs.org"
+Repository = "https://github.com/Alexhuszagh/BreezeStyleSheets.git"
+"Bug Tracker" = "https://github.com/Alexhuszagh/BreezeStyleSheets/issues"
+Changelog = "https://github.com/Alexhuszagh/BreezeStyleSheets/main/CHANGELOG.md"
 
 [project.optional-dependencies]
+# TODO: Add optional dependencies on Qt5, Qt6, etc. when we actually
+# make this a full package
 yaml = [
     "pyyaml>=6.0.1,<7.0.0",
 ]
@@ -19,13 +43,15 @@ toml = [
 [dependency-groups]
 lint = [
     "black>=25.9.0,<26.0.0",
-    "flake8>=5.0.4,<6.0.0",
+    "flake8>=7.0.0,<8.0.0",
     "isort>=5.11.5,<6.0.0",
     "pylint>=3.3.8,<4.0.0",
     "pyupgrade>=3.20.0,<4.0.0",
     "ruff>=0.13.2,<0.14.0",
 ]
 test = [
+    "coverage>=7.2.7,<8.0.0",
+    "coverage-badge>=1.1.2,<2.0.0",
     "pytest>=7.4.4,<8.0.0",
     "pytest-cov>=4.1.0,<5.0.0",
     "pytest-html>=3.2.0,<4.0.0",
@@ -35,6 +61,9 @@ type = [
     "mypy>=1.4.1,<2.0.0",
     "pyright>=1.1.405,<2.0.0",
 ]
+
+[tool.setuptools]
+py-modules = ["breezestylesheets"]
 
 [tool.uv.dependency-groups]
 lint = { requires-python = ">=3.11" }
@@ -624,3 +653,28 @@ ignored-argument-names = "_.*|^ignored_|^unused_"
 # List of qualified module names which can have objects that can redefine
 # builtins.
 redefining-builtins-modules = ["six.moves", "past.builtins", "future.builtins", "builtins", "io"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--cov=breezestylesheets --cov-report html"
+
+[tool.pyright]
+include = ["breezestylesheets", "example", "test"]
+
+[tool.tox]
+requires = ["tox>=4.19"]
+env_list = ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "type"]  # TODO: Add lint, etc.
+isolated_build = true
+
+[tool.tox.env_run_base]
+description = "Run test suite under {base_python}"
+commands = []  # TODO: Fix to support ["pytest"], bug with UTF8 start byte
+dependency_groups = ["test"]
+
+# TODO: Add lint, etc. without formatting
+[tool.tox.env.type]
+description = "Run test suite under {base_python}"
+commands = [["pyright"]]  # TODO: Fix the `, ["mypy"]
+dependency_groups = ["test", "type"]
+
+# TODO: Add type, lint, etc.
