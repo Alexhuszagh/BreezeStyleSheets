@@ -22,6 +22,7 @@ JSONArray: 'typing.TypeAlias' = Sequence['JSONPrimitive | JSONArray | JSONObject
 JSONObject: 'typing.TypeAlias' = Mapping['JSONKey', 'JSONPrimitive | JSONArray | JSONObject']
 
 __all__ = ['Config', 'load', 'loads']
+ColorType: 'typing.TypeAlias' = 'Color | typing.Literal[""]'
 
 
 def _expand_alias_choices(value: 'str') -> 'tuple[str, ...]':
@@ -63,152 +64,164 @@ class Config(BaseModel):
     # TODO: Change to prefer nested syntax. This should likely join all nested
     # fields with a period syntax to enable this format
 
-    foreground_light: 'Color' = Field(validation_alias=_alias_choices('foreground.light'))
+    foreground_light: 'ColorType' = Field(validation_alias=_alias_choices('foreground.light'))
     '''Lighter foreground color for selected items.'''
 
     background: 'Color' = Field(validation_alias=_alias_choices('background'))
     '''The main background color.'''
 
-    background_alternate: 'Color' = Field(validation_alias=_alias_choices('background.alternate'))
+    background_alternate: 'ColorType' = Field(validation_alias=_alias_choices('background.alternate'))
     '''Alternate background color for styles.'''
 
     highlight: 'Color' = Field(validation_alias=_alias_choices('highlight'))
     '''Main color to highlight widgets, such as on hover events.'''
 
-    highlight_dark: 'Color' = Field(validation_alias=_alias_choices('highlight.dark'))
+    highlight_dark: 'ColorType' = Field(validation_alias=_alias_choices('highlight.dark'))
     '''Color for selected widgets so hover events can change widget color.'''
 
-    highlight_alternate: 'Color' = Field(validation_alias=_alias_choices('highlight.alternate'))
+    highlight_alternate: 'ColorType' = Field(validation_alias=_alias_choices('highlight.alternate'))
     '''Alternate highlight color for hovered widgets in QAbstractItemViews.'''
 
     midtone: 'Color' = Field(validation_alias=_alias_choices('midtone'))
     '''Main midtone color, such as for borders.'''
 
-    midtone_light: 'Color' = Field(validation_alias=_alias_choices('midtone.light'))
+    midtone_light: 'ColorType' = Field(validation_alias=_alias_choices('midtone.light'))
     '''Lighter color for midtones, such as for certain disabled widgets.'''
 
-    midtone_dark: 'Color' = Field(validation_alias=_alias_choices('midtone.dark'))
+    midtone_dark: 'ColorType' = Field(validation_alias=_alias_choices('midtone.dark'))
     '''Darker midtone, such as for the background of QPushButton and QSlider.'''
 
-    midtone_hover: 'Color' = Field(validation_alias=_alias_choices('midtone.hover'))
+    midtone_hover: 'ColorType' = Field(validation_alias=_alias_choices('midtone.hover'))
     '''Lighter midtone for separator hover events.'''
 
     view_checked: 'Color' = Field(validation_alias=_alias_choices('view.checked'))
     '''Color for checked widgets in QAbstractItemViews.'''
 
-    view_hover: 'Color' = Field(validation_alias=_alias_choices('view.hover'))
+    view_hover: 'ColorType' = Field(validation_alias=_alias_choices('view.hover'))
     '''Hover background color in QAbstractItemViews.'''
 
-    view_corner: 'Color' = Field(validation_alias=_alias_choices('view.corner'))
+    view_corner: 'ColorType' = Field(validation_alias=_alias_choices('view.corner'))
     '''Background color for the corner widget in a QAbstractItemView.'''
 
-    view_header_border: 'Color' = Field(validation_alias=_alias_choices('view.header.border'))
+    view_header_border: 'ColorType' = Field(validation_alias=_alias_choices('view.header.border'))
     '''Border color between items in a QHeaderView.'''
 
-    view_header: 'Color' = Field(validation_alias=_alias_choices('view.header'))
+    view_header: 'ColorType' = Field(validation_alias=_alias_choices('view.header'))
     '''Background color for a QHeaderView.'''
 
-    view_border: 'Color' = Field(validation_alias=_alias_choices('view.border'))
+    view_border: 'ColorType' = Field(validation_alias=_alias_choices('view.border'))
     '''Border color Between items in a QAbstractItemView.'''
 
-    view_background: 'Color' = Field(validation_alias=_alias_choices('view.background'))
+    view_background: 'ColorType' = Field(validation_alias=_alias_choices('view.background'))
     '''Background for QAbstractItemViews.'''
 
-    toolbar_horizontal_background: 'Color' = Field(
+    toolbar_horizontal_background: 'ColorType' = Field(
         validation_alias=_alias_choices('toolbar.horizontal.background'),
     )
     '''Background for a horizontal QToolBar.'''
 
-    toolbar_vertical_background: 'Color' = Field(
+    toolbar_vertical_background: 'ColorType' = Field(
         validation_alias=_alias_choices('toolbar.vertical.background'),
     )
     '''Background for a vertical QToolBar.'''
 
-    text_background: 'Color' = Field(validation_alias=_alias_choices('text.background'))
+    text_background: 'ColorType' = Field(validation_alias=_alias_choices('text.background'))
     '''Background for widgets with text input.'''
 
-    tab_background_selected: 'Color' = Field(validation_alias=_alias_choices('tab.background.selected'))
+    tab_background_selected: 'ColorType' = Field(validation_alias=_alias_choices('tab.background.selected'))
     '''Background for the currently selected tab.'''
 
-    tab_background: 'Color' = Field(validation_alias=_alias_choices('tab.background'))
+    tab_background: 'ColorType' = Field(validation_alias=_alias_choices('tab.background'))
     '''Background for non-selected tabs.'''
 
     tree: 'Color' = Field(validation_alias=_alias_choices('tree'))
     '''Color for the branch/arrow icons in a QTreeView.'''
 
-    slider_foreground: 'Color' = Field(validation_alias=_alias_choices('slider.foreground'))
+    slider_foreground: 'ColorType' = Field(validation_alias=_alias_choices('slider.foreground'))
     '''
     Color for the chunk of a QProgressBar, the active groove of a QSlider,
     and the border of a hovered QSlider handle.
     '''
 
-    slider_handle_background: 'Color' = Field(validation_alias=_alias_choices('slider.handle.background'))
+    slider_handle_background: 'ColorType' = Field(validation_alias=_alias_choices('slider.handle.background'))
     '''Background color for the handle of a QSlider.'''
 
-    menu_disabled: 'Color' = Field(validation_alias=_alias_choices('menu.disabled'))
+    menu_disabled: 'ColorType' = Field(validation_alias=_alias_choices('menu.disabled'))
     '''Color for a disabled menubar/menu item.'''
 
-    checkbox_light: 'Color' = Field(validation_alias=_alias_choices('checkbox.light'))
+    checkbox_light: 'ColorType' = Field(validation_alias=_alias_choices('checkbox.light'))
     '''Color for a checked/hovered QCheckBox or QRadioButton.'''
 
-    checkbox_disabled: 'Color' = Field(validation_alias=_alias_choices('checkbox.disabled'))
+    checkbox_disabled: 'ColorType' = Field(validation_alias=_alias_choices('checkbox.disabled'))
     '''Color for a disabled or unchecked/unhovered QCheckBox or QRadioButton.'''
 
-    scrollbar_hover: 'Color' = Field(validation_alias=_alias_choices('scrollbar.hover'))
+    scrollbar_hover: 'ColorType' = Field(validation_alias=_alias_choices('scrollbar.hover'))
     '''
     Color for the handle of a scrollbar. Due to limitations of Qt stylesheets, any
     handle of a scrollbar must be treated like it's hovered.
     '''
 
-    scrollbar_background: 'Color' = Field(validation_alias=_alias_choices('scrollbar.background'))
+    scrollbar_background: 'ColorType' = Field(validation_alias=_alias_choices('scrollbar.background'))
     '''Background for a non-hovered scrollbar.'''
 
-    scrollbar_background_hover: 'Color' = Field(validation_alias=_alias_choices('scrollbar.background.hover'))
+    scrollbar_background_hover: 'ColorType' = Field(
+        validation_alias=_alias_choices('scrollbar.background.hover')
+    )
     '''Background for a hovered scrollbar.'''
 
-    button_background: 'Color' = Field(validation_alias=_alias_choices('button.background'))
+    button_background: 'ColorType' = Field(validation_alias=_alias_choices('button.background'))
     '''Default background for a QPushButton.'''
 
-    button_background_pressed: 'Color' = Field(validation_alias=_alias_choices('button.background.pressed'))
+    button_background_pressed: 'ColorType' = Field(
+        validation_alias=_alias_choices('button.background.pressed')
+    )
     '''Background for a pressed QPushButton.'''
 
-    button_border: 'Color' = Field(validation_alias=_alias_choices('button.border'))
+    button_border: 'ColorType' = Field(validation_alias=_alias_choices('button.border'))
     '''Border for a non-hovered QPushButton.'''
 
+    button_checked: 'ColorType' = Field(validation_alias=_alias_choices('button.checked'))
+    '''Background for a checked QPushButton.'''
+
+    # TODO: Make the disabled ones optional, using defaults if computed
     button_disabled: 'Color' = Field(validation_alias=_alias_choices('button.disabled'))
     '''Background for a disabled QPushButton, or fallthrough for disabled QWidgets.'''
 
-    close_hover: 'Color' = Field(validation_alias=_alias_choices('close.hover'))
+    close_hover: 'ColorType' = Field(validation_alias=_alias_choices('close.hover'))
     '''Color of a dock/tab close icon when hovered.'''
 
-    close_pressed: 'Color' = Field(validation_alias=_alias_choices('close.pressed'))
+    close_pressed: 'ColorType' = Field(validation_alias=_alias_choices('close.pressed'))
     '''Color of a dock/tab close icon when pressed.'''
 
-    dock_background: 'Color' = Field(validation_alias=_alias_choices('dock.background'))
+    dock_background: 'ColorType' = Field(validation_alias=_alias_choices('dock.background'))
     '''Default background color for QDockWidget and title.'''
 
-    dock_float: 'Color' = Field(validation_alias=_alias_choices('dock.float'))
+    dock_float: 'ColorType' = Field(validation_alias=_alias_choices('dock.float'))
     '''Color for the float icon for QDockWidgets.'''
 
-    critical: 'Color' = Field(validation_alias=_alias_choices('critical'))
+    critical: 'ColorType' = Field(validation_alias=_alias_choices('critical'))
     '''Background color for the QMessageBox critical icon.'''
 
-    information: 'Color' = Field(validation_alias=_alias_choices('information'))
+    information: 'ColorType' = Field(validation_alias=_alias_choices('information'))
     '''Background color for the QMessageBox information icon.'''
 
-    question: 'Color' = Field(validation_alias=_alias_choices('question'))
+    question: 'ColorType' = Field(validation_alias=_alias_choices('question'))
     '''Background color for the QMessageBox question icon.'''
 
-    warning: 'Color' = Field(validation_alias=_alias_choices('warning'))
+    warning: 'ColorType' = Field(validation_alias=_alias_choices('warning'))
     '''Background color for the QMessageBox warning icon.'''
 
-    ads_tab_focused: 'Color' = Field(validation_alias=_alias_choices('ads.tab.focused', 'ads-tab:focused'))
+    ads_tab_focused: 'ColorType' = Field(
+        validation_alias=_alias_choices('ads.tab.focused', 'ads-tab:focused')
+    )
     '''The background color for an Advanced Docking System Tab.'''
 
-    ads_border_focused: 'Color' = Field(
+    ads_border_focused: 'ColorType' = Field(
         validation_alias=_alias_choices('ads.border.focused', 'ads-border:focused')
     )
     '''The background color for an Advanced Docking System border.'''
+
+    # TODO: add `is_dark`, `is_light`
 
 
 class CommentsDecoder(json.JSONDecoder):
@@ -266,7 +279,7 @@ def loads(s: 'str | bytes | bytearray', extension: 'str') -> 'Config':
     Raises:
         `ConfigParseError`: Any errors that occur during parsing the configuration data.
     '''
-    with _parse_block():
+    with _parse_block(data=s):
         # NOTE: Migrate to `match` with 3.10+ support.
         if extension in ('.json', '.jsonc'):
             return _loads_json(s)
