@@ -13,6 +13,7 @@ from collections.abc import Mapping, Sequence
 
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 from pydantic_extra_types.color import Color
+from . import color, constants
 from .exception import ConfigParseError
 
 JSONKey: 'typing.TypeAlias' = 'str'
@@ -199,17 +200,61 @@ class Config(BaseModel):
     dock_float: 'ColorType' = Field(validation_alias=_alias_choices('dock.float'))
     '''Color for the float icon for QDockWidgets.'''
 
-    critical: 'ColorType' = Field(validation_alias=_alias_choices('critical'))
-    '''Background color for the QMessageBox critical icon.'''
+    critical_impl: 'ColorType' = Field(validation_alias=_alias_choices('critical'))
+    '''Internal helper for `critical`. Do not use directly.'''
 
-    information: 'ColorType' = Field(validation_alias=_alias_choices('information'))
-    '''Background color for the QMessageBox information icon.'''
+    @property
+    def critical(self) -> 'Color':
+        '''Background color for the QMessageBox critical icon.'''
+        if not self.critical_impl:
+            self.critical_impl = constants.CRITICAL[self.is_dark]
+        return self.critical_impl
 
-    question: 'ColorType' = Field(validation_alias=_alias_choices('question'))
-    '''Background color for the QMessageBox question icon.'''
+    @critical.setter
+    def critical(self, value: 'ColorType') -> None:
+        self.critical_impl = value
 
-    warning: 'ColorType' = Field(validation_alias=_alias_choices('warning'))
-    '''Background color for the QMessageBox warning icon.'''
+    information_impl: 'ColorType' = Field(validation_alias=_alias_choices('information'))
+    '''Internal helper for `information`. Do not use directly.'''
+
+    @property
+    def information(self) -> 'Color':
+        '''Background color for the QMessageBox information icon.'''
+        if not self.information_impl:
+            self.information_impl = constants.INFORMATION[self.is_dark]
+        return self.information_impl
+
+    @information.setter
+    def information(self, value: 'ColorType') -> None:
+        self.information_impl = value
+
+    question_impl: 'ColorType' = Field(validation_alias=_alias_choices('question'))
+    '''Internal helper for `question`. Do not use directly.'''
+
+    @property
+    def question(self) -> 'Color':
+        '''Background color for the QMessageBox question icon.'''
+        if not self.question_impl:
+            self.question_impl = constants.QUESTION[self.is_dark]
+        return self.question_impl
+
+    @question.setter
+    def question(self, value: 'ColorType') -> None:
+        self.question_impl = value
+
+    warning_impl: 'ColorType' = Field(validation_alias=_alias_choices('warning'))
+    '''Internal helper for `warning`. Do not use directly.'''
+
+    @property
+    def warning(self) -> 'Color':
+        '''Background color for the QMessageBox warning icon.'''
+        if not self.warning_impl:
+            self.warning_impl = constants.WARNING[self.is_dark]
+        return self.warning_impl
+
+    @warning.setter
+    def warning(self, value: 'ColorType') -> None:
+        self.warning_impl = value
 
     ads_tab_focused: 'ColorType' = Field(
         validation_alias=_alias_choices('ads.tab.focused', 'ads-tab:focused')
@@ -221,7 +266,15 @@ class Config(BaseModel):
     )
     '''The background color for an Advanced Docking System border.'''
 
-    # TODO: add `is_dark`, `is_light`
+    @property
+    def is_light(self) -> bool:
+        '''Get if the color scheme is a light theme.'''
+        return color.is_light_color(self.background)
+
+    @property
+    def is_dark(self) -> bool:
+        '''Get if the color scheme is a dark theme.'''
+        return not self.is_light
 
 
 class CommentsDecoder(json.JSONDecoder):
