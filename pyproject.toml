@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "breezestylesheets"
 version = "0.2.0"
@@ -22,6 +26,9 @@ classifiers = [
   "Environment :: X11 Applications :: Qt",
 ]
 keywords = ["qt", "gui", "stylesheets"]
+
+[project.scripts]
+configure = "breezestylesheets.__configure__:main"
 
 [project.urls]
 Homepage = "https://github.com/Alexhuszagh/BreezeStyleSheets"
@@ -75,6 +82,7 @@ lint = { requires-python = ">=3.11" }
 
 [tool.uv]
 add-bounds = "major"
+package = true
 
 [tool.black]
 target-version = ["py310"]
@@ -264,7 +272,7 @@ dependency_groups = ["test"]
 [tool.tox.env.type]
 description = "Run test suite under {base_python}"
 commands = [["pyright"], ["mypy"]]
-dependency_groups = ["type"]
+dependency_groups = ["type", "test"]
 
 [tool.tox.env.lint]
 description = "Run test suite under {base_python}"
@@ -275,4 +283,4 @@ commands = [
   ["pylint", "breezestylesheets/", "test/"], # TODO: "example/"
   ["flake8"],
 ]
-dependency_groups = ["lint"]
+dependency_groups = ["lint", "test"]
