@@ -4,9 +4,61 @@ color
 Methods and helpers for computing colors via manipulations.
 '''
 
+import typing
 import colorsys
 
 from pydantic_extra_types.color import Color
+
+RGBA: 'typing.TypeAlias' = 'tuple[int, int, int, float]'
+'''The red, green, blue, and alpha components of a color.'''
+
+HSLA: 'typing.TypeAlias' = 'tuple[float, float, float, float]'
+'''The hue, saturation, lightness, and alpha components of a color.'''
+
+Format: 'typing.TypeAlias' = 'typing.Literal["RGBA", "HSLA", "hex"]'
+'''The valid formats to represent a color as.'''
+
+
+def to_rgba(value: 'Color | str') -> 'RGBA':
+    '''
+    Parse a color into the RGBA components.
+
+    Args:
+        value (`str`, `Color`): The color, either as a string (hex, RGB, or HSL) or
+            a Pydantic color.
+
+    Returns:
+        `RGBA`: The red, green, blue (from 0-255) and alpha (opacity, from 0-1) components
+        of the color.
+    '''
+
+    if isinstance(value, str):
+        value = Color(value)
+    color = value.as_rgb_tuple()
+    if len(color) == 3:
+        color = (*color, 1.0)
+    return color
+
+
+def to_hsla(value: 'Color | str') -> 'HSLA':
+    '''
+    Parse a color into the HSLA components.
+
+    Args:
+        value (`str`, `Color`): The color, either as a string (hex, RGB, or HSL) or
+            a Pydantic color.
+
+    Returns:
+        `HSLA`: The hue, saturation, lightness, and alpha (opacity) (from 0-1) components
+        of the color.
+    '''
+
+    if isinstance(value, str):
+        value = Color(value)
+    color = value.as_hsl_tuple()
+    if len(color) == 3:
+        color = (*color, 1.0)
+    return color
 
 
 def is_light(color: Color) -> bool:

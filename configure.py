@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 '''
     configure
     =========
@@ -5,14 +6,13 @@
     Configure icons, stylesheets, and resource files.
 '''
 
+# TODO: Change to use the version dynamically
 __version__ = '0.2.0'
 
+import typing
 import argparse
-import ast
-import binascii
 import glob
 import json
-import lzma
 import os
 import re
 import shutil
@@ -20,12 +20,31 @@ import subprocess
 import sys
 from pathlib import Path
 
+# TODO: Add more loaders
+from breezestylesheets import color, exception, resources, types
+from breezestylesheets.config import CommentsDecoder
+from breezestylesheets import config as _config  # TODO: Fix the name and imports
+
 home_dir = os.path.dirname(os.path.realpath(__file__))
 dist_dir = os.path.join(home_dir, 'dist')
 resources_dir = os.path.join(home_dir, 'resources')
 template_dir = os.path.join(home_dir, 'template')
 theme_dir = os.path.join(home_dir, 'theme')
 extension_dir = os.path.join(home_dir, 'extension')
+
+
+class Template(typing.TypedDict):
+    # TODO: Remove this
+    icons: list[_config.Icon]
+    stylesheet: str
+
+
+class Config(typing.TypedDict):
+    # TODO: Remove this
+    themes: dict[str, _config.Theme]
+    templates: list[Template]
+    no_qrc: bool
+    resource: typing.Any  # TODO: Fix this hint
 
 
 def parse_args(argv=None):
@@ -95,7 +114,7 @@ def parse_args(argv=None):
     return args
 
 
-def load_json(path):
+def load_json(path: str | Path) -> dict[str, typing.Any]:  # TODO: Fix type hint
     '''Read a JSON file with limited comments support.'''
 
     # Note: we need comments for maintainability, so we
@@ -104,12 +123,10 @@ def load_json(path):
     # a complex parser, so we do something very simple:
     # only remove lines starting with '//'.
     with open(path, encoding='utf-8') as file:
-        lines = file.read().splitlines()
-    lines = [i for i in lines if not i.strip().startswith('//')]
-    return json.loads('\n'.join(lines))
+        return json.loads(file.read(), cls=CommentsDecoder)
 
 
-def read_template_dir(directory):
+def read_template_dir(directory: types.PathOrStr) -> Template:
     '''Read the template data from a directory'''
 
     # Make the stylesheet template optional.
@@ -118,39 +135,37 @@ def read_template_dir(directory):
     if os.path.exists(stylesheet_path):
         with open(f'{directory}/stylesheet.qss.in', encoding='utf-8') as style_file:
             stylesheet = style_file.read()
-    data = {
+    data: Template = {
         'stylesheet': stylesheet,
         'icons': [],
     }
+    icon_data: _config.IconReplacements = {}
     if os.path.exists(f'{directory}/icons.json'):
-        icon_data = load_json(f'{directory}/icons.json')
-    else:
-        icon_data = {}
+        icon_data = _config.IconReplacementsAdaptor.validate_python(load_json(f'{directory}/icons.json'))
     for file in glob.glob(f'{directory}/*.svg.in'):
         with open(file, encoding='utf-8') as svg_file:
-            svg = svg_file.read()
-        name = os.path.splitext(os.path.splitext(os.path.basename(file))[0])[0]
+            svg: str = svg_file.read()
+        name: str = os.path.splitext(os.path.splitext(os.path.basename(file))[0])[0]
+        replacements: _config.IconReplacement
         if name in icon_data:
             replacements = icon_data[name]
         else:
             # Need to find all the values inside the image.
-            keys = re.findall(r'\^[0-9a-zA-Z_-]+\^', svg)
+            keys: list[str] = re.findall(r'\^[0-9a-zA-Z_-]+\^', svg)
             replacements = [i[1:-1] for i in keys]
-        data['icons'].append(
-            {
-                'name': name,
-                'svg': svg,
-                'replacements': replacements,
-            }
-        )
+        data['icons'].append(_config.Icon(
+            name=name,
+            svg=svg,
+            replacements=replacements,
+        ))
 
     return data
 
 
-def split_csv(string):
+def split_csv(string: str) -> list[str]:
     '''Split a list of values provided as comma-separated values.'''
 
-    values = string.split(',')
+    values = map(str.strip, string.split(','))
     return [i for i in values if i]
 
 
@@ -180,53 +195,7 @@ def parse_extensions(args):
     args.extensions = values
 
 
-def parse_hexcolor(color):
-    '''Parse a hexadecimal color.'''
-
-    # Have a hex color: can be 6 or 8 (non-standard) items.
-    color = color[1:]
-    if len(color) not in (6, 8):
-        raise NotImplementedError
-
-    red = int(color[:2], 16)
-    green = int(color[2:4], 16)
-    blue = int(color[4:6], 16)
-    alpha = 1.0
-    if len(color) == 8:
-        alpha = int(color[6:8], 16) / 100
-    return (red, green, blue, alpha)
-
-
-def parse_rgba(color):
-    '''Parse an RGBA color.'''
-
-    # Match our rgba character. Note that this is
-    # First split the rgba components to get the inner stuff.
-    # Both rgb() and rgba() can have or omit an alpha layer.
-    rgba = re.match(r'^\s*rgba?\s*\((.*)\)\s*$', color).group(1)
-    split = re.split(r'(?:\s*,\s*)|\s+', rgba)
-    if len(split) not in (3, 4):
-        raise NotImplementedError
-    red = int(split[0])
-    green = int(split[1])
-    blue = int(split[2])
-    alpha = 1.0
-    if len(split) == 4:
-        alpha = float(split[3])
-    return (red, green, blue, alpha)
-
-
-def parse_color(color):
-    '''Parse a color into the RGBA components.'''
-
-    if color.startswith('#'):
-        return parse_hexcolor(color)
-    if color.startswith('rgb'):
-        return parse_rgba(color)
-    raise NotImplementedError
-
-
-def icon_basename(icon, extension):
+def icon_basename(icon: str, extension: str) -> str:
     '''Get the basename for an icon.'''
 
     if extension == 'default':
@@ -265,59 +234,43 @@ def replace_by_index(contents, theme, colors):
         # parse the color, get the correct value, and use only that
         # for the replacement.
         if key.endswith(':hex'):
-            color = theme[key[: -len(':hex')]]
-            rgb = [f'{i:02x}' for i in parse_color(color)[:3]]
+            theme_color = theme[key[: -len(':hex')]]
+            rgb = [f'{i:02x}' for i in color.to_rgba(theme_color)[:3]]
             value = f'#{"".join(rgb)}'
         elif key.endswith(':opacity'):
-            color = theme[key[: -len(':opacity')]]
-            value = str(parse_color(color)[3])
+            theme_color = theme[key[: -len(':opacity')]]
+            value = str(color.to_rgba(theme_color)[3])
         else:
             value = theme[key]
         contents = contents.replace(sub, value)
     return contents
 
 
-def configure_icons(config, style, qt_dist):
+def configure_icons(config: Config, style, qt_dist):
     '''Configure icons for a given style.'''
 
     theme = config['themes'][style]
     for template in config['templates']:
         for icon in template['icons']:
-            replacements = icon['replacements']
-            name = icon['name']
-            if isinstance(replacements, dict):
-                # Then we have the following format:
-                #   The key is the substate of the icon, such
-                #   as default, hover, pressed, etc, and the value
-                #   is an ordered list of replacements.
-                for ext, colors in replacements.items():
-                    contents = replace_by_index(icon['svg'], theme, colors)
-                    filename = f'{qt_dist}/{style}/{icon_basename(name, ext)}.svg'
-                    with open(filename, 'w', encoding='utf-8') as file:
-                        file.write(contents)
-            else:
-                # Then we just have a list of replacements for the
-                # icon, using standard colors. For example,
-                # replacement values might be `^foreground^`.
-                assert isinstance(replacements, list)
-                contents = replace_by_name(icon['svg'], theme, replacements)
+            rendered = icon.render(theme)
+            for name, svg in rendered.items():
                 filename = f'{qt_dist}/{style}/{name}.svg'
                 with open(filename, 'w', encoding='utf-8') as file:
-                    file.write(contents)
+                    file.write(svg)
 
 
-def configure_stylesheet(config, style, qt_dist, style_prefix):
+def configure_stylesheet(config: Config, style, qt_dist, style_prefix):
     '''Configure the stylesheet for a given style.'''
 
-    contents = '\n'.join([i['stylesheet'] for i in config['templates']])
-    contents = replace_by_name(contents, config['themes'][style])
-    contents = contents.replace('^style^', style_prefix)
+    theme = config['themes'][style]
+    stylesheet = '\n'.join([i['stylesheet'] for i in config['templates']])
+    stylesheet = theme.render(stylesheet, style_prefix)
 
     with open(f'{qt_dist}/{style}/stylesheet.qss', 'w', encoding='utf-8') as file:
-        file.write(contents)
+        file.write(stylesheet)
 
 
-def configure_style(config, style, qt_dist):
+def configure_style(config: Config, style, qt_dist):
     '''Configure the icons and stylesheet for a given style.'''
 
     def configure_qt(qt_dist, style_prefix):
@@ -333,7 +286,7 @@ def configure_style(config, style, qt_dist):
         configure_qt(qt_dist, f':/{style}/')
 
 
-def write_qrc(config, qt_dist):
+def write_qrc(config: Config, qt_dist):
     '''Simple QRC writer.'''
 
     # NOTE: We also want to create aliases for light-blue and dark-blue from our
@@ -363,31 +316,32 @@ def write_qrc(config, qt_dist):
 def compile_resource(args):
     '''Compile our resource file to a standalone Python file.'''
 
-    rcc = parse_rcc(args)
-    resource_path = args.resource
-    compiled_resource_path = args.compiled_resource
+    resource_path: str = args.resource
+    compiled_resource_path: str = args.compiled_resource
     if not os.path.isabs(resource_path):
-        resource_path = f'{args.output_dir}/{resource_path}'
+        resource_path: str = f'{args.output_dir}/{resource_path}'
     if not os.path.isabs(compiled_resource_path):
-        compiled_resource_path = f'{resources_dir}/{compiled_resource_path}'
+        compiled_resource_path: str = f'{resources_dir}/{compiled_resource_path}'
 
-    command = [rcc, resource_path, '-o', compiled_resource_path]
+    compression = 'lzma'
     if not args.use_default_compression:
-        command.append('-no-compress')
+        compression = 'default'
     try:
-        subprocess.check_output(
-            command,
-            stdin=subprocess.DEVNULL,
-            stderr=subprocess.PIPE,
-            shell=False,
+        resources.compile(
+            qrc=resource_path,
+            dst=compiled_resource_path,
+            framework=args.qt_framework,
+            rcc=args.rcc,
+            compression=compression,
         )
-    except subprocess.CalledProcessError as error:
-        if b'File does not exist' in error.stderr:
+    except exception.ResourceCompileError as error:
+        inner = typing.cast('subprocess.CalledProcessError', error.inner)
+        if b'File does not exist' in inner.stderr:
             print('ERROR: Ensure qrc file exists or deselect "no-qrc" option!', file=sys.stderr)
         else:
-            print(f'ERROR: Got an unknown error of "{error.stderr.decode("utf-8")}"!', file=sys.stderr)
+            print(f'ERROR: Got an unknown error of "{inner.stderr.decode("utf-8")}"!', file=sys.stderr)
         raise SystemExit from error
-    except FileNotFoundError as error:
+    except exception.RccNotFoundError as error:
         if args.rcc:
             print('ERROR: rcc path invalid!', file=sys.stderr)
         else:
@@ -403,58 +357,6 @@ def compile_resource(args):
         )
         raise SystemExit from error
 
-    if args.qt_framework == 'pyqt6':
-        fix_qt6_import(compiled_resource_path)
-
-    if not args.use_default_compression:
-        compress_resource(compiled_resource_path)
-
-
-def compress(data):
-    '''Compress an array to a smaller amount, and then split it along lines.'''
-    raise NotImplementedError('TODO')
-
-
-def compress_and_replace(module, prefix):
-    '''Extract data from a resource module, then replace the data with compress values.'''
-
-    # first, get and compress our data
-    # this pattern is always safe since there will never be any internal `"`
-    # characters due to how compilation/quoting is done, even escaped ones.
-    pattern = fr'(?P<prefix>{prefix}\s*=\s*)(?P<data>b".*?")'
-    match = re.search(pattern, module, flags=re.DOTALL)
-    if match is None and prefix == 'qt_resource_struct':
-        # NOTE: some older versions use v1/v2 structs
-        v1 = compress_and_replace(module, 'qt_resource_struct_v1')
-        v2 = compress_and_replace(v1, 'qt_resource_struct_v2')
-        return v2
-    decompressed = ast.literal_eval(match.group('data'))
-    compressed = lzma.compress(decompressed)
-
-    # NOTE: to avoid any issues with `"` or `'` characters, we always escape it
-    hexlified = binascii.hexlify(compressed).decode('ascii').upper()
-    escaped = ''.join([f'\\x{hexlified[i:i+2]}' for i in range(0, len(hexlified), 2)])
-    lzma_replace = f'{prefix} = lzma.decompress(_{prefix})'
-    replacement = f'_{prefix} = b"{escaped}"\n{lzma_replace}\n'
-
-    return module[: match.start()] + replacement + module[match.end() + 1 :]
-
-
-def compress_resource(path):
-    '''Compress the data within a Qt resource module.'''
-
-    # want to minimize the file size, let's use custom gzip compression
-    with open(path, encoding='utf-8') as file:
-        module = file.read()
-    module = module.replace('import QtCore', 'import QtCore\nimport lzma', 1)
-    # NOTE: these should never be none or we have an error
-    module = compress_and_replace(module, 'qt_resource_data')
-    module = compress_and_replace(module, 'qt_resource_name')
-    module = compress_and_replace(module, 'qt_resource_struct')
-
-    with open(path, 'w', encoding='utf-8') as file:
-        file.write(module)
-
 
 def configure(args):
     '''Configure all styles and write the files to a QRC file.'''
@@ -463,10 +365,12 @@ def configure(args):
         shutil.rmtree(args.output_dir, ignore_errors=True)
 
     # Need to convert our styles accordingly.
-    config = {'themes': {}, 'templates': [], 'no_qrc': args.no_qrc, 'resource': args.resource}
+    # TODO: Add hints, can remove them later
+    config: Config = {'themes': {}, 'templates': [], 'no_qrc': args.no_qrc, 'resource': args.resource}
+    # TODO: Fix this!
     config['templates'].append(read_template_dir(template_dir))
     for style in args.styles:
-        config['themes'][style] = load_json(f'{theme_dir}/{style}.json')
+        config['themes'][style] = _config.Theme.load(f'{theme_dir}/{style}.json')
     for extension in args.extensions:
         config['templates'].append(read_template_dir(f'{extension_dir}/{extension}'))
 
@@ -488,31 +392,6 @@ def configure(args):
         write_qrc(config, str(args.output_dir))
     if args.compiled_resource is not None:
         compile_resource(args)
-
-
-def fix_qt6_import(compiled_file):
-    '''Fix import after using PySide6-rcc to compile for PyQt6'''
-
-    with open(compiled_file, 'r', encoding='utf-8') as file:
-        text = file.read()
-    text = text.replace('PySide6', 'PyQt6', 1)
-    with open(compiled_file, 'w', encoding='utf-8') as file:
-        file.write(text)
-
-
-def parse_rcc(args):
-    '''Get rcc required for chosen framework'''
-
-    if args.rcc:
-        return args.rcc
-    if args.qt_framework in ('pyqt6', 'pyside6'):
-        return 'pyside6-rcc'
-    if args.qt_framework == 'pyqt5':
-        return 'pyrcc5'
-    if args.qt_framework == 'pyside2':
-        return 'pyside2-rcc'
-
-    raise ValueError(f'Got an unsupported Qt framework of "{args.qt_framework}".')
 
 
 def main(argv=None):

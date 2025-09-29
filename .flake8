@@ -4,7 +4,8 @@
 [flake8]
 exclude = .git, __pycache__, build, dist, .venv, .tox
 # NOTE: E203 and E226 are not PEP8-compliant.
-ignore = E203 E226 W503
+# NOTE: We disable E704 for when we have overloads
+ignore = E203 E226 E704 W503
 max-line-length = 110
 per-file-ignores =
     # widgets need to be created but not used.

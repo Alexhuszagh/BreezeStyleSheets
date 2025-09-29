@@ -11,9 +11,9 @@ import io
 import json
 import os.path
 
-from pydantic import AliasChoices, BaseModel, ConfigDict, Field, TypeAdapter
+from pydantic import AliasChoices, AliasPath, BaseModel, ConfigDict, Field, TypeAdapter
 from pydantic_extra_types.color import Color
-from . import color, constants, types
+from . import color, constants, types, utils
 from .exception import ConfigParseError
 
 # NOTE: Using unions directly, rather than the `|` syntax, is needed for 3.9 support,
@@ -22,9 +22,10 @@ from .exception import ConfigParseError
 __all__ = ['Theme']
 # NOTE: Union is required for 3.9 support in our base models.
 ColorType: 'typing.TypeAlias' = typing.Union[Color, typing.Literal[""]]
+_Alias: 'typing.TypeAlias' = 'tuple[str, ...]'
 
 
-def _expand_alias_choices(value: 'str') -> 'tuple[str, ...]':
+def _expand_alias_choices(value: 'str') -> '_Alias':
     '''Expand foreground and other choices to create all permutations of our choices.'''
 
     # NOTE: This takes the `.` and `foreground`/`background` syntax, which expands this
@@ -54,8 +55,71 @@ def _alias_choices(value: 'str', *extras: str) -> 'AliasChoices':
 class Model(BaseModel):
     '''The base model for all configuration options.'''
 
-    model_config: typing.ClassVar[ConfigDict] = ConfigDict(extra='forbid')
+    model_config: typing.ClassVar[ConfigDict] = ConfigDict(
+        extra='forbid',
+        ignored_types=(utils.LazyAttribute,),
+    )
     '''Additional parameters for how to configure Pydantic.'''
+
+    @utils.lazy_attribute
+    @classmethod
+    def aliases(cls) -> 'typing.Mapping[str, str]':
+        '''
+        Get all aliases associated with the class.
+
+        This caches the stored aliases for all resolved values,
+        and then computes them to their desired values, allowing
+        efficient lookups of instance values from the alias.
+
+        ```python
+        {
+            'foreground': 'foreground',
+            'fg': 'foreground',
+            'fg-default': 'foreground',
+            'fg.default': 'foreground',
+            'fg:default': 'foreground',
+            'foreground-default': 'foreground',
+        }
+        ```
+
+        Returns:
+            `dict`: The mapping of all the aliases to the field names.
+        '''
+
+        def to_alias(value: str | AliasChoices | AliasPath | None) -> 'list[str]':
+            if isinstance(value, str):
+                return [value]
+            if isinstance(value, AliasChoices):
+                return [i for j in value.choices for i in to_alias(j)]
+            if isinstance(value, AliasPath):
+                return [i for i in value.path if isinstance(i, str)]
+            return []
+
+        result: dict[str, str] = {}
+        for field, info in cls.model_fields.items():
+            result.setdefault(info.alias or field, field)
+            for alias in to_alias(info.validation_alias):
+                result.setdefault(alias, field)
+
+        return result
+
+    def get(self, alias: str) -> typing.Any:
+        '''
+        Get a single attribute by the field alias.
+
+        Args:
+            alias (`str`): The name of the alias or field to get, such as `foreground`.
+
+        Returns:
+            `Any`: The value of that field.
+
+        Raises:
+            `ValueError`: If the provided alias is not valid.
+        '''
+        field = self.aliases.get(alias)
+        if field is None:
+            raise ValueError(f'Got an unknown alias "{alias}".')
+        return getattr(self, field)
 
     @classmethod
     def load(cls: type[typing_extensions.Self], path: 'types.PathOrStr') -> typing_extensions.Self:
@@ -182,9 +246,6 @@ class Theme(Model):
 
     foreground: 'Color' = Field(validation_alias=_alias_choices('foreground'))
     '''The main foreground color.'''
-
-    # TODO: Change to prefer nested syntax. This should likely join all nested
-    # fields with a period syntax to enable this format
 
     foreground_light: 'ColorType' = Field(validation_alias=_alias_choices('foreground.light'))
     '''Lighter foreground color for selected items.'''
@@ -429,8 +490,80 @@ class Theme(Model):
         '''Get if the color scheme is a dark theme.'''
         return not self.is_light
 
+    @typing.overload
+    def get_color(self, alias: str, format: None = None) -> 'str | Color': ...
 
-IconListReplacement: 'typing.TypeAlias' = 'list[str]'
+    @typing.overload
+    def get_color(self, alias: str, format: 'color.Format') -> 'str': ...
+
+    def get_color(self, alias: str, format: 'color.Format | None' = None) -> 'str | Color':
+        '''
+        Get a single color by the alias.
+
+        Args:
+            alias (`str`): The name of the alias or field to get, such as `foreground`.
+
+        Returns:
+            `Color`: The color to use as the replacement.
+
+            `str`: The hex, alpha opacity, or RGBA representation of the color.
+
+            `""`: A value signifying no color, without a transparent replacement.
+
+        Raises:
+            `ValueError`: If the provided alias is not valid or the field is not a color.
+        '''
+
+        # ensure we have our color data, for the value
+        is_hex = alias.endswith((':hex', '.hex', '-hex'))
+        is_opacity = not is_hex and alias.endswith((':opacity', '.opacity', '-opacity'))
+        if is_hex:
+            alias = alias[: -len(':hex')]
+        elif is_opacity:
+            alias = alias[: -len(':opacity')]
+
+        # get and process our value
+        value = self.get(alias)
+        if value != '' and not isinstance(value, Color):
+            raise ValueError(f'Got an unexpected color value of "{value}" for alias "{alias}".')
+        if value == '' and (is_hex or is_opacity):
+            raise ValueError(f'Missing required color for alias "{alias}" with hex/opacity variant.')
+        if isinstance(value, str):
+            return value
+
+        # process our hex and opacity variants
+        if is_hex:
+            rgb = [f'{i:02x}' for i in color.to_rgba(value)[:3]]
+            return f'#{"".join(rgb)}'
+        if is_opacity:
+            return str(color.to_rgba(value)[3])
+        if format == 'RGBA':
+            return value.as_rgb()
+        if format == 'HSLA':
+            return value.as_hsl()
+        if format == 'hex':
+            return value.as_hex(format='long')
+        return value
+
+    def render(self, stylesheet: str, style: str) -> str:
+        '''
+        Render the stylesheet with all placeholders replaced.
+
+        Args:
+            stylesheet (`str`): The template stylesheet, as a single QSS document.
+            style (`str`): The prefix for the style as a QT resource.
+
+        Returns:
+            `str`: The fully rendered stylesheet with all placeholders replaced.
+        '''
+        if not style.startswith(':/'):
+            style = f':/{style}'
+        if not style.endswith('/'):
+            style = f'{style}/'
+        return _replace_by_name(stylesheet, self).replace('^style^', style)
+
+
+IconListReplacement: 'typing.TypeAlias' = 'typing.Sequence[str]'
 '''
 An ordered list of the index-based icon replacements.
 
@@ -610,6 +743,34 @@ class Icon(Model):
     replacements: IconReplacement
     '''The template replacements for the icon, optionally with additional extensions defined.'''
 
+    def render(self, theme: 'Theme') -> typing.Mapping[str, str]:
+        '''
+        Render the SVG icon with all placeholders replaced.
+
+        Args:
+            theme (`Theme`): The theme with the colors for each configuration.
+
+        Returns:
+            `dict`: The template SVG rendered with all placeholders replaced,
+            as a mapping of the icon name and the rendered SVG.
+        '''
+
+        def with_ext(name: str, ext: str) -> str:
+            if ext == 'default':
+                return name
+            return f'{name}_{ext}'
+
+        result = {}
+        if isinstance(self.replacements, typing.Mapping):
+            for extension, replacements in self.replacements.items():
+                name = with_ext(self.name, extension)
+                value = _replace_by_name(self.svg, theme, replacements)
+                result[name] = value
+        else:
+            result[self.name] = _replace_by_name(self.svg, theme, self.replacements)
+
+        return result
+
 
 class CommentsDecoder(json.JSONDecoder):
     '''
@@ -705,3 +866,15 @@ def _parse_block(
             with open(path, encoding='utf-8') as file:
                 data = file.read()
         raise ConfigParseError(str(error), data, path, error) from error
+
+
+def _replace_by_name(s: str, theme: 'Theme', colors: 'typing.Iterable[str] | None' = None) -> str:
+    '''Replace the placeholders in the value by string.'''
+
+    # NOTE: We expand the fields in order to have better type hinting.
+    if colors is None:
+        colors = Theme.model_fields.keys()
+    for key in colors:
+        s = s.replace(f'^{key}^', theme.get_color(key, format='RGBA'))
+
+    return s
