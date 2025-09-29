@@ -65,7 +65,7 @@ wheels = [
 [[package]]
 name = "breezestylesheets"
 version = "0.2.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "pydantic" },
     { name = "pydantic-extra-types" },

@@ -127,8 +127,8 @@ class Model(BaseModel):
         Load the stylesheet configuration settings from file.
 
         This adds the default configuration settings and validates
-        the loaded settings are valid. This supports JSON, YAML, and
-        TOML file formats.
+        the loaded settings are valid. This supports JSON, YAML, TOML,
+        and XML file formats.
 
         Args:
             path (`str`, `Path`): The path to the file to load.
@@ -151,8 +151,8 @@ class Model(BaseModel):
         Load the stylesheet configuration settings from a document.
 
         This adds the default configuration settings and validates
-        the loaded settings are valid. This supports JSON, YAML, and
-        TOML file formats.
+        the loaded settings are valid. This supports JSON, YAML, TOML,
+        and XML file formats.
 
         Args:
             s (`str`, `bytes`, `bytearray`): The document data, as a string or UTF-8 encoded bytes.
@@ -165,21 +165,7 @@ class Model(BaseModel):
             `ConfigParseError`: Any errors that occur during parsing the configuration data.
         '''
         with _parse_block(data=s):
-            # NOTE: Migrate to `match` with 3.10+ support.
-            if extension in ('.json', '.jsonc'):
-                value = _loads_json(s)
-            elif extension in ('.yml', '.yaml'):
-                value = _loads_yaml(s)
-            elif extension == '.toml':
-                value = _loads_toml(s)
-            elif extension == '.xml':
-                value = _loads_xml(s)
-            else:
-                raise ValueError(f'Got an unknown file type of "{extension}".')
-
-            if not isinstance(value, typing.Mapping):
-                raise ValueError(f'Got an invalid parsed config type of "{type(value).__name__}".')
-            return cls.model_validate(_transform_nested(typing.cast(types.JSONObject, value)))
+            return cls.model_validate(_transform_nested(_loads_model(s, extension)))
 
 
 class Theme(Model):
@@ -726,6 +712,46 @@ IconReplacementsAdaptor: 'TypeAdapter[IconReplacements]' = TypeAdapter(IconRepla
 '''A custom type validator for the icon replacements'''
 
 
+def load_icon_replacements(path: types.PathOrStr) -> IconReplacements:
+    '''
+    Load the icon replacements from a file.
+
+    This supports JSON, YAML, TOML, and XML file formats.
+
+    Args:
+        path (`str`, `Path`): The path to the file to load.
+
+    Returns:
+        `IconReplacements`: The loaded icon replacements.
+
+    Raises:
+        `ConfigParseError`: Any errors that occur during parsing the data.
+    '''
+    with _parse_block(path=path):
+        with open(path, encoding='utf-8') as file:
+            return loads_icon_replacements(file.read(), os.path.splitext(os.path.basename(path))[1])
+
+
+def loads_icon_replacements(s: 'str | bytes | bytearray', extension: 'str') -> IconReplacements:
+    '''
+    Load the icon replacements from a document.
+
+    This supports JSON, YAML, TOML, and XML file formats.
+
+    Args:
+        s (`str`, `bytes`, `bytearray`): The document data, as a string or UTF-8 encoded bytes.
+            extension (str): The extension of the file (to determine the file type).
+
+    Returns:
+        `IconReplacements`: The loaded icon replacements.
+
+    Raises:
+        `ConfigParseError`: Any errors that occur during parsing the data.
+    '''
+    with _parse_block(data=s):
+        return IconReplacementsAdaptor.validate_python(_loads_model(s, extension))
+
+
 class Icon(Model):
     '''The configurations for how to replace the colors within an icon.'''
 
@@ -747,6 +773,10 @@ class Icon(Model):
         '''
         Render the SVG icon with all placeholders replaced.
 
+        The placeholders have a syntax like `^foreground^` (for name-based placeholders),
+        or, in some cases, index-based ones like `^0^` which is the index in a list of
+        valid color replacements.
+
         Args:
             theme (`Theme`): The theme with the colors for each configuration.
 
@@ -764,7 +794,7 @@ class Icon(Model):
         if isinstance(self.replacements, typing.Mapping):
             for extension, replacements in self.replacements.items():
                 name = with_ext(self.name, extension)
-                value = _replace_by_name(self.svg, theme, replacements)
+                value = _replace_by_index(self.svg, theme, replacements)
                 result[name] = value
         else:
             result[self.name] = _replace_by_name(self.svg, theme, self.replacements)
@@ -787,13 +817,35 @@ class CommentsDecoder(json.JSONDecoder):
         return typing.cast('types.JSONValue', super().decode('\n'.join(lines)))
 
 
+def _loads_model(s: 'str | bytes | bytearray', extension: 'str') -> types.JSONObject:
+    '''Load an object from a document.'''
+    value = _loads(s, extension)
+    if not isinstance(value, typing.Mapping):
+        raise ValueError(f'Got an invalid parsed model type of "{type(value).__name__}".')
+    return typing.cast(types.JSONObject, value)
+
+
+def _loads(s: 'str | bytes | bytearray', extension: 'str') -> typing.Any:
+    '''Load values from a document.'''
+    # NOTE: Migrate to `match` with 3.10+ support.
+    if extension in ('.json', '.jsonc'):
+        return _loads_json(s)
+    elif extension in ('.yml', '.yaml'):
+        return _loads_yaml(s)
+    elif extension == '.toml':
+        return _loads_toml(s)
+    elif extension == '.xml':
+        return _loads_xml(s)
+    raise ValueError(f'Got an unknown file type of "{extension}".')
+
+
 def _loads_json(s: 'str | bytes | bytearray') -> typing.Any:
-    '''Load the stylesheet configuration settings from a JSON document.'''
+    '''Load values from a JSON document.'''
     return json.loads(_decode(s), cls=CommentsDecoder)
 
 
 def _loads_yaml(s: 'str | bytes | bytearray') -> typing.Any:
-    '''Load the stylesheet configuration settings from a YAML document.'''
+    '''Load values from a YAML document.'''
 
     # pylint: disable-next=import-error
     import yaml  # type: ignore # noqa
@@ -802,7 +854,7 @@ def _loads_yaml(s: 'str | bytes | bytearray') -> typing.Any:
 
 
 def _loads_toml(s: 'str | bytes | bytearray') -> typing.Any:
-    '''Load the stylesheet configuration settings from a TOML document.'''
+    '''Load values from a TOML document.'''
 
     try:
         # pylint: disable-next=import-error
@@ -815,7 +867,7 @@ def _loads_toml(s: 'str | bytes | bytearray') -> typing.Any:
 
 
 def _loads_xml(s: 'str | bytes | bytearray') -> typing.Any:
-    '''Load the stylesheet configuration settings from an XML document.'''
+    '''Load values from an XML document.'''
 
     # pylint: disable-next=import-error
     import xml2dict  # type: ignore # noqa
@@ -872,9 +924,27 @@ def _replace_by_name(s: str, theme: 'Theme', colors: 'typing.Iterable[str] | Non
     '''Replace the placeholders in the value by string.'''
 
     # NOTE: We expand the fields in order to have better type hinting.
+    # The placeholders have a syntax like `^foreground^`.
+    # To simplify the replacement process, you can specify
+    # a limited subset of colors, rather than use all of them.
     if colors is None:
         colors = Theme.model_fields.keys()
     for key in colors:
         s = s.replace(f'^{key}^', theme.get_color(key, format='RGBA'))
+
+    return s
+
+
+def _replace_by_index(s: str, theme: 'Theme', colors: 'typing.Iterable[str]') -> str:
+    '''Replace the placeholders in the value by string.'''
+
+    # NOTE: We expand the fields in order to have better type hinting.
+    # The placeholders have a syntax like `^0^`, where
+    # the is a list of valid colors and the index of
+    # the color is the replacement key.
+    # This is useful since we can want multiple colors
+    # for the same icon (such as hovered arrows).
+    for index, key in enumerate(colors):
+        s = s.replace(f'^{index}^', theme.get_color(key, format='RGBA'))
 
     return s

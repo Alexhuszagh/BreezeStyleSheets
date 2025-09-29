@@ -10,7 +10,6 @@ __version__ = '0.2.0'
 import typing
 import argparse
 import glob
-import json
 import os
 import re
 import shutil
@@ -19,8 +18,7 @@ import sys
 from pathlib import Path
 
 # TODO: Add more loaders
-from breezestylesheets import color, exception, resources, types
-from breezestylesheets.config import CommentsDecoder
+from breezestylesheets import exception, resources, types
 from breezestylesheets import config as _config  # TODO: Fix the name and imports
 
 home_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
@@ -112,18 +110,6 @@ def parse_args(argv=None):
     return args
 
 
-def load_json(path: str | Path) -> dict[str, typing.Any]:  # TODO: Fix type hint
-    '''Read a JSON file with limited comments support.'''
-
-    # Note: we need comments for maintainability, so we
-    # can annotate what works and the rationale, but
-    # we don't want to prevent code from working without
-    # a complex parser, so we do something very simple:
-    # only remove lines starting with '//'.
-    with open(path, encoding='utf-8') as file:
-        return json.loads(file.read(), cls=CommentsDecoder)
-
-
 def read_template_dir(directory: types.PathOrStr) -> Template:
     '''Read the template data from a directory'''
 
@@ -139,7 +125,7 @@ def read_template_dir(directory: types.PathOrStr) -> Template:
     }
     icon_data: _config.IconReplacements = {}
     if os.path.exists(f'{directory}/icons.json'):
-        icon_data = _config.IconReplacementsAdaptor.validate_python(load_json(f'{directory}/icons.json'))
+        icon_data = _config.load_icon_replacements(f'{directory}/icons.json')
     for file in glob.glob(f'{directory}/*.svg.in'):
         with open(file, encoding='utf-8') as svg_file:
             svg: str = svg_file.read()
@@ -151,11 +137,13 @@ def read_template_dir(directory: types.PathOrStr) -> Template:
             # Need to find all the values inside the image.
             keys: list[str] = re.findall(r'\^[0-9a-zA-Z_-]+\^', svg)
             replacements = [i[1:-1] for i in keys]
-        data['icons'].append(_config.Icon(
-            name=name,
-            svg=svg,
-            replacements=replacements,
-        ))
+        data['icons'].append(
+            _config.Icon(
+                name=name,
+                svg=svg,
+                replacements=replacements,
+            )
+        )
 
     return data
 
@@ -191,57 +179,6 @@ def parse_extensions(args):
                 values.append(dirname)
 
     args.extensions = values
-
-
-def icon_basename(icon: str, extension: str) -> str:
-    '''Get the basename for an icon.'''
-
-    if extension == 'default':
-        return icon
-    return f'{icon}_{extension}'
-
-
-def replace_by_name(contents, theme, colors=None):
-    '''Replace values by color name.'''
-
-    # The placeholders have a syntax like `^foreground^`.
-    # To simplify the replacement process, you can specify
-    # a limited subset of colors, rather than use all of them.
-    if colors is None:
-        colors = theme.keys()
-    for key in colors:
-        color = theme[key]
-        contents = contents.replace(f'^{key}^', color)
-    return contents
-
-
-def replace_by_index(contents, theme, colors):
-    '''Replace values by color name.'''
-
-    # The placeholders have a syntax like `^0^`, where
-    # the is a list of valid colors and the index of
-    # the color is the replacement key.
-    # This is useful since we can want multiple colors
-    # for the same icon (such as hovered arrows).
-    for index, key in enumerate(colors):
-        sub = f'^{index}^'
-        # Need special handle values with opacities. Standard
-        # SVG currently does not support `rgba` syntax, with an
-        # opacity, but it does provide `fill-opacity` and `stroke-opacity`.
-        # Therefore, if the replacement specifies `opacity` or `hex`,
-        # parse the color, get the correct value, and use only that
-        # for the replacement.
-        if key.endswith(':hex'):
-            theme_color = theme[key[: -len(':hex')]]
-            rgb = [f'{i:02x}' for i in color.to_rgba(theme_color)[:3]]
-            value = f'#{"".join(rgb)}'
-        elif key.endswith(':opacity'):
-            theme_color = theme[key[: -len(':opacity')]]
-            value = str(color.to_rgba(theme_color)[3])
-        else:
-            value = theme[key]
-        contents = contents.replace(sub, value)
-    return contents
 
 
 def configure_icons(config: Config, style, qt_dist):
