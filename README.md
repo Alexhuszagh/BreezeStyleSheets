@@ -378,6 +378,8 @@ Here is a sample theme, with the color descriptions annotated. Please note that 
     "button:background:pressed": "#454a4f",
     // Border for a non-hovered QPushButton.
     "button:border": "#76797c",
+    // Background for a checked QPushButton.
+    "button:checked": "#626568",
     // Background for a disabled QPushButton, or fallthrough
     // for disabled QWidgets.
     "button:disabled": "#454545",

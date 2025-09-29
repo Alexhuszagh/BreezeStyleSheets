@@ -5,12 +5,8 @@ exception
 Custom exception types.
 '''
 
-import typing
-
+from . import types
 from .constants import Framework
-
-if typing.TYPE_CHECKING:
-    import os
 
 
 class BreezeStyleSheetError(Exception):
@@ -38,7 +34,7 @@ class ConfigParseError(ConfigError):
     data: 'str | bytes | bytearray'
     '''The input data provided to the parser.'''
 
-    path: 'str | os.PathLike[str] | None'
+    path: 'types.PathOrStr | None'
     '''The path to the input file that caused the error, if parsing from file.'''
 
     inner: 'Exception | None'
@@ -48,7 +44,7 @@ class ConfigParseError(ConfigError):
         self,
         message: 'str',
         data: 'str | bytes | bytearray',
-        path: 'str | os.PathLike[str] | None' = None,
+        path: 'types.PathOrStr | None' = None,
         inner: 'Exception | None' = None,
     ) -> None:
         '''
@@ -85,13 +81,13 @@ class ResourceError(BreezeStyleSheetError):
 class RccNotFoundError(ResourceError):
     '''An exception that occurs when the Qt resource compiler cannot be found.'''
 
-    rcc: 'str | os.PathLike[str]'
+    rcc: 'types.PathOrStr'
     '''The name or path to the Qt resource compiler.'''
 
     framework: 'Framework'
     '''The name of the provided Qt framework.'''
 
-    def __init__(self, rcc: 'str | os.PathLike[str]', framework: 'Framework') -> None:
+    def __init__(self, rcc: 'types.PathOrStr', framework: 'Framework') -> None:
         super().__init__(f'Unable to find a suitable "{rcc}" executable for framework "{framework}".')
         self.rcc = rcc
         self.framework = framework
@@ -100,10 +96,10 @@ class RccNotFoundError(ResourceError):
 class ResourceCompileError(ResourceError):
     '''An exception that occurs when there is an external error compiling the Qt resources.'''
 
-    rcc: 'str | os.PathLike[str]'
+    rcc: 'types.PathOrStr'
     '''The name or path to the Qt resource compiler.'''
 
-    qrc: 'str | os.PathLike[str]'
+    qrc: 'types.PathOrStr'
     '''The path to the input QRC file.'''
 
     framework: 'Framework'
@@ -114,8 +110,8 @@ class ResourceCompileError(ResourceError):
 
     def __init__(
         self,
-        rcc: 'str | os.PathLike[str]',
-        qrc: 'str | os.PathLike[str]',
+        rcc: 'types.PathOrStr',
+        qrc: 'types.PathOrStr',
         framework: 'Framework',
         inner: 'Exception',
     ) -> None:

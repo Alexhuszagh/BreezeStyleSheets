@@ -7,7 +7,6 @@ the compression of these resources.
 [resources]: https://doc.qt.io/qt-6/resources.html
 '''
 
-import typing
 import ast
 import binascii
 import gzip
@@ -17,11 +16,9 @@ import shutil
 import subprocess
 import zlib
 
+from . import types
 from .constants import Compression, Framework  # pylint: disable=unused-import
 from .exception import InvalidFrameworkError, RccNotFoundError, ResourceCompileError
-
-if typing.TYPE_CHECKING:
-    import os
 
 
 def compress_resource(
@@ -154,7 +151,7 @@ def compress_resource(
 
 
 def compress(
-    path: 'str | os.PathLike[str]',
+    path: 'types.PathOrStr',
     compression: 'Compression | None' = 'lzma',
 ) -> None:
     '''
@@ -245,7 +242,7 @@ def compress(
         file.write(code)
 
 
-def fix_imports(path: 'str | os.PathLike[str]', framework: 'Framework') -> None:
+def fix_imports(path: 'types.PathOrStr', framework: 'Framework') -> None:
     '''
     Fix imports after using PySide6-rcc to compile for PyQt6.
 
@@ -275,11 +272,11 @@ def fix_imports(path: 'str | os.PathLike[str]', framework: 'Framework') -> None:
 
 
 def compile(  # pylint: disable=redefined-builtin
-    qrc: 'str | os.PathLike[str]',
-    dst: 'str | os.PathLike[str]',
+    qrc: 'types.PathOrStr',
+    dst: 'types.PathOrStr',
     framework: 'Framework',
     *,
-    rcc: 'str | os.PathLike[str] | None' = None,
+    rcc: 'types.PathOrStr | None' = None,
     compression: 'Compression | None' = 'lzma',
 ) -> None:
     '''
@@ -339,7 +336,7 @@ def compile(  # pylint: disable=redefined-builtin
         raise ResourceCompileError(rcc, qrc, framework, error) from error
 
 
-def get_rcc(framework: 'Framework') -> 'str | os.PathLike[str]':
+def get_rcc(framework: 'Framework') -> 'types.PathOrStr':
     '''
     Get resource compiler (RCC) required the provided framework.
 

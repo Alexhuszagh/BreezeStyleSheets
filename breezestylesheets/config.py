@@ -5,24 +5,21 @@ Models and helpers to load the Stylesheet configuration options.
 '''
 
 import typing
+import typing_extensions
 import contextlib
 import io
 import json
 import os.path
-from collections.abc import Mapping, Sequence
 
-from pydantic import AliasChoices, BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, TypeAdapter
 from pydantic_extra_types.color import Color
-from . import color, constants
+from . import color, constants, types
 from .exception import ConfigParseError
 
-JSONKey: 'typing.TypeAlias' = 'str'
-JSONValue: 'typing.TypeAlias' = 'JSONPrimitive | JSONArray | JSONObject'
-JSONPrimitive: 'typing.TypeAlias' = 'float | str | None'
-JSONArray: 'typing.TypeAlias' = Sequence['JSONPrimitive | JSONArray | JSONObject']
-JSONObject: 'typing.TypeAlias' = Mapping['JSONKey', 'JSONPrimitive | JSONArray | JSONObject']
+# NOTE: Using unions directly, rather than the `|` syntax, is needed for 3.9 support,
+# with pydantic, which must resolve these hints to define the models.
 
-__all__ = ['Config', 'load', 'loads']
+__all__ = ['Theme']
 # NOTE: Union is required for 3.9 support in our base models.
 ColorType: 'typing.TypeAlias' = typing.Union[Color, typing.Literal[""]]
 
@@ -54,11 +51,134 @@ def _alias_choices(value: 'str', *extras: str) -> 'AliasChoices':
     return AliasChoices(*_expand_alias_choices(value), *extras)
 
 
-class Config(BaseModel):
-    '''The configuration settings for how to style the QT Stylesheet.'''
+class Model(BaseModel):
+    '''The base model for all configuration options.'''
 
     model_config: typing.ClassVar[ConfigDict] = ConfigDict(extra='forbid')
     '''Additional parameters for how to configure Pydantic.'''
+
+    @classmethod
+    def load(cls: type[typing_extensions.Self], path: 'types.PathOrStr') -> typing_extensions.Self:
+        '''
+        Load the stylesheet configuration settings from file.
+
+        This adds the default configuration settings and validates
+        the loaded settings are valid. This supports JSON, YAML, and
+        TOML file formats.
+
+        Args:
+            path (`str`, `Path`): The path to the file to load.
+
+        Returns:
+            `Model`: The loaded stylesheet configuration settings.
+
+        Raises:
+            `ConfigParseError`: Any errors that occur during parsing the configuration data.
+        '''
+        with _parse_block(path=path):
+            with open(path, encoding='utf-8') as file:
+                return cls.loads(file.read(), os.path.splitext(os.path.basename(path))[1])
+
+    @classmethod
+    def loads(
+        cls: type[typing_extensions.Self], s: 'str | bytes | bytearray', extension: 'str'
+    ) -> typing_extensions.Self:
+        '''
+        Load the stylesheet configuration settings from a document.
+
+        This adds the default configuration settings and validates
+        the loaded settings are valid. This supports JSON, YAML, and
+        TOML file formats.
+
+        Args:
+            s (`str`, `bytes`, `bytearray`): The document data, as a string or UTF-8 encoded bytes.
+            extension (str): The extension of the file (to determine the file type).
+
+        Returns:
+            `Model`: The loaded stylesheet configuration settings.
+
+        Raises:
+            `ConfigParseError`: Any errors that occur during parsing the configuration data.
+        '''
+        with _parse_block(data=s):
+            # NOTE: Migrate to `match` with 3.10+ support.
+            if extension in ('.json', '.jsonc'):
+                value = _loads_json(s)
+            elif extension in ('.yml', '.yaml'):
+                value = _loads_yaml(s)
+            elif extension == '.toml':
+                value = _loads_toml(s)
+            elif extension == '.xml':
+                value = _loads_xml(s)
+            else:
+                raise ValueError(f'Got an unknown file type of "{extension}".')
+
+            if not isinstance(value, typing.Mapping):
+                raise ValueError(f'Got an invalid parsed config type of "{type(value).__name__}".')
+            return cls.model_validate(_transform_nested(typing.cast(types.JSONObject, value)))
+
+
+class Theme(Model):
+    '''
+    The theme settings for how to style the Qt Stylesheet.
+
+    The theme contains the core color data for converting a stylesheet or icon
+    template into the rendered form.
+
+    ## Example
+
+    ```json
+    {
+        "foreground": "#31363b",
+        "foreground:light": "#272b2f",
+        "background": "#eff0f1",
+        "background:alternate": "#eaebec",
+        "highlight": "rgba(51, 164, 223, 0.5)",
+        "highlight:dark": "rgba(45, 147, 200, 0.5)",
+        "highlight:alternate": "rgba(71, 184, 243, 0.6)",
+        "midtone": "#bab9b8",
+        "midtone:light": "#bab9b8",
+        "midtone:dark": "rgba(106, 105, 105, 0.7)",
+        "midtone:hover": "#787876",
+        "view:checked": "#b9dae7",
+        "view:hover": "rgba(61, 173, 232, 0.2)",
+        "toolbar:horizontal:background": "#eff0f1",
+        "toolbar:vertical:background": "#eff0f1",
+        "view:corner": "#eff0f1",
+        "view:header": "#eff0f1",
+        "view:header:border": "#bab9b8",
+        "view:border": "#bab9b8",
+        "view:background": "#eff0f1",
+        "text:background": "#eff0f1",
+        "tab:background:selected": "#eff0f1",
+        "tab:background": "#d9d8d7",
+        "tree": "#4b4b4b",
+        "slider:foreground": "#3daef3",
+        "slider:handle:background": "#eff0f1",
+        "menu:disabled": "#bab9b8",
+        "checkbox:light": "#272b2f",
+        "checkbox:disabled": "#6a6e71",
+        "scrollbar:hover": "rgba(51, 164, 223, 0.8)",
+        "scrollbar:background": "#eff0f1",
+        "scrollbar:background:hover": "#c7c7c6",
+        "button:background": "#eaebec",
+        "button:background:pressed": "#bedfec",
+        "button:border": "#bab9b8",
+        "button:checked": "#c7c7c6",
+        "button:disabled": "#b4b4b4",
+        "close:hover": "#31363b",
+        "close:pressed": "#b33e3e",
+        "dock:background": "#eaebec",
+        "dock:float": "#a2a2a2",
+        "critical": "#ff8c9f",
+        "information": "#8cd5ff",
+        "question": "#c08cff",
+        "warning": "#ffff8c",
+        "ads-tab:focused": "rgba(61, 173, 232, 0.2)",
+        "ads-border:focused": "rgba(61, 173, 232, 0.25)"
+    }
+    ```
+    '''
 
     foreground: 'Color' = Field(validation_alias=_alias_choices('foreground'))
     '''The main foreground color.'''
@@ -310,6 +430,187 @@ class Config(BaseModel):
         return not self.is_light
 
 
+IconListReplacement: 'typing.TypeAlias' = 'list[str]'
+'''
+An ordered list of the index-based icon replacements.
+
+These are used to replace indexes, such as `^0^`, with a named placeholder
+which will be used when configuring the icon.
+
+```json
+["foreground", "background"]
+```
+
+These are then used to replace the specifiers in the template: for example, here `^0^` becomes
+`foreground` and `^1^` becomes `background`.
+
+```xml
+<svg width="24" height="24">
+  <path fill="^0^" d=..."/>
+  <g transform="scale(0.5) translate(14, 20)">
+    <path fill="^1^" d="..."/>
+  </g>
+</svg>
+```
+'''
+
+IconDictReplacement: 'typing.TypeAlias' = typing.Mapping[str, IconListReplacement]
+'''
+A single icon replacement which replaces the icon fields with template specifiers.
+
+This contains which contains the name of the extension(s), which can be `default`
+(uses the default name) or a custom value which can be used to extend stylesheets.
+
+```json
+{
+    "default": ["foreground", "background"]
+}
+```
+
+These are then used to replace the specifiers in the template: for example, here `^0^` becomes
+`foreground` and `^1^` becomes `background`.
+
+```xml
+<svg width="24" height="24">
+  <path fill="^0^" d=..."/>
+  <g transform="scale(0.5) translate(14, 20)">
+    <path fill="^1^" d="..."/>
+  </g>
+</svg>
+```
+'''
+
+IconReplacement: 'typing.TypeAlias' = typing.Union[IconDictReplacement, IconListReplacement]
+'''
+A single icon replacement which replaces the icon fields with template specifiers.
+
+This contains which contains the name of the extension(s), which can be `default`
+(uses the default name) or a custom value which can be used to extend stylesheets.
+
+```json
+{
+    "default": ["foreground", "background"]
+}
+```
+
+Or in simpler form (only supports default):
+
+```json
+["foreground", "background"]
+```
+
+These are then used to replace the specifiers in the template: for example, here `^0^` becomes
+`foreground` and `^1^` becomes `background`.
+
+```xml
+<svg width="24" height="24">
+  <path fill="^0^" d=..."/>
+  <g transform="scale(0.5) translate(14, 20)">
+    <path fill="^1^" d="..."/>
+  </g>
+</svg>
+```
+'''
+
+
+class StandardIconReplacements(typing_extensions.TypedDict, total=False):
+    '''
+    The Qt standard icons that can be used for simple icon styling.
+
+    The fields all correspond to the following Qt enumerated icon names:
+    - browser_refresh: `SP_BrowserReload`
+    - browser_refresh_stop: `SP_BrowserStop`
+    - dialog_apply: `SP_DialogApplyButton`, `SP_DialogYesButton`
+    - dialog_ignore: `SP_DialogIgnoreButton`
+    - dialog_retry: `SP_DialogRetryButton`
+    - dialog_save_all: `SP_DialogSaveAllButton`
+    - dialog_yes_to_all: `SP_DialogYesToAllButton`
+    - folder_open_link: `SP_DirLinkOpenIcon`
+    - horizontal_extension: `SP_ToolBarHorizontalExtensionButton`
+    - pause: `SP_MediaPause`
+    - play: `SP_MediaPlay`
+    - restore_defaults: `SP_RestoreDefaultsButton`
+    - seek_backward: `SP_MediaSeekBackward`
+    - seek_forward: `SP_MediaSeekForward`
+    - skip_backward: `SP_MediaSkipBackward`
+    - skip_forward: `SP_MediaSkipForward`
+    - stop: `SP_MediaStop`
+    - tab_close: `SP_TabCloseButton` (Qt 6.3+)
+    - vertical_extension: `SP_ToolBarVerticalExtensionButton`
+    - vista_shield: `SP_VistaShield`
+    - volume: `SP_MediaVolume`
+    - volume_muted: `SP_MediaVolumeMuted`
+    '''
+
+    browser_refresh: 'IconReplacement'
+    browser_refresh_stop: 'IconReplacement'
+    dialog_apply: 'IconReplacement'
+    dialog_ignore: 'IconReplacement'
+    dialog_retry: 'IconReplacement'
+    dialog_save_all: 'IconReplacement'
+    dialog_yes_to_all: 'IconReplacement'
+    folder_open_link: 'IconReplacement'
+    horizontal_extension: 'IconReplacement'
+    pause: 'IconReplacement'
+    play: 'IconReplacement'
+    restore_defaults: 'IconReplacement'
+    seek_backward: 'IconReplacement'
+    seek_forward: 'IconReplacement'
+    skip_backward: 'IconReplacement'
+    skip_forward: 'IconReplacement'
+    stop: 'IconReplacement'
+    tab_close: 'IconReplacement'
+    vertical_extension: 'IconReplacement'
+    vista_shield: 'IconReplacement'
+    volume: 'IconReplacement'
+    volume_muted: 'IconReplacement'
+
+
+IconReplacements: 'typing.TypeAlias' = typing.Union[
+    typing.Mapping[str, IconReplacement], StandardIconReplacements
+]
+'''
+A mapping of the icon names to their replacement definitions.
+
+This supports the standard icons and can also be customized with your own icons.
+
+```json
+{
+    "browser_refresh": {
+        "default": ["foreground"]
+    },
+    "browser_refresh_stop": {
+        "default": ["critical"]
+    }
+}
+```
+
+The icon replacements for how they correspond to the replaced colors is
+defined in `IconReplacement` .
+'''
+
+IconReplacementsAdaptor: 'TypeAdapter[IconReplacements]' = TypeAdapter(IconReplacements)
+'''A custom type validator for the icon replacements'''
+
+
+class Icon(Model):
+    '''The configurations for how to replace the colors within an icon.'''
+
+    name: str
+    '''
+    The name of the icon.
+
+    This corresponds to the icon written to disk, with the `.svg` suffix, and
+    optionally, with an extension suffix as defined in the replacements.
+    '''
+
+    svg: str
+    '''The raw SVG data of the icon.'''
+
+    replacements: IconReplacement
+    '''The template replacements for the icon, optionally with additional extensions defined.'''
+
+
 class CommentsDecoder(json.JSONDecoder):
     '''
     A custom decoder that removes simple comments from the JSON input.
@@ -318,126 +619,29 @@ class CommentsDecoder(json.JSONDecoder):
     '''
 
     # pylint: disable-next=arguments-differ
-    def decode(self, s: 'str') -> 'JSONValue':  # type: ignore # noqa
+    def decode(self, s: 'str') -> 'types.JSONValue':  # type: ignore # noqa
         '''Return the Python representation of s (a str instance containing a JSON document).'''
         lines = s.splitlines()
         lines = [i for i in lines if not i.strip().startswith('//')]
-        return typing.cast('JSONValue', super().decode('\n'.join(lines)))
+        return typing.cast('types.JSONValue', super().decode('\n'.join(lines)))
 
 
-def load(path: 'str | os.PathLike[str]') -> 'Config':
-    '''
-    Load the stylesheet configuration settings from file.
-
-    This adds the default configuration settings and validates
-    the loaded settings are valid. This supports JSON, YAML, and
-    TOML file formats.
-
-    Args:
-        path (`str`, `Path`): The path to the file to load.
-
-    Returns:
-        `Config`: The loaded stylesheet configuration settings.
-
-    Raises:
-        `ConfigParseError`: Any errors that occur during parsing the configuration data.
-    '''
-    with _parse_block(path=path):
-        with open(path, encoding='utf-8') as file:
-            return loads(file.read(), os.path.splitext(os.path.basename(path))[1])
+def _loads_json(s: 'str | bytes | bytearray') -> typing.Any:
+    '''Load the stylesheet configuration settings from a JSON document.'''
+    return json.loads(_decode(s), cls=CommentsDecoder)
 
 
-def loads(s: 'str | bytes | bytearray', extension: 'str') -> 'Config':
-    '''
-    Load the stylesheet configuration settings from a document.
-
-    This adds the default configuration settings and validates
-    the loaded settings are valid. This supports JSON, YAML, and
-    TOML file formats.
-
-    Args:
-        s (`str`, `bytes`, `bytearray`): The document data, as a string or UTF-8 encoded bytes.
-        extension (str): The extension of the file (to determine the file type).
-
-    Returns:
-        `Config`: The loaded stylesheet configuration settings.
-
-    Raises:
-        `ConfigParseError`: Any errors that occur during parsing the configuration data.
-    '''
-    with _parse_block(data=s):
-        # NOTE: Migrate to `match` with 3.10+ support.
-        if extension in ('.json', '.jsonc'):
-            return _loads_json(s)
-        if extension in ('.yml', '.yaml'):
-            return _loads_yaml(s)
-        if extension == '.toml':
-            return _loads_toml(s)
-        if extension == '.xml':
-            return _loads_xml(s)
-        raise ValueError(f'Got an unknown file type of "{extension}".')
-
-
-def _loads_json(s: 'str | bytes | bytearray') -> 'Config':
-    '''
-    Load the stylesheet configuration settings from a document.
-
-    This adds the default configuration settings and validates
-    the loaded settings are valid.
-
-    Args:
-        s (`str`, `bytes`, `bytearray`): The JSON document data, as a string or UTF-8 encoded bytes.
-
-    Returns:
-        `Config`: The loaded stylesheet configuration settings.
-
-    Raises:
-        `ConfigParseError`: Any errors that occur during parsing the configuration data.
-    '''
-    value = json.loads(_decode(s), cls=CommentsDecoder)
-    return Config.model_validate(_transform_nested(value))
-
-
-def _loads_yaml(s: 'str | bytes | bytearray') -> 'Config':
-    '''
-    Load the stylesheet configuration settings from a document.
-
-    This adds the default configuration settings and validates
-    the loaded settings are valid.
-
-    Args:
-        s (`str`, `bytes`, `bytearray`): The YAML document data, as a string or UTF-8 encoded bytes.
-
-    Returns:
-        `Config`: The loaded stylesheet configuration settings.
-
-    Raises:
-        `ConfigParseError`: Any errors that occur during parsing the configuration data.
-    '''
+def _loads_yaml(s: 'str | bytes | bytearray') -> typing.Any:
+    '''Load the stylesheet configuration settings from a YAML document.'''
 
     # pylint: disable-next=import-error
     import yaml  # type: ignore # noqa
 
-    value = yaml.safe_load(io.StringIO(_decode(s)))
-    return Config.model_validate(_transform_nested(value))
+    return yaml.safe_load(io.StringIO(_decode(s)))
 
 
-def _loads_toml(s: 'str | bytes | bytearray') -> 'Config':
-    '''
-    Load the stylesheet configuration settings from a document.
-
-    This adds the default configuration settings and validates
-    the loaded settings are valid.
-
-    Args:
-        s (`str`, `bytes`, `bytearray`): The TOML document data, as a string or UTF-8 encoded bytes.
-
-    Returns:
-        `Config`: The loaded stylesheet configuration settings.
-
-    Raises:
-        `ConfigParseError`: Any errors that occur during parsing the configuration data.
-    '''
+def _loads_toml(s: 'str | bytes | bytearray') -> typing.Any:
+    '''Load the stylesheet configuration settings from a TOML document.'''
 
     try:
         # pylint: disable-next=import-error
@@ -446,32 +650,16 @@ def _loads_toml(s: 'str | bytes | bytearray') -> 'Config':
         # pylint: disable-next=import-error
         import tomli as tomllib  # type: ignore # noqa
 
-    value = tomllib.loads(_decode(s))
-    return Config.model_validate(_transform_nested(value))
+    return tomllib.loads(_decode(s))
 
 
-def _loads_xml(s: 'str | bytes | bytearray') -> 'Config':
-    '''
-    Load the stylesheet configuration settings from a document.
-
-    This adds the default configuration settings and validates
-    the loaded settings are valid.
-
-    Args:
-        s (`str`, `bytes`, `bytearray`): The XML document data, as a string or UTF-8 encoded bytes.
-
-    Returns:
-        `Config`: The loaded stylesheet configuration settings.
-
-    Raises:
-        `ConfigParseError`: Any errors that occur during parsing the configuration data.
-    '''
+def _loads_xml(s: 'str | bytes | bytearray') -> typing.Any:
+    '''Load the stylesheet configuration settings from an XML document.'''
 
     # pylint: disable-next=import-error
     import xml2dict  # type: ignore # noqa
 
-    value = xml2dict.parse(_decode(s))
-    return Config.model_validate(_transform_nested(value))
+    return xml2dict.parse(_decode(s))
 
 
 def _decode(s: 'str | bytes | bytearray') -> 'str':
@@ -481,16 +669,16 @@ def _decode(s: 'str | bytes | bytearray') -> 'str':
     return s
 
 
-def _transform_nested(v: 'JSONObject') -> 'dict[str, str]':
+def _transform_nested(v: 'types.JSONObject') -> 'dict[str, str]':
     '''Transform nested keys in a JSON object to `key.nested` syntax.'''
 
     result: dict[str, str] = {}
     for key, value in v.items():
-        if not isinstance(key, str) or not isinstance(value, (str, Mapping)):
+        if not isinstance(key, str) or not isinstance(value, (str, typing.Mapping)):
             raise ValueError(f'Expected JSON value to be str or mapping, got "{type(value)}".')
         if isinstance(value, str):
             result[key] = value
-        elif isinstance(value, Mapping):
+        elif isinstance(value, typing.Mapping):
             nested = _transform_nested(value)
             for subkey, subvalue in nested.items():
                 result[f'{key}:{subkey}'] = subvalue
@@ -501,7 +689,7 @@ def _transform_nested(v: 'JSONObject') -> 'dict[str, str]':
 @contextlib.contextmanager
 def _parse_block(
     data: 'str | bytes | bytearray | None' = None,
-    path: 'str | os.PathLike[str] | None' = None,
+    path: 'types.PathOrStr | None' = None,
 ) -> 'typing.Iterator[None]':
     '''A helper to parse the config data within a context block.'''
     try:
