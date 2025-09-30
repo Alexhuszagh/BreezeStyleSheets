@@ -64,7 +64,6 @@ wheels = [
 
 [[package]]
 name = "breezestylesheets"
-version = "0.2.0"
 source = { editable = "." }
 dependencies = [
     { name = "pydantic" },
@@ -114,7 +113,7 @@ requires-dist = [
     { name = "tomli", marker = "python_full_version < '3.11' and extra == 'toml'", specifier = ">=2.0.1,<3.0.0" },
     { name = "xml2dict", marker = "extra == 'xml'", specifier = ">=0.2.2,<0.3.0" },
 ]
-provides-extras = ["yaml", "toml", "xml"]
+provides-extras = ["toml", "xml", "yaml"]
 
 [package.metadata.requires-dev]
 lint = [

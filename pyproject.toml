@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "breezestylesheets"
-version = "0.2.0"
+dynamic = ["version"]
 description = "Configurable Breeze and BreezeDark-like stylesheets for Qt Applications."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -76,6 +76,9 @@ type = [
 
 [tool.setuptools]
 py-modules = ["breezestylesheets"]
+
+[tool.hatch.version]
+path = "breezestylesheets/__init__.py"
 
 [tool.uv.dependency-groups]
 lint = { requires-python = ">=3.11" }

@@ -12,3 +12,5 @@ widgets and widget properties, providing a consistent, stylish feel on
 any platform, including different operating systems, desktop environments,
 and Qt versions.
 '''
+
+__version__ = '0.2.0'

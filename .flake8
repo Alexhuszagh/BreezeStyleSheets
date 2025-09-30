@@ -8,6 +8,8 @@ exclude = .git, __pycache__, build, dist, .venv, .tox
 ignore = E203 E226 E704 W503
 max-line-length = 110
 per-file-ignores =
+    # modules need to rexport contents
+    __init__.py: F401
     # widgets need to be created but not used.
     example/widgets.py: F841
     test/ui.py: F841

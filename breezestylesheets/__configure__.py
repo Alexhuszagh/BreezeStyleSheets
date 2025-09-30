@@ -5,8 +5,7 @@ Configure icons, stylesheets, and resource files.
 '''
 
 # TODO: Change to use the version dynamically
-__version__ = '0.2.0'
-
+# TODO: HERE!
 import typing
 import argparse
 import glob
@@ -18,10 +17,10 @@ import sys
 from pathlib import Path
 
 # TODO: Add more loaders
-from breezestylesheets import exception, resources, types
+from breezestylesheets import exception, resources, types, utils, __version__
 from breezestylesheets import config as _config  # TODO: Fix the name and imports
 
-home_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+home_dir = utils.project_dir()
 dist_dir = os.path.join(home_dir, 'dist')
 resources_dir = os.path.join(home_dir, 'resources')
 template_dir = os.path.join(home_dir, 'template')
@@ -40,7 +39,7 @@ class Config(typing.TypedDict):
     themes: dict[str, _config.Theme]
     templates: list[Template]
     no_qrc: bool
-    resource: typing.Any  # TODO: Fix this hint
+    resource: types.PathOrStr
 
 
 def parse_args(argv=None):
@@ -221,7 +220,7 @@ def configure_style(config: Config, style, qt_dist):
         configure_qt(qt_dist, f':/{style}/')
 
 
-def write_qrc(config: Config, qt_dist):
+def write_qrc(config: Config, qt_dist: types.PathOrStr) -> None:
     '''Simple QRC writer.'''
 
     # NOTE: We also want to create aliases for light-blue and dark-blue from our
@@ -243,6 +242,7 @@ def write_qrc(config: Config, qt_dist):
         print('<RCC>', file=file)
         print('  <qresource>', file=file)
         for resource in sorted(resources):
+            # TODO: Need to escape the resources here!
             print(f'    <file>{resource}</file>', file=file)
         print('  </qresource>', file=file)
         print('</RCC>', file=file)
