@@ -86,6 +86,25 @@ lint = { requires-python = ">=3.11" }
 [tool.uv]
 add-bounds = "major"
 
+[tool.poe.tasks]
+test = "pytest"
+tox = "tox"
+type = ["_pyright", "_mypy"]
+lint = ["_flake8", "_pylint", "_isort_lint", "_ruff_lint", "_black_lint"]
+fmt = ["_isort", "_ruff", "_black", "_pyupgrade"]
+_pyright = "pyright"
+_mypy = "mypy"
+# TODO: Add examples to all tasks
+_flake8 = "flake8"
+_pylint = "pylint breezestylesheets test"
+_isort_lint = "isort --check-only breezestylesheets test"
+_ruff_lint = "ruff check breezestylesheets test"
+_black_lint = "black --check breezestylesheets test"
+_isort = "isort breezestylesheets test"
+_ruff = "ruff check breezestylesheets test --fix"
+_black = "black breezestylesheets test"
+_pyupgrade = "pyupgrade breezestylesheets/**/*.py test/**/*.py"
+
 [tool.black]
 target-version = ["py310"]
 line-length = 110
@@ -237,10 +256,12 @@ minversion = "6.0"
 addopts = "--cov=breezestylesheets --cov-report html"
 
 [tool.pyright]
-include = ["breezestylesheets", "test"] # TODO: "example", once base has been implemented
+# TODO: Add examples
+include = ["breezestylesheets", "test"]
 
 [tool.mypy]
-packages = ["breezestylesheets", "test"] # TODO: "example", once base has been implemented
+# TODO: Add examples
+packages = ["breezestylesheets", "test"]
 
 [tool.pyupgrade]
 py39-plus = true
@@ -278,11 +299,12 @@ dependency_groups = ["type", "test"]
 
 [tool.tox.env.lint]
 description = "Run test suite under {base_python}"
+# TODO: Add examples to all tasks
 commands = [
-  ["black", "--check", "breezestylesheets/", "test/"],  # TODO: "example/",
-  ["isort", "--check-only", "breezestylesheets/", "test/"], # TODO: "example/"
-  ["ruff", "check", "breezestylesheets/", "test/"], # TODO: "example/"
-  ["pylint", "breezestylesheets/", "test/"], # TODO: "example/"
+  ["black", "--check", "breezestylesheets", "test"],
+  ["isort", "--check-only", "breezestylesheets", "test"],
+  ["ruff", "check", "breezestylesheets", "test"],
+  ["pylint", "breezestylesheets", "test"],
   ["flake8"],
 ]
 dependency_groups = ["lint", "test"]
