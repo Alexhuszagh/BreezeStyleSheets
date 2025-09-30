@@ -5,6 +5,7 @@ General-purpose utilities.
 '''
 
 import typing
+from pathlib import Path
 
 _T = typing.TypeVar('_T')
 _C = typing.TypeVar('_C')
@@ -37,3 +38,13 @@ class LazyAttribute(typing.Generic[_C, _T]):
 
 # NOTE: An alias since it will be used as a function-like object
 lazy_attribute = LazyAttribute
+
+
+def package_dir() -> Path:
+    '''Get the directory containing the current package.'''
+    return Path(__file__).parent
+
+
+def project_dir() -> Path:
+    '''Get the directory containing the current project.'''
+    return package_dir().parent
