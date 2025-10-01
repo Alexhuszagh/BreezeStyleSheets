@@ -38,8 +38,7 @@ Repository = "https://github.com/Alexhuszagh/BreezeStyleSheets.git"
 Changelog = "https://github.com/Alexhuszagh/BreezeStyleSheets/main/CHANGELOG.md"
 
 [project.optional-dependencies]
-# TODO: Add optional dependencies on Qt5, Qt6, etc. when we actually
-# make this a full package
+# TODO: Add optional dependencies on Qt5, Qt6, etc. when we actually make this a full package
 yaml = [
     "pyyaml>=6.0.1,<7.0.0",
 ]
@@ -74,11 +73,21 @@ type = [
     "types-pyyaml>=6.0.12.20250915,<7.0.0.0",
 ]
 
-[tool.setuptools]
-py-modules = ["breezestylesheets"]
-
 [tool.hatch.version]
 path = "breezestylesheets/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = ["breezestylesheets", "example", "extension", "template", "theme"]
+
+[tool.hatch.build.targets.sdist.sources]
+"breezestylesheets" = "breezestylesheets"
+"example" = "breezestylesheets/example"
+"extension" = "breezestylesheets/extension"
+"template" = "breezestylesheets/template"
+"theme" = "breezestylesheets/theme"
+
+[tool.hatch.build.targets.wheel]
+include = ["breezestylesheets", "example", "extension", "template", "theme"]
 
 [tool.uv.dependency-groups]
 lint = { requires-python = ">=3.11" }
