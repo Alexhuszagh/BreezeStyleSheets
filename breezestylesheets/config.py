@@ -10,6 +10,8 @@ import contextlib
 import io
 import json
 import os.path
+import re
+from pathlib import Path
 
 from pydantic import AliasChoices, AliasPath, BaseModel, ConfigDict, Field, TypeAdapter
 from pydantic_extra_types.color import Color
@@ -531,12 +533,12 @@ class Theme(Model):
             return value.as_hex(format='long')
         return value
 
-    def render(self, stylesheet: str, style: str) -> str:
+    def render(self, template: str, style: str) -> str:
         '''
         Render the stylesheet with all placeholders replaced.
 
         Args:
-            stylesheet (`str`): The template stylesheet, as a single QSS document.
+            template (`str`): The template stylesheet, as a single QSS document.
             style (`str`): The prefix for the style as a QT resource.
 
         Returns:
@@ -546,7 +548,7 @@ class Theme(Model):
             style = f':/{style}'
         if not style.endswith('/'):
             style = f'{style}/'
-        return _replace_by_name(stylesheet, self).replace('^style^', style)
+        return _replace_by_name(template, self).replace('^style^', style)
 
 
 IconListReplacement: 'typing.TypeAlias' = 'typing.Sequence[str]'
@@ -753,7 +755,13 @@ def loads_icon_replacements(s: 'str | bytes | bytearray', extension: 'str') -> I
 
 
 class Icon(Model):
-    '''The configurations for how to replace the colors within an icon.'''
+    '''
+    The configurations for how to replace the colors within an icon.
+
+    This contains an icon template, the name of the icon used to
+    determine icon resource path, and the color replacements for
+    the template.
+    '''
 
     name: str
     '''
@@ -763,11 +771,15 @@ class Icon(Model):
     optionally, with an extension suffix as defined in the replacements.
     '''
 
-    svg: str
-    '''The raw SVG data of the icon.'''
+    template: str
+    '''The raw, template SVG data of the icon.'''
 
     replacements: IconReplacement
-    '''The template replacements for the icon, optionally with additional extensions defined.'''
+    '''
+    The template replacements for the icon, optionally with additional extensions defined.
+
+    The replacements **MUST** be defined here, since
+    '''
 
     def render(self, theme: 'Theme') -> typing.Mapping[str, str]:
         '''
@@ -794,12 +806,91 @@ class Icon(Model):
         if isinstance(self.replacements, typing.Mapping):
             for extension, replacements in self.replacements.items():
                 name = with_ext(self.name, extension)
-                value = _replace_by_index(self.svg, theme, replacements)
+                value = _replace_by_index(self.template, theme, replacements)
                 result[name] = value
         else:
-            result[self.name] = _replace_by_name(self.svg, theme, self.replacements)
+            result[self.name] = _replace_by_name(self.template, theme, self.replacements)
 
         return result
+
+
+class Template(Model):
+    '''
+    A theme template, containing the stylesheet and icon templates.
+
+    This contains the data for how to render a single template,
+    which may include additional extensions.
+    '''
+
+    icons: list[Icon]
+    '''A list of icon templates, including their replacements.'''
+
+    stylesheet: str
+    '''
+    A template stylesheet, which may be empty.
+
+    If additional stylesheet templates exist, these will be merged into
+    a single stylesheet at the end.
+    '''
+
+    @classmethod
+    def from_directory(
+        cls: type[typing_extensions.Self],
+        directory: types.PathOrStr,
+    ) -> typing_extensions.Self:
+        '''
+        Read the icon and stylesheet templates from a directory.
+
+        A template directory contains the stylesheet template, icon replacement info,
+        and icon templates (all are optional). A sample template directory structure is:
+
+        ```text
+        directory/
+            stylesheet.qss.in
+            icons.json
+            branch_closed.svg.in
+            branch_end_arrow.svg.in
+            ...
+        ```
+
+        Our pre-built templates exist in 2 locations, relative to the project directory:
+        - `/template`
+        - `/extension/*` (every subdirectory in `extension`)
+
+        Args:
+            directory (`str`, `Path`): The path to the directory containing the templates.
+
+        Returns:
+            `Template`: The loaded icon and stylesheet template data.
+        '''
+
+        stylesheet = ''
+        icons: list[Icon] = []
+        icon_replacements: IconReplacements = {}
+
+        directory = Path(directory)
+        stylesheet_path = directory / 'stylesheet.qss.in'
+        if stylesheet_path.exists():
+            stylesheet = stylesheet_path.read_text(encoding='utf-8')
+
+        icons_path = directory / 'icons.json'
+        if icons_path.exists():
+            icon_replacements = load_icon_replacements(icons_path)
+
+        for file in directory.glob('*.svg.in'):
+            svg = file.read_text(encoding='utf-8')
+            name = file.stem.rsplit('.', maxsplit=1)[0]
+            if (replacements := icon_replacements.get(name)) is None:
+                keys: list[str] = re.findall(r'\^[0-9a-zA-Z_-]+\^', svg)
+                replacements = [i[1:-1] for i in keys]
+
+            icons.append(Icon(name=name, template=svg, replacements=replacements))
+
+        return cls(icons=icons, stylesheet=stylesheet)
+
+    def render(self, theme: 'Theme') -> None:
+        '''TODO: Document and implement'''
+        raise NotImplementedError('TODO')
 
 
 class CommentsDecoder(json.JSONDecoder):

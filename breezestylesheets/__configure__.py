@@ -10,15 +10,17 @@ import typing
 import argparse
 import glob
 import os
-import re
 import shutil
 import subprocess
 import sys
 from pathlib import Path
 
 # TODO: Add more loaders
-from breezestylesheets import exception, resources, types, utils, __version__
+from breezestylesheets import Theme, __version__
 from breezestylesheets import config as _config  # TODO: Fix the name and imports
+from breezestylesheets import exception, resources, types, utils
+
+# TODO: Make this `py39` compatible
 
 home_dir = utils.project_dir()
 dist_dir = os.path.join(home_dir, 'dist')
@@ -28,16 +30,10 @@ theme_dir = os.path.join(home_dir, 'theme')
 extension_dir = os.path.join(home_dir, 'extension')
 
 
-class Template(typing.TypedDict):
-    # TODO: Remove this
-    icons: list[_config.Icon]
-    stylesheet: str
-
-
 class Config(typing.TypedDict):
     # TODO: Remove this
-    themes: dict[str, _config.Theme]
-    templates: list[Template]
+    themes: dict[str, Theme]
+    templates: list[_config.Template]
     no_qrc: bool
     resource: types.PathOrStr
 
@@ -109,44 +105,6 @@ def parse_args(argv=None):
     return args
 
 
-def read_template_dir(directory: types.PathOrStr) -> Template:
-    '''Read the template data from a directory'''
-
-    # Make the stylesheet template optional.
-    stylesheet = ''
-    stylesheet_path = f'{directory}/stylesheet.qss.in'
-    if os.path.exists(stylesheet_path):
-        with open(f'{directory}/stylesheet.qss.in', encoding='utf-8') as style_file:
-            stylesheet = style_file.read()
-    data: Template = {
-        'stylesheet': stylesheet,
-        'icons': [],
-    }
-    icon_data: _config.IconReplacements = {}
-    if os.path.exists(f'{directory}/icons.json'):
-        icon_data = _config.load_icon_replacements(f'{directory}/icons.json')
-    for file in glob.glob(f'{directory}/*.svg.in'):
-        with open(file, encoding='utf-8') as svg_file:
-            svg: str = svg_file.read()
-        name: str = os.path.splitext(os.path.splitext(os.path.basename(file))[0])[0]
-        replacements: _config.IconReplacement
-        if name in icon_data:
-            replacements = icon_data[name]
-        else:
-            # Need to find all the values inside the image.
-            keys: list[str] = re.findall(r'\^[0-9a-zA-Z_-]+\^', svg)
-            replacements = [i[1:-1] for i in keys]
-        data['icons'].append(
-            _config.Icon(
-                name=name,
-                svg=svg,
-                replacements=replacements,
-            )
-        )
-
-    return data
-
-
 def split_csv(string: str) -> list[str]:
     '''Split a list of values provided as comma-separated values.'''
 
@@ -185,7 +143,7 @@ def configure_icons(config: Config, style, qt_dist):
 
     theme = config['themes'][style]
     for template in config['templates']:
-        for icon in template['icons']:
+        for icon in template.icons:
             rendered = icon.render(theme)
             for name, svg in rendered.items():
                 filename = f'{qt_dist}/{style}/{name}.svg'
@@ -197,7 +155,7 @@ def configure_stylesheet(config: Config, style, qt_dist, style_prefix):
     '''Configure the stylesheet for a given style.'''
 
     theme = config['themes'][style]
-    stylesheet = '\n'.join([i['stylesheet'] for i in config['templates']])
+    stylesheet = '\n'.join([i.stylesheet for i in config['templates']])
     stylesheet = theme.render(stylesheet, style_prefix)
 
     with open(f'{qt_dist}/{style}/stylesheet.qss', 'w', encoding='utf-8') as file:
@@ -248,17 +206,17 @@ def write_qrc(config: Config, qt_dist: types.PathOrStr) -> None:
         print('</RCC>', file=file)
 
 
-def compile_resource(args):
+def compile_resource(args: argparse.Namespace) -> None:
     '''Compile our resource file to a standalone Python file.'''
 
     resource_path: str = args.resource
     compiled_resource_path: str = args.compiled_resource
     if not os.path.isabs(resource_path):
-        resource_path: str = f'{args.output_dir}/{resource_path}'
+        resource_path = f'{args.output_dir}/{resource_path}'
     if not os.path.isabs(compiled_resource_path):
-        compiled_resource_path: str = f'{resources_dir}/{compiled_resource_path}'
+        compiled_resource_path = f'{resources_dir}/{compiled_resource_path}'
 
-    compression = 'lzma'
+    compression: resources.Compression = 'lzma'
     if not args.use_default_compression:
         compression = 'default'
     try:
@@ -293,7 +251,7 @@ def compile_resource(args):
         raise SystemExit from error
 
 
-def configure(args):
+def configure(args: argparse.Namespace) -> None:
     '''Configure all styles and write the files to a QRC file.'''
 
     if args.clean:
@@ -303,11 +261,11 @@ def configure(args):
     # TODO: Add hints, can remove them later
     config: Config = {'themes': {}, 'templates': [], 'no_qrc': args.no_qrc, 'resource': args.resource}
     # TODO: Fix this!
-    config['templates'].append(read_template_dir(template_dir))
+    config['templates'].append(_config.Template.from_directory(template_dir))
     for style in args.styles:
-        config['themes'][style] = _config.Theme.load(f'{theme_dir}/{style}.json')
+        config['themes'][style] = Theme.load(f'{theme_dir}/{style}.json')
     for extension in args.extensions:
-        config['templates'].append(read_template_dir(f'{extension_dir}/{extension}'))
+        config['templates'].append(_config.Template.from_directory(f'{extension_dir}/{extension}'))
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     for style in config['themes']:
@@ -329,7 +287,7 @@ def configure(args):
         compile_resource(args)
 
 
-def main(argv=None):
+def main(argv: 'list[str] | None' = None):
     '''Configuration entry point'''
     configure(parse_args(argv))
 

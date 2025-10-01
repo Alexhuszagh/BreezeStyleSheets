@@ -14,3 +14,10 @@ and Qt versions.
 '''
 
 __version__ = '0.2.0'
+
+from .config import Theme as Theme
+
+# TODO: Import `Theme` and define an `apply` here
+# That will call `Theme.apply` which will require the Qt app
+#   This will have many arguments which will define the
+#   platform-specific patches
