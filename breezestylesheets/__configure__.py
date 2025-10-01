@@ -30,14 +30,6 @@ theme_dir = os.path.join(home_dir, 'theme')
 extension_dir = os.path.join(home_dir, 'extension')
 
 
-class Config(typing.TypedDict):
-    # TODO: Remove this
-    themes: dict[str, Theme]
-    templates: list[_config.Template]
-    no_qrc: bool
-    resource: types.PathOrStr
-
-
 def parse_args(argv=None):
     '''Parse the command-line options.'''
 
@@ -138,11 +130,11 @@ def parse_extensions(args):
     args.extensions = values
 
 
-def configure_icons(config: Config, style, qt_dist):
+def configure_icons(config: _config.CompilerConfig, style, qt_dist):
     '''Configure icons for a given style.'''
 
-    theme = config['themes'][style]
-    for template in config['templates']:
+    theme = config.themes[style]
+    for template in config.templates:
         for icon in template.icons:
             rendered = icon.render(theme)
             for name, svg in rendered.items():
@@ -151,18 +143,18 @@ def configure_icons(config: Config, style, qt_dist):
                     file.write(svg)
 
 
-def configure_stylesheet(config: Config, style, qt_dist, style_prefix):
+def configure_stylesheet(config: _config.CompilerConfig, style, qt_dist, style_prefix):
     '''Configure the stylesheet for a given style.'''
 
-    theme = config['themes'][style]
-    stylesheet = '\n'.join([i.stylesheet for i in config['templates']])
+    theme = config.themes[style]
+    stylesheet = '\n'.join([i.stylesheet for i in config.templates])
     stylesheet = theme.render(stylesheet, style_prefix)
 
     with open(f'{qt_dist}/{style}/stylesheet.qss', 'w', encoding='utf-8') as file:
         file.write(stylesheet)
 
 
-def configure_style(config: Config, style, qt_dist):
+def configure_style(config: _config.CompilerConfig, style, qt_dist):
     '''Configure the icons and stylesheet for a given style.'''
 
     def configure_qt(qt_dist, style_prefix):
@@ -174,26 +166,26 @@ def configure_style(config: Config, style, qt_dist):
     # Need to replace the URL paths for loading icons/
     # assets. This uses the resource system, AKA,
     # `url(:/dark/path/to/resource)`.
-    if not config['no_qrc']:
+    if not config.no_qrc:
         configure_qt(qt_dist, f':/{style}/')
 
 
-def write_qrc(config: Config, qt_dist: types.PathOrStr) -> None:
+def write_qrc(config: _config.CompilerConfig, qt_dist: types.PathOrStr) -> None:
     '''Simple QRC writer.'''
 
     # NOTE: We also want to create aliases for light-blue and dark-blue from our
     # light and dark. See:
     #   https://github.com/Alexhuszagh/BreezeStyleSheets/pull/101#issuecomment-2336476041
     resources = []
-    for style in config['themes'].keys():
+    for style in config.themes:
         files = os.listdir(f'{qt_dist}/{style}')
         resources += [f'{style}/{i}' for i in files]
-    if 'dark-blue' in config['themes'].keys():
+    if 'dark-blue' in config.themes:
         resources.append('dark/stylesheet.qss')
-    if 'light-blue' in config['themes'].keys():
+    if 'light-blue' in config.themes:
         resources.append('light/stylesheet.qss')
 
-    qrc_path = config['resource']
+    qrc_path = config.resource
     if not os.path.isabs(qrc_path):
         qrc_path = f'{qt_dist}/{qrc_path}'
     with open(qrc_path, 'w', encoding='utf-8') as file:
@@ -258,17 +250,15 @@ def configure(args: argparse.Namespace) -> None:
         shutil.rmtree(args.output_dir, ignore_errors=True)
 
     # Need to convert our styles accordingly.
-    # TODO: Add hints, can remove them later
-    config: Config = {'themes': {}, 'templates': [], 'no_qrc': args.no_qrc, 'resource': args.resource}
-    # TODO: Fix this!
-    config['templates'].append(_config.Template.from_directory(template_dir))
+    config = _config.CompilerConfig(themes={}, templates=[], no_qrc=args.no_qrc, resource=args.resource)
+    config.templates.append(_config.Template.from_directory(template_dir))
     for style in args.styles:
-        config['themes'][style] = Theme.load(f'{theme_dir}/{style}.json')
+        config.themes[style] = Theme.load(f'{theme_dir}/{style}.json')
     for extension in args.extensions:
-        config['templates'].append(_config.Template.from_directory(f'{extension_dir}/{extension}'))
+        config.templates.append(_config.Template.from_directory(f'{extension_dir}/{extension}'))
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    for style in config['themes']:
+    for style in config.themes:
         configure_style(config, style, str(args.output_dir))
 
     # Create aliases for our light-blue and dark-blue styles to light and dark.

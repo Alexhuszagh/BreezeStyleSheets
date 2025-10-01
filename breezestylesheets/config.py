@@ -21,7 +21,7 @@ from .exception import ConfigParseError
 # NOTE: Using unions directly, rather than the `|` syntax, is needed for 3.9 support,
 # with pydantic, which must resolve these hints to define the models.
 
-__all__ = ['Theme']
+__all__ = ['Theme', 'Template']
 # NOTE: Union is required for 3.9 support in our base models.
 ColorType: 'typing.TypeAlias' = typing.Union[Color, typing.Literal[""]]
 _Alias: 'typing.TypeAlias' = 'tuple[str, ...]'
@@ -891,6 +891,38 @@ class Template(Model):
     def render(self, theme: 'Theme') -> None:
         '''TODO: Document and implement'''
         raise NotImplementedError('TODO')
+
+
+class CompilerConfig(Model):
+    '''
+    The configuration of a compiling resource files.
+
+    This is used for the configuration scripts **only**: any runtime
+    theme configuration will use dynamic resources already loaded
+    which will not require compilation.
+    '''
+
+    themes: dict[str, Theme]
+    '''TODO: Document'''
+
+    templates: list[Template]
+    '''TODO: Document'''
+
+    no_qrc: bool
+    '''
+    Do not write (or build) a Qt Resource Collection File ([.qrc]).
+
+    These enumerates the files within a compiled resource to be used
+    as inputs to the resource compiler.
+
+    [.qrc]: https://doc.qt.io/qt-6/resources.html#qt-resource-collection-file-qrc
+    '''
+
+    # TODO: Rename this
+    resource: types.PathOrStr
+    '''TODO: Document'''
+
+    # TODO: Add additional fields
 
 
 class CommentsDecoder(json.JSONDecoder):
