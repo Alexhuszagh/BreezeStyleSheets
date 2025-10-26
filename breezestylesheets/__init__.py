@@ -15,7 +15,7 @@ and Qt versions.
 
 __version__ = '0.2.0'
 
-from .config import Template, Theme
+from .config import Template, Theme  # noqa # type: ignore
 
 # TODO: Import `Theme` and define an `apply` here
 # That will call `Theme.apply` which will require the Qt app

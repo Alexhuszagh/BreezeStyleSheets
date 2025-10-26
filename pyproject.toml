@@ -8,12 +8,9 @@ dynamic = ["version"]
 description = "Configurable Breeze and BreezeDark-like stylesheets for Qt Applications."
 readme = "README.md"
 requires-python = ">=3.9"
-dependencies = [
-    "pydantic>=2.5.3,<3.0.0",
-    "pydantic-extra-types>=2.3.0,<3.0.0",
-]
+dependencies = []
 authors = [
-  {name = "Colin Duquesnoy"},
+  { name = "Colin Duquesnoy" },
   { name = "Alex Huszagh", email = "ahuszagh@gmail.com" },
 ]
 maintainers = [
@@ -40,37 +37,38 @@ Changelog = "https://github.com/Alexhuszagh/BreezeStyleSheets/main/CHANGELOG.md"
 [project.optional-dependencies]
 # TODO: Add optional dependencies on Qt5, Qt6, etc. when we actually make this a full package
 yaml = [
-    "pyyaml>=6.0.1,<7.0.0",
+  "pyyaml>=6.0.1,<7.0.0",
 ]
 toml = [
-    "tomli>=2.0.1,<3.0.0; python_version < '3.11'",
+  "tomli>=2.0.1,<3.0.0; python_version < '3.11'",
 ]
 xml = [
-    "xml2dict>=0.2.2,<0.3.0",
+  "xml2dict>=0.2.2,<0.3.0",
 ]
 
 [dependency-groups]
 lint = [
-    "black>=25.9.0,<26.0.0",
-    "flake8>=7.0.0,<8.0.0",
-    "isort>=5.11.5,<6.0.0",
-    "pylint>=3.3.8,<4.0.0",
-    "pyproject-pyupgrade>=0.1.1,<0.2.0",
-    "pyupgrade>=3.20.0,<4.0.0",
-    "ruff>=0.13.2,<0.14.0",
+# TODO: Remove everything bests ruff
+  "black>=25.9.0,<26.0.0",
+  "flake8>=7.0.0,<8.0.0",
+  "isort>=5.11.5,<6.0.0",
+  "pylint>=3.3.8,<4.0.0",
+  "pyproject-pyupgrade>=0.1.1,<0.2.0",
+  "pyupgrade>=3.20.0,<4.0.0",
+  "ruff>=0.13.2,<0.14.0",
 ]
 test = [
-    "coverage>=7.2.7,<8.0.0",
-    "coverage-badge>=1.1.2,<2.0.0",
-    "pytest>=7.4.4,<8.0.0",
-    "pytest-cov>=4.1.0,<5.0.0",
-    "pytest-html>=3.2.0,<4.0.0",
-    "tox>=4.8.0,<5.0.0",
+  "coverage>=7.2.7,<8.0.0",
+  "coverage-badge>=1.1.2,<2.0.0",
+  "pytest>=7.4.4,<8.0.0",
+  "pytest-cov>=4.1.0,<5.0.0",
+  "pytest-html>=3.2.0,<4.0.0",
+  "tox>=4.8.0,<5.0.0",
 ]
 type = [
-    "mypy>=1.4.1,<2.0.0",
-    "pyright>=1.1.405,<2.0.0",
-    "types-pyyaml>=6.0.12.20250915,<7.0.0.0",
+  "mypy>=1.4.1,<2.0.0",
+  "pyright>=1.1.405,<2.0.0",
+  "types-pyyaml>=6.0.12.20250915,<7.0.0.0",
 ]
 
 [tool.hatch.version]
@@ -96,6 +94,7 @@ lint = { requires-python = ">=3.11" }
 add-bounds = "major"
 
 [tool.poe.tasks]
+# TODO: Change to use only ruff
 test = "pytest"
 tox = "tox"
 type = ["_pyright", "_mypy"]
@@ -103,15 +102,15 @@ lint = ["_flake8", "_pylint", "_isort_lint", "_ruff_lint", "_black_lint"]
 fmt = ["_isort", "_ruff", "_black", "_pyupgrade"]
 _pyright = "pyright"
 _mypy = "mypy"
-# TODO: Add examples to all tasks
+# TODO: Add test, examples to all tasks
 _flake8 = "flake8"
-_pylint = "pylint breezestylesheets test"
-_isort_lint = "isort --check-only breezestylesheets test"
-_ruff_lint = "ruff check breezestylesheets test"
-_black_lint = "black --check breezestylesheets test"
-_isort = "isort breezestylesheets test"
-_ruff = "ruff check breezestylesheets test --fix"
-_black = "black breezestylesheets test"
+_pylint = "pylint breezestylesheets"
+_isort_lint = "isort --check-only breezestylesheets"
+_ruff_lint = "ruff check breezestylesheets"
+_black_lint = "black --check breezestylesheets"
+_isort = "isort breezestylesheets"
+_ruff = "ruff check breezestylesheets --fix"
+_black = "black breezestylesheets"
 _pyupgrade = "pyupgrade breezestylesheets/**/*.py test/**/*.py"
 
 [tool.black]

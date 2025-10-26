@@ -170,7 +170,7 @@ A list of the widgets and properties covered in [ui.py](test/ui.py).
 - QScrollBar
   - Vertical
   - Horizontal
-- QSlider 
+- QSlider
   - Vertical
   - Horizontal
   - Ticks Above
@@ -181,7 +181,7 @@ A list of the widgets and properties covered in [ui.py](test/ui.py).
 - QSplitter
   - Vertical
   - Horizontal
-  - Non-Collapsible Children 
+  - Non-Collapsible Children
   - Handle Width
 - QSplitterHandle
 - QStackedWidget

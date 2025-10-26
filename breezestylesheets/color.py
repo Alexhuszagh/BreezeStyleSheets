@@ -1,26 +1,26 @@
-'''
+"""
 color
 
 Methods and helpers for computing colors via manipulations.
-'''
+"""
 
 import typing
 import colorsys
 
-from pydantic_extra_types.color import Color
+from .pydantic.color import Color
 
-RGBA: 'typing.TypeAlias' = 'tuple[int, int, int, float]'
-'''The red, green, blue, and alpha components of a color.'''
+RGBA: 'typing.TypeAlias' = tuple[int, int, int, float]
+"""The red, green, blue, and alpha components of a color."""
 
-HSLA: 'typing.TypeAlias' = 'tuple[float, float, float, float]'
-'''The hue, saturation, lightness, and alpha components of a color.'''
+HSLA: 'typing.TypeAlias' = tuple[float, float, float, float]
+"""The hue, saturation, lightness, and alpha components of a color."""
 
-Format: 'typing.TypeAlias' = 'typing.Literal["RGBA", "HSLA", "hex"]'
-'''The valid formats to represent a color as.'''
+Format: 'typing.TypeAlias' = typing.Literal['RGBA', 'HSLA', 'hex']
+"""The valid formats to represent a color as."""
 
 
 def to_rgba(value: 'Color | str') -> 'RGBA':
-    '''
+    """
     Parse a color into the RGBA components.
 
     Args:
@@ -30,7 +30,7 @@ def to_rgba(value: 'Color | str') -> 'RGBA':
     Returns:
         `RGBA`: The red, green, blue (from 0-255) and alpha (opacity, from 0-1) components
         of the color.
-    '''
+    """
 
     if isinstance(value, str):
         value = Color(value)
@@ -41,7 +41,7 @@ def to_rgba(value: 'Color | str') -> 'RGBA':
 
 
 def to_hsla(value: 'Color | str') -> 'HSLA':
-    '''
+    """
     Parse a color into the HSLA components.
 
     Args:
@@ -51,7 +51,7 @@ def to_hsla(value: 'Color | str') -> 'HSLA':
     Returns:
         `HSLA`: The hue, saturation, lightness, and alpha (opacity) (from 0-1) components
         of the color.
-    '''
+    """
 
     if isinstance(value, str):
         value = Color(value)
@@ -62,7 +62,7 @@ def to_hsla(value: 'Color | str') -> 'HSLA':
 
 
 def is_light(color: Color) -> bool:
-    '''
+    """
     Determine if the color is bright as a quick estimate.
 
     Args:
@@ -70,13 +70,13 @@ def is_light(color: Color) -> bool:
 
     Returns:
         `bool`: If the color is perceived as light.
-    '''
+    """
     r, g, b, *_ = color.as_rgb_tuple()
     return is_light_rgb(r, g, b)
 
 
 def is_light_hsl(h: float, s: float, l: float) -> bool:  # noqa
-    '''
+    """
     Determine if the color is bright as a quick estimate from the HSL components.
 
     Args:
@@ -86,13 +86,13 @@ def is_light_hsl(h: float, s: float, l: float) -> bool:  # noqa
 
     Returns:
         `bool`: If the color is perceived as light.
-    '''
+    """
     r, g, b = colorsys.hls_to_rgb(h, l, s)
     return is_light_rgb(int(r * 255), int(g * 255), int(b * 255))
 
 
 def is_light_rgb(r: int, g: int, b: int) -> bool:
-    '''
+    """
     Determine if the color is bright as a quick estimate from the RGB components.
 
     Args:
@@ -102,5 +102,5 @@ def is_light_rgb(r: int, g: int, b: int) -> bool:
 
     Returns:
         `bool`: If the color is perceived as light.
-    '''
+    """
     return ((5 * g) + (2 * r) + b) > (8 * 128)

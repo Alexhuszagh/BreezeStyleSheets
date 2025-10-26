@@ -53,11 +53,12 @@ import shutil
 import signal
 import subprocess
 import sys
+from collections import abc as typing_abc
 from pathlib import Path
 
-CallbackFn: typing.TypeAlias = typing.Callable[['Theme'], None]
-ThemeFn: typing.TypeAlias = typing.Callable[[], 'Theme']
-ListenerFn: typing.TypeAlias = typing.Callable[[CallbackFn], None]
+CallbackFn: 'typing.TypeAlias' = typing_abc.Callable[['Theme'], None]
+ThemeFn: 'typing.TypeAlias' = typing_abc.Callable[[], 'Theme']
+ListenerFn: 'typing.TypeAlias' = typing_abc.Callable[[CallbackFn], None]
 
 
 class Theme(enum.IntEnum):
@@ -68,7 +69,7 @@ class Theme(enum.IntEnum):
     UNKNOWN = 2
 
     @staticmethod
-    def from_string(value: str | None) -> 'Theme':
+    def from_string(value: 'str | None') -> 'Theme':
         '''Initialize the enumeration from value.'''
 
         # NOTE: This is for Py3.10 and earlier support.
@@ -266,7 +267,7 @@ def _initialize_advapi32() -> ctypes.CDLL:
     return advapi32
 
 
-_advapi32: typing.Optional['ctypes.CDLL'] = None
+_advapi32: 'ctypes.CDLL | None' = None
 
 # endregion
 
@@ -388,7 +389,7 @@ def _listener_macos(callback: CallbackFn) -> None:
 
 
 def _listen_child_macos() -> None:
-    '''Create a confole event loop listing the macOS events.'''
+    '''Create a console event loop listing the macOS events.'''
 
     # NOTE: We do this so we don't need imports at the global level.
     try:

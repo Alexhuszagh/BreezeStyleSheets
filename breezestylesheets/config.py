@@ -1,22 +1,22 @@
-'''
+"""
 config
 
 Models and helpers to load the Stylesheet configuration options.
-'''
+"""
 
 import typing
-import typing_extensions
-import contextlib
-import io
-import json
 import os.path
 import re
+from collections import abc as typing_abc
+from dataclasses import field
 from pathlib import Path
 
-from pydantic import AliasChoices, AliasPath, BaseModel, ConfigDict, Field, TypeAdapter
-from pydantic_extra_types.color import Color
-from . import color, constants, types, utils
-from .exception import ConfigParseError
+from . import constants, color, types
+from .pydantic.color import Color, NullableColor
+from .model import Model, field_metadata, loads_model, model, parse_block
+
+if typing.TYPE_CHECKING:
+    import typing_extensions as typing_ext
 
 # NOTE: Using unions directly, rather than the `|` syntax, is needed for 3.9 support,
 # with pydantic, which must resolve these hints to define the models.
@@ -24,154 +24,11 @@ from .exception import ConfigParseError
 __all__ = ['Theme', 'Template']
 # NOTE: Union is required for 3.9 support in our base models.
 ColorType: 'typing.TypeAlias' = typing.Union[Color, typing.Literal[""]]
-_Alias: 'typing.TypeAlias' = 'tuple[str, ...]'
 
 
-def _expand_alias_choices(value: 'str') -> '_Alias':
-    '''Expand foreground and other choices to create all permutations of our choices.'''
-
-    # NOTE: This takes the `.` and `foreground`/`background` syntax, which expands this
-    result = set()
-    result.add(value)
-    result.add(value.replace('foreground', 'fg'))
-    result.add(value.replace('background', 'bg'))
-    result.add(value.replace('alternate', 'alt'))
-    updated: list[str] = []
-    if '.' not in value:
-        updated += [f'{i}.default' for i in result]
-        updated += [f'{i}:default' for i in result]
-        updated += [f'{i}-default' for i in result]
-    else:
-        updated += [i.replace('.', ':') for i in result]
-        updated += [i.replace('.', '-') for i in result]
-    result.update(updated)
-
-    return tuple(sorted(result))
-
-
-def _alias_choices(value: 'str', *extras: str) -> 'AliasChoices':
-    '''Get the alias choices from the expanded values.'''
-    return AliasChoices(*_expand_alias_choices(value), *extras)
-
-
-class Model(BaseModel):
-    '''The base model for all configuration options.'''
-
-    model_config: typing.ClassVar[ConfigDict] = ConfigDict(
-        extra='forbid',
-        ignored_types=(utils.LazyAttribute,),
-    )
-    '''Additional parameters for how to configure Pydantic.'''
-
-    @utils.lazy_attribute
-    @classmethod
-    def aliases(cls) -> 'typing.Mapping[str, str]':
-        '''
-        Get all aliases associated with the class.
-
-        This caches the stored aliases for all resolved values,
-        and then computes them to their desired values, allowing
-        efficient lookups of instance values from the alias.
-
-        ```python
-        {
-            'foreground': 'foreground',
-            'fg': 'foreground',
-            'fg-default': 'foreground',
-            'fg.default': 'foreground',
-            'fg:default': 'foreground',
-            'foreground-default': 'foreground',
-        }
-        ```
-
-        Returns:
-            `dict`: The mapping of all the aliases to the field names.
-        '''
-
-        def to_alias(value: str | AliasChoices | AliasPath | None) -> 'list[str]':
-            if isinstance(value, str):
-                return [value]
-            if isinstance(value, AliasChoices):
-                return [i for j in value.choices for i in to_alias(j)]
-            if isinstance(value, AliasPath):
-                return [i for i in value.path if isinstance(i, str)]
-            return []
-
-        result: dict[str, str] = {}
-        for field, info in cls.model_fields.items():
-            result.setdefault(info.alias or field, field)
-            for alias in to_alias(info.validation_alias):
-                result.setdefault(alias, field)
-
-        return result
-
-    def get(self, alias: str) -> typing.Any:
-        '''
-        Get a single attribute by the field alias.
-
-        Args:
-            alias (`str`): The name of the alias or field to get, such as `foreground`.
-
-        Returns:
-            `Any`: The value of that field.
-
-        Raises:
-            `ValueError`: If the provided alias is not valid.
-        '''
-        field = self.aliases.get(alias)
-        if field is None:
-            raise ValueError(f'Got an unknown alias "{alias}".')
-        return getattr(self, field)
-
-    @classmethod
-    def load(cls: type[typing_extensions.Self], path: 'types.PathOrStr') -> typing_extensions.Self:
-        '''
-        Load the stylesheet configuration settings from file.
-
-        This adds the default configuration settings and validates
-        the loaded settings are valid. This supports JSON, YAML, TOML,
-        and XML file formats.
-
-        Args:
-            path (`str`, `Path`): The path to the file to load.
-
-        Returns:
-            `Model`: The loaded stylesheet configuration settings.
-
-        Raises:
-            `ConfigParseError`: Any errors that occur during parsing the configuration data.
-        '''
-        with _parse_block(path=path):
-            with open(path, encoding='utf-8') as file:
-                return cls.loads(file.read(), os.path.splitext(os.path.basename(path))[1])
-
-    @classmethod
-    def loads(
-        cls: type[typing_extensions.Self], s: 'str | bytes | bytearray', extension: 'str'
-    ) -> typing_extensions.Self:
-        '''
-        Load the stylesheet configuration settings from a document.
-
-        This adds the default configuration settings and validates
-        the loaded settings are valid. This supports JSON, YAML, TOML,
-        and XML file formats.
-
-        Args:
-            s (`str`, `bytes`, `bytearray`): The document data, as a string or UTF-8 encoded bytes.
-            extension (str): The extension of the file (to determine the file type).
-
-        Returns:
-            `Model`: The loaded stylesheet configuration settings.
-
-        Raises:
-            `ConfigParseError`: Any errors that occur during parsing the configuration data.
-        '''
-        with _parse_block(data=s):
-            return cls.model_validate(_transform_nested(_loads_model(s, extension)))
-
-
+@model
 class Theme(Model):
-    '''
+    """
     The theme settings for how to style the Qt Stylesheet.
 
     The theme contains the core color data for converting a stylesheet or icon
@@ -230,252 +87,248 @@ class Theme(Model):
         "ads-border:focused": "rgba(61, 173, 232, 0.25)"
     }
     ```
-    '''
+    """
 
-    foreground: 'Color' = Field(validation_alias=_alias_choices('foreground'))
-    '''The main foreground color.'''
+    foreground: 'Color' = field(metadata=field_metadata('foreground', required=True))
+    """The main foreground color."""
 
-    foreground_light: 'ColorType' = Field(validation_alias=_alias_choices('foreground.light'))
-    '''Lighter foreground color for selected items.'''
+    foreground_light: 'NullableColor' = field(metadata=field_metadata('foreground:light'))
+    """Lighter foreground color for selected items."""
 
-    background: 'Color' = Field(validation_alias=_alias_choices('background'))
-    '''The main background color.'''
+    background: 'Color' = field(metadata=field_metadata('background'))
+    """The main background color."""
 
-    background_alternate: 'ColorType' = Field(validation_alias=_alias_choices('background.alternate'))
-    '''Alternate background color for styles.'''
+    background_alternate: 'NullableColor' = field(metadata=field_metadata('background:alternate'))
+    """Alternate background color for styles."""
 
-    highlight: 'Color' = Field(validation_alias=_alias_choices('highlight'))
-    '''Main color to highlight widgets, such as on hover events.'''
+    highlight: 'Color' = field(metadata=field_metadata('highlight'))
+    """Main color to highlight widgets, such as on hover events."""
 
-    highlight_dark: 'ColorType' = Field(validation_alias=_alias_choices('highlight.dark'))
-    '''Color for selected widgets so hover events can change widget color.'''
+    highlight_dark: 'NullableColor' = field(metadata=field_metadata('highlight:dark'))
+    """Color for selected widgets so hover events can change widget color."""
 
-    highlight_alternate: 'ColorType' = Field(validation_alias=_alias_choices('highlight.alternate'))
-    '''Alternate highlight color for hovered widgets in QAbstractItemViews.'''
+    highlight_alternate: 'NullableColor' = field(metadata=field_metadata('highlight:alternate'))
+    """Alternate highlight color for hovered widgets in QAbstractItemViews."""
 
-    midtone: 'Color' = Field(validation_alias=_alias_choices('midtone'))
-    '''Main midtone color, such as for borders.'''
+    midtone: 'Color' = field(metadata=field_metadata('midtone'))
+    """Main midtone color, such as for borders."""
 
-    midtone_light: 'ColorType' = Field(validation_alias=_alias_choices('midtone.light'))
-    '''Lighter color for midtones, such as for certain disabled widgets.'''
+    midtone_light: 'NullableColor' = field(metadata=field_metadata('midtone:light'))
+    """Lighter color for midtones, such as for certain disabled widgets."""
 
-    midtone_dark: 'ColorType' = Field(validation_alias=_alias_choices('midtone.dark'))
-    '''Darker midtone, such as for the background of QPushButton and QSlider.'''
+    midtone_dark: 'NullableColor' = field(metadata=field_metadata('midtone:dark'))
+    """Darker midtone, such as for the background of QPushButton and QSlider."""
 
-    midtone_hover: 'ColorType' = Field(validation_alias=_alias_choices('midtone.hover'))
-    '''Lighter midtone for separator hover events.'''
+    midtone_hover: 'NullableColor' = field(metadata=field_metadata('midtone:hover'))
+    """Lighter midtone for separator hover events."""
 
-    view_checked: 'Color' = Field(validation_alias=_alias_choices('view.checked'))
-    '''Color for checked widgets in QAbstractItemViews.'''
+    view_checked: 'Color' = field(metadata=field_metadata('view:checked'))
+    """Color for checked widgets in QAbstractItemViews."""
 
-    view_hover: 'ColorType' = Field(validation_alias=_alias_choices('view.hover'))
-    '''Hover background color in QAbstractItemViews.'''
+    view_hover: 'NullableColor' = field(metadata=field_metadata('view:hover'))
+    """Hover background color in QAbstractItemViews."""
 
-    view_corner: 'ColorType' = Field(validation_alias=_alias_choices('view.corner'))
-    '''Background color for the corner widget in a QAbstractItemView.'''
+    view_corner: 'NullableColor' = field(metadata=field_metadata('view:corner'))
+    """Background color for the corner widget in a QAbstractItemView."""
 
-    view_header_border: 'ColorType' = Field(validation_alias=_alias_choices('view.header.border'))
-    '''Border color between items in a QHeaderView.'''
+    view_header_border: 'NullableColor' = field(metadata=field_metadata('view:header:border'))
+    """Border color between items in a QHeaderView."""
 
-    view_header: 'ColorType' = Field(validation_alias=_alias_choices('view.header'))
-    '''Background color for a QHeaderView.'''
+    view_header: 'NullableColor' = field(metadata=field_metadata('view:header'))
+    """Background color for a QHeaderView."""
 
-    view_border: 'ColorType' = Field(validation_alias=_alias_choices('view.border'))
-    '''Border color Between items in a QAbstractItemView.'''
+    view_border: 'NullableColor' = field(metadata=field_metadata('view:border'))
+    """Border color Between items in a QAbstractItemView."""
 
-    view_background: 'ColorType' = Field(validation_alias=_alias_choices('view.background'))
-    '''Background for QAbstractItemViews.'''
+    view_background: 'NullableColor' = field(metadata=field_metadata('view:background'))
+    """Background for QAbstractItemViews."""
 
-    toolbar_horizontal_background: 'ColorType' = Field(
-        validation_alias=_alias_choices('toolbar.horizontal.background'),
+    toolbar_horizontal_background: 'NullableColor' = field(
+        metadata=field_metadata('toolbar:horizontal:background'),
     )
-    '''Background for a horizontal QToolBar.'''
+    """Background for a horizontal QToolBar."""
 
-    toolbar_vertical_background: 'ColorType' = Field(
-        validation_alias=_alias_choices('toolbar.vertical.background'),
+    toolbar_vertical_background: 'NullableColor' = field(
+        metadata=field_metadata('toolbar:vertical:background'),
     )
-    '''Background for a vertical QToolBar.'''
+    """Background for a vertical QToolBar."""
 
-    text_background: 'ColorType' = Field(validation_alias=_alias_choices('text.background'))
-    '''Background for widgets with text input.'''
+    text_background: 'NullableColor' = field(metadata=field_metadata('text:background'))
+    """Background for widgets with text input."""
 
-    tab_background_selected: 'ColorType' = Field(validation_alias=_alias_choices('tab.background.selected'))
-    '''Background for the currently selected tab.'''
+    tab_background_selected: 'NullableColor' = field(metadata=field_metadata('tab:background:selected'))
+    """Background for the currently selected tab."""
 
-    tab_background: 'ColorType' = Field(validation_alias=_alias_choices('tab.background'))
-    '''Background for non-selected tabs.'''
+    tab_background: 'NullableColor' = field(metadata=field_metadata('tab:background'))
+    """Background for non-selected tabs."""
 
-    tree: 'Color' = Field(validation_alias=_alias_choices('tree'))
-    '''Color for the branch/arrow icons in a QTreeView.'''
+    tree: 'Color' = field(metadata=field_metadata('tree'))
+    """Color for the branch/arrow icons in a QTreeView."""
 
-    slider_foreground: 'ColorType' = Field(validation_alias=_alias_choices('slider.foreground'))
-    '''
+    slider_foreground: 'NullableColor' = field(metadata=field_metadata('slider:foreground'))
+    """
     Color for the chunk of a QProgressBar, the active groove of a QSlider,
     and the border of a hovered QSlider handle.
-    '''
+    """
 
-    slider_handle_background: 'ColorType' = Field(validation_alias=_alias_choices('slider.handle.background'))
-    '''Background color for the handle of a QSlider.'''
+    slider_handle_background: 'NullableColor' = field(metadata=field_metadata('slider:handle:background'))
+    """Background color for the handle of a QSlider."""
 
-    menu_disabled_impl: 'ColorType' = Field(validation_alias=_alias_choices('menu.disabled'))
-    '''Internal helper for `menu_disabled`. Do not use directly.'''
+    menu_disabled_impl: 'NullableColor' = field(metadata=field_metadata('menu:disabled'))
+    """Internal helper for `menu_disabled`. Do not use directly."""
 
     @property
     def menu_disabled(self) -> 'Color':
-        '''Color for a disabled menubar/menu item.'''
-        if not self.menu_disabled_impl:
+        """Color for a disabled menubar/menu item."""
+        if not self.menu_disabled_impl.is_empty:
             self.menu_disabled_impl = constants.DISABLED[self.is_dark]
         return self.menu_disabled_impl
 
     @menu_disabled.setter
-    def menu_disabled(self, value: 'ColorType') -> None:
+    def menu_disabled(self, value: 'NullableColor') -> None:
         self.menu_disabled_impl = value
 
-    checkbox_light: 'ColorType' = Field(validation_alias=_alias_choices('checkbox.light'))
-    '''Color for a checked/hovered QCheckBox or QRadioButton.'''
+    checkbox_light: 'NullableColor' = field(metadata=field_metadata('checkbox:light'))
+    """Color for a checked/hovered QCheckBox or QRadioButton."""
 
-    checkbox_disabled_impl: 'ColorType' = Field(validation_alias=_alias_choices('checkbox.disabled'))
-    '''Internal helper for `checkbox_disabled`. Do not use directly.'''
+    checkbox_disabled_impl: 'NullableColor' = field(metadata=field_metadata('checkbox:disabled'))
+    """Internal helper for `checkbox_disabled`. Do not use directly."""
 
     @property
     def checkbox_disabled(self) -> 'Color':
-        '''Color for a disabled or unchecked/unhovered QCheckBox or QRadioButton.'''
-        if not self.checkbox_disabled_impl:
+        """Color for a disabled or unchecked/unhovered QCheckBox or QRadioButton."""
+        if not self.checkbox_disabled_impl.is_empty:
             self.checkbox_disabled_impl = constants.DISABLED[self.is_dark]
         return self.checkbox_disabled_impl
 
     @checkbox_disabled.setter
-    def checkbox_disabled(self, value: 'ColorType') -> None:
+    def checkbox_disabled(self, value: 'NullableColor') -> None:
         self.checkbox_disabled_impl = value
 
-    scrollbar_hover: 'ColorType' = Field(validation_alias=_alias_choices('scrollbar.hover'))
-    '''
+    scrollbar_hover: 'NullableColor' = field(metadata=field_metadata('scrollbar:hover'))
+    """
     Color for the handle of a scrollbar. Due to limitations of Qt stylesheets, any
     handle of a scrollbar must be treated like it's hovered.
-    '''
+    """
 
-    scrollbar_background: 'ColorType' = Field(validation_alias=_alias_choices('scrollbar.background'))
-    '''Background for a non-hovered scrollbar.'''
+    scrollbar_background: 'NullableColor' = field(metadata=field_metadata('scrollbar:background'))
+    """Background for a non-hovered scrollbar."""
 
-    scrollbar_background_hover: 'ColorType' = Field(
-        validation_alias=_alias_choices('scrollbar.background.hover')
+    scrollbar_background_hover: 'NullableColor' = field(
+        metadata=field_metadata('scrollbar:background:hover'),
     )
-    '''Background for a hovered scrollbar.'''
+    """Background for a hovered scrollbar."""
 
-    button_background: 'ColorType' = Field(validation_alias=_alias_choices('button.background'))
-    '''Default background for a QPushButton.'''
+    button_background: 'NullableColor' = field(metadata=field_metadata('button:background'))
+    """Default background for a QPushButton."""
 
-    button_background_pressed: 'ColorType' = Field(
-        validation_alias=_alias_choices('button.background.pressed')
+    button_background_pressed: 'NullableColor' = field(
+        metadata=field_metadata('button:background:pressed')
     )
-    '''Background for a pressed QPushButton.'''
+    """Background for a pressed QPushButton."""
 
-    button_border: 'ColorType' = Field(validation_alias=_alias_choices('button.border'))
-    '''Border for a non-hovered QPushButton.'''
+    button_border: 'NullableColor' = field(metadata=field_metadata('button:border'))
+    """Border for a non-hovered QPushButton."""
 
-    button_checked: 'ColorType' = Field(validation_alias=_alias_choices('button.checked'))
-    '''Background for a checked QPushButton.'''
+    button_checked: 'NullableColor' = field(metadata=field_metadata('button:checked'))
+    """Background for a checked QPushButton."""
 
-    button_disabled_impl: 'ColorType' = Field(validation_alias=_alias_choices('button.disabled'))
-    '''Internal helper for `button_disabled`. Do not use directly.'''
+    button_disabled_impl: 'NullableColor' = field(metadata=field_metadata('button:disabled'))
+    """Internal helper for `button_disabled`. Do not use directly."""
 
     @property
     def button_disabled(self) -> 'Color':
-        '''Background for a disabled QPushButton, or fallthrough for disabled QWidgets.'''
-        if not self.button_disabled_impl:
+        """Background for a disabled QPushButton, or fallthrough for disabled QWidgets."""
+        if not self.button_disabled_impl.is_empty:
             self.button_disabled_impl = constants.DISABLED[self.is_dark]
         return self.button_disabled_impl
 
     @button_disabled.setter
-    def button_disabled(self, value: 'ColorType') -> None:
+    def button_disabled(self, value: 'NullableColor') -> None:
         self.button_disabled_impl = value
 
-    close_hover: 'ColorType' = Field(validation_alias=_alias_choices('close.hover'))
-    '''Color of a dock/tab close icon when hovered.'''
+    close_hover: 'NullableColor' = field(metadata=field_metadata('close:hover'))
+    """Color of a dock/tab close icon when hovered."""
 
-    close_pressed: 'ColorType' = Field(validation_alias=_alias_choices('close.pressed'))
-    '''Color of a dock/tab close icon when pressed.'''
+    close_pressed: 'NullableColor' = field(metadata=field_metadata('close:pressed'))
+    """Color of a dock/tab close icon when pressed."""
 
-    dock_background: 'ColorType' = Field(validation_alias=_alias_choices('dock.background'))
-    '''Default background color for QDockWidget and title.'''
+    dock_background: 'NullableColor' = field(metadata=field_metadata('dock:background'))
+    """Default background color for QDockWidget and title."""
 
-    dock_float: 'ColorType' = Field(validation_alias=_alias_choices('dock.float'))
-    '''Color for the float icon for QDockWidgets.'''
+    dock_float: 'NullableColor' = field(metadata=field_metadata('dock:float'))
+    """Color for the float icon for QDockWidgets."""
 
-    critical_impl: 'ColorType' = Field(validation_alias=_alias_choices('critical'))
-    '''Internal helper for `critical`. Do not use directly.'''
+    critical_impl: 'NullableColor' = field(metadata=field_metadata('critical'))
+    """Internal helper for `critical`. Do not use directly."""
 
     @property
     def critical(self) -> 'Color':
-        '''Background color for the QMessageBox critical icon.'''
-        if not self.critical_impl:
+        """Background color for the QMessageBox critical icon."""
+        if not self.critical_impl.is_empty:
             self.critical_impl = constants.CRITICAL[self.is_dark]
         return self.critical_impl
 
     @critical.setter
-    def critical(self, value: 'ColorType') -> None:
+    def critical(self, value: 'NullableColor') -> None:
         self.critical_impl = value
 
-    information_impl: 'ColorType' = Field(validation_alias=_alias_choices('information'))
-    '''Internal helper for `information`. Do not use directly.'''
+    information_impl: 'NullableColor' = field(metadata=field_metadata('information'))
+    """Internal helper for `information`. Do not use directly."""
 
     @property
     def information(self) -> 'Color':
-        '''Background color for the QMessageBox information icon.'''
-        if not self.information_impl:
+        """Background color for the QMessageBox information icon."""
+        if not self.information_impl.is_empty:
             self.information_impl = constants.INFORMATION[self.is_dark]
         return self.information_impl
 
     @information.setter
-    def information(self, value: 'ColorType') -> None:
+    def information(self, value: 'NullableColor') -> None:
         self.information_impl = value
 
-    question_impl: 'ColorType' = Field(validation_alias=_alias_choices('question'))
-    '''Internal helper for `question`. Do not use directly.'''
+    question_impl: 'NullableColor' = field(metadata=field_metadata('question'))
+    """Internal helper for `question`. Do not use directly."""
 
     @property
     def question(self) -> 'Color':
-        '''Background color for the QMessageBox question icon.'''
-        if not self.question_impl:
+        """Background color for the QMessageBox question icon."""
+        if not self.question_impl.is_empty:
             self.question_impl = constants.QUESTION[self.is_dark]
         return self.question_impl
 
     @question.setter
-    def question(self, value: 'ColorType') -> None:
+    def question(self, value: 'NullableColor') -> None:
         self.question_impl = value
 
-    warning_impl: 'ColorType' = Field(validation_alias=_alias_choices('warning'))
-    '''Internal helper for `warning`. Do not use directly.'''
+    warning_impl: 'NullableColor' = field(metadata=field_metadata('warning'))
+    """Internal helper for `warning`. Do not use directly."""
 
     @property
     def warning(self) -> 'Color':
-        '''Background color for the QMessageBox warning icon.'''
+        """Background color for the QMessageBox warning icon."""
         if not self.warning_impl:
             self.warning_impl = constants.WARNING[self.is_dark]
         return self.warning_impl
 
     @warning.setter
-    def warning(self, value: 'ColorType') -> None:
+    def warning(self, value: 'NullableColor') -> None:
         self.warning_impl = value
 
-    ads_tab_focused: 'ColorType' = Field(
-        validation_alias=_alias_choices('ads.tab.focused', 'ads-tab:focused')
-    )
-    '''The background color for an Advanced Docking System Tab.'''
+    ads_tab_focused: 'NullableColor' = field(metadata=field_metadata('ads-tab:focused'))
+    """The background color for an Advanced Docking System Tab."""
 
-    ads_border_focused: 'ColorType' = Field(
-        validation_alias=_alias_choices('ads.border.focused', 'ads-border:focused')
-    )
-    '''The background color for an Advanced Docking System border.'''
+    ads_border_focused: 'NullableColor' = field(metadata=field_metadata('ads-border:focused'))
+    """The background color for an Advanced Docking System border."""
 
     @property
     def is_light(self) -> 'bool':
-        '''Get if the color scheme is a light theme.'''
+        """Get if the color scheme is a light theme."""
         return color.is_light(self.background)
 
     @property
     def is_dark(self) -> 'bool':
-        '''Get if the color scheme is a dark theme.'''
+        """Get if the color scheme is a dark theme."""
         return not self.is_light
 
     @typing.overload
@@ -485,7 +338,7 @@ class Theme(Model):
     def get_color(self, alias: str, format: 'color.Format') -> 'str': ...
 
     def get_color(self, alias: str, format: 'color.Format | None' = None) -> 'str | Color':
-        '''
+        """
         Get a single color by the alias.
 
         Args:
@@ -500,7 +353,7 @@ class Theme(Model):
 
         Raises:
             `ValueError`: If the provided alias is not valid or the field is not a color.
-        '''
+        """
 
         # ensure we have our color data, for the value
         is_hex = alias.endswith((':hex', '.hex', '-hex'))
@@ -534,7 +387,7 @@ class Theme(Model):
         return value
 
     def render(self, template: str, style: str) -> str:
-        '''
+        """
         Render the stylesheet with all placeholders replaced.
 
         Args:
@@ -543,16 +396,21 @@ class Theme(Model):
 
         Returns:
             `str`: The fully rendered stylesheet with all placeholders replaced.
-        '''
+        """
         if not style.startswith(':/'):
             style = f':/{style}'
         if not style.endswith('/'):
             style = f'{style}/'
-        return _replace_by_name(template, self).replace('^style^', style)
+        result = _replace_by_name(template, self).replace('^style^', style)
+        if re.search(r'\^[A-Za-z0-9]+(?:[.:-][A-Za-z0-9]+)*\^', result) is not None:
+            msg = 'Did not replace all value placeholders: ensure the theme is properly configured.'
+            raise ValueError(msg)
+
+        return result
 
 
-IconListReplacement: 'typing.TypeAlias' = 'typing.Sequence[str]'
-'''
+IconListReplacement: 'typing.TypeAlias' = 'typing_abc.Sequence[str]'
+"""
 An ordered list of the index-based icon replacements.
 
 These are used to replace indexes, such as `^0^`, with a named placeholder
@@ -573,10 +431,10 @@ These are then used to replace the specifiers in the template: for example, here
   </g>
 </svg>
 ```
-'''
+"""
 
-IconDictReplacement: 'typing.TypeAlias' = typing.Mapping[str, IconListReplacement]
-'''
+IconDictReplacement: 'typing.TypeAlias' = typing_abc.Mapping[str, IconListReplacement]
+"""
 A single icon replacement which replaces the icon fields with template specifiers.
 
 This contains which contains the name of the extension(s), which can be `default`
@@ -599,10 +457,10 @@ These are then used to replace the specifiers in the template: for example, here
   </g>
 </svg>
 ```
-'''
+"""
 
 IconReplacement: 'typing.TypeAlias' = typing.Union[IconDictReplacement, IconListReplacement]
-'''
+"""
 A single icon replacement which replaces the icon fields with template specifiers.
 
 This contains which contains the name of the extension(s), which can be `default`
@@ -631,14 +489,15 @@ These are then used to replace the specifiers in the template: for example, here
   </g>
 </svg>
 ```
-'''
+"""
 
 
-class StandardIconReplacements(typing_extensions.TypedDict, total=False):
-    '''
+class StandardIconReplacements(typing.TypedDict, total=False):
+    """
     The Qt standard icons that can be used for simple icon styling.
 
-    The fields all correspond to the following Qt enumerated icon names:
+    The fields all correspond to the following Qt enumerated icon names,
+    defined under [QStyle](https://doc.qt.io/qt-6/qstyle.html):
     - browser_refresh: `SP_BrowserReload`
     - browser_refresh_stop: `SP_BrowserStop`
     - dialog_apply: `SP_DialogApplyButton`, `SP_DialogYesButton`
@@ -661,7 +520,7 @@ class StandardIconReplacements(typing_extensions.TypedDict, total=False):
     - vista_shield: `SP_VistaShield`
     - volume: `SP_MediaVolume`
     - volume_muted: `SP_MediaVolumeMuted`
-    '''
+    """
 
     browser_refresh: 'IconReplacement'
     browser_refresh_stop: 'IconReplacement'
@@ -688,9 +547,9 @@ class StandardIconReplacements(typing_extensions.TypedDict, total=False):
 
 
 IconReplacements: 'typing.TypeAlias' = typing.Union[
-    typing.Mapping[str, IconReplacement], StandardIconReplacements
+    typing_abc.Mapping[str, IconReplacement], StandardIconReplacements
 ]
-'''
+"""
 A mapping of the icon names to their replacement definitions.
 
 This supports the standard icons and can also be customized with your own icons.
@@ -708,14 +567,11 @@ This supports the standard icons and can also be customized with your own icons.
 
 The icon replacements for how they correspond to the replaced colors is
 defined in `IconReplacement` .
-'''
-
-IconReplacementsAdaptor: 'TypeAdapter[IconReplacements]' = TypeAdapter(IconReplacements)
-'''A custom type validator for the icon replacements'''
+"""
 
 
 def load_icon_replacements(path: types.PathOrStr) -> IconReplacements:
-    '''
+    """
     Load the icon replacements from a file.
 
     This supports JSON, YAML, TOML, and XML file formats.
@@ -728,14 +584,14 @@ def load_icon_replacements(path: types.PathOrStr) -> IconReplacements:
 
     Raises:
         `ConfigParseError`: Any errors that occur during parsing the data.
-    '''
-    with _parse_block(path=path):
+    """
+    with parse_block(path=path):
         with open(path, encoding='utf-8') as file:
-            return loads_icon_replacements(file.read(), os.path.splitext(os.path.basename(path))[1])
+            return _loads_icon_replacements(file.read(), os.path.splitext(os.path.basename(path))[1])
 
 
 def loads_icon_replacements(s: 'str | bytes | bytearray', extension: 'str') -> IconReplacements:
-    '''
+    """
     Load the icon replacements from a document.
 
     This supports JSON, YAML, TOML, and XML file formats.
@@ -749,40 +605,68 @@ def loads_icon_replacements(s: 'str | bytes | bytearray', extension: 'str') -> I
 
     Raises:
         `ConfigParseError`: Any errors that occur during parsing the data.
-    '''
-    with _parse_block(data=s):
-        return IconReplacementsAdaptor.validate_python(_loads_model(s, extension))
+    """
+    with parse_block(data=s):
+        return _loads_icon_replacements(s, extension)
 
 
+def _loads_icon_replacements(s: 'str | bytes | bytearray', extension: 'str') -> IconReplacements:
+    """Load and validate the loaded icons."""
+
+    def is_mapping_str(value: typing_abc.Mapping):
+        return all([isinstance(i, str) for i in value.keys()])
+
+    def is_sequence_str(value: typing.Any):
+        return isinstance(value, typing_abc.Sequence) and all([isinstance(i, str) for i in value])
+
+    def throw_invalid(data: typing.Any) -> typing.NoReturn:
+        raise ValueError(f'Expected a mapping icon names to replacements, got "{data}".')
+
+    # NOTE: We accept Mapping/Sequence, but `loads` with always return `dict` or `list`.
+    loaded = loads_model(s, extension)
+    if not isinstance(loaded, typing_abc.Mapping) or not is_mapping_str(loaded):
+        throw_invalid(loaded)
+    for value in loaded.values():
+        # Mapping[str, Sequence[str]] | Sequence[str]
+        if isinstance(value, typing_abc.Mapping):
+            if not is_mapping_str(value) or not all([is_sequence_str(i) for i in value.values()]):
+                throw_invalid(loaded)
+        elif not is_sequence_str(value):
+            throw_invalid(loaded)
+
+    return typing.cast(IconReplacements, loaded)
+
+
+@model
 class Icon(Model):
-    '''
+    """
     The configurations for how to replace the colors within an icon.
 
     This contains an icon template, the name of the icon used to
     determine icon resource path, and the color replacements for
     the template.
-    '''
+    """
 
     name: str
-    '''
+    """
     The name of the icon.
 
     This corresponds to the icon written to disk, with the `.svg` suffix, and
     optionally, with an extension suffix as defined in the replacements.
-    '''
+    """
 
     template: str
-    '''The raw, template SVG data of the icon.'''
+    """The raw, template SVG data of the icon."""
 
     replacements: IconReplacement
-    '''
+    """
     The template replacements for the icon, optionally with additional extensions defined.
 
     The replacements **MUST** be defined here, since
-    '''
+    """
 
-    def render(self, theme: 'Theme') -> typing.Mapping[str, str]:
-        '''
+    def render(self, theme: 'Theme') -> typing_abc.Mapping[str, str]:
+        """
         Render the SVG icon with all placeholders replaced.
 
         The placeholders have a syntax like `^foreground^` (for name-based placeholders),
@@ -795,7 +679,7 @@ class Icon(Model):
         Returns:
             `dict`: The template SVG rendered with all placeholders replaced,
             as a mapping of the icon name and the rendered SVG.
-        '''
+        """
 
         def with_ext(name: str, ext: str) -> str:
             if ext == 'default':
@@ -803,7 +687,7 @@ class Icon(Model):
             return f'{name}_{ext}'
 
         result = {}
-        if isinstance(self.replacements, typing.Mapping):
+        if isinstance(self.replacements, typing_abc.Mapping):
             for extension, replacements in self.replacements.items():
                 name = with_ext(self.name, extension)
                 value = _replace_by_index(self.template, theme, replacements)
@@ -814,31 +698,52 @@ class Icon(Model):
         return result
 
 
+@model
 class Template(Model):
-    '''
+    """
     A theme template, containing the stylesheet and icon templates.
 
     This contains the data for how to render a single template,
     which may include additional extensions.
-    '''
+
+    The template defines placeholders, such as `^foreground^`,
+    which are then replaced by the values specified in the `Theme`.
+
+    ```css
+    QToolTip
+    {
+        /* 0.2ex is the smallest value that's not ignored on Windows. */
+        border: 0.04em solid ^foreground^;
+        background-image: none;
+        background-color: ^background^;
+        alternate-background-color: ^background:alternate^;
+        color: ^foreground^;
+        padding: 0.1em;
+        opacity: 200;
+    }
+    ```
+
+    Similarly, icons will define index-based (`^0^`) or name-based
+    placeholders `^foreground^` like above.
+    """
 
     icons: list[Icon]
-    '''A list of icon templates, including their replacements.'''
+    """A list of icon templates, including their replacements."""
 
     stylesheet: str
-    '''
+    """
     A template stylesheet, which may be empty.
 
     If additional stylesheet templates exist, these will be merged into
     a single stylesheet at the end.
-    '''
+    """
 
     @classmethod
     def from_directory(
-        cls: type[typing_extensions.Self],
+        cls: type['typing_ext.Self'],
         directory: types.PathOrStr,
-    ) -> typing_extensions.Self:
-        '''
+    ) -> 'typing_ext.Self':
+        """
         Read the icon and stylesheet templates from a directory.
 
         A template directory contains the stylesheet template, icon replacement info,
@@ -862,7 +767,7 @@ class Template(Model):
 
         Returns:
             `Template`: The loaded icon and stylesheet template data.
-        '''
+        """
 
         stylesheet = ''
         icons: list[Icon] = []
@@ -888,178 +793,83 @@ class Template(Model):
 
         return cls(icons=icons, stylesheet=stylesheet)
 
+    @classmethod
+    def from_directories(
+        cls: type['typing_ext.Self'],
+        *directories: types.PathOrStr,
+    ) -> 'typing_ext.Self':
+        """
+        Read the icon and stylesheet templates from multiple directories and merge them.
+
+        A template directory contains the stylesheet template, icon replacement info,
+        and icon templates (all are optional). A sample template directory structure is:
+
+        ```text
+        directory/
+            stylesheet.qss.in
+            icons.json
+            branch_closed.svg.in
+            branch_end_arrow.svg.in
+            ...
+        ```
+
+        Our pre-built templates exist in 2 locations, relative to the project directory:
+        - `/template`
+        - `/extension/*` (every subdirectory in `extension`)
+
+        Args:
+            directories (`str`, `Path`): The paths to the directories containing the templates.
+
+        Returns:
+            `Template`: The loaded and merged icon and stylesheet template data.
+        """
+        templates = [cls.from_directory(i) for i in directories]
+        return cls.join(*templates)
+
+    @classmethod
+    def join(
+        cls: type['typing_ext.Self'],
+        *templates: 'typing_ext.Self',
+    ) -> 'typing_ext.Self':
+        """
+        Join multiple templates into a single template.
+
+        This merges all the relevant stylesheets and icons for each template
+        into a single template.
+
+        Args:
+            templates (`Template`): The templates to merge.
+
+        Returns:
+            `Template`: The merged templates.
+        """
+        icons = [i for j in templates for i in j.icons]
+        stylesheet = '\n'.join([i.stylesheet for i in templates])
+        return cls(icons=icons, stylesheet=stylesheet)
+
     def render(self, theme: 'Theme') -> None:
-        '''TODO: Document and implement'''
+        """TODO: Document and implement"""
         raise NotImplementedError('TODO')
 
 
-class CompilerConfig(Model):
-    '''
-    The configuration of a compiling resource files.
-
-    This is used for the configuration scripts **only**: any runtime
-    theme configuration will use dynamic resources already loaded
-    which will not require compilation.
-    '''
-
-    themes: dict[str, Theme]
-    '''TODO: Document'''
-
-    templates: list[Template]
-    '''TODO: Document'''
-
-    no_qrc: bool
-    '''
-    Do not write (or build) a Qt Resource Collection File ([.qrc]).
-
-    These enumerates the files within a compiled resource to be used
-    as inputs to the resource compiler.
-
-    [.qrc]: https://doc.qt.io/qt-6/resources.html#qt-resource-collection-file-qrc
-    '''
-
-    # TODO: Rename this
-    resource: types.PathOrStr
-    '''TODO: Document'''
-
-    # TODO: Add additional fields
-
-
-class CommentsDecoder(json.JSONDecoder):
-    '''
-    A custom decoder that removes simple comments from the JSON input.
-
-    This removes only lines starting with `//`.
-    '''
-
-    # pylint: disable-next=arguments-differ
-    def decode(self, s: 'str') -> 'types.JSONValue':  # type: ignore # noqa
-        '''Return the Python representation of s (a str instance containing a JSON document).'''
-        lines = s.splitlines()
-        lines = [i for i in lines if not i.strip().startswith('//')]
-        return typing.cast('types.JSONValue', super().decode('\n'.join(lines)))
-
-
-def _loads_model(s: 'str | bytes | bytearray', extension: 'str') -> types.JSONObject:
-    '''Load an object from a document.'''
-    value = _loads(s, extension)
-    if not isinstance(value, typing.Mapping):
-        raise ValueError(f'Got an invalid parsed model type of "{type(value).__name__}".')
-    return typing.cast(types.JSONObject, value)
-
-
-def _loads(s: 'str | bytes | bytearray', extension: 'str') -> typing.Any:
-    '''Load values from a document.'''
-    # NOTE: Migrate to `match` with 3.10+ support.
-    if extension in ('.json', '.jsonc'):
-        return _loads_json(s)
-    elif extension in ('.yml', '.yaml'):
-        return _loads_yaml(s)
-    elif extension == '.toml':
-        return _loads_toml(s)
-    elif extension == '.xml':
-        return _loads_xml(s)
-    raise ValueError(f'Got an unknown file type of "{extension}".')
-
-
-def _loads_json(s: 'str | bytes | bytearray') -> typing.Any:
-    '''Load values from a JSON document.'''
-    return json.loads(_decode(s), cls=CommentsDecoder)
-
-
-def _loads_yaml(s: 'str | bytes | bytearray') -> typing.Any:
-    '''Load values from a YAML document.'''
-
-    # pylint: disable-next=import-error
-    import yaml  # type: ignore # noqa
-
-    return yaml.safe_load(io.StringIO(_decode(s)))
-
-
-def _loads_toml(s: 'str | bytes | bytearray') -> typing.Any:
-    '''Load values from a TOML document.'''
-
-    try:
-        # pylint: disable-next=import-error
-        import tomllib  # type # noqa
-    except ImportError:
-        # pylint: disable-next=import-error
-        import tomli as tomllib  # type: ignore # noqa
-
-    return tomllib.loads(_decode(s))
-
-
-def _loads_xml(s: 'str | bytes | bytearray') -> typing.Any:
-    '''Load values from an XML document.'''
-
-    # pylint: disable-next=import-error
-    import xml2dict  # type: ignore # noqa
-
-    return xml2dict.parse(_decode(s))
-
-
-def _decode(s: 'str | bytes | bytearray') -> 'str':
-    '''Decode the value to string as UTF-8.'''
-    if isinstance(s, (bytes, bytearray)):
-        s = s.decode('utf-8')
-    return s
-
-
-def _transform_nested(v: 'types.JSONObject') -> 'dict[str, str]':
-    '''Transform nested keys in a JSON object to `key.nested` syntax.'''
-
-    result: dict[str, str] = {}
-    for key, value in v.items():
-        if not isinstance(key, str) or not isinstance(value, (str, typing.Mapping)):
-            raise ValueError(f'Expected JSON value to be str or mapping, got "{type(value)}".')
-        if isinstance(value, str):
-            result[key] = value
-        elif isinstance(value, typing.Mapping):
-            nested = _transform_nested(value)
-            for subkey, subvalue in nested.items():
-                result[f'{key}:{subkey}'] = subvalue
-
-    return result
-
-
-@contextlib.contextmanager
-def _parse_block(
-    data: 'str | bytes | bytearray | None' = None,
-    path: 'types.PathOrStr | None' = None,
-) -> 'typing.Iterator[None]':
-    '''A helper to parse the config data within a context block.'''
-    try:
-        yield
-    except ConfigParseError as error:
-        error.path = error.path or path
-        raise
-    except Exception as error:
-        if data is None and path is None:
-            raise ValueError('Must provide either the data or the path.') from error
-        if data is None:
-            assert path is not None
-            with open(path, encoding='utf-8') as file:
-                data = file.read()
-        raise ConfigParseError(str(error), data, path, error) from error
-
-
 def _replace_by_name(s: str, theme: 'Theme', colors: 'typing.Iterable[str] | None' = None) -> str:
-    '''Replace the placeholders in the value by string.'''
+    """Replace the placeholders in the value by string."""
 
     # NOTE: We expand the fields in order to have better type hinting.
     # The placeholders have a syntax like `^foreground^`.
     # To simplify the replacement process, you can specify
     # a limited subset of colors, rather than use all of them.
     if colors is None:
-        colors = Theme.model_fields.keys()
+        colors = Theme.keys
     for key in colors:
+        # TODO: This is wrong, we don't have the fields correctly mapped
         s = s.replace(f'^{key}^', theme.get_color(key, format='RGBA'))
 
     return s
 
 
 def _replace_by_index(s: str, theme: 'Theme', colors: 'typing.Iterable[str]') -> str:
-    '''Replace the placeholders in the value by string.'''
+    """Replace the placeholders in the value by string."""
 
     # NOTE: We expand the fields in order to have better type hinting.
     # The placeholders have a syntax like `^0^`, where

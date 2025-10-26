@@ -15,8 +15,10 @@ import re
 import shutil
 import subprocess
 import zlib
+from dataclasses import dataclass
 
 from . import types
+from .config import Template, Theme
 from .constants import Compression, Framework  # pylint: disable=unused-import
 from .exception import InvalidFrameworkError, RccNotFoundError, ResourceCompileError
 
@@ -366,3 +368,81 @@ def get_rcc(framework: 'Framework') -> 'types.PathOrStr':
         raise RccNotFoundError(rcc, framework)
 
     return command
+
+
+@dataclass(kw_only=True)
+class Compiler:
+    '''
+    The configuration of a compiling resource files.
+
+    This is used for the configuration scripts **only**: any runtime
+    theme configuration will use dynamic resources already loaded
+    which will not require compilation.
+    '''
+
+    themes: dict[str, Theme]
+    '''
+    A mapping of the resource style names to the themes.
+
+    This maps the names, for when the resources are configured, to the
+    paths of the resources, so the compiler can convert them to Qt
+    resources.
+    '''
+
+    template: Template
+    '''
+    The stylesheet and icon templates to configure.
+
+    The template defines placeholders, such as `^foreground^`,
+    which are then replaced by the values specified in the `Theme`.
+
+    These can be loaded from one or more directories.
+    '''
+
+    framework: Framework
+    '''
+    The Qt framework to target.
+
+    Valid frameworks are:
+    - pyqt5
+    - pyqt6
+    - pyside2
+    - pyside6
+    '''
+
+    qrc: 'types.PathOrStr | None' = None
+    '''
+    The path to the Qt Resource Collection File ([.qrc]) to write.
+
+    If the value is None, do not write (or build) a Qt Resource Collection
+    File ([.qrc]).
+
+    These enumerates the files within a compiled resource to be used
+    as inputs to the resource compiler.
+
+    [.qrc]: https://doc.qt.io/qt-6/resources.html#qt-resource-collection-file-qrc
+    '''
+
+    rcc: 'types.PathOrStr | None' = None
+    '''The path to the Qt resource compiler.'''
+
+    compression: 'Compression | None' = None
+    '''
+    The compression of the replaced resource data.
+
+    If not using the default or no compression, we optimize the generated
+    resource using a custom compression that compresses over all files,
+    rather than per-file, producing much smaller resource files.
+
+    Valid compression values are:
+    - zlib
+    - lzma
+    - gzip
+    - default (use the default Qt compression)
+    '''
+
+    def compile(self) -> None:
+        raise NotImplementedError('TODO')
+
+    def to_qrc(self) -> None:
+        raise NotImplementedError('TODO')
