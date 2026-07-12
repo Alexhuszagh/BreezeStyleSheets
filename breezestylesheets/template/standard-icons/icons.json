@@ -1,0 +1,70 @@
+// NOTE: This is a custom JSON file, where lines leading
+// with `//` are removed. No other comments are valid.
+{
+    "browser_refresh": {
+        "default": ["foreground"]
+    },
+    "browser_refresh_stop": {
+        "default": ["critical"]
+    },
+    "dialog_apply": {
+        "default": ["foreground"]
+    },
+    "dialog_ignore": {
+        "default": ["foreground"]
+    },
+    "dialog_retry": {
+        "default": ["foreground"]
+    },
+    "dialog_save_all": {
+        "default": ["foreground"]
+    },
+    "dialog_yes_to_all": {
+        "default": ["foreground"]
+    },
+    "folder_open_link": {
+        "default": ["foreground", "background"]
+    },
+    "horizontal_extension": {
+        "default": ["foreground"]
+    },
+    "pause": {
+        "default": ["foreground"]
+    },
+    "play": {
+        "default": ["foreground"]
+    },
+    "restore_defaults": {
+        "default": ["foreground"]
+    },
+    "seek_backward": {
+        "default": ["foreground"]
+    },
+    "seek_forward": {
+        "default": ["foreground"]
+    },
+    "skip_backward": {
+        "default": ["foreground"]
+    },
+    "skip_forward": {
+        "default": ["foreground"]
+    },
+    "stop": {
+        "default": ["foreground"]
+    },
+    "tab_close": {
+        "default": ["foreground"]
+    },
+    "vertical_extension": {
+        "default": ["foreground"]
+    },
+    "vista_shield": {
+        "default": ["foreground"]
+    },
+    "volume": {
+        "default": ["foreground"]
+    },
+    "volume_muted": {
+        "default": ["foreground"]
+    }
+}

@@ -20,12 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-'''
-    standard_icons
-    ==============
-
-    Example overriding QCommonStyle for custom standard icons.
-'''
+"""Example overriding QCommonStyle for custom standard icons."""
 
 import os
 import sys
@@ -43,41 +38,41 @@ ICON_MAP = shared.get_icon_map(compat)
 
 
 def style_icon(style, icon, option=None, widget=None):
-    '''Helper to provide arguments for setting a style icon.'''
+    """Helper to provide arguments for setting a style icon."""
     return shared.style_icon(args, style, icon, ICON_MAP, option, widget)
 
 
 class StandardIconStyle(QtWidgets.QCommonStyle):
-    '''A custom application style overriding standard icons.'''
+    """A custom application style overriding standard icons."""
 
     def __init__(self, style):
         super().__init__()
         self.style = style
 
     def __getattribute__(self, item):
-        '''
+        """
         Override for standardIcon. Everything else should default to the
         system default. We cannot have `style_icon` be a member of
         `StandardIconStyle`, since this will cause an infinite recursive loop.
-        '''
-        if item == 'standardIcon':
+        """
+        if item == "standardIcon":
             return lambda *x: style_icon(self, *x)
-        return getattr(object.__getattribute__(self, 'style'), item)
+        return getattr(object.__getattribute__(self, "style"), item)
 
 
 def add_standard_button(ui, layout, icon, index):
-    '''Create and add a QToolButton with a standard icon.'''
+    """Create and add a QToolButton with a standard icon."""
 
     button = QtWidgets.QToolButton(ui.centralwidget)
-    setattr(ui, f'button{index}', button)
+    setattr(ui, f"button{index}", button)
     button.setAutoRaise(True)
     button.setIcon(style_icon(button.style(), icon, widget=button))
-    button.setObjectName(f'button{index}')
+    button.setObjectName(f"button{index}")
     layout.addWidget(button)
 
 
 def add_standard_buttons(ui, page, icons):
-    '''Create and add QToolButtons with standard icons to the UI.'''
+    """Create and add QToolButtons with standard icons to the UI."""
 
     _ = ui
     for icon_name in icons:

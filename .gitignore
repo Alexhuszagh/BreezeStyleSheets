@@ -199,3 +199,10 @@ cython_debug/
 *.exe
 *.out
 *.app
+
+# Rendered templates
+breezestylesheets/**/*.svg
+breezestylesheets/**/*.qss
+
+# Test reports
+__reports__

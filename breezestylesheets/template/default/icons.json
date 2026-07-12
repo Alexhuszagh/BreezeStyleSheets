@@ -1,0 +1,254 @@
+// NOTE: This is a custom JSON file, where lines leading
+// with `//` are removed. No other comments are valid.
+{
+    // There's 3 different ways to provide valid replacement colors for
+    // icons:
+    //  1. Provide a dict of the icon suffix to the color replacements.
+    //      This will do index-based replacement, so, for example,
+    //      `"down_arrow": { "default": ["foreground"] }` will
+    //      replace the `down_arrow` template and create an icon
+    //      named `down_arrow.svg` with `^0^` replaced by the
+    //      theme's foreground color.
+    //  2. Provide a list to the color replacements.
+    //      This will do name-based replacement, so, for example,
+    //      `"down_arrow": ["foreground"]` will replace the
+    //      `down_arrow` template and create an icon named
+    //      `down_arrow.svg` with `^foreground^` replaced by
+    //      the theme's foreground color.
+    //  3. Don't provide an entry for the icon.
+    //      The replacements will be auto-deduced from the file,
+    //      and will use name-based replacement like above.
+
+    // Arrows
+    "down_arrow": {
+        "default": ["foreground:hex", "foreground:opacity"],
+        "hover": ["highlight:hex", "highlight:opacity"],
+        "disabled": ["midtone:light:hex", "midtone:light:opacity"]
+    },
+    "left_arrow": {
+        "default": ["foreground:hex", "foreground:opacity"],
+        "hover": ["highlight:hex", "highlight:opacity"],
+        "disabled": ["midtone:light:hex", "midtone:light:opacity"]
+    },
+    "right_arrow": {
+        "default": ["foreground:hex", "foreground:opacity"],
+        "hover": ["highlight:hex", "highlight:opacity"],
+        "disabled": ["midtone:light:hex", "midtone:light:opacity"]
+    },
+    "up_arrow": {
+        "default": ["foreground:hex", "foreground:opacity"],
+        "hover": ["highlight:hex", "highlight:opacity"],
+        "disabled": ["midtone:light:hex", "midtone:light:opacity"]
+    },
+    // Abstract buttons.
+    "checkbox_checked": {
+        "default": ["checkbox:light"],
+        "disabled": ["checkbox:disabled"]
+    },
+    "checkbox_indeterminate": {
+        "default": ["checkbox:light"],
+        "disabled": ["checkbox:disabled"]
+    },
+    "checkbox_unchecked": {
+        "default": ["checkbox:light"],
+        "disabled": ["checkbox:disabled"]
+    },
+    "radio_checked": {
+        "default": ["checkbox:light"],
+        "disabled": ["checkbox:disabled"]
+    },
+    "radio_unchecked": {
+        "default": ["checkbox:light"],
+        "disabled": ["checkbox:disabled"]
+    },
+    // Dock/Tab widgets
+    "close": {
+        "default": ["midtone:dark:hex", "midtone:dark:opacity"],
+        "hover": ["close:hover:hex", "close:hover:opacity"],
+        "pressed": ["highlight:dark:hex", "highlight:dark:opacity"]
+    },
+    "undock": {
+        "default": ["dock:float:hex", "dock:float:opacity"]
+    },
+    "undock_hover": {
+        "default": ["close:hover:hex", "close:hover:opacity"],
+        "pressed": ["highlight:dark:hex", "highlight:dark:opacity"]
+    },
+    // Tree views.
+    "branch_open": {
+        "default": ["tree:hex", "tree:opacity"],
+        "hover": ["highlight:hex", "highlight:opacity"]
+    },
+    "branch_closed": {
+        "default": ["tree:hex", "tree:opacity"],
+        "hover": ["highlight:hex", "highlight:opacity"]
+    },
+    "branch_end": {
+        "default": ["tree"]
+    },
+    "branch_end_arrow": {
+        "default": ["tree"]
+    },
+    "branch_more": {
+        "default": ["tree"]
+    },
+    "branch_more_arrow": {
+        "default": ["tree"]
+    },
+    "vline": {
+        "default": ["tree"]
+    },
+    "calendar_next": {
+        "default": ["foreground"]
+    },
+    "calendar_previous": {
+        "default": ["foreground"]
+    },
+    "transparent": {
+        "default": []
+    },
+    "hmovetoolbar": {
+        "default": ["midtone:light"]
+    },
+    "vmovetoolbar": {
+        "default": ["midtone:light"]
+    },
+    "hseptoolbar": {
+        "default": ["midtone:light"]
+    },
+    "vseptoolbar": {
+        "default": ["midtone:light"]
+    },
+    "sizegrip": {
+        "default": ["midtone:light"]
+    },
+    // DialogButtonBox icons
+    "dialog_cancel": {
+        "default": ["foreground"]
+    },
+    "dialog_close": {
+        "default": ["foreground"]
+    },
+    "dialog_ok": {
+        "default": ["foreground"]
+    },
+    "dialog_open": {
+        "default": ["foreground"]
+    },
+    "dialog_save": {
+        "default": ["foreground"]
+    },
+    "dialog_reset": {
+        "default": ["foreground"]
+    },
+    "dialog_help": {
+        "default": ["foreground"]
+    },
+    "dialog_no": {
+        "default": ["foreground"]
+    },
+    "dialog_discard": {
+        "default": ["foreground"]
+    },
+    // File icons.
+    "file": {
+        "default": ["foreground"]
+    },
+    "file_dialog_contents": {
+        "default": ["foreground", "highlight:alternate", "midtone"]
+    },
+    "file_dialog_detailed": {
+        "default": ["foreground", "midtone:light"]
+    },
+    "file_dialog_end": {
+        "default": ["foreground", "midtone:light"]
+    },
+    "file_dialog_info": {
+        "default": ["foreground"]
+    },
+    "file_dialog_list": {
+        "default": ["foreground", "midtone:light"]
+    },
+    "file_dialog_start": {
+        "default": ["foreground", "midtone:light"]
+    },
+    "file_link": {
+        "default": ["foreground"]
+    },
+    "folder": {
+        "default": ["foreground"]
+    },
+    "folder_link": {
+        "default": ["foreground"]
+    },
+    "folder_open": {
+        "default": ["foreground"]
+    },
+    "home_directory": {
+        "default": ["foreground"]
+    },
+    // Computer icons
+    "computer": {
+        "default": ["foreground"]
+    },
+    "desktop": {
+        "default": ["foreground"]
+    },
+    "disc_drive": {
+        "default": ["foreground"]
+    },
+    "floppy_drive": {
+        "default": ["foreground"]
+    },
+    "hard_drive": {
+        "default": ["foreground"]
+    },
+    "network_drive": {
+        "default": ["foreground"]
+    },
+    "trash": {
+        "default": ["foreground"]
+    },
+    // Titlebar icons
+    "help": {
+        "default": ["foreground"]
+    },
+    "maximize": {
+        "default": ["foreground"]
+    },
+    "menu": {
+        "default": ["foreground"]
+    },
+    "minimize": {
+        "default": ["foreground"]
+    },
+    "restore": {
+        "default": ["foreground"]
+    },
+    "shade": {
+        "default": ["foreground"]
+    },
+    "unshade": {
+        "default": ["foreground"]
+    },
+    "window_close": {
+        "default": ["foreground"]
+    },
+    // Message icons
+    "message_critical": {
+        "default": ["critical", "foreground"]
+    },
+    "message_information": {
+        "default": ["information", "foreground"]
+    },
+    "message_question": {
+        "default": ["question", "foreground"]
+    },
+    "message_warning": {
+        "default": ["warning", "foreground"]
+    },
+    // Other icons
+    "clear_text": {
+        "default": ["foreground"]
+    }
+}

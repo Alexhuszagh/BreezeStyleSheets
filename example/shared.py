@@ -1,9 +1,4 @@
-'''
-    shared
-    ======
-
-    Shared imports and compatibility definitions between Qt5 and Qt6.
-'''
+"""Shared imports and compatibility definitions between Qt5 and Qt6."""
 
 # pylint: disable=import-error
 
@@ -15,7 +10,7 @@ import sys
 
 example_dir = os.path.dirname(os.path.realpath(__file__))
 home = os.path.dirname(example_dir)
-dist = os.path.join(home, 'dist')
+dist = os.path.join(home, "dist")
 sys.path.append(home)
 THEME = None
 
@@ -23,123 +18,123 @@ from example.detect import system_theme  # noqa  # pylint: disable=wrong-import-
 
 
 def create_parser():
-    '''Create an argparser with the base settings for all Qt applications.'''
+    """Create an argparser with the base settings for all Qt applications."""
 
-    parser = argparse.ArgumentParser(description='Configurations for the Qt5 application.')
+    parser = argparse.ArgumentParser(description="Configurations for the Qt5 application.")
     parser.add_argument(
-        '--stylesheet',
-        help='stylesheet name (`dark`, `light`, `native`, `auto`, ...)',
-        default='native',
+        "--stylesheet",
+        help="stylesheet name (`dark`, `light`, `native`, `auto`, ...)",
+        default="native",
     )
     # Know working styles include:
     #   1. Fusion
     #   2. Windows
     parser.add_argument(
-        '--style',
-        help='application style (`Fusion`, `Windows`, `native`, ...)',
-        default='native',
+        "--style",
+        help="application style (`Fusion`, `Windows`, `native`, ...)",
+        default="native",
     )
-    parser.add_argument('--font-size', help='font size for the application', type=float, default=-1)
-    parser.add_argument('--font-family', help='the font family')
+    parser.add_argument("--font-size", help="font size for the application", type=float, default=-1)
+    parser.add_argument("--font-family", help="the font family")
     parser.add_argument(
-        '--scale',
-        help='scale factor for the UI',
+        "--scale",
+        help="scale factor for the UI",
         type=float,
         default=1,
     )
     parser.add_argument(
-        '--qt-framework',
+        "--qt-framework",
         help=(
-            'target framework to build for. Default = pyqt5. '
-            'Note: building for PyQt6 requires PySide6-rcc to be installed.'
+            "target framework to build for. Default = pyqt5. "
+            "Note: building for PyQt6 requires PySide6-rcc to be installed."
         ),
-        choices=['pyqt5', 'pyqt6', 'pyside2', 'pyside6'],
-        default='pyqt5',
+        choices=["pyqt5", "pyqt6", "pyside2", "pyside6"],
+        default="pyqt5",
     )
     # Linux or Unix-like only.
-    parser.add_argument('--use-x11', help='force the use of x11 on compatible systems.', action='store_true')
+    parser.add_argument("--use-x11", help="force the use of x11 on compatible systems.", action="store_true")
 
     return parser
 
 
 def parse_args(parser):
-    '''Parse the command-line arguments and hot-patch the args.'''
+    """Parse the command-line arguments and hot-patch the args."""
 
     args, unknown = parser.parse_known_args()
     # Need to fix an issue on Wayland on Linux:
     #   conda-forge does not support Wayland, for who knows what reason.
-    if sys.platform.lower().startswith('linux') and 'CONDA_PREFIX' in os.environ:
+    if sys.platform.lower().startswith("linux") and "CONDA_PREFIX" in os.environ:
         args.use_x11 = True
 
     if args.use_x11:
-        os.environ['XDG_SESSION_TYPE'] = 'x11'
-        os.environ['QT_QPA_PLATFORM'] = 'xcb'
+        os.environ["XDG_SESSION_TYPE"] = "x11"
+        os.environ["QT_QPA_PLATFORM"] = "xcb"
 
     args.stylesheet = normalize_stylesheet(args.stylesheet)
     return args, unknown
 
 
 def normalize_stylesheet(stylesheet):
-    '''Normalize the stylesheet, removing and normalizing any aliases.'''
+    """Normalize the stylesheet, removing and normalizing any aliases."""
 
     # now we need to normalize our theme. we don't use Qt6 features
     # so we can differentiat between light/dark/unknown.
-    if stylesheet.startswith('auto'):
+    if stylesheet.startswith("auto"):
         theme = system_theme.get_theme()
         if theme == system_theme.Theme.DARK:
-            stylesheet = stylesheet.replace('auto', 'dark', 1)
+            stylesheet = stylesheet.replace("auto", "dark", 1)
         elif theme == system_theme.Theme.LIGHT:
-            stylesheet = stylesheet.replace('auto', 'light', 1)
+            stylesheet = stylesheet.replace("auto", "light", 1)
         else:
-            logging.warning('Unknown an unknown system theme, falling back to the system native theme.')
-            stylesheet = 'native'
+            logging.warning("Unknown an unknown system theme, falling back to the system native theme.")
+            stylesheet = "native"
 
     # Needed so we remove any aliases. See #106.
-    if stylesheet in ('dark', 'light'):
-        stylesheet += '-blue'
+    if stylesheet in ("dark", "light"):
+        stylesheet += "-blue"
     return stylesheet
 
 
 def is_qt6(args):
-    '''Get if we're using Qt6 and not Qt5.'''
-    return args.qt_framework in ('pyqt6', 'pyside6')
+    """Get if we're using Qt6 and not Qt5."""
+    return args.qt_framework in ("pyqt6", "pyside6")
 
 
 def import_qt(args, load_resources=True):
-    '''Import the Qt modules'''
+    """Import the Qt modules"""
 
-    if args.qt_framework == 'pyqt6':
+    if args.qt_framework == "pyqt6":
         from PyQt6 import QtCore, QtGui, QtWidgets  # pyright: ignore[reportMissingImports]
-    elif args.qt_framework == 'pyside6':
+    elif args.qt_framework == "pyside6":
         from PySide6 import QtCore, QtGui, QtWidgets  # pyright: ignore[reportMissingImports]
     elif args.qt_framework == "pyqt5":
         from PyQt5 import QtCore, QtGui, QtWidgets  # pyright: ignore[reportMissingImports]
-    elif args.qt_framework == 'pyside2':
+    elif args.qt_framework == "pyside2":
         from PySide2 import QtCore, QtGui, QtWidgets  # pyright: ignore[reportMissingImports]
     else:
         raise ValueError(f'Got an invalid Qt framework of "{args.qt_framework}".')
 
     if load_resources:
-        sys.path.insert(0, f'{home}/resources')
-        importlib.import_module(f'breeze_{args.qt_framework}')
+        sys.path.insert(0, f"{home}/resources")
+        importlib.import_module(f"breeze_{args.qt_framework}")
 
     return QtCore, QtGui, QtWidgets
 
 
 def get_resources(args):
-    '''Get the resource format for the Qt application.'''
-    return f':/{args.stylesheet}/'
+    """Get the resource format for the Qt application."""
+    return f":/{args.stylesheet}/"
 
 
 def get_stylesheet(resource_format):
-    '''Get the path to the stylesheet.'''
-    return f'{resource_format}stylesheet.qss'
+    """Get the path to the stylesheet."""
+    return f"{resource_format}stylesheet.qss"
 
 
 def get_version(args):
-    '''Get the current version of the Qt library.'''
+    """Get the current version of the Qt library."""
     QtCore, _, __ = import_qt(args, load_resources=False)
-    if args.qt_framework in ('pyqt5', 'pyqt6'):
+    if args.qt_framework in ("pyqt5", "pyqt6"):
         # QT_VERSION is stored in 0xMMmmpp, each in 8 bit pairs.
         # Goes major, minor, patch. 393984 is "6.3.0"
         return (QtCore.QT_VERSION >> 16, (QtCore.QT_VERSION >> 8) & 0xFF, QtCore.QT_VERSION & 0xFF)
@@ -147,7 +142,7 @@ def get_version(args):
 
 
 def get_compat_definitions(args):  # pylint: disable=too-many-statements
-    '''Create our compatibility definitions.'''
+    """Create our compatibility definitions."""
 
     ns = argparse.Namespace()
     QtCore, QtGui, QtWidgets = import_qt(args, load_resources=False)
@@ -156,7 +151,7 @@ def get_compat_definitions(args):  # pylint: disable=too-many-statements
     ns.QtWidgets = QtWidgets
 
     # ensure we store the QT_VERSION
-    if args.qt_framework in ('pyqt5', 'pyqt6'):
+    if args.qt_framework in ("pyqt5", "pyqt6"):
         # QT_VERSION is stored in 0xMMmmpp, each in 8 bit pairs.
         # Goes major, minor, patch. 393984 is "6.3.0"
         ns.QT_VERSION = (QtCore.QT_VERSION >> 16, (QtCore.QT_VERSION >> 8) & 0xFF, QtCore.QT_VERSION & 0xFF)
@@ -230,7 +225,7 @@ def get_compat_definitions(args):  # pylint: disable=too-many-statements
 
         # QObjects
         ns.QAction = QtGui.QAction
-        if args.qt_framework == 'pyqt6':
+        if args.qt_framework == "pyqt6":
             ns.QFileSystemModel = QtGui.QFileSystemModel
         else:
             ns.QFileSystemModel = QtWidgets.QFileSystemModel
@@ -802,7 +797,7 @@ def get_compat_definitions(args):  # pylint: disable=too-many-statements
 
 
 def get_colors(args, compat):
-    '''Create shared colors dependent on the stylesheet.'''
+    """Create shared colors dependent on the stylesheet."""
 
     ns = argparse.Namespace()
     ns.Background = compat.QtGui.QColor(255, 255, 0)
@@ -816,7 +811,7 @@ def get_colors(args, compat):
     ns.ViewBackground = compat.QtGui.QColor(0, 0, 0)
     ns.TabBackground = compat.QtGui.QColor(0, 0, 0)
     ns.HighLightDark = compat.QtGui.QColor(255, 0, 0)
-    if args.stylesheet.startswith('dark'):
+    if args.stylesheet.startswith("dark"):
         ns.Background = compat.QtGui.QColor(49, 54, 59)
         ns.Foreground = compat.QtGui.QColor(239, 240, 241)
         ns.GrooveBackground = compat.QtGui.QColor(98, 101, 104)
@@ -834,7 +829,7 @@ def get_colors(args, compat):
         ns.HighLightDark = compat.QtGui.QColor(42, 121, 163)
         ns.LinkColor = compat.QtGui.QColor(88, 166, 255)
         ns.LinkVisitedColor = compat.QtGui.QColor(255, 88, 250)
-    elif args.stylesheet.startswith('light'):
+    elif args.stylesheet.startswith("light"):
         ns.Background = compat.QtGui.QColor(239, 240, 241)
         ns.Foreground = compat.QtGui.QColor(49, 54, 59)
         ns.GrooveBackground = compat.QtGui.QColor(106, 105, 105, 179)
@@ -857,101 +852,101 @@ def get_colors(args, compat):
 
 
 def get_icon_map(compat):
-    '''Create a map of standard icons to resource paths.'''
+    """Create a map of standard icons to resource paths."""
 
     icon_map = {
-        compat.SP_TitleBarMinButton: 'minimize.svg',
-        compat.SP_TitleBarMenuButton: 'menu.svg',
-        compat.SP_TitleBarMaxButton: 'maximize.svg',
-        compat.SP_TitleBarCloseButton: 'window_close.svg',
-        compat.SP_TitleBarNormalButton: 'restore.svg',
-        compat.SP_TitleBarShadeButton: 'shade.svg',
-        compat.SP_TitleBarUnshadeButton: 'unshade.svg',
-        compat.SP_TitleBarContextHelpButton: 'help.svg',
-        compat.SP_MessageBoxInformation: 'message_information.svg',
-        compat.SP_MessageBoxWarning: 'message_warning.svg',
-        compat.SP_MessageBoxCritical: 'message_critical.svg',
-        compat.SP_MessageBoxQuestion: 'message_question.svg',
-        compat.SP_DesktopIcon: 'desktop.svg',
-        compat.SP_TrashIcon: 'trash.svg',
-        compat.SP_ComputerIcon: 'computer.svg',
-        compat.SP_DriveFDIcon: 'floppy_drive.svg',
-        compat.SP_DriveHDIcon: 'hard_drive.svg',
-        compat.SP_DriveCDIcon: 'disc_drive.svg',
-        compat.SP_DriveDVDIcon: 'disc_drive.svg',
-        compat.SP_DriveNetIcon: 'network_drive.svg',
-        compat.SP_DirHomeIcon: 'home_directory.svg',
-        compat.SP_DirOpenIcon: 'folder_open.svg',
-        compat.SP_DirClosedIcon: 'folder.svg',
-        compat.SP_DirIcon: 'folder.svg',
-        compat.SP_DirLinkIcon: 'folder_link.svg',
-        compat.SP_DirLinkOpenIcon: 'folder_open_link.svg',
-        compat.SP_FileIcon: 'file.svg',
-        compat.SP_FileLinkIcon: 'file_link.svg',
-        compat.SP_FileDialogStart: 'file_dialog_start.svg',
-        compat.SP_FileDialogEnd: 'file_dialog_end.svg',
-        compat.SP_FileDialogToParent: 'up_arrow.svg',
-        compat.SP_FileDialogNewFolder: 'folder.svg',
-        compat.SP_FileDialogDetailedView: 'file_dialog_detailed.svg',
-        compat.SP_FileDialogInfoView: 'file_dialog_info.svg',
-        compat.SP_FileDialogContentsView: 'file_dialog_contents.svg',
-        compat.SP_FileDialogListView: 'file_dialog_list.svg',
-        compat.SP_FileDialogBack: 'left_arrow.svg',
-        compat.SP_DockWidgetCloseButton: 'close.svg',
-        compat.SP_ToolBarHorizontalExtensionButton: 'horizontal_extension.svg',
-        compat.SP_ToolBarVerticalExtensionButton: 'vertical_extension.svg',
-        compat.SP_DialogOkButton: 'dialog_ok.svg',
-        compat.SP_DialogCancelButton: 'dialog_cancel.svg',
-        compat.SP_DialogHelpButton: 'dialog_help.svg',
-        compat.SP_DialogOpenButton: 'dialog_open.svg',
-        compat.SP_DialogSaveButton: 'dialog_save.svg',
-        compat.SP_DialogCloseButton: 'dialog_close.svg',
-        compat.SP_DialogApplyButton: 'dialog_apply.svg',
-        compat.SP_DialogResetButton: 'dialog_reset.svg',
-        compat.SP_DialogDiscardButton: 'dialog_discard.svg',
-        compat.SP_DialogYesButton: 'dialog_apply.svg',
-        compat.SP_DialogNoButton: 'dialog_no.svg',
-        compat.SP_ArrowUp: 'up_arrow.svg',
-        compat.SP_ArrowDown: 'down_arrow.svg',
-        compat.SP_ArrowLeft: 'left_arrow.svg',
-        compat.SP_ArrowRight: 'right_arrow.svg',
-        compat.SP_ArrowBack: 'left_arrow.svg',
-        compat.SP_ArrowForward: 'right_arrow.svg',
-        compat.SP_CommandLink: 'right_arrow.svg',
-        compat.SP_VistaShield: 'vista_shield.svg',
-        compat.SP_BrowserReload: 'browser_refresh.svg',
-        compat.SP_BrowserStop: 'browser_refresh_stop.svg',
-        compat.SP_MediaPlay: 'play.svg',
-        compat.SP_MediaStop: 'stop.svg',
-        compat.SP_MediaPause: 'pause.svg',
-        compat.SP_MediaSkipForward: 'skip_backward.svg',
-        compat.SP_MediaSkipBackward: 'skip_forward.svg',
-        compat.SP_MediaSeekForward: 'seek_forward.svg',
-        compat.SP_MediaSeekBackward: 'seek_backward.svg',
-        compat.SP_MediaVolume: 'volume.svg',
-        compat.SP_MediaVolumeMuted: 'volume_muted.svg',
-        compat.SP_LineEditClearButton: 'clear_text.svg',
-        compat.SP_DialogYesToAllButton: 'dialog_yes_to_all.svg',
-        compat.SP_DialogNoToAllButton: 'dialog_no.svg',
-        compat.SP_DialogSaveAllButton: 'dialog_save_all.svg',
-        compat.SP_DialogAbortButton: 'dialog_cancel.svg',
-        compat.SP_DialogRetryButton: 'dialog_retry.svg',
-        compat.SP_DialogIgnoreButton: 'dialog_ignore.svg',
-        compat.SP_RestoreDefaultsButton: 'restore_defaults.svg',
+        compat.SP_TitleBarMinButton: "minimize.svg",
+        compat.SP_TitleBarMenuButton: "menu.svg",
+        compat.SP_TitleBarMaxButton: "maximize.svg",
+        compat.SP_TitleBarCloseButton: "window_close.svg",
+        compat.SP_TitleBarNormalButton: "restore.svg",
+        compat.SP_TitleBarShadeButton: "shade.svg",
+        compat.SP_TitleBarUnshadeButton: "unshade.svg",
+        compat.SP_TitleBarContextHelpButton: "help.svg",
+        compat.SP_MessageBoxInformation: "message_information.svg",
+        compat.SP_MessageBoxWarning: "message_warning.svg",
+        compat.SP_MessageBoxCritical: "message_critical.svg",
+        compat.SP_MessageBoxQuestion: "message_question.svg",
+        compat.SP_DesktopIcon: "desktop.svg",
+        compat.SP_TrashIcon: "trash.svg",
+        compat.SP_ComputerIcon: "computer.svg",
+        compat.SP_DriveFDIcon: "floppy_drive.svg",
+        compat.SP_DriveHDIcon: "hard_drive.svg",
+        compat.SP_DriveCDIcon: "disc_drive.svg",
+        compat.SP_DriveDVDIcon: "disc_drive.svg",
+        compat.SP_DriveNetIcon: "network_drive.svg",
+        compat.SP_DirHomeIcon: "home_directory.svg",
+        compat.SP_DirOpenIcon: "folder_open.svg",
+        compat.SP_DirClosedIcon: "folder.svg",
+        compat.SP_DirIcon: "folder.svg",
+        compat.SP_DirLinkIcon: "folder_link.svg",
+        compat.SP_DirLinkOpenIcon: "folder_open_link.svg",
+        compat.SP_FileIcon: "file.svg",
+        compat.SP_FileLinkIcon: "file_link.svg",
+        compat.SP_FileDialogStart: "file_dialog_start.svg",
+        compat.SP_FileDialogEnd: "file_dialog_end.svg",
+        compat.SP_FileDialogToParent: "up_arrow.svg",
+        compat.SP_FileDialogNewFolder: "folder.svg",
+        compat.SP_FileDialogDetailedView: "file_dialog_detailed.svg",
+        compat.SP_FileDialogInfoView: "file_dialog_info.svg",
+        compat.SP_FileDialogContentsView: "file_dialog_contents.svg",
+        compat.SP_FileDialogListView: "file_dialog_list.svg",
+        compat.SP_FileDialogBack: "left_arrow.svg",
+        compat.SP_DockWidgetCloseButton: "close.svg",
+        compat.SP_ToolBarHorizontalExtensionButton: "horizontal_extension.svg",
+        compat.SP_ToolBarVerticalExtensionButton: "vertical_extension.svg",
+        compat.SP_DialogOkButton: "dialog_ok.svg",
+        compat.SP_DialogCancelButton: "dialog_cancel.svg",
+        compat.SP_DialogHelpButton: "dialog_help.svg",
+        compat.SP_DialogOpenButton: "dialog_open.svg",
+        compat.SP_DialogSaveButton: "dialog_save.svg",
+        compat.SP_DialogCloseButton: "dialog_close.svg",
+        compat.SP_DialogApplyButton: "dialog_apply.svg",
+        compat.SP_DialogResetButton: "dialog_reset.svg",
+        compat.SP_DialogDiscardButton: "dialog_discard.svg",
+        compat.SP_DialogYesButton: "dialog_apply.svg",
+        compat.SP_DialogNoButton: "dialog_no.svg",
+        compat.SP_ArrowUp: "up_arrow.svg",
+        compat.SP_ArrowDown: "down_arrow.svg",
+        compat.SP_ArrowLeft: "left_arrow.svg",
+        compat.SP_ArrowRight: "right_arrow.svg",
+        compat.SP_ArrowBack: "left_arrow.svg",
+        compat.SP_ArrowForward: "right_arrow.svg",
+        compat.SP_CommandLink: "right_arrow.svg",
+        compat.SP_VistaShield: "vista_shield.svg",
+        compat.SP_BrowserReload: "browser_refresh.svg",
+        compat.SP_BrowserStop: "browser_refresh_stop.svg",
+        compat.SP_MediaPlay: "play.svg",
+        compat.SP_MediaStop: "stop.svg",
+        compat.SP_MediaPause: "pause.svg",
+        compat.SP_MediaSkipForward: "skip_backward.svg",
+        compat.SP_MediaSkipBackward: "skip_forward.svg",
+        compat.SP_MediaSeekForward: "seek_forward.svg",
+        compat.SP_MediaSeekBackward: "seek_backward.svg",
+        compat.SP_MediaVolume: "volume.svg",
+        compat.SP_MediaVolumeMuted: "volume_muted.svg",
+        compat.SP_LineEditClearButton: "clear_text.svg",
+        compat.SP_DialogYesToAllButton: "dialog_yes_to_all.svg",
+        compat.SP_DialogNoToAllButton: "dialog_no.svg",
+        compat.SP_DialogSaveAllButton: "dialog_save_all.svg",
+        compat.SP_DialogAbortButton: "dialog_cancel.svg",
+        compat.SP_DialogRetryButton: "dialog_retry.svg",
+        compat.SP_DialogIgnoreButton: "dialog_ignore.svg",
+        compat.SP_RestoreDefaultsButton: "restore_defaults.svg",
     }
     if compat.QT_VERSION > (6, 3, 0):
-        icon_map[compat.SP_TabCloseButton] = 'tab_close.svg'
+        icon_map[compat.SP_TabCloseButton] = "tab_close.svg"
 
     return icon_map
 
 
 def setup_app(args, unknown, compat, style_class=None, window_class=None):
-    '''Setup code for the Qt application.'''
+    """Setup code for the Qt application."""
 
     if args.scale != 1:
-        os.environ['QT_SCALE_FACTOR'] = str(args.scale)
+        os.environ["QT_SCALE_FACTOR"] = str(args.scale)
     else:
-        os.environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = '1'
+        os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 
     app = compat.QtWidgets.QApplication.instance()
     is_initial = app is None
@@ -959,7 +954,7 @@ def setup_app(args, unknown, compat, style_class=None, window_class=None):
         app = compat.QtWidgets.QApplication(sys.argv[:1] + unknown)
         # NOTE: Need to detect if the style is dark mode here
         _ = get_theme(compat)
-    if args.style != 'native':
+    if args.style != "native":
         style = compat.QtWidgets.QStyleFactory.create(args.style)
         if style_class is not None:
             style = style_class(style)
@@ -983,7 +978,7 @@ def setup_app(args, unknown, compat, style_class=None, window_class=None):
 
 
 def get_theme(compat, reinitialize=False):
-    '''Determine if the system theme is in dark mode.'''
+    """Determine if the system theme is in dark mode."""
 
     global THEME
 
@@ -992,7 +987,7 @@ def get_theme(compat, reinitialize=False):
 
     app = compat.QtWidgets.QApplication.instance()
     if app is None:
-        raise RuntimeError('Must initialize the global application prior to getting dark mode.')
+        raise RuntimeError("Must initialize the global application prior to getting dark mode.")
 
     if compat.QT_VERSION >= (6, 5, 0):
         color_scheme = app.styleHints().colorScheme()
@@ -1010,7 +1005,7 @@ def get_theme(compat, reinitialize=False):
 
 
 def read_qtext_file(path, compat):
-    '''Read the Qt text resource.'''
+    """Read the Qt text resource."""
 
     file = compat.QtCore.QFile(path)
     file.open(compat.ReadOnly | compat.Text)
@@ -1019,25 +1014,25 @@ def read_qtext_file(path, compat):
 
 
 def set_stylesheet(args, app, compat):
-    '''Set the application stylesheet.'''
+    """Set the application stylesheet."""
 
-    if args.stylesheet != 'native':
+    if args.stylesheet != "native":
         resource_format = get_resources(args)
         stylesheet = get_stylesheet(resource_format)
         app.setStyleSheet(read_qtext_file(stylesheet, compat))
 
 
 def exec_app(args, app, window):
-    '''Show and execute the Qt application.'''
+    """Show and execute the Qt application."""
 
     window.show()
-    if os.environ.get('QT_QPA_PLATFORM') == 'offscreen':
+    if os.environ.get("QT_QPA_PLATFORM") == "offscreen":
         return app.quit()
     return execute(args, app)
 
 
 def execute(args, widget, *params):
-    '''Shared code to call `exec()` on a widget.'''
+    """Shared code to call `exec()` on a widget."""
 
     if is_qt6(args):
         return widget.exec(*params)
@@ -1045,7 +1040,7 @@ def execute(args, widget, *params):
 
 
 def single_point_position(args, event):
-    '''Shared code to call `pos()` on a single-point event.'''
+    """Shared code to call `pos()` on a single-point event."""
 
     if is_qt6(args):
         # Qt6 returns `QPointF`, which is overkill.
@@ -1054,7 +1049,7 @@ def single_point_position(args, event):
 
 
 def single_point_global_position(args, event):
-    '''Shared code to call `globalPos()` on a single-point event.'''
+    """Shared code to call `globalPos()` on a single-point event."""
 
     if is_qt6(args):
         # Qt6 returns `QPointF`, which is overkill.
@@ -1063,31 +1058,31 @@ def single_point_global_position(args, event):
 
 
 def native_icon(style, icon, option=None, widget=None):
-    '''Get a standard icon for the native style'''
+    """Get a standard icon for the native style"""
     return style.standardIcon(icon, option, widget)
 
 
 def stylesheet_icon(args, style, icon, icon_map, option=None, widget=None):
-    '''Get a standard icon for the stylesheet style'''
+    """Get a standard icon for the stylesheet style"""
 
     QtCore, QtGui, QtWidgets = import_qt(args, load_resources=False)
 
     path = icon_map[icon]
     resource_format = get_resources(args)
-    resource = f'{resource_format}{path}'
+    resource = f"{resource_format}{path}"
     if QtCore.QFile.exists(resource):
         return QtGui.QIcon(resource)
     return QtWidgets.QCommonStyle.standardIcon(style, icon, option, widget)
 
 
 def style_icon(args, style, icon, icon_map, option=None, widget=None):
-    '''Get the stylized icon, either native or in the stylesheet.'''
+    """Get the stylized icon, either native or in the stylesheet."""
 
-    if args.stylesheet == 'native':
+    if args.stylesheet == "native":
         return native_icon(style, icon, option, widget)
     return stylesheet_icon(args, style, icon, icon_map, option, widget)
 
 
 def standard_icon(args, widget, icon, icon_map):
-    '''Simplified wrapper to get a standard icon from a widget.'''
+    """Simplified wrapper to get a standard icon from a widget."""
     return style_icon(args, widget.style(), icon, icon_map, widget=widget)

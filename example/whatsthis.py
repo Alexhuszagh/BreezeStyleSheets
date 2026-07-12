@@ -22,13 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-'''
-    whatsthis
-    =========
-
-    Example showing how to style the tooltip base and text for QWhatsThis,
-    since it cannot be modified via stylesheets.
-'''
+"""Example stylizing the tooltip base and text for QWhatsThis using palettes."""
 
 import sys
 
@@ -42,31 +36,31 @@ colors = shared.get_colors(args, compat)
 
 
 class Ui:
-    '''Main class for the user interface.'''
+    """Main class for the user interface."""
 
     def setup(self, MainWindow):
-        '''Setup our main window for the UI.'''
+        """Setup our main window for the UI."""
 
-        MainWindow.setObjectName('MainWindow')
+        MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1068, 824)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName('centralwidget')
+        self.centralwidget.setObjectName("centralwidget")
         self.layout = QtWidgets.QVBoxLayout(self.centralwidget)
-        self.layout.setObjectName('layout')
+        self.layout.setObjectName("layout")
         self.layout.setAlignment(compat.AlignHCenter)
         MainWindow.setCentralWidget(self.centralwidget)
 
-        self.toolbar = QtWidgets.QToolBar('Toolbar')
+        self.toolbar = QtWidgets.QToolBar("Toolbar")
         self.toolbar.setOrientation(compat.Vertical)
-        self.action = compat.QAction('&Action 1', MainWindow)
-        self.action.setWhatsThis('Example action')
+        self.action = compat.QAction("&Action 1", MainWindow)
+        self.action.setWhatsThis("Example action")
         self.toolbar.addAction(self.action)
         self.toolbar.addAction(QtWidgets.QWhatsThis.createAction(self.toolbar))
         MainWindow.addToolBar(compat.TopToolBarArea, self.toolbar)
 
 
 def main():
-    'Application entry point'
+    "Application entry point"
 
     app, window = shared.setup_app(args, unknown, compat)
 
@@ -78,12 +72,12 @@ def main():
     # setup ui
     ui = Ui()
     ui.setup(window)
-    window.setWindowTitle('Stylized QWhatsThis.')
+    window.setWindowTitle("Stylized QWhatsThis.")
     window.resize(200, 100)
 
     shared.set_stylesheet(args, app, compat)
     return shared.exec_app(args, app, window)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

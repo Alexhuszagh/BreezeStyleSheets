@@ -21,11 +21,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-'''
-test
-
-Test styles of a single widget.
-'''
+"""Test styles of a single widget."""
 
 import gc
 import os
@@ -37,41 +33,41 @@ import pytest
 
 pytest.skip(allow_module_level=True)
 
-# TODO: Fix these
+# TODO: Fix the entire test suite.
 tests_dir = os.path.dirname(os.path.realpath(__file__))
 home = os.path.dirname(tests_dir)
-example_dir = os.path.join(home, 'example')
+example_dir = os.path.join(home, "example")
 sys.path.append(example_dir)
 
 import shared  # type: ignore # noqa
 
 parser = shared.create_parser()
-parser.add_argument('--widget', help='widget to test. can provide `all` to test all widgets', default='all')
+parser.add_argument("--widget", help="widget to test. can provide `all` to test all widgets", default="all")
 parser.add_argument(
-    '--width',
-    help='the window width',
+    "--width",
+    help="the window width",
     type=int,
     default=1068,
 )
 parser.add_argument(
-    '--height',
-    help='the window height',
+    "--height",
+    help="the window height",
     type=int,
     default=824,
 )
 parser.add_argument(
-    '--alignment',
-    help='the layout alignment',
+    "--alignment",
+    help="the layout alignment",
 )
 parser.add_argument(
-    '--compress',
-    help='add stretch on both sides',
-    action='store_true',
+    "--compress",
+    help="add stretch on both sides",
+    action="store_true",
 )
-parser.add_argument('--print-tests', help='print all available tests (widget names).', action='store_true')
+parser.add_argument("--print-tests", help="print all available tests (widget names).", action="store_true")
 parser.add_argument(
-    '--start',
-    help='test widget to start at.',
+    "--start",
+    help="test widget to start at.",
 )
 args, unknown = shared.parse_args(parser)
 QtCore, QtGui, QtWidgets = shared.import_qt(args)
@@ -79,28 +75,28 @@ compat = shared.get_compat_definitions(args)
 ICON_MAP = shared.get_icon_map(compat)
 
 layout = {
-    'vertical': QtWidgets.QVBoxLayout,
-    'horizontal': QtWidgets.QHBoxLayout,
+    "vertical": QtWidgets.QVBoxLayout,
+    "horizontal": QtWidgets.QHBoxLayout,
 }
 
 alignment = {
-    'top': compat.AlignTop,
-    'vcenter': compat.AlignVCenter,
-    'bottom': compat.AlignBottom,
-    'left': compat.AlignLeft,
-    'hcenter': compat.AlignHCenter,
-    'right': compat.AlignRight,
-    'center': compat.AlignCenter,
+    "top": compat.AlignTop,
+    "vcenter": compat.AlignVCenter,
+    "bottom": compat.AlignBottom,
+    "left": compat.AlignLeft,
+    "hcenter": compat.AlignHCenter,
+    "right": compat.AlignRight,
+    "center": compat.AlignCenter,
 }
 
 
 def is_headless():
-    '''Get if the scripts are running in test mode, that is offscreen.'''
-    return os.environ.get('QT_QPA_PLATFORM') == 'offscreen'
+    """Get if the scripts are running in test mode, that is offscreen."""
+    return os.environ.get("QT_QPA_PLATFORM") == "offscreen"
 
 
 def add_widgets(layout, children):
-    '''Add 1 or more widgets to the layout.'''
+    """Add 1 or more widgets to the layout."""
 
     if isinstance(children, list):
         for child in children:
@@ -118,7 +114,7 @@ def abstract_button(
     checkable=True,
     enabled=True,
 ):
-    '''Helper to simplify creating abstract buttons.'''
+    """Helper to simplify creating abstract buttons."""
 
     inst = cls(*args, parent)
     inst.setAutoExclusive(exlusive)
@@ -133,73 +129,73 @@ def abstract_button(
 
 
 def splash_timer(splash, window):
-    '''Non-block timer for a splashscreen.'''
+    """Non-block timer for a splashscreen."""
 
     splash.finish(window)
     window.show()
 
 
 def standard_icon(widget, icon):
-    '''Get a standard icon depending on the stylesheet.'''
+    """Get a standard icon depending on the stylesheet."""
     return shared.standard_icon(args, widget, icon, ICON_MAP)
 
 
 def close_icon(widget):
-    '''Get the close icon depending on the stylesheet.'''
+    """Get the close icon depending on the stylesheet."""
     return standard_icon(widget, compat.SP_DockWidgetCloseButton)
 
 
 def reset_icon(widget):
-    '''Get the reset icon depending on the stylesheet.'''
+    """Get the reset icon depending on the stylesheet."""
     return standard_icon(widget, compat.SP_DialogResetButton)
 
 
 def next_icon(widget):
-    '''Get the next icon depending on the stylesheet.'''
+    """Get the next icon depending on the stylesheet."""
     return standard_icon(widget, compat.SP_ArrowRight)
 
 
 def previous_icon(widget):
-    '''Get the previous icon depending on the stylesheet.'''
+    """Get the previous icon depending on the stylesheet."""
     return standard_icon(widget, compat.SP_ArrowLeft)
 
 
 def test_progressbar_horizontal(widget, *_):
     child = []
     bar1 = QtWidgets.QProgressBar(widget)
-    bar1.setProperty('value', 0)
+    bar1.setProperty("value", 0)
     child.append(bar1)
     bar2 = QtWidgets.QProgressBar(widget)
-    bar2.setProperty('value', 24)
+    bar2.setProperty("value", 24)
     child.append(bar2)
     bar3 = QtWidgets.QProgressBar(widget)
-    bar3.setProperty('value', 99)
+    bar3.setProperty("value", 99)
     child.append(bar3)
     bar4 = QtWidgets.QProgressBar(widget)
-    bar4.setProperty('value', 100)
+    bar4.setProperty("value", 100)
     child.append(bar4)
 
     return child
 
 
 def test_progressbar_vertical(widget, *_):
-    layout_type = 'horizontal'
+    layout_type = "horizontal"
     child = []
     bar1 = QtWidgets.QProgressBar(widget)
     bar1.setOrientation(compat.Vertical)
-    bar1.setProperty('value', 0)
+    bar1.setProperty("value", 0)
     child.append(bar1)
     bar2 = QtWidgets.QProgressBar(widget)
     bar2.setOrientation(compat.Vertical)
-    bar2.setProperty('value', 24)
+    bar2.setProperty("value", 24)
     child.append(bar2)
     bar3 = QtWidgets.QProgressBar(widget)
     bar3.setOrientation(compat.Vertical)
-    bar3.setProperty('value', 99)
+    bar3.setProperty("value", 99)
     child.append(bar3)
     bar4 = QtWidgets.QProgressBar(widget)
     bar4.setOrientation(compat.Vertical)
-    bar4.setProperty('value', 100)
+    bar4.setProperty("value", 100)
     child.append(bar4)
 
     return child, layout_type
@@ -208,16 +204,16 @@ def test_progressbar_vertical(widget, *_):
 def test_progressbar_inverted(widget, *_):
     child = []
     bar1 = QtWidgets.QProgressBar(widget)
-    bar1.setProperty('value', 0)
+    bar1.setProperty("value", 0)
     child.append(bar1)
     bar2 = QtWidgets.QProgressBar(widget)
-    bar2.setProperty('value', 24)
+    bar2.setProperty("value", 24)
     child.append(bar2)
     bar3 = QtWidgets.QProgressBar(widget)
-    bar3.setProperty('value', 99)
+    bar3.setProperty("value", 99)
     child.append(bar3)
     bar4 = QtWidgets.QProgressBar(widget)
-    bar4.setProperty('value', 100)
+    bar4.setProperty("value", 100)
     child.append(bar4)
     for bar in child:
         bar.setInvertedAppearance(True)
@@ -226,19 +222,19 @@ def test_progressbar_inverted(widget, *_):
 
 
 def test_progressbar_text(widget, *_):
-    layout_type = 'horizontal'
+    layout_type = "horizontal"
     child = []
     bar1 = QtWidgets.QProgressBar(widget)
-    bar1.setProperty('value', 0)
+    bar1.setProperty("value", 0)
     child.append(bar1)
     bar2 = QtWidgets.QProgressBar(widget)
-    bar2.setProperty('value', 24)
+    bar2.setProperty("value", 24)
     child.append(bar2)
     bar3 = QtWidgets.QProgressBar(widget)
-    bar3.setProperty('value', 99)
+    bar3.setProperty("value", 99)
     child.append(bar3)
     bar4 = QtWidgets.QProgressBar(widget)
-    bar4.setProperty('value', 100)
+    bar4.setProperty("value", 100)
     child.append(bar4)
     for bar in child:
         bar.setTextDirection(compat.TopToBottom)
@@ -255,7 +251,7 @@ def test_slider_horizontal(widget, *_):
 
 
 def test_slider_vertical(widget, *_):
-    layout_type = 'horizontal'
+    layout_type = "horizontal"
     child = QtWidgets.QSlider(widget)
     child.setOrientation(compat.Vertical)
 
@@ -281,7 +277,7 @@ def test_splitter_horizontal(widget, *_):
 
 
 def test_splitter_vertical(widget, *_):
-    layout_type = 'horizontal'
+    layout_type = "horizontal"
     child = QtWidgets.QSplitter(widget)
     child.setOrientation(compat.Vertical)
     child.addWidget(QtWidgets.QListWidget())
@@ -320,16 +316,16 @@ def test_rubber_band(widget, *_):
 
 def test_plain_text_edit(widget, *_):
     child = [
-        QtWidgets.QPlainTextEdit('Edit 1', widget),
-        QtWidgets.QPlainTextEdit('Edit 2', widget),
-        QtWidgets.QPlainTextEdit('Edit 3', widget),
-        QtWidgets.QPlainTextEdit('Edit 4', widget),
-        QtWidgets.QPlainTextEdit('Edit 5', widget),
+        QtWidgets.QPlainTextEdit("Edit 1", widget),
+        QtWidgets.QPlainTextEdit("Edit 2", widget),
+        QtWidgets.QPlainTextEdit("Edit 3", widget),
+        QtWidgets.QPlainTextEdit("Edit 4", widget),
+        QtWidgets.QPlainTextEdit("Edit 5", widget),
     ]
     child[1].setBackgroundVisible(True)
     child[2].setCenterOnScroll(True)
     child[3].setCursorWidth(5)
-    child[3].setPlaceholderText('Placeholder Text')
+    child[3].setPlaceholderText("Placeholder Text")
     child[4].setReadOnly(True)
 
     return child
@@ -338,39 +334,39 @@ def test_plain_text_edit(widget, *_):
 def test_menu(widget, window, font, width, *_):
     child = QtWidgets.QMenuBar(window)
     child.setGeometry(QtCore.QRect(0, 0, width, int(1.5 * font.pointSize())))
-    menu = QtWidgets.QMenu('Main Menu', child)
-    menu.addAction(compat.QAction('&Action 1', window))
-    menu.addAction(compat.QAction('&Action 2', window))
-    submenu = QtWidgets.QMenu('Sub Menu', menu)
-    submenu.addAction(compat.QAction('&Action 3', window))
-    action1 = compat.QAction('&Action 4', window)
+    menu = QtWidgets.QMenu("Main Menu", child)
+    menu.addAction(compat.QAction("&Action 1", window))
+    menu.addAction(compat.QAction("&Action 2", window))
+    submenu = QtWidgets.QMenu("Sub Menu", menu)
+    submenu.addAction(compat.QAction("&Action 3", window))
+    action1 = compat.QAction("&Action 4", window)
     action1.setCheckable(True)
     submenu.addAction(action1)
     menu.addAction(submenu.menuAction())
-    action2 = compat.QAction('&Action 5', window)
+    action2 = compat.QAction("&Action 5", window)
     action2.setCheckable(True)
     action2.setChecked(True)
     menu.addSeparator()
     menu.addAction(action2)
-    action3 = compat.QAction('&Action 6', window)
+    action3 = compat.QAction("&Action 6", window)
     action3.setCheckable(True)
     menu.addAction(action3)
     icon = close_icon(menu)
-    menu.addAction(compat.QAction(icon, '&Action 7', window))
-    menu.addAction(compat.QAction(icon, '&Action 8', window))
-    submenu.addAction(compat.QAction(icon, '&Action 9', window))
+    menu.addAction(compat.QAction(icon, "&Action 7", window))
+    menu.addAction(compat.QAction(icon, "&Action 8", window))
+    submenu.addAction(compat.QAction(icon, "&Action 9", window))
     child.addAction(menu.menuAction())
     window.setMenuBar(child)
 
-    file = QtWidgets.QMenu('File', child)
-    file.addAction(compat.QAction('&Open', window))
-    file.addAction(compat.QAction('&Close', window))
+    file = QtWidgets.QMenu("File", child)
+    file.addAction(compat.QAction("&Open", window))
+    file.addAction(compat.QAction("&Close", window))
     child.addAction(file.menuAction())
 
-    edit = QtWidgets.QMenu('Edit', child)
-    edit.addAction(compat.QAction('&Cut', window))
-    edit.addAction(compat.QAction('&Copy', window))
-    edit.addAction(compat.QAction('&Paste', window))
+    edit = QtWidgets.QMenu("Edit", child)
+    edit.addAction(compat.QAction("&Cut", window))
+    edit.addAction(compat.QAction("&Copy", window))
+    edit.addAction(compat.QAction("&Paste", window))
     child.addAction(edit.menuAction())
 
     return child
@@ -379,9 +375,9 @@ def test_menu(widget, window, font, width, *_):
 def _menu(window, font, width):
     child = QtWidgets.QMenuBar(window)
     child.setGeometry(QtCore.QRect(0, 0, width, int(1.5 * font.pointSize())))
-    menu = QtWidgets.QMenu('Main Menu', child)
-    menu.addAction(compat.QAction('&Action 1', window))
-    menu.addAction(compat.QAction('&Action 2', window))
+    menu = QtWidgets.QMenu("Main Menu", child)
+    menu.addAction(compat.QAction("&Action 1", window))
+    menu.addAction(compat.QAction("&Action 2", window))
     child.addAction(menu.menuAction())
     window.setMenuBar(child)
 
@@ -419,12 +415,12 @@ def test_icon_menu(widget, window, font, width, *_):
 def test_collapsible_separators_menu(_, window, font, width, *__):
     child = QtWidgets.QMenuBar(window)
     child.setGeometry(QtCore.QRect(0, 0, width, int(1.5 * font.pointSize())))
-    menu = QtWidgets.QMenu('Main Menu', child)
+    menu = QtWidgets.QMenu("Main Menu", child)
     menu.addSeparator()
-    menu.addAction(compat.QAction('&Action 1', window))
+    menu.addAction(compat.QAction("&Action 1", window))
     menu.addSeparator()
     menu.addSeparator()
-    menu.addAction(compat.QAction('&Action 2', window))
+    menu.addAction(compat.QAction("&Action 2", window))
     menu.addSeparator()
     child.addAction(menu.menuAction())
     window.setMenuBar(child)
@@ -436,12 +432,12 @@ def test_collapsible_separators_menu(_, window, font, width, *__):
 def test_tooltips_menu(widget, window, font, width, *_):
     child = QtWidgets.QMenuBar(window)
     child.setGeometry(QtCore.QRect(0, 0, width, int(1.5 * font.pointSize())))
-    menu = QtWidgets.QMenu('Main Menu', child)
-    action1 = compat.QAction('&Action 1', window)
-    action1.setToolTip('Action 1')
+    menu = QtWidgets.QMenu("Main Menu", child)
+    action1 = compat.QAction("&Action 1", window)
+    action1.setToolTip("Action 1")
     menu.addAction(action1)
-    action2 = compat.QAction('&Action 2', window)
-    action2.setToolTip('Action 1')
+    action2 = compat.QAction("&Action 2", window)
+    action2.setToolTip("Action 1")
     menu.addAction(action2)
     child.addAction(menu.menuAction())
     window.setMenuBar(child)
@@ -458,7 +454,7 @@ def test_mdi_area(widget, *_):
     flags |= compat.WindowContextHelpButtonHint
     flags |= compat.WindowShadeButtonHint
     window.setWindowFlags(flags)
-    window.setWindowTitle('Subwindow')
+    window.setWindowTitle("Subwindow")
     child.addSubWindow(window)
 
     return child
@@ -476,7 +472,7 @@ def test_partial_mdi_area(widget, *_):
     flags |= compat.WindowContextHelpButtonHint
     flags |= compat.WindowShadeButtonHint
     window.setWindowFlags(flags)
-    window.setWindowTitle('Subwindow')
+    window.setWindowTitle("Subwindow")
     child[1].addSubWindow(window)
 
     return child
@@ -498,15 +494,15 @@ def test_no_sizegrip_statusbar(_, window, *__):
 
 
 def test_spinbox(widget, *_):
-    layout_type = 'horizontal'
+    layout_type = "horizontal"
     child = []
     spin1 = QtWidgets.QSpinBox(widget)
     spin1.setValue(10)
     child.append(spin1)
     spin2 = QtWidgets.QSpinBox(widget)
     spin2.setValue(10)
-    spin2.setPrefix('$')
-    spin2.setSuffix('%')
+    spin2.setPrefix("$")
+    spin2.setSuffix("%")
     spin2.setEnabled(False)
     child.append(spin2)
 
@@ -514,7 +510,7 @@ def test_spinbox(widget, *_):
 
 
 def test_double_spinbox(widget, *_):
-    layout_type = 'horizontal'
+    layout_type = "horizontal"
     child = []
     spin1 = QtWidgets.QDoubleSpinBox(widget)
     spin1.setValue(10.5)
@@ -522,37 +518,37 @@ def test_double_spinbox(widget, *_):
     spin2 = QtWidgets.QDoubleSpinBox(widget)
     spin2.setValue(10.5)
     spin2.setEnabled(False)
-    spin2.setPrefix('$')
-    spin2.setSuffix('%')
+    spin2.setPrefix("$")
+    spin2.setSuffix("%")
     child.append(spin2)
 
     return child, layout_type
 
 
 def test_combobox(widget, *_):
-    layout_type = 'horizontal'
+    layout_type = "horizontal"
     child = []
     combo1 = QtWidgets.QComboBox(widget)
-    combo1.addItem('Item 1')
-    combo1.addItem('Item 2')
+    combo1.addItem("Item 1")
+    combo1.addItem("Item 2")
     child.append(combo1)
     combo2 = QtWidgets.QComboBox(widget)
-    combo2.addItem('Very Very Long Item 1')
-    combo2.addItem('Very Very Long Item 2')
+    combo2.addItem("Very Very Long Item 1")
+    combo2.addItem("Very Very Long Item 2")
     child.append(combo2)
     combo3 = QtWidgets.QComboBox(widget)
     combo3.setEditable(True)
-    combo3.addItem('Edit 1')
-    combo3.addItem('Edit 2')
-    combo3.lineEdit().setPlaceholderText('Placeholder')
+    combo3.addItem("Edit 1")
+    combo3.addItem("Edit 2")
+    combo3.lineEdit().setPlaceholderText("Placeholder")
     child.append(combo3)
     combo4 = QtWidgets.QComboBox(widget)
-    combo4.addItem('Item 1')
-    combo4.addItem('Item 2')
-    combo4.addItem('Item 3')
-    combo4.addItem('Item 4')
-    combo4.addItem('Item 5')
-    combo4.addItem('Item 6')
+    combo4.addItem("Item 1")
+    combo4.addItem("Item 2")
+    combo4.addItem("Item 3")
+    combo4.addItem("Item 4")
+    combo4.addItem("Item 5")
+    combo4.addItem("Item 6")
     combo4.setMaxVisibleItems(5)
     child.append(combo4)
 
@@ -562,9 +558,9 @@ def test_combobox(widget, *_):
 def _test_tabwidget(widget, position):
     child = QtWidgets.QTabWidget(widget)
     child.setTabPosition(position)
-    child.addTab(QtWidgets.QWidget(), 'Tab 1')
-    child.addTab(QtWidgets.QWidget(), 'Tab 2')
-    child.addTab(QtWidgets.QWidget(), 'Tab 3')
+    child.addTab(QtWidgets.QWidget(), "Tab 1")
+    child.addTab(QtWidgets.QWidget(), "Tab 2")
+    child.addTab(QtWidgets.QWidget(), "Tab 3")
 
     return child
 
@@ -590,7 +586,7 @@ def test_autohide_tabwidget(widget, *_):
 
     item1 = QtWidgets.QTabWidget(widget)
     item1.setTabPosition(compat.North)
-    item1.addTab(QtWidgets.QWidget(), 'Tab 1')
+    item1.addTab(QtWidgets.QWidget(), "Tab 1")
     item1.setTabBarAutoHide(True)
     child.append(item1)
 
@@ -633,7 +629,7 @@ def test_use_scroll_tabwidget(widget, *_):
     child = QtWidgets.QTabWidget(widget)
     child.setTabPosition(compat.North)
     for i in range(1, 100):
-        child.addTab(QtWidgets.QWidget(), f'Tab {i}')
+        child.addTab(QtWidgets.QWidget(), f"Tab {i}")
     child.setUsesScrollButtons(True)
 
     return child
@@ -643,7 +639,7 @@ def test_no_scroll_tabwidget(widget, *_):
     child = QtWidgets.QTabWidget(widget)
     child.setTabPosition(compat.North)
     for i in range(1, 100):
-        child.addTab(QtWidgets.QWidget(), f'Tab {i}')
+        child.addTab(QtWidgets.QWidget(), f"Tab {i}")
     child.setUsesScrollButtons(False)
 
     return child
@@ -741,7 +737,7 @@ def test_button_position_tabwidget(widget, *_):
     child = QtWidgets.QTabWidget(widget)
     child.setTabPosition(compat.North)
     for i in range(1, 10):
-        child.addTab(QtWidgets.QWidget(), f'Tab {i}')
+        child.addTab(QtWidgets.QWidget(), f"Tab {i}")
         if i % 2 == 0:
             side = compat.LeftSide
         else:
@@ -755,17 +751,17 @@ def test_button_position_tabwidget(widget, *_):
 def test_text_browser(widget, *_):
     child = QtWidgets.QTextBrowser(widget)
     child.setOpenExternalLinks(True)
-    child.setMarkdown('[QTextBrowser](https://doc.qt.io/qt-6/qtextbrowser.html)')
+    child.setMarkdown("[QTextBrowser](https://doc.qt.io/qt-6/qtextbrowser.html)")
 
     return child
 
 
 def test_dock(_, window, *__):
-    dock1 = QtWidgets.QDockWidget('&Dock widget 1', window)
+    dock1 = QtWidgets.QDockWidget("&Dock widget 1", window)
     dock1.setFeatures(compat.AllDockWidgetFeatures)
-    dock2 = QtWidgets.QDockWidget('&Dock widget 2', window)
+    dock2 = QtWidgets.QDockWidget("&Dock widget 2", window)
     dock2.setFeatures(compat.AllDockWidgetFeatures)
-    dock3 = QtWidgets.QDockWidget('&Dock widget 3', window)
+    dock3 = QtWidgets.QDockWidget("&Dock widget 3", window)
     dock3.setFeatures(compat.DockWidgetVerticalTitleBar)
     window.addDockWidget(compat.LeftDockWidgetArea, dock1)
     window.addDockWidget(compat.LeftDockWidgetArea, dock2)
@@ -780,7 +776,7 @@ def test_radio(widget, *_):
     child.append(abstract_button(widget_type, widget, checked=True))
     child.append(abstract_button(widget_type, widget, enabled=False))
     child.append(abstract_button(widget_type, widget, checked=True, enabled=False))
-    child.append(abstract_button(widget_type, widget, 'With Text'))
+    child.append(abstract_button(widget_type, widget, "With Text"))
 
     return child
 
@@ -794,8 +790,8 @@ def test_checkbox(widget, _, __, ___, ____, app):
     child.append(abstract_button(widget_type, widget, enabled=False))
     child.append(abstract_button(widget_type, widget, checked=True, enabled=False))
     child.append(abstract_button(widget_type, widget, checked=compat.PartiallyChecked, enabled=False))
-    child.append(abstract_button(widget_type, widget, 'With Text'))
-    child.append(abstract_button(widget_type, widget, 'With Large Text'))
+    child.append(abstract_button(widget_type, widget, "With Text"))
+    child.append(abstract_button(widget_type, widget, "With Large Text"))
     checkbox_font = app.font()
     checkbox_font.setPointSizeF(50.0)
     child[-1].setFont(checkbox_font)
@@ -807,17 +803,17 @@ def test_table(widget, *_):
     child = QtWidgets.QTableWidget(widget)
     child.setColumnCount(2)
     child.setRowCount(4)
-    item = QtWidgets.QTableWidgetItem('Row 1')
+    item = QtWidgets.QTableWidgetItem("Row 1")
     child.setVerticalHeaderItem(0, item)
-    item = QtWidgets.QTableWidgetItem('Row 2')
+    item = QtWidgets.QTableWidgetItem("Row 2")
     child.setVerticalHeaderItem(1, item)
-    item = QtWidgets.QTableWidgetItem('Row 3')
+    item = QtWidgets.QTableWidgetItem("Row 3")
     child.setVerticalHeaderItem(2, item)
-    item = QtWidgets.QTableWidgetItem('Row 4')
+    item = QtWidgets.QTableWidgetItem("Row 4")
     child.setVerticalHeaderItem(3, item)
-    item = QtWidgets.QTableWidgetItem('Column 1')
+    item = QtWidgets.QTableWidgetItem("Column 1")
     child.setHorizontalHeaderItem(0, item)
-    item = QtWidgets.QTableWidgetItem('Column 2')
+    item = QtWidgets.QTableWidgetItem("Column 2")
     child.setHorizontalHeaderItem(1, item)
 
     return child
@@ -879,12 +875,12 @@ def test_list(widget, *_):
     alignments = [compat.AlignLeft, compat.AlignRight, compat.AlignHCenter]
     child = QtWidgets.QListWidget(widget)
     for index in range(10):
-        item = QtWidgets.QListWidgetItem(f'Item {index + 1}')
+        item = QtWidgets.QListWidgetItem(f"Item {index + 1}")
         item.setTextAlignment(random.choice(alignments))
         child.addItem(item)
     icon = close_icon(child)
     for index in range(10):
-        item = QtWidgets.QListWidgetItem(icon, f'Item {index + 1}')
+        item = QtWidgets.QListWidgetItem(icon, f"Item {index + 1}")
         item.setTextAlignment(random.choice(alignments))
         child.addItem(item)
 
@@ -895,7 +891,7 @@ def test_sortable_list(widget, *_):
     child = QtWidgets.QListWidget(widget)
     child.setSortingEnabled(True)
     for index in range(10):
-        item = QtWidgets.QListWidgetItem(f'Item {index + 1}')
+        item = QtWidgets.QListWidgetItem(f"Item {index + 1}")
         child.addItem(item)
 
     return child
@@ -905,7 +901,7 @@ def test_editable_list(widget, *_):
     child = QtWidgets.QListWidget(widget)
     child.setSortingEnabled(True)
     for index in range(10):
-        item = QtWidgets.QListWidgetItem(f'Item {index + 1}')
+        item = QtWidgets.QListWidgetItem(f"Item {index + 1}")
         item.setFlags(item.flags() | compat.ItemIsEditable)
         child.addItem(item)
 
@@ -918,7 +914,7 @@ def test_key_sequence_edit(widget, *_):
 
 def test_completer(widget, *_):
     child = QtWidgets.QLineEdit(widget)
-    completer = QtWidgets.QCompleter(['Fruit', 'Fruits Basket', 'Fruba'])
+    completer = QtWidgets.QCompleter(["Fruit", "Fruits Basket", "Fruba"])
     child.setCompleter(completer)
 
     return child
@@ -927,7 +923,7 @@ def test_completer(widget, *_):
 def test_scrollbar_vertical(widget, *_):
     child = QtWidgets.QListWidget(widget)
     for index in range(100):
-        child.addItem(QtWidgets.QListWidgetItem(f'Item {index + 1}'))
+        child.addItem(QtWidgets.QListWidgetItem(f"Item {index + 1}"))
 
     return child
 
@@ -936,40 +932,40 @@ def test_scrollbar_horizontal(widget, *_):
     child = QtWidgets.QTableWidget(widget)
     child.setColumnCount(100)
     child.setRowCount(1)
-    item = QtWidgets.QTableWidgetItem('Row 1')
+    item = QtWidgets.QTableWidgetItem("Row 1")
     child.setVerticalHeaderItem(0, item)
     for index in range(100):
-        item = QtWidgets.QTableWidgetItem(f'Column {index + 1}')
+        item = QtWidgets.QTableWidgetItem(f"Column {index + 1}")
         child.setHorizontalHeaderItem(index, item)
 
     return child
 
 
 def test_toolbar(_, window, *__):
-    toolbar1 = QtWidgets.QToolBar('Toolbar')
-    toolbar1.addAction('&Action 1')
-    toolbar1.addAction('&Action 2')
+    toolbar1 = QtWidgets.QToolBar("Toolbar")
+    toolbar1.addAction("&Action 1")
+    toolbar1.addAction("&Action 2")
     toolbar1.addSeparator()
-    toolbar1.addAction('&Action 3')
-    toolbar1.addAction('&Action 3 Really Long Name')
+    toolbar1.addAction("&Action 3")
+    toolbar1.addAction("&Action 3 Really Long Name")
     icon = close_icon(toolbar1)
-    toolbar1.addAction(icon, '&Action 4')
+    toolbar1.addAction(icon, "&Action 4")
     toolbar1.setMovable(False)
     window.addToolBar(compat.TopToolBarArea, toolbar1)
 
-    toolbar2 = QtWidgets.QToolBar('Toolbar')
+    toolbar2 = QtWidgets.QToolBar("Toolbar")
     toolbar2.setOrientation(compat.Vertical)
-    toolbar2.addAction('&Action 1')
-    action2 = compat.QAction('&Action 2', window)
-    action2.setStatusTip('Status tip')
-    action2.setWhatsThis('Example action')
+    toolbar2.addAction("&Action 1")
+    action2 = compat.QAction("&Action 2", window)
+    action2.setStatusTip("Status tip")
+    action2.setWhatsThis("Example action")
     toolbar2.addAction(action2)
     toolbar2.addSeparator()
-    toolbar2.addAction('&Action 3')
-    toolbar2.addAction('&Action 3 Really Long Name')
+    toolbar2.addAction("&Action 3")
+    toolbar2.addAction("&Action 3 Really Long Name")
     toolbar2.addAction(QtWidgets.QWhatsThis.createAction(toolbar2))
     icon = close_icon(toolbar2)
-    toolbar2.addAction(icon, '&Action 4')
+    toolbar2.addAction(icon, "&Action 4")
     toolbar2.setFloatable(True)
     toolbar2.setMovable(True)
     window.addToolBar(compat.LeftToolBarArea, toolbar2)
@@ -981,7 +977,7 @@ def test_toolbar(_, window, *__):
 
 
 def test_toolbutton(widget, window, *_):
-    layout_type = 'horizontal'
+    layout_type = "horizontal"
     child = [
         QtWidgets.QToolButton(widget),
         QtWidgets.QToolButton(widget),
@@ -1000,30 +996,24 @@ def test_toolbutton(widget, window, *_):
     window.setTabOrder(child[4], child[5])
     window.setTabOrder(child[5], child[6])
     window.setTabOrder(child[6], child[7])
-    child[0].setText('Simple ToolButton')
-    child[1].setText('Action Toolbutton')
-    child[2].setText('Menu Toolbutton')
-    child[3].setText('Instant Toolbutton')
-    child[1].addActions(
-        [
-            compat.QAction('&Action 5', window),
-            compat.QAction('&Action 6', window),
-        ]
-    )
+    child[0].setText("Simple ToolButton")
+    child[1].setText("Action Toolbutton")
+    child[2].setText("Menu Toolbutton")
+    child[3].setText("Instant Toolbutton")
+    child[1].addActions([
+        compat.QAction("&Action 5", window),
+        compat.QAction("&Action 6", window),
+    ])
     child[2].setPopupMode(compat.MenuButtonPopup)
-    child[2].addActions(
-        [
-            compat.QAction('&Action 9', window),
-            compat.QAction('&Action 10', window),
-        ]
-    )
+    child[2].addActions([
+        compat.QAction("&Action 9", window),
+        compat.QAction("&Action 10", window),
+    ])
     child[3].setPopupMode(compat.InstantPopup)
-    child[3].addActions(
-        [
-            compat.QAction('&Action 11', window),
-            compat.QAction('&Action 12', window),
-        ]
-    )
+    child[3].addActions([
+        compat.QAction("&Action 11", window),
+        compat.QAction("&Action 12", window),
+    ])
     child[4].setArrowType(compat.LeftArrow)
     child[5].setArrowType(compat.RightArrow)
     child[6].setArrowType(compat.UpArrow)
@@ -1035,7 +1025,7 @@ def test_toolbutton(widget, window, *_):
 
 
 def test_raised_toolbutton(widget, window, *_):
-    layout_type = 'horizontal'
+    layout_type = "horizontal"
     child = [
         QtWidgets.QToolButton(widget),
         QtWidgets.QToolButton(widget),
@@ -1056,7 +1046,7 @@ def test_raised_toolbutton(widget, window, *_):
 
 
 def test_toolbutton_style(widget, window, *_):
-    layout_type = 'horizontal'
+    layout_type = "horizontal"
     child = [
         QtWidgets.QToolButton(widget),
         QtWidgets.QToolButton(widget),
@@ -1078,16 +1068,16 @@ def test_toolbutton_style(widget, window, *_):
     window.setTabOrder(child[6], child[7])
     window.setTabOrder(child[7], child[8])
     window.setTabOrder(child[8], child[9])
-    child[0].setText('Button 1')
-    child[1].setText('Button 2')
-    child[2].setText('Button 3')
-    child[3].setText('Button 4')
-    child[4].setText('Button 5')
-    child[5].setText('Button 6')
-    child[6].setText('Button 7')
-    child[7].setText('Button 8')
-    child[8].setText('Button 9')
-    child[9].setText('Button 10')
+    child[0].setText("Button 1")
+    child[1].setText("Button 2")
+    child[2].setText("Button 3")
+    child[3].setText("Button 4")
+    child[4].setText("Button 5")
+    child[5].setText("Button 6")
+    child[6].setText("Button 7")
+    child[7].setText("Button 8")
+    child[8].setText("Button 9")
+    child[9].setText("Button 10")
     child[0].setToolButtonStyle(compat.ToolButtonIconOnly)
     child[1].setToolButtonStyle(compat.ToolButtonTextOnly)
     child[2].setToolButtonStyle(compat.ToolButtonTextBesideIcon)
@@ -1108,7 +1098,7 @@ def test_toolbutton_style(widget, window, *_):
 
 
 def test_toolbutton_menu(widget, window, *_):
-    layout_type = 'horizontal'
+    layout_type = "horizontal"
     child = [
         QtWidgets.QToolButton(widget),
         QtWidgets.QToolButton(widget),
@@ -1118,51 +1108,45 @@ def test_toolbutton_menu(widget, window, *_):
     window.setTabOrder(child[0], child[1])
     window.setTabOrder(child[1], child[2])
     window.setTabOrder(child[2], child[3])
-    child[0].setText('Button 1')
-    child[1].setText('Button 2')
-    child[2].setText('Button 3')
-    child[3].setText('Button 4')
-    child[1].addActions(
-        [
-            compat.QAction('&Action 5', window),
-            compat.QAction('&Action 6', window),
-        ]
-    )
+    child[0].setText("Button 1")
+    child[1].setText("Button 2")
+    child[2].setText("Button 3")
+    child[3].setText("Button 4")
+    child[1].addActions([
+        compat.QAction("&Action 5", window),
+        compat.QAction("&Action 6", window),
+    ])
     child[2].setPopupMode(compat.MenuButtonPopup)
-    child[2].addActions(
-        [
-            compat.QAction('&Action 9', window),
-            compat.QAction('&Action 10', window),
-        ]
-    )
+    child[2].addActions([
+        compat.QAction("&Action 9", window),
+        compat.QAction("&Action 10", window),
+    ])
     child[3].setPopupMode(compat.InstantPopup)
-    child[3].addActions(
-        [
-            compat.QAction('&Action 11', window),
-            compat.QAction('&Action 12', window),
-        ]
-    )
-    child[0].setProperty('hasMenu', False)
+    child[3].addActions([
+        compat.QAction("&Action 11", window),
+        compat.QAction("&Action 12", window),
+    ])
+    child[0].setProperty("hasMenu", False)
     # Incorrectly trims this normally... but set hasMenu true
     child[1].setAutoRaise(True)
-    child[1].setProperty('hasMenu', True)
+    child[1].setProperty("hasMenu", True)
 
     return child, layout_type
 
 
 def test_pushbutton(widget, *_):
-    layout_type = 'horizontal'
+    layout_type = "horizontal"
     child = []
     widget_type = QtWidgets.QPushButton
-    child.append(abstract_button(widget_type, widget, 'Button 1', checked=True))
-    child.append(abstract_button(widget_type, widget, 'Button 2', enabled=False))
-    child.append(abstract_button(widget_type, widget, 'Button 3', checkable=False))
+    child.append(abstract_button(widget_type, widget, "Button 1", checked=True))
+    child.append(abstract_button(widget_type, widget, "Button 2", enabled=False))
+    child.append(abstract_button(widget_type, widget, "Button 3", checkable=False))
     icon = close_icon(widget)
-    child.append(abstract_button(widget_type, widget, icon, 'Button 4', checkable=False))
-    flat = QtWidgets.QPushButton('Flat')
+    child.append(abstract_button(widget_type, widget, icon, "Button 4", checkable=False))
+    flat = QtWidgets.QPushButton("Flat")
     flat.setFlat(True)
     child.append(flat)
-    auto_default = QtWidgets.QPushButton('Auto Default')
+    auto_default = QtWidgets.QPushButton("Auto Default")
     auto_default.setAutoDefault(True)
     child.append(auto_default)
 
@@ -1172,7 +1156,7 @@ def test_pushbutton(widget, *_):
 def test_column_view(widget, *_):
     child = QtWidgets.QColumnView(widget)
     model = compat.QFileSystemModel(widget)
-    model.setRootPath('/')
+    model.setRootPath("/")
     child.setModel(model)
     child.setResizeGripsVisible(True)
 
@@ -1182,7 +1166,7 @@ def test_column_view(widget, *_):
 def test_nosizegrip_column_view(widget, *_):
     child = QtWidgets.QColumnView(widget)
     model = compat.QFileSystemModel(widget)
-    model.setRootPath('/')
+    model.setRootPath("/")
     child.setModel(model)
     child.setResizeGripsVisible(False)
 
@@ -1225,29 +1209,29 @@ def test_comprehensive_frame(widget, *_):
 def test_tree(widget, *_):
     child = []
     tree1 = QtWidgets.QTreeWidget(widget)
-    tree1.setHeaderLabel('Tree 1')
-    item1 = QtWidgets.QTreeWidgetItem(tree1, ['Row 1'])
-    item2 = QtWidgets.QTreeWidgetItem(tree1, ['Row 2'])
-    item3 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.1'])
+    tree1.setHeaderLabel("Tree 1")
+    item1 = QtWidgets.QTreeWidgetItem(tree1, ["Row 1"])
+    item2 = QtWidgets.QTreeWidgetItem(tree1, ["Row 2"])
+    item3 = QtWidgets.QTreeWidgetItem(item2, ["Row 2.1"])
     item3.setFlags(item3.flags() | compat.ItemIsUserCheckable)
     item3.setCheckState(0, compat.Unchecked)
-    item4 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.2'])
-    item5 = QtWidgets.QTreeWidgetItem(item4, ['Row 2.2.1'])
-    item6 = QtWidgets.QTreeWidgetItem(item5, ['Row 2.2.1.1'])
-    item7 = QtWidgets.QTreeWidgetItem(item5, ['Row 2.2.1.2'])
+    item4 = QtWidgets.QTreeWidgetItem(item2, ["Row 2.2"])
+    item5 = QtWidgets.QTreeWidgetItem(item4, ["Row 2.2.1"])
+    item6 = QtWidgets.QTreeWidgetItem(item5, ["Row 2.2.1.1"])
+    item7 = QtWidgets.QTreeWidgetItem(item5, ["Row 2.2.1.2"])
     item7.setFlags(item7.flags() | compat.ItemIsUserCheckable)
     item7.setCheckState(0, compat.Checked)
-    item8 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.3'])
+    item8 = QtWidgets.QTreeWidgetItem(item2, ["Row 2.3"])
     item8.setFlags(item8.flags() | compat.ItemIsUserTristate)
     item8.setCheckState(0, compat.PartiallyChecked)
-    item9 = QtWidgets.QTreeWidgetItem(tree1, ['Row 3'])
-    item10 = QtWidgets.QTreeWidgetItem(item9, ['Row 3.1'])
-    item11 = QtWidgets.QTreeWidgetItem(tree1, ['Row 4'])
+    item9 = QtWidgets.QTreeWidgetItem(tree1, ["Row 3"])
+    item10 = QtWidgets.QTreeWidgetItem(item9, ["Row 3.1"])
+    item11 = QtWidgets.QTreeWidgetItem(tree1, ["Row 4"])
     child.append(tree1)
     tree2 = QtWidgets.QTreeWidget(widget)
-    tree2.setHeaderLabel('Tree 2')
+    tree2.setHeaderLabel("Tree 2")
     tree2.header().setSectionsClickable(True)
-    item12 = QtWidgets.QTreeWidgetItem(tree2, ['Row 1', 'Column 2', 'Column 3'])
+    item12 = QtWidgets.QTreeWidgetItem(tree2, ["Row 1", "Column 2", "Column 3"])
     child.append(tree2)
 
     return child
@@ -1255,31 +1239,31 @@ def test_tree(widget, *_):
 
 def test_sortable_tree(widget, *_):
     tree = QtWidgets.QTreeWidget(widget)
-    tree.setObjectName('treeWidget')
+    tree.setObjectName("treeWidget")
     item_0 = QtWidgets.QTreeWidgetItem(tree)
     item_1 = QtWidgets.QTreeWidgetItem(tree)
     item_2 = QtWidgets.QTreeWidgetItem(item_1)
-    item_2.setText(0, 'subitem')
-    item_3 = QtWidgets.QTreeWidgetItem(item_2, ['Row 2.1'])
+    item_2.setText(0, "subitem")
+    item_3 = QtWidgets.QTreeWidgetItem(item_2, ["Row 2.1"])
     item_3.setFlags(item_3.flags() | compat.ItemIsUserCheckable)
     item_3.setCheckState(0, compat.Unchecked)
-    item_4 = QtWidgets.QTreeWidgetItem(item_2, ['Row 2.2'])
-    item_5 = QtWidgets.QTreeWidgetItem(item_4, ['Row 2.2.1'])
-    item_6 = QtWidgets.QTreeWidgetItem(item_5, ['Row 2.2.1.1'])
-    item_7 = QtWidgets.QTreeWidgetItem(item_5, ['Row 2.2.1.2'])
+    item_4 = QtWidgets.QTreeWidgetItem(item_2, ["Row 2.2"])
+    item_5 = QtWidgets.QTreeWidgetItem(item_4, ["Row 2.2.1"])
+    item_6 = QtWidgets.QTreeWidgetItem(item_5, ["Row 2.2.1.1"])
+    item_7 = QtWidgets.QTreeWidgetItem(item_5, ["Row 2.2.1.2"])
     item_3.setFlags(item_7.flags() | compat.ItemIsUserCheckable)
     item_7.setCheckState(0, compat.Checked)
-    item_8 = QtWidgets.QTreeWidgetItem(item_2, ['Row 2.3'])
+    item_8 = QtWidgets.QTreeWidgetItem(item_2, ["Row 2.3"])
     item_8.setFlags(item_8.flags() | compat.ItemIsUserTristate)
     item_8.setCheckState(0, compat.PartiallyChecked)
-    item_9 = QtWidgets.QTreeWidgetItem(tree, ['Row 3'])
-    item_10 = QtWidgets.QTreeWidgetItem(item_9, ['Row 3.1'])
-    item_11 = QtWidgets.QTreeWidgetItem(tree, ['Row 4'])
+    item_9 = QtWidgets.QTreeWidgetItem(tree, ["Row 3"])
+    item_10 = QtWidgets.QTreeWidgetItem(item_9, ["Row 3.1"])
+    item_11 = QtWidgets.QTreeWidgetItem(tree, ["Row 4"])
 
-    tree.headerItem().setText(0, 'qdz')
+    tree.headerItem().setText(0, "qdz")
     tree.setSortingEnabled(False)
-    tree.topLevelItem(0).setText(0, 'qzd')
-    tree.topLevelItem(1).setText(0, 'effefe')
+    tree.topLevelItem(0).setText(0, "qzd")
+    tree.topLevelItem(1).setText(0, "effefe")
     tree.setSortingEnabled(True)
 
     return tree
@@ -1293,29 +1277,29 @@ def test_editable_tree(widget, *_):
 
     child = []
     tree1 = QtWidgets.QTreeWidget(widget)
-    tree1.setHeaderLabel('Tree 1')
-    item1 = new_item(tree1, ['Row 1'])
-    item2 = new_item(tree1, ['Row 2'])
-    item3 = new_item(item2, ['Row 2.1'])
+    tree1.setHeaderLabel("Tree 1")
+    item1 = new_item(tree1, ["Row 1"])
+    item2 = new_item(tree1, ["Row 2"])
+    item3 = new_item(item2, ["Row 2.1"])
     item3.setFlags(item3.flags() | compat.ItemIsUserCheckable)
     item3.setCheckState(0, compat.Unchecked)
-    item4 = new_item(item2, ['Row 2.2'])
-    item5 = new_item(item4, ['Row 2.2.1'])
-    item6 = new_item(item5, ['Row 2.2.1.1'])
-    item7 = new_item(item5, ['Row 2.2.1.2'])
+    item4 = new_item(item2, ["Row 2.2"])
+    item5 = new_item(item4, ["Row 2.2.1"])
+    item6 = new_item(item5, ["Row 2.2.1.1"])
+    item7 = new_item(item5, ["Row 2.2.1.2"])
     item7.setFlags(item7.flags() | compat.ItemIsUserCheckable)
     item7.setCheckState(0, compat.Checked)
-    item8 = new_item(item2, ['Row 2.3'])
+    item8 = new_item(item2, ["Row 2.3"])
     item8.setFlags(item8.flags() | compat.ItemIsUserTristate)
     item8.setCheckState(0, compat.PartiallyChecked)
-    item9 = new_item(tree1, ['Row 3'])
-    item10 = new_item(item9, ['Row 3.1'])
-    item11 = new_item(tree1, ['Row 4'])
+    item9 = new_item(tree1, ["Row 3"])
+    item10 = new_item(item9, ["Row 3.1"])
+    item11 = new_item(tree1, ["Row 4"])
     child.append(tree1)
     tree2 = QtWidgets.QTreeWidget(widget)
-    tree2.setHeaderLabel('Tree 2')
+    tree2.setHeaderLabel("Tree 2")
     tree2.header().setSectionsClickable(True)
-    item12 = new_item(tree2, ['Row 1', 'Column 2', 'Column 3'])
+    item12 = new_item(tree2, ["Row 1", "Column 2", "Column 3"])
     child.append(tree2)
 
     return child
@@ -1323,10 +1307,10 @@ def test_editable_tree(widget, *_):
 
 def test_hidden_header_tree(widget, *_):
     tree = QtWidgets.QTreeWidget(widget)
-    tree.setHeaderLabel('Tree 1')
-    item1 = QtWidgets.QTreeWidgetItem(tree, ['Row 1'])
-    item2 = QtWidgets.QTreeWidgetItem(tree, ['Row 2'])
-    item3 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.1'])
+    tree.setHeaderLabel("Tree 1")
+    item1 = QtWidgets.QTreeWidgetItem(tree, ["Row 1"])
+    item2 = QtWidgets.QTreeWidgetItem(tree, ["Row 2"])
+    item3 = QtWidgets.QTreeWidgetItem(item2, ["Row 2.1"])
 
     tree.setHeaderHidden(True)
 
@@ -1335,10 +1319,10 @@ def test_hidden_header_tree(widget, *_):
 
 def test_indented_tree(widget, *_):
     tree = QtWidgets.QTreeWidget(widget)
-    tree.setHeaderLabel('Tree 1')
-    item1 = QtWidgets.QTreeWidgetItem(tree, ['Row 1'])
-    item2 = QtWidgets.QTreeWidgetItem(tree, ['Row 2'])
-    item3 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.1', 'Row 2.2'])
+    tree.setHeaderLabel("Tree 1")
+    item1 = QtWidgets.QTreeWidgetItem(tree, ["Row 1"])
+    item2 = QtWidgets.QTreeWidgetItem(tree, ["Row 2"])
+    item3 = QtWidgets.QTreeWidgetItem(item2, ["Row 2.1", "Row 2.2"])
 
     tree.setIndentation(tree.indentation() * 2)
     tree.setColumnCount(2)
@@ -1350,10 +1334,10 @@ def test_indented_tree(widget, *_):
 
 def test_all_focus_tree(widget, *_):
     tree = QtWidgets.QTreeWidget(widget)
-    tree.setHeaderLabel('Tree 1')
-    item1 = QtWidgets.QTreeWidgetItem(tree, ['Row 1'])
-    item2 = QtWidgets.QTreeWidgetItem(tree, ['Row 2'])
-    item3 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.1', 'Row 2.2'])
+    tree.setHeaderLabel("Tree 1")
+    item1 = QtWidgets.QTreeWidgetItem(tree, ["Row 1"])
+    item2 = QtWidgets.QTreeWidgetItem(tree, ["Row 2"])
+    item3 = QtWidgets.QTreeWidgetItem(item2, ["Row 2.1", "Row 2.2"])
 
     tree.setAllColumnsShowFocus(True)
     tree.setColumnCount(2)
@@ -1363,10 +1347,10 @@ def test_all_focus_tree(widget, *_):
 
 def test_nonexpandable_tree(widget, *_):
     tree = QtWidgets.QTreeWidget(widget)
-    tree.setHeaderLabel('Tree 1')
-    item1 = QtWidgets.QTreeWidgetItem(tree, ['Row 1'])
-    item2 = QtWidgets.QTreeWidgetItem(tree, ['Row 2'])
-    item3 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.1'])
+    tree.setHeaderLabel("Tree 1")
+    item1 = QtWidgets.QTreeWidgetItem(tree, ["Row 1"])
+    item2 = QtWidgets.QTreeWidgetItem(tree, ["Row 2"])
+    item3 = QtWidgets.QTreeWidgetItem(item2, ["Row 2.1"])
 
     tree.setItemsExpandable(False)
 
@@ -1375,10 +1359,10 @@ def test_nonexpandable_tree(widget, *_):
 
 def test_undecorated_tree(widget, *_):
     tree = QtWidgets.QTreeWidget(widget)
-    tree.setHeaderLabel('Tree 1')
-    item1 = QtWidgets.QTreeWidgetItem(tree, ['Row 1'])
-    item2 = QtWidgets.QTreeWidgetItem(tree, ['Row 2'])
-    item3 = QtWidgets.QTreeWidgetItem(item2, ['Row 2.1'])
+    tree.setHeaderLabel("Tree 1")
+    item1 = QtWidgets.QTreeWidgetItem(tree, ["Row 1"])
+    item2 = QtWidgets.QTreeWidgetItem(tree, ["Row 2"])
+    item3 = QtWidgets.QTreeWidgetItem(item2, ["Row 2.1"])
 
     tree.setRootIsDecorated(False)
 
@@ -1391,9 +1375,9 @@ def test_view_scrollarea(widget, *_):
     child.setColumnCount(100)
     child.setRowCount(100)
     for index in range(100):
-        row = QtWidgets.QTableWidgetItem(f'Row {index + 1}')
+        row = QtWidgets.QTableWidgetItem(f"Row {index + 1}")
         child.setVerticalHeaderItem(index, row)
-        column = QtWidgets.QTableWidgetItem(f'Column {index + 1}')
+        column = QtWidgets.QTableWidgetItem(f"Column {index + 1}")
         child.setHorizontalHeaderItem(index, column)
 
     return child
@@ -1402,7 +1386,7 @@ def test_view_scrollarea(widget, *_):
 def test_widget_scrollarea(widget, window, *_):
     child = QtWidgets.QProgressBar(widget)
     window.setMinimumSize(300, 100)
-    child.setProperty('value', 24)
+    child.setProperty("value", 24)
     window.resize(30, 30)
 
     return child
@@ -1411,7 +1395,7 @@ def test_widget_scrollarea(widget, window, *_):
 def test_frame(widget, *_):
     child = []
     text = QtWidgets.QTextEdit()
-    text.setPlainText('Hello world\nTesting lines')
+    text.setPlainText("Hello world\nTesting lines")
     child.append(text)
     table = QtWidgets.QTableWidget()
     table.setColumnCount(5)
@@ -1423,18 +1407,18 @@ def test_frame(widget, *_):
 
 def test_groupbox(widget, *_):
     child = []
-    groupbox = QtWidgets.QGroupBox('Groupbox 1', widget)
+    groupbox = QtWidgets.QGroupBox("Groupbox 1", widget)
     vbox1 = QtWidgets.QVBoxLayout(groupbox)
     vbox1.setAlignment(compat.AlignHCenter)
-    vbox1.addWidget(QtWidgets.QLineEdit('Sample Label'))
+    vbox1.addWidget(QtWidgets.QLineEdit("Sample Label"))
     child.append(groupbox)
-    checkable = QtWidgets.QGroupBox('Groupbox 2', widget)
+    checkable = QtWidgets.QGroupBox("Groupbox 2", widget)
     checkable.setCheckable(True)
     child.append(checkable)
     vbox = QtWidgets.QVBoxLayout(checkable)
     vbox.setAlignment(compat.AlignHCenter)
-    vbox.addWidget(QtWidgets.QLineEdit('Sample Label'))
-    flat = QtWidgets.QGroupBox('Groupbox 3', widget)
+    vbox.addWidget(QtWidgets.QLineEdit("Sample Label"))
+    flat = QtWidgets.QGroupBox("Groupbox 3", widget)
     flat.setFlat(True)
     child.append(flat)
 
@@ -1456,14 +1440,14 @@ def test_command_link(widget, *_):
     child = QtWidgets.QWidget(widget)
     layout = QtWidgets.QVBoxLayout()
     layout.addStretch(1)
-    next = QtWidgets.QCommandLinkButton('Next', 'Go next', widget)
+    next = QtWidgets.QCommandLinkButton("Next", "Go next", widget)
     next.setIcon(next_icon(next))
     layout.addWidget(next)
-    previous = QtWidgets.QCommandLinkButton('Previous', 'Go previous', widget)
+    previous = QtWidgets.QCommandLinkButton("Previous", "Go previous", widget)
     previous.setFlat(True)
     previous.setIcon(previous_icon(previous))
     layout.addWidget(previous)
-    layout.addWidget(QtWidgets.QCommandLinkButton('Text Only', widget))
+    layout.addWidget(QtWidgets.QCommandLinkButton("Text Only", widget))
     layout.addStretch(1)
 
     child.setLayout(layout)
@@ -1472,64 +1456,64 @@ def test_command_link(widget, *_):
 
 
 def test_lineedit(widget, *_):
-    return QtWidgets.QLineEdit('Sample label', widget)
+    return QtWidgets.QLineEdit("Sample label", widget)
 
 
 def test_placeholder_lineedit(widget, *_):
-    child = QtWidgets.QLineEdit('Sample label', widget)
-    child.setPlaceholderText('Placeholder')
+    child = QtWidgets.QLineEdit("Sample label", widget)
+    child.setPlaceholderText("Placeholder")
 
     return child
 
 
 def test_readonly_lineedit(widget, *_):
-    child = QtWidgets.QLineEdit('Sample label', widget)
+    child = QtWidgets.QLineEdit("Sample label", widget)
     child.setReadOnly(True)
 
     return child
 
 
 def test_noframe_lineedit(widget, *_):
-    child = QtWidgets.QLineEdit('Sample label', widget)
+    child = QtWidgets.QLineEdit("Sample label", widget)
     child.setFrame(False)
 
     return child
 
 
 def test_noecho_lineedit(widget, *_):
-    child = QtWidgets.QLineEdit('Sample label', widget)
+    child = QtWidgets.QLineEdit("Sample label", widget)
     child.setEchoMode(compat.NoEcho)
 
     return child
 
 
 def test_password_lineedit(widget, *_):
-    child = QtWidgets.QLineEdit('Sample label', widget)
+    child = QtWidgets.QLineEdit("Sample label", widget)
     child.setEchoMode(compat.Password)
 
     return child
 
 
 def test_password_edit_lineedit(widget, *_):
-    child = QtWidgets.QLineEdit('Sample label', widget)
+    child = QtWidgets.QLineEdit("Sample label", widget)
     child.setEchoMode(compat.PasswordEchoOnEdit)
 
     return child
 
 
 def test_clear_lineedit(widget, *_):
-    child = QtWidgets.QLineEdit('Sample label', widget)
+    child = QtWidgets.QLineEdit("Sample label", widget)
     child.setClearButtonEnabled(True)
 
     return child
 
 
 def test_label(widget, *_):
-    return QtWidgets.QLabel('Sample label')
+    return QtWidgets.QLabel("Sample label")
 
 
 def test_indented_label(widget, *_):
-    child = QtWidgets.QLabel('Sample label')
+    child = QtWidgets.QLabel("Sample label")
     child.setIndent(50)
 
     return child
@@ -1540,9 +1524,9 @@ def test_markdown_label(widget, *_):
         QtWidgets.QLabel(),
         QtWidgets.QLabel(),
     ]
-    child[0].setText('[BreezeStyleSheets](https://github.com/Alexhuszagh/BreezeStyleSheets)')
+    child[0].setText("[BreezeStyleSheets](https://github.com/Alexhuszagh/BreezeStyleSheets)")
     child[0].setOpenExternalLinks(True)
-    child[1].setText('# Sample Header\n- Bullet 1\n- Bullet 2')
+    child[1].setText("# Sample Header\n- Bullet 1\n- Bullet 2")
 
     for item in child:
         item.setTextFormat(compat.MarkdownText)
@@ -1551,14 +1535,14 @@ def test_markdown_label(widget, *_):
 
 
 def test_selectable_label(widget, *_):
-    child = QtWidgets.QLabel('Selectable label')
+    child = QtWidgets.QLabel("Selectable label")
     child.setTextInteractionFlags(compat.TextSelectableByMouse)
 
     return child
 
 
 def test_editable_label(widget, *_):
-    child = QtWidgets.QLabel('Editable label')
+    child = QtWidgets.QLabel("Editable label")
     child.setTextInteractionFlags(compat.TextEditorInteraction)
 
     return child
@@ -1571,45 +1555,43 @@ def test_font_combobox(widget, *_):
 def test_toolbox(widget, *_):
     # Test alignment with another item, in a vertical layout.
     child = []
-    child.append(QtWidgets.QGroupBox('Groupbox', widget))
-    child.append(QtWidgets.QGroupBox('Really, really long groupbox', widget))
+    child.append(QtWidgets.QGroupBox("Groupbox", widget))
+    child.append(QtWidgets.QGroupBox("Really, really long groupbox", widget))
     toolbox = QtWidgets.QToolBox(widget)
     child.append(toolbox)
     page1 = QtWidgets.QWidget()
-    toolbox.addItem(page1, 'Page 1')
+    toolbox.addItem(page1, "Page 1")
     page2 = QtWidgets.QWidget()
     vbox = QtWidgets.QVBoxLayout(page2)
-    vbox.addWidget(QtWidgets.QLabel('Sample Label'))
-    toolbox.addItem(page2, 'Page 2')
+    vbox.addWidget(QtWidgets.QLabel("Sample Label"))
+    toolbox.addItem(page2, "Page 2")
     page3 = QtWidgets.QWidget()
-    toolbox.addItem(page3, 'Really, really long page 3')
+    toolbox.addItem(page3, "Really, really long page 3")
 
     return child
 
 
 def test_menubutton(widget, window, *_):
     child = QtWidgets.QToolButton(widget)
-    child.setText('Menu Toolbutton')
+    child.setText("Menu Toolbutton")
     child.setPopupMode(compat.MenuButtonPopup)
-    child.addActions(
-        [
-            compat.QAction('&Action 9', window),
-            compat.QAction('&Action 10', window),
-        ]
-    )
+    child.addActions([
+        compat.QAction("&Action 9", window),
+        compat.QAction("&Action 10", window),
+    ])
 
     return child
 
 
 def test_tooltip(widget, *_):
-    child = QtWidgets.QPushButton('Sample Label')
-    child.setToolTip('Sample Tooltip')
+    child = QtWidgets.QPushButton("Sample Label")
+    child.setToolTip("Sample Tooltip")
 
     return child
 
 
 def test_splashscreen(_, window, __, ___, ____, app):
-    pixmap = QtGui.QPixmap('assets/Yellowstone.jpg')
+    pixmap = QtGui.QPixmap("assets/Yellowstone.jpg")
     size = app.screens()[0].size()
     scaled = pixmap.scaled(size, compat.KeepAspectRatio)
     splash = QtWidgets.QSplashScreen(scaled)
@@ -1665,8 +1647,8 @@ def test_formats_datetime_edit(widget, *_):
         QtWidgets.QDateTimeEdit(widget),
         QtWidgets.QDateTimeEdit(widget),
     ]
-    child[0].setDisplayFormat('dd.MM.yyyy')
-    child[1].setDisplayFormat('MMM d yy')
+    child[0].setDisplayFormat("dd.MM.yyyy")
+    child[1].setDisplayFormat("MMM d yy")
 
     return child
 
@@ -1674,17 +1656,17 @@ def test_formats_datetime_edit(widget, *_):
 def test_undo_group(widget, *_):
     group = compat.QUndoGroup(widget)
     child = QtWidgets.QUndoView(group, widget)
-    child.setEmptyLabel('New')
+    child.setEmptyLabel("New")
     child.setCleanIcon(reset_icon(widget))
 
     stack1 = compat.QUndoStack(widget)
-    stack1.push(compat.QUndoCommand('Action 1'))
-    stack1.push(compat.QUndoCommand('Action 2'))
+    stack1.push(compat.QUndoCommand("Action 1"))
+    stack1.push(compat.QUndoCommand("Action 2"))
     group.addStack(stack1)
 
     stack2 = compat.QUndoStack(widget)
-    stack2.push(compat.QUndoCommand('Action 3'))
-    stack2.push(compat.QUndoCommand('Action 4'))
+    stack2.push(compat.QUndoCommand("Action 3"))
+    stack2.push(compat.QUndoCommand("Action 4"))
     group.addStack(stack2)
 
     group.setActiveStack(stack1)
@@ -1695,13 +1677,13 @@ def test_undo_group(widget, *_):
 def test_undo_stack(widget, *_):
     stack = compat.QUndoStack(widget)
     child = QtWidgets.QUndoView(stack, widget)
-    child.setEmptyLabel('New')
+    child.setEmptyLabel("New")
     child.setCleanIcon(reset_icon(widget))
-    stack.push(compat.QUndoCommand('Action 1'))
-    stack.push(compat.QUndoCommand('Action 2'))
-    stack.push(compat.QUndoCommand('Action 3'))
-    stack.push(compat.QUndoCommand('Action 4'))
-    stack.push(compat.QUndoCommand('Action 5'))
+    stack.push(compat.QUndoCommand("Action 1"))
+    stack.push(compat.QUndoCommand("Action 2"))
+    stack.push(compat.QUndoCommand("Action 3"))
+    stack.push(compat.QUndoCommand("Action 4"))
+    stack.push(compat.QUndoCommand("Action 5"))
 
     return child
 
@@ -1860,14 +1842,14 @@ def test_error_message(widget, *_):
     if is_headless():
         return None, None, False, False
     dialog = QtWidgets.QErrorMessage(widget)
-    dialog.showMessage('Error message')
+    dialog.showMessage("Error message")
     shared.execute(args, dialog)
 
     return None, None, False, True
 
 
 def test_progress_dialog(_, window, __, ___, ____, app):
-    dialog = QtWidgets.QProgressDialog('Text', 'Cancel', 0, 100, window)
+    dialog = QtWidgets.QProgressDialog("Text", "Cancel", 0, 100, window)
     dialog.setMinimumDuration(0)
     dialog.setMinimumSize(300, 100)
     dialog.show()
@@ -1916,7 +1898,7 @@ def test_combobox_input_dialog(_, window, *__):
     if is_headless():
         return None, None, False, False
     dialog = QtWidgets.QInputDialog(window)
-    dialog.setComboBoxItems(['Item 1', 'Item 2'])
+    dialog.setComboBoxItems(["Item 1", "Item 2"])
     shared.execute(args, dialog)
 
     return None, None, False, True
@@ -1926,7 +1908,7 @@ def test_list_input_dialog(_, window, *__):
     if is_headless():
         return None, None, False, False
     dialog = QtWidgets.QInputDialog(window)
-    dialog.setComboBoxItems(['Item 1', 'Item 2'])
+    dialog.setComboBoxItems(["Item 1", "Item 2"])
     dialog.setOption(compat.UseListViewForComboBoxItems)
     shared.execute(args, dialog)
 
@@ -1937,7 +1919,7 @@ def test_nobuttons_input_dialog(_, window, *__):
     if is_headless():
         return None, None, False, False
     dialog = QtWidgets.QInputDialog(window)
-    dialog.setComboBoxItems(['Item 1', 'Item 2'])
+    dialog.setComboBoxItems(["Item 1", "Item 2"])
     dialog.setOption(compat.InputNoButtons)
     shared.execute(args, dialog)
 
@@ -1948,9 +1930,9 @@ def _wizard(widget):
     wizard = QtWidgets.QWizard()
 
     intro = QtWidgets.QWizardPage()
-    intro.setTitle('Introduction')
+    intro.setTitle("Introduction")
     intro_label = QtWidgets.QLabel(
-        'Some very long text to simulate wrapping of the UI when displayed,' ' because this needs to be done.'
+        "Some very long text to simulate wrapping of the UI when displayed, because this needs to be done."
     )
     intro_label.setWordWrap(True)
     intro_layout = QtWidgets.QVBoxLayout()
@@ -1960,8 +1942,8 @@ def _wizard(widget):
     wizard.addPage(intro)
 
     registration = QtWidgets.QWizardPage()
-    registration.setTitle('Registration')
-    registration_label = QtWidgets.QLabel('Please register your copy.')
+    registration.setTitle("Registration")
+    registration_label = QtWidgets.QLabel("Please register your copy.")
     registration_label.setWordWrap(True)
     registration_layout = QtWidgets.QVBoxLayout()
     registration_layout.addWidget(registration_label)
@@ -1970,8 +1952,8 @@ def _wizard(widget):
     wizard.addPage(registration)
 
     conclusion = QtWidgets.QWizardPage()
-    conclusion.setTitle('Conclusion')
-    conclusion_label = QtWidgets.QLabel('Congratulations on your purchase.')
+    conclusion.setTitle("Conclusion")
+    conclusion_label = QtWidgets.QLabel("Congratulations on your purchase.")
     conclusion_label.setWordWrap(True)
     conclusion_layout = QtWidgets.QVBoxLayout()
     conclusion_layout.addWidget(conclusion_label)
@@ -1982,7 +1964,7 @@ def _wizard(widget):
 
     wizard.setOption(compat.HaveHelpButton)
 
-    wizard.setWindowTitle('Simple Wizard Example')
+    wizard.setWindowTitle("Simple Wizard Example")
 
     return wizard
 
@@ -2040,13 +2022,13 @@ def test_system_tray(widget, window, *_):
     if is_headless():
         return None, None, False, False
     dialog = QtWidgets.QErrorMessage(widget)
-    dialog.showMessage('Hey! System tray icon.')
+    dialog.showMessage("Hey! System tray icon.")
 
     tray = QtWidgets.QSystemTrayIcon()
     icon = close_icon(widget)
     tray.setIcon(icon)
     tray.show()
-    tray.setToolTip('Sample tray icon')
+    tray.setToolTip("Sample tray icon")
 
     shared.execute(args, dialog)
 
@@ -2166,13 +2148,13 @@ def test_horizontal_buttons(widget, *_):
     child.append(QtWidgets.QTextEdit(widget))
     container = QtWidgets.QWidget(widget)
     hbox = QtWidgets.QHBoxLayout(container)
-    hbox.addWidget(QtWidgets.QPushButton('Delete'))
-    hbox.addWidget(QtWidgets.QPushButton('Complete'))
+    hbox.addWidget(QtWidgets.QPushButton("Delete"))
+    hbox.addWidget(QtWidgets.QPushButton("Complete"))
     child.append(container)
     child.append(QtWidgets.QLineEdit(widget))
     dialog = QtWidgets.QDialogButtonBox(compat.Horizontal, widget)
-    dialog.addButton('Yes', compat.DialogYesRole)
-    dialog.addButton('Really really really long', compat.DialogYesRole)
+    dialog.addButton("Yes", compat.DialogYesRole)
+    dialog.addButton("Really really really long", compat.DialogYesRole)
     dialog.addButton(compat.DialogOk)
     dialog.addButton(compat.DialogCancel)
     child.append(dialog)
@@ -2185,13 +2167,13 @@ def test_vertical_buttons(widget, *_):
     child.append(QtWidgets.QTextEdit(widget))
     container = QtWidgets.QWidget(widget)
     hbox = QtWidgets.QHBoxLayout(container)
-    hbox.addWidget(QtWidgets.QPushButton('Delete'))
-    hbox.addWidget(QtWidgets.QPushButton('Complete'))
+    hbox.addWidget(QtWidgets.QPushButton("Delete"))
+    hbox.addWidget(QtWidgets.QPushButton("Complete"))
     child.append(container)
     child.append(QtWidgets.QLineEdit(widget))
     dialog = QtWidgets.QDialogButtonBox(compat.Vertical, widget)
-    dialog.addButton('Yes', compat.DialogYesRole)
-    dialog.addButton('Really really really long', compat.DialogYesRole)
+    dialog.addButton("Yes", compat.DialogYesRole)
+    dialog.addButton("Really really really long", compat.DialogYesRole)
     dialog.addButton(compat.DialogOk)
     dialog.addButton(compat.DialogCancel)
     dialog.setCenterButtons(True)
@@ -2202,10 +2184,10 @@ def test_vertical_buttons(widget, *_):
 
 def test_stacked_widget(widget, *_):
     child = QtWidgets.QStackedWidget(widget)
-    child.addWidget(QtWidgets.QLabel('Label 1'))
-    child.addWidget(QtWidgets.QLabel('Label 2'))
-    child.addWidget(QtWidgets.QLabel('Label 3'))
-    child.addWidget(QtWidgets.QLabel('Label 4'))
+    child.addWidget(QtWidgets.QLabel("Label 1"))
+    child.addWidget(QtWidgets.QLabel("Label 2"))
+    child.addWidget(QtWidgets.QLabel("Label 3"))
+    child.addWidget(QtWidgets.QLabel("Label 4"))
     child.setCurrentIndex(2)
 
     return child
@@ -2214,29 +2196,29 @@ def test_stacked_widget(widget, *_):
 def test_disabled_menu(widget, window, font, width, *_):
     child = QtWidgets.QMenuBar(window)
     child.setGeometry(QtCore.QRect(0, 0, width, int(1.5 * font.pointSize())))
-    menu = QtWidgets.QMenu('Main Menu', child)
-    menu.addAction(compat.QAction('&Action 1', window))
-    menu.addAction(compat.QAction('&Action 2', window))
-    submenu = QtWidgets.QMenu('Sub Menu', menu)
-    submenu.addAction(compat.QAction('&Action 3', window))
-    action1 = compat.QAction('&Action 4', window)
+    menu = QtWidgets.QMenu("Main Menu", child)
+    menu.addAction(compat.QAction("&Action 1", window))
+    menu.addAction(compat.QAction("&Action 2", window))
+    submenu = QtWidgets.QMenu("Sub Menu", menu)
+    submenu.addAction(compat.QAction("&Action 3", window))
+    action1 = compat.QAction("&Action 4", window)
     action1.setCheckable(True)
     action1.setEnabled(False)
     submenu.addAction(action1)
     menu.addAction(submenu.menuAction())
-    action2 = compat.QAction('&Action 5', window)
+    action2 = compat.QAction("&Action 5", window)
     action2.setCheckable(True)
     action2.setChecked(True)
     menu.addSeparator()
     menu.addAction(action2)
-    action3 = compat.QAction('&Action 6', window)
+    action3 = compat.QAction("&Action 6", window)
     action3.setCheckable(True)
     menu.addAction(action3)
     icon = close_icon(menu)
-    menu.addAction(compat.QAction(icon, '&Action 7', window))
-    menu.addAction(compat.QAction(icon, '&Action 8', window))
+    menu.addAction(compat.QAction(icon, "&Action 7", window))
+    menu.addAction(compat.QAction(icon, "&Action 8", window))
     menu.actions()[2].setEnabled(False)
-    submenu.addAction(compat.QAction(icon, '&Action 9', window))
+    submenu.addAction(compat.QAction(icon, "&Action 9", window))
     child.addAction(menu.menuAction())
     window.setMenuBar(child)
 
@@ -2246,7 +2228,7 @@ def test_disabled_menu(widget, window, font, width, *_):
 def test_disabled_menubar(widget, window, font, width, *_):
     child = QtWidgets.QMenuBar(window)
     child.setGeometry(QtCore.QRect(0, 0, width, int(1.5 * font.pointSize())))
-    menu = QtWidgets.QMenu('Main Menu', child)
+    menu = QtWidgets.QMenu("Main Menu", child)
     child.addAction(menu.menuAction())
     window.setMenuBar(child)
     menu.setEnabled(False)
@@ -2280,8 +2262,8 @@ def test_issue25(widget, window, font, width, *_):
     child = QtWidgets.QTabWidget(dialog)
     child.setTabPosition(compat.North)
     general = QtWidgets.QWidget()
-    child.addTab(general, 'General')
-    child.addTab(QtWidgets.QWidget(), 'Colors')
+    child.addTab(general, "General")
+    child.addTab(QtWidgets.QWidget(), "Colors")
     layout = QtWidgets.QVBoxLayout(general)
     layout.setAlignment(compat.AlignVCenter)
 
@@ -2289,22 +2271,22 @@ def test_issue25(widget, window, font, width, *_):
     data = QtWidgets.QWidget()
     layout.addWidget(data)
     data_layout = QtWidgets.QHBoxLayout(data)
-    data_layout.addWidget(QtWidgets.QLabel('Data Folder'))
-    data_folder = QtWidgets.QLineEdit('Data')
+    data_layout.addWidget(QtWidgets.QLabel("Data Folder"))
+    data_folder = QtWidgets.QLineEdit("Data")
     data_layout.addWidget(data_folder)
-    file_dialog = QtWidgets.QPushButton('...', checkable=False)
+    file_dialog = QtWidgets.QPushButton("...", checkable=False)
     data_layout.addWidget(file_dialog)
     file_dialog.clicked.connect(lambda _: launch_filedialog(data_folder))
 
     # Add the "Show Grid" QCheckbox.
     checkbox = QtWidgets.QCheckBox
-    layout.addWidget(abstract_button(checkbox, general, 'Show grid'))
+    layout.addWidget(abstract_button(checkbox, general, "Show grid"))
 
     # Grid square size.
     grid_size = QtWidgets.QWidget()
     layout.addWidget(grid_size)
     grid_size_layout = QtWidgets.QHBoxLayout(grid_size)
-    grid_size_layout.addWidget(QtWidgets.QLabel('Grid Square Size'))
+    grid_size_layout.addWidget(QtWidgets.QLabel("Grid Square Size"))
     spin = QtWidgets.QSpinBox(grid_size)
     spin.setValue(16)
     grid_size_layout.addWidget(spin)
@@ -2313,21 +2295,21 @@ def test_issue25(widget, window, font, width, *_):
     units = QtWidgets.QWidget()
     layout.addWidget(units)
     units_layout = QtWidgets.QHBoxLayout(units)
-    units_layout.addWidget(QtWidgets.QLabel('Default length unit of measurement'))
+    units_layout.addWidget(QtWidgets.QLabel("Default length unit of measurement"))
     units_combo = QtWidgets.QComboBox()
-    units_combo.addItem('Inches')
-    units_combo.addItem('Foot')
-    units_combo.addItem('Meter')
+    units_combo.addItem("Inches")
+    units_combo.addItem("Foot")
+    units_combo.addItem("Meter")
     units_layout.addWidget(units_combo)
 
     # Add default font.
     font = QtWidgets.QWidget()
     layout.addWidget(font)
     font_layout = QtWidgets.QHBoxLayout(font)
-    font_layout.addWidget(QtWidgets.QLabel('Default Font'))
-    font_value = QtWidgets.QLineEdit('Abcdef')
+    font_layout.addWidget(QtWidgets.QLabel("Default Font"))
+    font_value = QtWidgets.QLineEdit("Abcdef")
     font_layout.addWidget(font_value)
-    font_dialog = QtWidgets.QPushButton('...', checkable=False)
+    font_dialog = QtWidgets.QPushButton("...", checkable=False)
     font_layout.addWidget(font_dialog)
     font_dialog.clicked.connect(lambda _: launch_fontdialog(font_value))
     font_layout.addStretch(1)
@@ -2337,23 +2319,23 @@ def test_issue25(widget, window, font, width, *_):
     layout.addWidget(alignment)
     alignment_layout = QtWidgets.QHBoxLayout(alignment)
     align_combo = QtWidgets.QComboBox()
-    align_combo.addItem('Align Top')
-    align_combo.addItem('Align Bottom')
-    align_combo.addItem('Align Left')
-    align_combo.addItem('Align Right')
-    align_combo.addItem('Align Center')
+    align_combo.addItem("Align Top")
+    align_combo.addItem("Align Bottom")
+    align_combo.addItem("Align Left")
+    align_combo.addItem("Align Right")
+    align_combo.addItem("Align Center")
     alignment_layout.addWidget(align_combo)
-    alignment_layout.addWidget(abstract_button(checkbox, general, 'Word Wrap'))
+    alignment_layout.addWidget(abstract_button(checkbox, general, "Word Wrap"))
     alignment_layout.addStretch(1)
 
     # Add item label font
     item_label = QtWidgets.QWidget()
     layout.addWidget(item_label)
     item_label_layout = QtWidgets.QHBoxLayout(item_label)
-    item_label_layout.addWidget(QtWidgets.QLabel('Item Label Font'))
-    item_label_value = QtWidgets.QLineEdit('Abcdef')
+    item_label_layout.addWidget(QtWidgets.QLabel("Item Label Font"))
+    item_label_value = QtWidgets.QLineEdit("Abcdef")
     item_label_layout.addWidget(item_label_value)
-    item_label_dialog = QtWidgets.QPushButton('...', checkable=False)
+    item_label_dialog = QtWidgets.QPushButton("...", checkable=False)
     item_label_layout.addWidget(item_label_dialog)
     item_label_dialog.clicked.connect(lambda _: launch_fontdialog(item_label_value))
     item_label_layout.addStretch(1)
@@ -2380,14 +2362,14 @@ def test_issue28(_, window, *__):
 
 
 def test(args, test_widget):
-    '''Test a single widget.'''
+    """Test a single widget."""
 
     app, window = shared.setup_app(args, unknown, compat)
     shared.set_stylesheet(args, app, compat)
 
     # Setup the main window.
     window = QtWidgets.QMainWindow()
-    window.setWindowTitle(f'Unittest for {test_widget}.')
+    window.setWindowTitle(f"Unittest for {test_widget}.")
     window.resize(args.width, args.height)
     widget = QtWidgets.QWidget()
     scroll = QtWidgets.QScrollArea()
@@ -2397,13 +2379,13 @@ def test(args, test_widget):
 
     # Get the correct parameters for our test widget.
     try:
-        function = globals()[f'test_{test_widget}']
+        function = globals()[f"test_{test_widget}"]
     except KeyError:
-        raise NotImplementedError(f'test for {test_widget} not implemented')
+        raise NotImplementedError(f"test for {test_widget} not implemented")
     font = app.font()
     result = function(widget, window, font, args.width, args.height, app)
     child = []
-    layout_type = 'vertical'
+    layout_type = "vertical"
     show_window = True
     quit = False
     if result and isinstance(result, list):
@@ -2447,22 +2429,22 @@ def test(args, test_widget):
 
 
 def main():
-    'Application entry point'
+    "Application entry point"
 
     def test_names():
-        return [i for i in globals().keys() if i.startswith('test_')]
+        return [i for i in globals().keys() if i.startswith("test_")]
 
     def widget_names():
-        return [i[len('test_') :] for i in test_names()]
+        return [i[len("test_") :] for i in test_names()]
 
     if args.print_tests:
-        print('\n'.join(sorted(widget_names())))
+        print("\n".join(sorted(widget_names())))
         return 0
 
     # Disable garbage collection to avoid runtime errors.
     gc.disable()
-    os.environ['QT_SCALE_FACTOR'] = str(args.scale)
-    if args.widget == 'all':
+    os.environ["QT_SCALE_FACTOR"] = str(args.scale)
+    if args.widget == "all":
         widgets = widget_names()
         if args.start is not None:
             try:
@@ -2479,5 +2461,5 @@ def main():
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

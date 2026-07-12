@@ -1,34 +1,33 @@
-"""
-color
+"""Methods and helpers for computing colors via manipulations."""
 
-Methods and helpers for computing colors via manipulations.
-"""
+from typing import TYPE_CHECKING
 
-import typing
 import colorsys
 
 from .pydantic.color import Color
 
-RGBA: 'typing.TypeAlias' = tuple[int, int, int, float]
-"""The red, green, blue, and alpha components of a color."""
+if TYPE_CHECKING:
+    from typing import Literal
 
-HSLA: 'typing.TypeAlias' = tuple[float, float, float, float]
-"""The hue, saturation, lightness, and alpha components of a color."""
+    RGBA = tuple[int, int, int, float]
+    """The red, green, blue, and alpha components of a color."""
 
-Format: 'typing.TypeAlias' = typing.Literal['RGBA', 'HSLA', 'hex']
-"""The valid formats to represent a color as."""
+    HSLA = tuple[float, float, float, float]
+    """The hue, saturation, lightness, and alpha components of a color."""
+
+    Format = Literal["RGBA", "HSLA", "hex"]
+    """The valid formats to represent a color as."""
 
 
-def to_rgba(value: 'Color | str') -> 'RGBA':
+def to_rgba(value: "Color | str") -> "RGBA":
     """
     Parse a color into the RGBA components.
 
     Args:
-        value (`str`, `Color`): The color, either as a string (hex, RGB, or HSL) or
-            a Pydantic color.
+        value: The color, either as a string (hex, RGB, or HSL) or a Pydantic color.
 
     Returns:
-        `RGBA`: The red, green, blue (from 0-255) and alpha (opacity, from 0-1) components
+        The red, green, blue (from 0-255) and alpha (opacity, from 0-1) components
         of the color.
     """
 
@@ -40,16 +39,15 @@ def to_rgba(value: 'Color | str') -> 'RGBA':
     return color
 
 
-def to_hsla(value: 'Color | str') -> 'HSLA':
+def to_hsla(value: "Color | str") -> "HSLA":
     """
     Parse a color into the HSLA components.
 
     Args:
-        value (`str`, `Color`): The color, either as a string (hex, RGB, or HSL) or
-            a Pydantic color.
+        value: The color, either as a string (hex, RGB, or HSL) or a Pydantic color.
 
     Returns:
-        `HSLA`: The hue, saturation, lightness, and alpha (opacity) (from 0-1) components
+        The hue, saturation, lightness, and alpha (opacity) (from 0-1) components
         of the color.
     """
 
@@ -61,21 +59,21 @@ def to_hsla(value: 'Color | str') -> 'HSLA':
     return color
 
 
-def is_light(color: Color) -> bool:
+def is_light(color: "Color") -> "bool":
     """
     Determine if the color is bright as a quick estimate.
 
     Args:
-        color (`Color`): The color to check.
+        color: The color to check.
 
     Returns:
-        `bool`: If the color is perceived as light.
+        If the color is perceived as light.
     """
     r, g, b, *_ = color.as_rgb_tuple()
     return is_light_rgb(r, g, b)
 
 
-def is_light_hsl(h: float, s: float, l: float) -> bool:  # noqa
+def is_light_hsl(h: "float", s: "float", l: "float") -> "bool":  # noqa
     """
     Determine if the color is bright as a quick estimate from the HSL components.
 
@@ -85,13 +83,13 @@ def is_light_hsl(h: float, s: float, l: float) -> bool:  # noqa
         l: The lightness value, from [0, 1].
 
     Returns:
-        `bool`: If the color is perceived as light.
+        If the color is perceived as light.
     """
     r, g, b = colorsys.hls_to_rgb(h, l, s)
     return is_light_rgb(int(r * 255), int(g * 255), int(b * 255))
 
 
-def is_light_rgb(r: int, g: int, b: int) -> bool:
+def is_light_rgb(r: "int", g: "int", b: "int") -> "bool":
     """
     Determine if the color is bright as a quick estimate from the RGB components.
 
@@ -101,6 +99,6 @@ def is_light_rgb(r: int, g: int, b: int) -> bool:
         b: The blue value, from [0, 255].
 
     Returns:
-        `bool`: If the color is perceived as light.
+        If the color is perceived as light.
     """
     return ((5 * g) + (2 * r) + b) > (8 * 128)

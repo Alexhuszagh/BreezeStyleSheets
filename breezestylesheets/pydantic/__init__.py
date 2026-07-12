@@ -1,6 +1,4 @@
-'''
-pydantic
-
+"""
 Minimal forks of Pydantic types to be used internally.
 
 All code is forked from Pydantic projects, and no copyright is
@@ -27,6 +25,6 @@ claimed for any of these types.
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
     SOFTWARE.
-'''
+"""
 
 from .color import Color, NullableColor

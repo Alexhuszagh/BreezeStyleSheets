@@ -1,216 +1,251 @@
-'''
-configure
+"""Configure icons, stylesheets, and resource files."""
 
-Configure icons, stylesheets, and resource files.
-'''
+from typing import TYPE_CHECKING, cast
 
-# TODO: Change to use the version dynamically
-# TODO: HERE!
-import typing
 import argparse
-import glob
 import os
 import shutil
 import subprocess
 import sys
 from pathlib import Path
 
-# TODO: Add more loaders
-from breezestylesheets import Theme, __version__
-from breezestylesheets import config as _config  # TODO: Fix the name and imports
-from breezestylesheets import exception, resources, types, utils
+from breezestylesheets import (
+    Style,
+    StyleSheetTemplate,
+    Theme,
+    __author__,
+    __credits__,
+    __license__,
+    __version__,
+    __version_info__,
+    exception,
+    resources,
+    utils,
+)
 
-# TODO: Make this `py39` compatible
+if TYPE_CHECKING:
+    from typing import Literal, Protocol
 
-home_dir = utils.project_dir()
-dist_dir = os.path.join(home_dir, 'dist')
-resources_dir = os.path.join(home_dir, 'resources')
-template_dir = os.path.join(home_dir, 'template')
-theme_dir = os.path.join(home_dir, 'theme')
-extension_dir = os.path.join(home_dir, 'extension')
+    from breezestylesheets.types import PathOrStr
+
+PACKAGE_DIR = utils.package_dir()
+PROJECT_DIR = utils.project_dir()
+DIST_DIR = PROJECT_DIR / "dist"
+RESOURCES_DIR = PROJECT_DIR / "resources"
+TEMPLATE_DIR = PACKAGE_DIR / "template"
+THEME_DIR = PACKAGE_DIR / "theme"
+DEFAULT = "default"
+
+if TYPE_CHECKING:
+
+    class Args(Protocol):
+        styles: "list[str]"
+        extensions: "list[str]"
+        resource: "str"
+        no_qrc: "bool"
+        output_dir: "Path"
+        qt_framework: Literal["pyqt5", "pyqt6", "pyside2", "pyside6"]
+        clean: "bool"
+        rcc: "str | None"
+        compiled: "str | None"
+        use_default_compression: "bool"
 
 
-def parse_args(argv=None):
-    '''Parse the command-line options.'''
+def parse_args(argv: "list[str] | None" = None) -> "Args":
+    """Parse the command-line options."""
 
-    parser = argparse.ArgumentParser(description='Styles to configure for a Qt application.')
-    parser.add_argument('-v', '--version', action='version', version=f'%(prog)s {__version__}')
+    parser = argparse.ArgumentParser(description="Styles to configure for a Qt application.")
+    parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {__version__}")
     parser.add_argument(
-        '--styles',
-        help='comma-separate list of styles to configure. pass `all` to build all themes',
-        default='light-blue,dark-blue',
+        "--styles",
+        "--themes",
+        help="the themes to configure. pass `all` to build all themes",
+        dest="styles",
+        default=["light-blue", "dark-blue"],
+        nargs="*",
     )
     parser.add_argument(
-        '--extensions',
-        help='comma-separate list of styles to configure. pass `all` to build all themes',
-        default='',
+        "--extensions",
+        help="comma-separate list of styles to configure. pass `all` to build all extensions",
+        nargs="*",
+        default=[],
     )
     parser.add_argument(
-        '--resource',
-        help='output qrc resource file name',
-        default='breeze.qrc',
+        "--qrc",
+        "--resource",
+        "--resource-collection-file",
+        help="output qrc resource file name",
+        default="breeze.qrc",
+        dest="resource",
     )
     parser.add_argument(
-        '--no-qrc',
-        help='do not build QRC resources.',
-        action='store_true',
+        "--no-qrc",
+        help="do not build QRC resources.",
+        action="store_true",
     )
     parser.add_argument(
-        '--output-dir',
-        help='the default output directory path',
-        default=Path(dist_dir),
+        "--output",
+        "--output-dir",
+        help="the default output directory path",
+        default=Path(DIST_DIR),
+        dest="output_dir",
         type=Path,
     )
     parser.add_argument(
-        '--qt-framework',
+        "--qt-framework",
         help=(
-            'target framework to build for. Default = pyqt5. '
-            'Note: building for PyQt6 requires PySide6-rcc to be installed.'
+            "target framework to build for. Default = pyqt5. "
+            "Note: building for PyQt6 requires PySide6-rcc to be installed."
         ),
-        choices=['pyqt5', 'pyqt6', 'pyside2', 'pyside6'],
-        default='pyqt5',
+        choices=["pyqt5", "pyqt6", "pyside2", "pyside6"],
+        default="pyqt5",
     )
     parser.add_argument(
-        '--clean', help='clean dist directory prior to configuring themes.', action='store_true'
+        "--clean",
+        help="clean dist directory prior to configuring themes.",
+        action="store_true",
     )
     parser.add_argument(
-        '--rcc',
+        "--rcc",
         help=(
-            'path to the rcc executable. '
-            'Overrides rcc of chosen framework. '
-            'Only use if system cannot find the rcc exe.'
+            "path to the rcc executable. "
+            "Overrides rcc of chosen framework. "
+            "Only use if system cannot find the rcc exe."
         ),
     )
     parser.add_argument(
-        '--compiled-resource',
-        help='output compiled python resource file.',
+        "--compiled",
+        "--compiled-resource",
+        help="output compiled python resource file.",
+        dest="compiled",
     )
     parser.add_argument(
-        '--use-default-compression',
-        help='use the default Qt compression rather than the more efficient custom compression.',
-        action='store_true',
+        "--use-default-compression",
+        help="use the default Qt compression rather than the more efficient custom compression.",
+        action="store_true",
     )
-    args = parser.parse_args(argv)
+    args = cast("Args", parser.parse_args(argv))
     parse_styles(args)
     parse_extensions(args)
 
     return args
 
 
-def split_csv(string: str) -> list[str]:
-    '''Split a list of values provided as comma-separated values.'''
-
-    values = map(str.strip, string.split(','))
+def split_csv(value: "list[str] | str") -> "list[str]":
+    """Split a list of values provided as comma-separated values."""
+    if isinstance(value, list):
+        return [j for i in value for j in split_csv(i)]
+    values = map(str.strip, value.split(","))
     return [i for i in values if i]
 
 
-def parse_styles(args):
-    '''Parse a list of valid styles.'''
+def parse_styles(args: "Args") -> None:
+    """Parse a list of valid styles."""
 
     values = split_csv(args.styles)
-    if 'all' in values:
-        files = glob.glob(f'{theme_dir}/*json')
-        values = [os.path.splitext(os.path.basename(i))[0] for i in files]
+    if "all" in values:
+        values = [i.stem for i in THEME_DIR.glob("*.json")]
     args.styles = values
 
 
-def parse_extensions(args):
-    '''Parse a list of valid extensions.'''
+def parse_extensions(args: "Args") -> None:
+    """Parse a list of valid extensions."""
 
+    ext_files = ("stylesheet.qss.in", "icons.json")
     values = split_csv(args.extensions)
-    if 'all' in values:
-        values = []
-        for dirname in os.listdir(extension_dir):
-            ext = f'{extension_dir}/{dirname}'
-            ext_files = ('stylesheet.qss.in', 'icons.json')
-            paths = [f'{ext}/{i}' for i in ext_files]
-            if os.path.isdir(ext) and any(os.path.exists(i) for i in paths):
-                values.append(dirname)
+    if "all" in values:
+        directories = (i for i in TEMPLATE_DIR.iterdir() if i.is_dir())
+        values = [i.stem for i in directories if any((i / e).exists() for e in ext_files)]
+        values.remove(DEFAULT)
 
     args.extensions = values
 
 
-def configure_icons(config: _config.CompilerConfig, style, qt_dist):
-    '''Configure icons for a given style.'''
+def configure_icons(config: "resources.Compiler", style: "Style", qt_dist: "PathOrStr") -> "None":
+    """Configure icons for a given style."""
 
-    theme = config.themes[style]
-    for template in config.templates:
-        for icon in template.icons:
-            rendered = icon.render(theme)
-            for name, svg in rendered.items():
-                filename = f'{qt_dist}/{style}/{name}.svg'
-                with open(filename, 'w', encoding='utf-8') as file:
-                    file.write(svg)
+    for template in config.template.icons:
+        rendered = template.render(style.theme)
+        for icon in rendered:
+            filename = Path(qt_dist) / style.name / f"{icon.name}.svg"
+            filename.write_text(icon.value, encoding="utf-8")
 
 
-def configure_stylesheet(config: _config.CompilerConfig, style, qt_dist, style_prefix):
-    '''Configure the stylesheet for a given style.'''
+def configure_stylesheet(
+    config: "resources.Compiler",
+    style: "Style",
+    qt_dist: "PathOrStr"
+) -> "None":
+    """Configure the stylesheet for a given style."""
 
-    theme = config.themes[style]
-    stylesheet = '\n'.join([i.stylesheet for i in config.templates])
-    stylesheet = theme.render(stylesheet, style_prefix)
-
-    with open(f'{qt_dist}/{style}/stylesheet.qss', 'w', encoding='utf-8') as file:
-        file.write(stylesheet)
+    stylesheet = config.template.render(style)
+    with open(f"{qt_dist}/{style.name}/stylesheet.qss", "w", encoding="utf-8") as file:
+        file.write(stylesheet.value)
 
 
-def configure_style(config: _config.CompilerConfig, style, qt_dist):
-    '''Configure the icons and stylesheet for a given style.'''
+def configure_style(config: "resources.Compiler", style: "Style", qt_dist: "PathOrStr") -> "None":
+    """Configure the icons and stylesheet for a given style."""
 
-    def configure_qt(qt_dist, style_prefix):
-        os.makedirs(f'{qt_dist}/{style}', exist_ok=True)
+    def configure_qt(qt_dist: "PathOrStr") -> "None":
+        os.makedirs(f"{qt_dist}/{style.name}", exist_ok=True)
         # Need to pass the qt_dist dir.
         configure_icons(config, style, qt_dist)
-        configure_stylesheet(config, style, qt_dist, style_prefix)
+        configure_stylesheet(config, style, qt_dist)
 
     # Need to replace the URL paths for loading icons/
     # assets. This uses the resource system, AKA,
     # `url(:/dark/path/to/resource)`.
-    if not config.no_qrc:
-        configure_qt(qt_dist, f':/{style}/')
+    if config.qrc is not None:
+        configure_qt(qt_dist)
 
 
-def write_qrc(config: _config.CompilerConfig, qt_dist: types.PathOrStr) -> None:
-    '''Simple QRC writer.'''
+def write_qrc(config: "resources.Compiler", qt_dist: "PathOrStr") -> "None":
+    """Simple QRC writer."""
+
+    if config.qrc is None:
+        return
 
     # NOTE: We also want to create aliases for light-blue and dark-blue from our
     # light and dark. See:
     #   https://github.com/Alexhuszagh/BreezeStyleSheets/pull/101#issuecomment-2336476041
     resources = []
-    for style in config.themes:
-        files = os.listdir(f'{qt_dist}/{style}')
-        resources += [f'{style}/{i}' for i in files]
-    if 'dark-blue' in config.themes:
-        resources.append('dark/stylesheet.qss')
-    if 'light-blue' in config.themes:
-        resources.append('light/stylesheet.qss')
+    for style in config.styles:
+        files = os.listdir(f"{qt_dist}/{style.name}")
+        resources += [f"{style.name}/{i}" for i in files]
 
-    qrc_path = config.resource
+    style_names = {i.name for i in config.styles}
+    if "dark-blue" in style_names:
+        resources.append("dark/stylesheet.qss")
+    if "light-blue" in style_names:
+        resources.append("light/stylesheet.qss")
+
+    qrc_path = config.qrc
     if not os.path.isabs(qrc_path):
-        qrc_path = f'{qt_dist}/{qrc_path}'
-    with open(qrc_path, 'w', encoding='utf-8') as file:
-        print('<RCC>', file=file)
-        print('  <qresource>', file=file)
+        qrc_path = f"{qt_dist}/{qrc_path}"
+    with open(qrc_path, "w", encoding="utf-8") as file:
+        print("<RCC>", file=file)
+        print("  <qresource>", file=file)
         for resource in sorted(resources):
-            # TODO: Need to escape the resources here!
-            print(f'    <file>{resource}</file>', file=file)
-        print('  </qresource>', file=file)
-        print('</RCC>', file=file)
+            print(f"    <file>{resource}</file>", file=file)
+        print("  </qresource>", file=file)
+        print("</RCC>", file=file)
 
 
-def compile_resource(args: argparse.Namespace) -> None:
-    '''Compile our resource file to a standalone Python file.'''
+def compile_resource(args: "Args", config: "resources.Compiler") -> "None":
+    """Compile our resource file to a standalone Python file."""
 
-    resource_path: str = args.resource
-    compiled_resource_path: str = args.compiled_resource
+    assert args.compiled is not None
+
+    resource_path = args.resource
+    compiled_resource_path = args.compiled
     if not os.path.isabs(resource_path):
-        resource_path = f'{args.output_dir}/{resource_path}'
+        resource_path = f"{args.output_dir}/{resource_path}"
     if not os.path.isabs(compiled_resource_path):
-        compiled_resource_path = f'{resources_dir}/{compiled_resource_path}'
+        compiled_resource_path = f"{RESOURCES_DIR}/{compiled_resource_path}"
 
-    compression: resources.Compression = 'lzma'
+    compression: resources.Compression = "lzma"
     if not args.use_default_compression:
-        compression = 'default'
+        compression = "default"
     try:
         resources.compile(
             qrc=resource_path,
@@ -220,67 +255,75 @@ def compile_resource(args: argparse.Namespace) -> None:
             compression=compression,
         )
     except exception.ResourceCompileError as error:
-        inner = typing.cast('subprocess.CalledProcessError', error.inner)
-        if b'File does not exist' in inner.stderr:
+        inner = cast("subprocess.CalledProcessError", error.inner)
+        if b"File does not exist" in inner.stderr:
             print('ERROR: Ensure qrc file exists or deselect "no-qrc" option!', file=sys.stderr)
         else:
             print(f'ERROR: Got an unknown error of "{inner.stderr.decode("utf-8")}"!', file=sys.stderr)
         raise SystemExit from error
     except exception.RccNotFoundError as error:
         if args.rcc:
-            print('ERROR: rcc path invalid!', file=sys.stderr)
+            print("ERROR: rcc path invalid!", file=sys.stderr)
         else:
-            print('ERROR: Ensure rcc executable exists for chosen framework!', file=sys.stderr)
+            print("ERROR: Ensure rcc executable exists for chosen framework!", file=sys.stderr)
         print(
-            'Required rcc for PyQt5: pyrcc5',
-            'Required rcc for PySide6 & PyQt6: PySide6-rcc',
-            'Required rcc for PySide2: PySide2-rcc',
-            '',
-            'if using venv, activate it or provide path to rcc.',
-            sep='\n',
+            "Required rcc for PyQt5: pyrcc5",
+            "Required rcc for PySide6 & PyQt6: PySide6-rcc",
+            "Required rcc for PySide2: PySide2-rcc",
+            "",
+            "if using venv, activate it or provide path to rcc.",
+            sep="\n",
             file=sys.stderr,
         )
         raise SystemExit from error
 
 
-def configure(args: argparse.Namespace) -> None:
-    '''Configure all styles and write the files to a QRC file.'''
+def configure(args: "Args") -> "None":
+    """Configure all styles and write the files to a QRC file."""
 
+    if args.clean and args.output_dir.is_relative_to(PACKAGE_DIR):
+        raise ValueError("Cannot clean the source code repository.")
     if args.clean:
         shutil.rmtree(args.output_dir, ignore_errors=True)
 
     # Need to convert our styles accordingly.
-    config = _config.CompilerConfig(themes={}, templates=[], no_qrc=args.no_qrc, resource=args.resource)
-    config.templates.append(_config.Template.from_directory(template_dir))
-    for style in args.styles:
-        config.themes[style] = Theme.load(f'{theme_dir}/{style}.json')
-    for extension in args.extensions:
-        config.templates.append(_config.Template.from_directory(f'{extension_dir}/{extension}'))
+    styles = [Style(i, Theme.load(f"{THEME_DIR}/{i}.json")) for i in args.styles]
+    template_dirs = [TEMPLATE_DIR / DEFAULT] + [TEMPLATE_DIR / i for i in args.extensions]
+    qrc = args.resource if not args.no_qrc else None
+    compression = "default" if not args.use_default_compression else "lzma"
+    config = resources.Compiler(
+        styles=styles,
+        template=StyleSheetTemplate.from_directories(*template_dirs),
+        framework=args.qt_framework,
+        qrc=qrc,
+        rcc=args.rcc,
+        compression=compression,
+    )
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    for style in config.themes:
+    for style in styles:
         configure_style(config, style, str(args.output_dir))
 
     # Create aliases for our light-blue and dark-blue styles to light and dark.
     # Only create aliases if light-blue and/or dark-blue are to be built.
-    aliases = set(args.styles) & {'dark-blue', 'light-blue'}
+    aliases = set(args.styles) & {"dark-blue", "light-blue"}
     for theme in aliases:
-        source = args.output_dir / theme / 'stylesheet.qss'
-        destination = args.output_dir / theme.split('-')[0] / 'stylesheet.qss'
+        source = args.output_dir / theme / "stylesheet.qss"
+        destination = args.output_dir / theme.split("-")[0] / "stylesheet.qss"
         destination.parent.mkdir(exist_ok=True)
         shutil.copy2(source, destination)
 
     # Create and compile our resource files.
     if not args.no_qrc:
         write_qrc(config, str(args.output_dir))
-    if args.compiled_resource is not None:
-        compile_resource(args)
+    if args.compiled is not None:
+        compile_resource(args, config)
 
 
-def main(argv: 'list[str] | None' = None):
-    '''Configuration entry point'''
+def main(argv: "list[str] | None" = None):
+    """Configuration entry point"""
     configure(parse_args(argv))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

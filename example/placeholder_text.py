@@ -22,16 +22,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-'''
-    placeholder_text
-    ================
+"""
+Demo of using placeholder text.
 
-    Example showing how to style the placeholder text for QLineEdit,
-    QTextEdit, and QPlainTextEdit, since in Qt6 is can be styled as
-    the default text color. This seems to be an issue with palettes for
-    Qt6 in `QPalette::PlaceholderText`, since both the stylesheets
-    and palette edits correctly affect styles in Qt5, but not Qt6.
-'''
+Example showing how to style the placeholder text for QLineEdit,
+QTextEdit, and QPlainTextEdit, since in Qt6 is can be styled as
+the default text color. This seems to be an issue with palettes for
+Qt6 in `QPalette::PlaceholderText`, since both the stylesheets
+and palette edits correctly affect styles in Qt5, but not Qt6.
+"""
 
 # pylint: disable=duplicate-code
 
@@ -41,12 +40,12 @@ import shared
 
 parser = shared.create_parser()
 parser.add_argument(
-    '--set-app-palette', help='''set the placeholder text palette globally.''', action='store_true'
+    "--set-app-palette", help="""set the placeholder text palette globally.""", action="store_true"
 )
 parser.add_argument(
-    '--set-widget-palette',
-    help='''set the placeholder text palette for the affected widgets.''',
-    action='store_true',
+    "--set-widget-palette",
+    help="""set the placeholder text palette for the affected widgets.""",
+    action="store_true",
 )
 args, unknown = shared.parse_args(parser)
 QtCore, QtGui, QtWidgets = shared.import_qt(args)
@@ -55,7 +54,7 @@ colors = shared.get_colors(args, compat)
 
 
 def set_palette(widget, role, color):
-    '''Set the palette for a widget.'''
+    """Set the palette for a widget."""
 
     palette = widget.palette()
     palette.setColor(role, color)
@@ -63,38 +62,38 @@ def set_palette(widget, role, color):
 
 
 def set_placeholder_palette(widget):
-    '''Set the palette for the placeholder text. This only works in Qt5.'''
+    """Set the palette for the placeholder text. This only works in Qt5."""
     set_palette(widget, compat.PlaceholderText, colors.PlaceholderColor)
 
 
 class Ui:
-    '''Main class for the user interface.'''
+    """Main class for the user interface."""
 
     def setup(self, MainWindow):
-        '''Setup our main window for the UI.'''
+        """Setup our main window for the UI."""
 
-        MainWindow.setObjectName('MainWindow')
+        MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1068, 824)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName('centralwidget')
+        self.centralwidget.setObjectName("centralwidget")
         self.layout = QtWidgets.QVBoxLayout(self.centralwidget)
-        self.layout.setObjectName('layout')
+        self.layout.setObjectName("layout")
         self.layout.setAlignment(compat.AlignHCenter)
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.textEdit = QtWidgets.QTextEdit(self.centralwidget)
-        self.textEdit.setObjectName('textEdit')
-        self.textEdit.setPlaceholderText('Placeholder Text')
+        self.textEdit.setObjectName("textEdit")
+        self.textEdit.setPlaceholderText("Placeholder Text")
         self.layout.addWidget(self.textEdit)
 
         self.plainTextEdit = QtWidgets.QPlainTextEdit(self.centralwidget)
-        self.plainTextEdit.setObjectName('plainTextEdit')
-        self.plainTextEdit.setPlaceholderText('Placeholder Text')
+        self.plainTextEdit.setObjectName("plainTextEdit")
+        self.plainTextEdit.setPlaceholderText("Placeholder Text")
         self.layout.addWidget(self.plainTextEdit)
 
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit.setObjectName('lineEdit')
-        self.lineEdit.setPlaceholderText('Placeholder Text')
+        self.lineEdit.setObjectName("lineEdit")
+        self.lineEdit.setPlaceholderText("Placeholder Text")
         self.layout.addWidget(self.lineEdit)
         # Set the palettes.
         if args.set_widget_palette:
@@ -104,7 +103,7 @@ class Ui:
 
 
 def main():
-    'Application entry point'
+    "Application entry point"
 
     app, window = shared.setup_app(args, unknown, compat)
     if args.set_app_palette:
@@ -113,12 +112,12 @@ def main():
     # setup ui
     ui = Ui()
     ui.setup(window)
-    window.setWindowTitle('Stylized Placeholder Text.')
+    window.setWindowTitle("Stylized Placeholder Text.")
     window.resize(400, 150)
 
     shared.set_stylesheet(args, app, compat)
     return shared.exec_app(args, app, window)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

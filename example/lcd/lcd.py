@@ -20,15 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-'''
-    lcd
-    ===
-
-    Example showing how to override the `paintEvent` and `eventFilter`
-    for a `QLCDNumber`, creating a visually consistent, stylish
-    `QLCDNumber` that supports highlighting the handle on the active
-    or hovered number.
-'''
+"""
+Example showing how to override the `paintEvent` and `eventFilter`
+for a `QLCDNumber`, creating a visually consistent, stylish
+`QLCDNumber` that supports highlighting the handle on the active
+or hovered number.
+"""
 
 import os
 import sys
@@ -40,7 +37,7 @@ import shared  # noqa  # pylint: disable=wrong-import-position,import-error
 
 parser = shared.create_parser()
 parser.add_argument(
-    '--no-align', help='''allow larger widgets without forcing alignment.''', action='store_true'
+    "--no-align", help="""allow larger widgets without forcing alignment.""", action="store_true"
 )
 args, unknown = shared.parse_args(parser)
 _, __, QtWidgets = shared.import_qt(args)
@@ -49,19 +46,19 @@ colors = shared.get_colors(args, compat)
 
 
 class LCD(QtWidgets.QLCDNumber):
-    '''QLCDNumber with a custom palette.'''
+    """QLCDNumber with a custom palette."""
 
     def __init__(self, widget=None):
         super().__init__(widget)
         self.setContentsMargins(1, 1, 1, 1)
-        if args.stylesheet == 'native':
+        if args.stylesheet == "native":
             return
 
         # The color of the non-flat LCD numbers is still controlled
         # via the `color` stylesheet attribute.
         r, g, b, a = colors.HighLightDark.getRgb()
         color = (r, g, b, a / 255)
-        self.setStyleSheet(f'QLCDNumber {{ color: rgba{color}; }}')
+        self.setStyleSheet(f"QLCDNumber {{ color: rgba{color}; }}")
 
         palette = self.palette()
         palette.setColor(compat.WindowPalette, colors.Background)

@@ -1,13 +1,10 @@
 #!/usr/bin/env python
-'''
-    lcd
-    ===
-
-    Example showing how to override the `paintEvent` and `eventFilter`
-    for a `QLCDNumber`, creating a visually consistent, stylish
-    `QLCDNumber` that supports highlighting the handle on the active
-    or hovered number.
-'''
+"""
+Example showing how to override the `paintEvent` and `eventFilter`
+for a `QLCDNumber`, creating a visually consistent, stylish
+`QLCDNumber` that supports highlighting the handle on the active
+or hovered number.
+"""
 
 import sys
 
@@ -15,12 +12,12 @@ import lcd
 
 
 class Ui:
-    '''Main class for the user interface.'''
+    """Main class for the user interface."""
 
     def setup(self, MainWindow):
-        '''Setup our main window for the UI.'''
+        """Setup our main window for the UI."""
 
-        MainWindow.setObjectName('MainWindow')
+        MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1068, 824)
         self.centralwidget = lcd.QtWidgets.QWidget(MainWindow)
         self.layout = lcd.QtWidgets.QHBoxLayout(self.centralwidget)
@@ -56,19 +53,19 @@ class Ui:
 
 
 def main():
-    'Application entry point'
+    "Application entry point"
 
     app, window = lcd.shared.setup_app(lcd.args, lcd.unknown, lcd.compat)
 
     # setup ui
     ui = Ui()
     ui.setup(window)
-    window.setWindowTitle('QLCDNumber')
+    window.setWindowTitle("QLCDNumber")
     window.resize(400, 150)
 
     lcd.shared.set_stylesheet(lcd.args, app, lcd.compat)
     return lcd.shared.exec_app(lcd.args, app, window)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

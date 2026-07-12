@@ -22,12 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-'''
-    branchless
-    ==========
-
-    Simple PyQt application without branches for our QTreeViews.
-'''
+"""Simple PyQt application without branches for our QTreeViews."""
 
 import os
 import sys
@@ -47,20 +42,20 @@ ICON_MAP = shared.get_icon_map(compat)
 
 
 def set_stylesheet(app):
-    '''Set the application stylesheet.'''
+    """Set the application stylesheet."""
 
-    if args.stylesheet != 'native':
+    if args.stylesheet != "native":
         resource_format = shared.get_resources(args)
         qt_path = shared.get_stylesheet(resource_format)
-        ext_path = os.path.join(HOME, 'stylesheet.qss.in')
+        ext_path = os.path.join(EXAMPLE, "stylesheet.qss.in")
         stylesheet = shared.read_qtext_file(qt_path, compat)
-        with open(ext_path, 'r', encoding='utf-8') as file:
-            stylesheet += '\n' + file.read()
+        with open(ext_path, "r", encoding="utf-8") as file:
+            stylesheet += "\n" + file.read()
         app.setStyleSheet(stylesheet)
 
 
 def get_treeviews(parent, depth=1000):
-    '''Recursively get all tree views.'''
+    """Recursively get all tree views."""
     for child in parent.children():
         if isinstance(child, QtWidgets.QTreeView):
             yield child
@@ -69,7 +64,7 @@ def get_treeviews(parent, depth=1000):
 
 
 def main():
-    'Application entry point'
+    "Application entry point"
 
     # this is mostly a hack to get simplify using the same UI but with
     # minimal additions to modify the stylesheet
@@ -81,7 +76,7 @@ def main():
     ui.bt_delay_popup.addActions([ui.actionAction, ui.actionAction_C])
     ui.bt_instant_popup.addActions([ui.actionAction, ui.actionAction_C])
     ui.bt_menu_button_popup.addActions([ui.actionAction, ui.actionAction_C])
-    window.setWindowTitle('Sample BreezeStyleSheets application.')
+    window.setWindowTitle("Sample BreezeStyleSheets application.")
 
     # Add event triggers
     ui.actionAction.triggered.connect(ui.about)
@@ -98,5 +93,5 @@ def main():
     return shared.exec_app(args, app, window)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

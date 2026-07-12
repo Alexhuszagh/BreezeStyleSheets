@@ -22,13 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-'''
-    url
-    ===
-
-    Example showing how to style URLs, since the color of the links
-    cannot be modified in stylesheets.
-'''
+"""Example stylizing URLs using palettes."""
 
 # pylint: disable=duplicate-code
 
@@ -38,12 +32,12 @@ import shared
 
 parser = shared.create_parser()
 parser.add_argument(
-    '--set-app-palette', help='''set the placeholder text palette globally.''', action='store_true'
+    "--set-app-palette", help="""set the placeholder text palette globally.""", action="store_true"
 )
 parser.add_argument(
-    '--set-widget-palette',
-    help='''set the placeholder text palette for the affected widgets.''',
-    action='store_true',
+    "--set-widget-palette",
+    help="""set the placeholder text palette for the affected widgets.""",
+    action="store_true",
 )
 args, unknown = shared.parse_args(parser)
 QtCore, QtGui, QtWidgets = shared.import_qt(args)
@@ -52,7 +46,7 @@ colors = shared.get_colors(args, compat)
 
 
 def set_palette(widget, role, color):
-    '''Set the palette for the placeholder text. This only works in Qt5.'''
+    """Set the palette for the placeholder text. This only works in Qt5."""
 
     palette = widget.palette()
     palette.setColor(role, color)
@@ -60,46 +54,46 @@ def set_palette(widget, role, color):
 
 
 def set_link_palette(widget):
-    '''Set the palette for a link type.'''
+    """Set the palette for a link type."""
     set_palette(widget, compat.Link, colors.LinkColor)
     set_palette(widget, compat.LinkVisited, colors.LinkVisitedColor)
 
 
 class Ui:
-    '''Main class for the user interface.'''
+    """Main class for the user interface."""
 
     def setup(self, MainWindow):
-        '''Setup our main window for the UI.'''
+        """Setup our main window for the UI."""
 
-        url = 'https://github.com/Alexhuszagh/BreezeStyleSheets'
-        MainWindow.setObjectName('MainWindow')
+        url = "https://github.com/Alexhuszagh/BreezeStyleSheets"
+        MainWindow.setObjectName("MainWindow")
         MainWindow.resize(400, 200)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName('centralwidget')
+        self.centralwidget.setObjectName("centralwidget")
         self.layout = QtWidgets.QVBoxLayout(self.centralwidget)
-        self.layout.setObjectName('layout')
+        self.layout.setObjectName("layout")
         self.layout.setAlignment(compat.AlignLeft)
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.repository = QtWidgets.QLabel(self.centralwidget)
-        self.repository.setObjectName('repository')
-        self.repository.setText(f'[BreezeStyleSheets]({url})')
+        self.repository.setObjectName("repository")
+        self.repository.setText(f"[BreezeStyleSheets]({url})")
         self.repository.setTextFormat(compat.MarkdownText)
         self.repository.setTextInteractionFlags(compat.TextBrowserInteraction)
         self.repository.setOpenExternalLinks(True)
         self.layout.addWidget(self.repository)
 
         self.issues = QtWidgets.QLabel(self.centralwidget)
-        self.issues.setObjectName('issues')
-        self.issues.setText(f'[Issues]({url}/issues)')
+        self.issues.setObjectName("issues")
+        self.issues.setText(f"[Issues]({url}/issues)")
         self.issues.setTextFormat(compat.MarkdownText)
         self.issues.setTextInteractionFlags(compat.TextBrowserInteraction)
         self.issues.setOpenExternalLinks(True)
         self.layout.addWidget(self.issues)
 
         self.pulls = QtWidgets.QLabel(self.centralwidget)
-        self.pulls.setObjectName('pulls')
-        self.pulls.setText(f'[Pull Requests]({url}/pulls)')
+        self.pulls.setObjectName("pulls")
+        self.pulls.setText(f"[Pull Requests]({url}/pulls)")
         self.pulls.setTextFormat(compat.MarkdownText)
         self.pulls.setTextInteractionFlags(compat.TextBrowserInteraction)
         self.pulls.setOpenExternalLinks(True)
@@ -113,7 +107,7 @@ class Ui:
 
 
 def main():
-    'Application entry point'
+    "Application entry point"
 
     app, window = shared.setup_app(args, unknown, compat)
     if args.set_app_palette:
@@ -122,12 +116,12 @@ def main():
     # setup ui
     ui = Ui()
     ui.setup(window)
-    window.setWindowTitle('Stylized URL colors.')
+    window.setWindowTitle("Stylized URL colors.")
     window.resize(200, 100)
 
     shared.set_stylesheet(args, app, compat)
     return shared.exec_app(args, app, window)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

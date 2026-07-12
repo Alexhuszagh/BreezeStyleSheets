@@ -84,7 +84,7 @@ By default, BreezeStyleSheets comes with the `dark` and `light` themes pre-built
 # choose only the frameworks you want
 frameworks=("pyqt5" "pyqt6" "pyside2" "pyside6")
 for framework in "${frameworks[@]}"; do
-    python configure.py --styles=all --extensions=all --qt-framework "${framework}" \
+    python configure.py --styles all --extensions all --qt-framework "${framework}" \
         --resource breeze.qrc --compiled-resource "breeze_${framework}.py"
 done
 ```
@@ -307,7 +307,7 @@ Here is a sample theme, with the color descriptions annotated. Please note that 
     // Main foreground color.
     "foreground": "#eff0f1",
     // Lighter foreground color for selected items.
-    "foreground-light": "#ffffff",
+    "foreground:light": "#ffffff",
     // Main background color.
     "background": "#31363b",
     // Alternate background color for styles.
@@ -462,7 +462,7 @@ Have an issue with the styles? Here's a few suggestions, prior to filing a bug r
 
 ### Git Hooks
 
-Contributors to BreezeStylesheets should make use of [vcs](/vcs.py) and [scripts](/scripts/) to both install Git hooks and run local tests and typechecking. After cloning the repository, developers should first install a pre-commit hook, to ensure their code is formatted and linted prior to commiting:
+Contributors to BreezeStylesheets should make use of [vcs](/vcs.py) and [scripts](/scripts/) to both install Git hooks and run local tests and typechecking. After cloning the repository, developers should first install a pre-commit hook, to ensure their code is formatted and linted prior to committing:
 
 ```bash
 python vcs.py --install-hooks

@@ -7,7 +7,7 @@ name = "breezestylesheets"
 dynamic = ["version"]
 description = "Configurable Breeze and BreezeDark-like stylesheets for Qt Applications."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.7.4"
 dependencies = []
 authors = [
   { name = "Colin Duquesnoy" },
@@ -24,9 +24,6 @@ classifiers = [
 ]
 keywords = ["qt", "gui", "stylesheets"]
 
-[project.scripts]
-configure = "breezestylesheets.__configure__:main"
-
 [project.urls]
 Homepage = "https://github.com/Alexhuszagh/BreezeStyleSheets"
 Documentation = "https://readthedocs.org"
@@ -35,7 +32,7 @@ Repository = "https://github.com/Alexhuszagh/BreezeStyleSheets.git"
 Changelog = "https://github.com/Alexhuszagh/BreezeStyleSheets/main/CHANGELOG.md"
 
 [project.optional-dependencies]
-# TODO: Add optional dependencies on Qt5, Qt6, etc. when we actually make this a full package
+# TODO: Add optional dependencies on Qt5, Qt6, etc. when making this a full package
 yaml = [
   "pyyaml>=6.0.1,<7.0.0",
 ]
@@ -47,28 +44,22 @@ xml = [
 ]
 
 [dependency-groups]
-lint = [
-# TODO: Remove everything bests ruff
-  "black>=25.9.0,<26.0.0",
-  "flake8>=7.0.0,<8.0.0",
-  "isort>=5.11.5,<6.0.0",
-  "pylint>=3.3.8,<4.0.0",
-  "pyproject-pyupgrade>=0.1.1,<0.2.0",
-  "pyupgrade>=3.20.0,<4.0.0",
-  "ruff>=0.13.2,<0.14.0",
+dev = [
+  "pytest>=9.1.1; python_version >= '3.10'",
+  "pytest>=7.4.4; python_version < '3.10'",
 ]
 test = [
-  "coverage>=7.2.7,<8.0.0",
-  "coverage-badge>=1.1.2,<2.0.0",
-  "pytest>=7.4.4,<8.0.0",
-  "pytest-cov>=4.1.0,<5.0.0",
-  "pytest-html>=3.2.0,<4.0.0",
-  "tox>=4.8.0,<5.0.0",
+  "coverage>=7.2.4",
+  "pytest-cov>=4.1.0",
+  "pytest-html>=3.2.0",
 ]
 type = [
-  "mypy>=1.4.1,<2.0.0",
-  "pyright>=1.1.405,<2.0.0",
-  "types-pyyaml>=6.0.12.20250915,<7.0.0.0",
+  "mypy>=2.3.0; python_version >= '3.10'",
+  "pyright>=1.1.411,<2.0.0",
+  "types-pyyaml>=6.0.12.20260724,<7.0.0.0; python_version >= '3.10'",
+]
+badge = [
+  "genbadge[coverage]>=1.1.3",
 ]
 
 [tool.hatch.version]
@@ -87,232 +78,136 @@ include = ["breezestylesheets", "example", "extension", "template", "theme"]
 [tool.hatch.build.targets.wheel]
 include = ["breezestylesheets", "example", "extension", "template", "theme"]
 
-[tool.uv.dependency-groups]
-lint = { requires-python = ">=3.11" }
-
 [tool.uv]
 add-bounds = "major"
 
-[tool.poe.tasks]
-# TODO: Change to use only ruff
-test = "pytest"
-tox = "tox"
-type = ["_pyright", "_mypy"]
-lint = ["_flake8", "_pylint", "_isort_lint", "_ruff_lint", "_black_lint"]
-fmt = ["_isort", "_ruff", "_black", "_pyupgrade"]
-_pyright = "pyright"
-_mypy = "mypy"
-# TODO: Add test, examples to all tasks
-_flake8 = "flake8"
-_pylint = "pylint breezestylesheets"
-_isort_lint = "isort --check-only breezestylesheets"
-_ruff_lint = "ruff check breezestylesheets"
-_black_lint = "black --check breezestylesheets"
-_isort = "isort breezestylesheets"
-_ruff = "ruff check breezestylesheets --fix"
-_black = "black breezestylesheets"
-_pyupgrade = "pyupgrade breezestylesheets/**/*.py test/**/*.py"
+# tox-like replacements to execute tests for a large environment and configure CI
+[tool.poe.executor]
+type = "uv"
+extra = ["yaml", "toml", "xml"]
 
-[tool.black]
-target-version = ["py310"]
-line-length = 110
-color = true
-skip-string-normalization = true
+[tool.poe.tasks._check]
+cmd = "ruff check breezestylesheets example test"
+executor = { no-group = ["badge", "test"] }
 
-exclude = '''
-/(
-    \.git
-    | \.hg
-    | \.mypy_cache
-    | \.tox
-    | \.venv
-    | _build
-    | buck-out
-    | build
-    | dist
-    | env
-    | venv
-)/
-'''
+[tool.poe.tasks._fmt-check]
+cmd = "ruff format breezestylesheets example test --check"
+executor = { no-group = ["badge", "test"] }
 
-[tool.isort]
-py_version = 310
-line_length = 110
-include_trailing_comma = true
-profile = "black"
-multi_line_output = 3
-indent = 4
-color_output = true
-known_typing = ["typing", "types", "typing_extensions", "mypy", "mypy_extensions"]
-sections = ["FUTURE", "TYPING", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
-no_lines_before = ["TYPING", "STDLIB", "FIRSTPARTY", "LOCALFOLDER"]
+[tool.poe.tasks.lint]
+help = "run the code linters"
+sequence = ["_check", "_fmt-check"]
 
-[tool.pylint.main]
-fail-under = 10.0
-ignore = [".venv", "dist", ".git", "htmlcov", "venv"]
-ignore-patterns = ["^\\.#"]
-jobs = 0
-limit-inference-results = 100
-persistent = true
-py-version = "3.9"
-suggestion-mode = true
+[tool.poe.tasks.fmt]
+help = "run the code formatters"
+cmd = "ruff format breezestylesheets example test"
 
-[tool.pylint.basic]
-argument-naming-style = "snake_case"
-attr-naming-style = "snake_case"
-bad-names = ["foo", "bar", "baz", "toto", "tutu", "tata"]
-class-attribute-naming-style = "any"
-class-const-naming-style = "UPPER_CASE"
-class-naming-style = "PascalCase"
-const-naming-style = "UPPER_CASE"
-docstring-min-length = -1
-function-naming-style = "snake_case"
-good-names = ["h", "i", "j", "k", "l", "s", "ex", "Run", "_"]
-inlinevar-naming-style = "any"
-method-naming-style = "snake_case"
-module-naming-style = "snake_case"
-no-docstring-rgx = "^_"
-property-classes = ["abc.abstractproperty"]
-variable-naming-style = "snake_case"
+[tool.poe.tasks._pyright]
+cmd = "pyright"
+executor = { group = ["dev", "type"], no-group = ["badge", "test"] }
 
-[tool.pylint.classes]
-defining-attr-methods = ["__init__", "__new__", "setUp", "asyncSetUp", "__post_init__"]
-exclude-protected = ["_asdict", "_fields", "_replace", "_source", "_make", "os._exit"]
-valid-classmethod-first-arg = ["cls"]
-valid-metaclass-classmethod-first-arg = ["mcs"]
+[tool.poe.tasks._mypy]
+cmd = "mypy"
+executor = { group = ["dev", "type"], no-group = ["badge", "test"] }
 
-[tool.pylint.design]
-max-args = 15
-max-attributes = 24
-max-bool-expr = 10
-max-branches = 24
-max-locals = 20
-max-parents = 12
-max-public-methods = 40
-max-returns = 15
-max-statements = 50
-min-public-methods = 0
-max-positional-arguments = 8
+[tool.poe.tasks.type]
+help = "run the static type checkers"
+sequence = ["_pyright", "_mypy"]
 
-[tool.pylint.exceptions]
-overgeneral-exceptions = ["builtins.BaseException", "builtins.Exception"]
+[tool.poe.tasks.test-py37]
+help = "run the test suite for Python 3.7"
+cmd = "uv run --python 3.7 pytest"
+executor = { group = ["dev", "test"], no-group = ["badge", "type"] }
 
-[tool.pylint.format]
-ignore-long-lines = "^\\s*(# )?<?https?://\\S+>?$"
-indent-after-paren = 4
-indent-string = "    "
-max-line-length = 110
-max-module-lines = 2500
+[tool.poe.tasks.test-py38]
+help = "run the test suite for Python 3.8"
+cmd = "uv run --python 3.8 pytest"
+executor = { group = ["dev", "test"], no-group = ["badge", "type"] }
 
-[tool.pylint.imports]
-known-third-party = ["enchant"]
+[tool.poe.tasks.test-py39]
+help = "run the test suite for Python 3.9"
+cmd = "uv run --python 3.9 pytest"
+executor = { group = ["dev", "test"], no-group = ["badge", "type"] }
 
-[tool.pylint.logging]
-logging-format-style = "old"
-logging-modules = ["logging"]
+[tool.poe.tasks.test-py310]
+help = "run the test suite for Python 3.10"
+cmd = "uv run --python 3.10 pytest"
+executor = { group = ["dev", "test"], no-group = ["badge", "type"] }
 
-[tool.pylint."messages control"]
-confidence = ["HIGH", "CONTROL_FLOW", "INFERENCE", "INFERENCE_FAILURE", "UNDEFINED"]
-disable = ["raw-checker-failed", "bad-inline-option", "locally-disabled", "file-ignored", "suppressed-message", "useless-suppression", "deprecated-pragma", "use-symbolic-message-instead", "use-implicit-booleaness-not-comparison-to-string", "use-implicit-booleaness-not-comparison-to-zero", "import-outside-toplevel", "broad-exception-caught", "too-few-public-methods", "global-statement", "c-extension-no-member", "too-many-instance-attributes", "invalid-name", "attribute-defined-outside-init", "unnecessary-lambda-assignment", "fixme"]
+[tool.poe.tasks.test-py311]
+help = "run the test suite for Python 3.11"
+cmd = "uv run --python 3.11 pytest"
+executor = { group = ["dev", "test"], no-group = ["badge", "type"] }
 
-[tool.pylint.method_args]
-timeout-methods = ["requests.api.delete", "requests.api.get", "requests.api.head", "requests.api.options", "requests.api.patch", "requests.api.post", "requests.api.put", "requests.api.request"]
+[tool.poe.tasks.test-py312]
+help = "run the test suite for Python 3.12"
+cmd = "uv run --python 3.12 pytest"
+executor = { group = ["dev", "test"], no-group = ["badge", "type"] }
 
-[tool.pylint.miscellaneous]
-notes = ["FIXME", "XXX", "TODO"]
+[tool.poe.tasks.test-py313]
+help = "run the test suite for Python 3.13"
+cmd = "uv run --python 3.13 pytest"
+executor = { group = ["dev", "test"], no-group = ["badge", "type"] }
 
-[tool.pylint.refactoring]
-max-nested-blocks = 5
-never-returning-functions = ["sys.exit", "argparse.parse_error"]
-suggest-join-with-non-empty-separator = true
+[tool.poe.tasks.test-py314]
+help = "run the test suite for Python 3.14"
+cmd = "uv run --python 3.14 pytest"
+executor = { group = ["dev", "test"], no-group = ["badge", "type"] }
 
-[tool.pylint.reports]
-evaluation = "max(0, 0 if fatal else 10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10))"
-score = true
+[tool.poe.tasks.test]
+help = "run the test suite for all versions"
+# NOTE: there's a bug with using pytest on Windows for Python 3.7 due to encoding issues
+sequence = ["test-py38", "test-py39", "test-py310", "test-py311", "test-py312", "test-py313", "test-py314"]
 
-[tool.pylint.similarities]
-ignore-comments = true
-ignore-docstrings = true
-ignore-imports = true
-ignore-signatures = true
-min-similarity-lines = 15
+[tool.poe.tasks.badge]
+help = "generate the coverage and test badge"
+cmd = "uv run genbadge coverage --input-file coverage.xml --output-file coverage.svg"
+executor = { group = ["badge"], no-group = ["dev", "test", "type"] }
 
-[tool.pylint.spelling]
-max-spelling-suggestions = 4
-spelling-ignore-comment-directives = "fmt: on,fmt: off,noqa:,noqa,nosec,isort:skip,mypy:"
+# TODO: Will need the frameworks and more
+[tool.poe.tasks.configure]
+help = "configure the stylesheets"
+cmd = "uv run python configure.py"
 
-[tool.pylint.typecheck]
-contextmanager-decorators = ["contextlib.contextmanager"]
-ignore-none = true
-ignore-on-opaque-inference = true
-ignored-checks-for-mixins = ["no-member", "not-async-context-manager", "not-context-manager", "attribute-defined-outside-init"]
-ignored-classes = ["optparse.Values", "thread._local", "_thread._local", "argparse.Namespace"]
-missing-member-hint = true
-missing-member-hint-distance = 1
-missing-member-max-choices = 1
-mixin-class-rgx = ".*[Mm]ixin"
-
-[tool.pylint.variables]
-allow-global-unused-variables = true
-callbacks = ["cb_", "_cb"]
-dummy-variables-rgx = "_+$|(_[a-zA-Z0-9_]*[a-zA-Z0-9]+?$)|dummy|^ignored_|^unused_"
-ignored-argument-names = "_.*|^ignored_|^unused_"
-redefining-builtins-modules = ["six.moves", "past.builtins", "future.builtins", "builtins", "io"]
-
-[tool.pytest.ini_options]
-minversion = "6.0"
-addopts = "--cov=breezestylesheets --cov-report html"
-
-[tool.pyright]
-# TODO: Add examples
-include = ["breezestylesheets", "test"]
-
-[tool.mypy]
-# TODO: Add examples
-packages = ["breezestylesheets", "test"]
-
-[tool.pyupgrade]
-py39-plus = true
-pyproject-pyupgrade-debug = true
+[tool.poe.tasks.ci]
+help = "run the CI suite"
+sequence = ["lint", "test", "type", "badge"]
 
 [tool.ruff]
 line-length = 110
-indent-width = 4
-target-version = "py39"
-
-[tool.ruff.lint]
-ignore = ["E203", "E226"]
-select = ["E", "F", "N", "W", "UP"]
-preview = true
+# NOTE: lowest possible version
+target-version = "py37"
 
 [tool.ruff.format]
-quote-style = 'single'
-line-ending = 'lf'
+quote-style = "double"
+line-ending = "lf"
 preview = true
 
-[tool.tox]
-requires = ["tox>=4.19"]
-env_list = ["3.9", "3.10", "3.11", "3.12", "3.13", "lint", "type"]
-isolated_build = true
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E203", "D202", "D212", "D300", "UP037"]
+preview = true
 
-[tool.tox.env_run_base]
-description = "Run test suite under {base_python}"
-commands = [["pytest"]]
-dependency_groups = ["test"]
+[tool.ruff.lint.per-file-ignores]
+"__*__.py" = ["F401"]
 
-[tool.tox.env.type]
-description = "Run test suite under {base_python}"
-commands = [["pyright"], ["mypy"]]
-dependency_groups = ["type", "test"]
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
-[tool.tox.env.lint]
-description = "Run test suite under {base_python}"
-# TODO: Add examples to all tasks
-commands = [
-  ["black", "--check", "breezestylesheets", "test"],
-  ["isort", "--check-only", "breezestylesheets", "test"],
-  ["ruff", "check", "breezestylesheets", "test"],
-  ["pylint", "breezestylesheets", "test"],
-  ["flake8"],
-]
-dependency_groups = ["lint", "test"]
+[tool.ruff.lint.isort]
+section-order = ["future", "typing", "standard-library", "third-party", "first-party", "local-folder"]
+no-lines-before = ["typing", "local-folder"]
+
+[tool.ruff.lint.isort.sections]
+typing = ["typing", "types", "typing_extensions", "mypy", "mypy_extensions", "collections.abc"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "--cov=breezestylesheets --junitxml=__reports__/junit.xml --html=__reports__/report.html --cov-report=xml"
+
+[tool.pyright]
+include = ["breezestylesheets", "example", "test"]
+pythonVersion = "3.12"
+
+[tool.mypy]
+packages = ["breezestylesheets", "example", "test"]

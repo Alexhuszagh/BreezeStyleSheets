@@ -20,14 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-'''
-    dial
-    ====
-
-    Example showing how to override the `paintEvent` and `eventFilter`
-    for a `QDial`, creating a visually consistent, stylish `QDial` that
-    supports highlighting the handle on the active or hovered dial.
-'''
+"""
+Example showing how to override the `paintEvent` and `eventFilter`
+for a `QDial`, creating a visually consistent, stylish `QDial` that
+supports highlighting the handle on the active or hovered dial.
+"""
 
 import math
 import os
@@ -40,7 +37,7 @@ import shared  # noqa  # pylint: disable=wrong-import-position,import-error
 
 parser = shared.create_parser()
 parser.add_argument(
-    '--no-align', help='''allow larger widgets without forcing alignment.''', action='store_true'
+    "--no-align", help="""allow larger widgets without forcing alignment.""", action="store_true"
 )
 args, unknown = shared.parse_args(parser)
 QtCore, QtGui, QtWidgets = shared.import_qt(args)
@@ -49,12 +46,12 @@ colors = shared.get_colors(args, compat)
 
 
 def radius(dial):
-    '''Get the radius of the dial.'''
+    """Get the radius of the dial."""
     return min(dial.rect.width(), dial.rect.height()) // 2
 
 
 def groove_rect(dial):
-    '''Calculate the bounding rectangle for the dial groove.'''
+    """Calculate the bounding rectangle for the dial groove."""
 
     x0 = dial.rect.width() / 2
     y0 = dial.rect.height() / 2
@@ -64,7 +61,7 @@ def groove_rect(dial):
 
 
 def circle_percent(dial):
-    '''Calculate the percentage of the dial.'''
+    """Calculate the percentage of the dial."""
 
     distance = dial.maximum - dial.minimum
     offset = dial.sliderPosition - dial.minimum
@@ -73,7 +70,7 @@ def circle_percent(dial):
 
 
 def circle_position(dial, rect, position, r):
-    '''Calculate the (x, y) coordinates based on the position on a circle.'''
+    """Calculate the (x, y) coordinates based on the position on a circle."""
 
     # Get our center and the percent we've gone alone the dial.
     center = rect.center()
@@ -102,17 +99,17 @@ def circle_position(dial, rect, position, r):
 
 
 def handle_position(dial, rect, r):
-    '''Calculate the position of the handle.'''
+    """Calculate the position of the handle."""
     return circle_position(dial, rect, dial.sliderPosition, r)
 
 
 def default_pen(color, width):
-    '''Create a pen with the default styles.'''
+    """Create a pen with the default styles."""
     return QtGui.QPen(color, width)
 
 
 def round_pen(color, width):
-    '''Create a pen with round join styles.'''
+    """Create a pen with round join styles."""
     return QtGui.QPen(
         color,
         width,
@@ -123,7 +120,7 @@ def round_pen(color, width):
 
 
 def event_pos(event):
-    '''Determine the event position.'''
+    """Determine the event position."""
 
     if shared.is_qt6(args):
         return event.position()
@@ -131,11 +128,11 @@ def event_pos(event):
 
 
 class Dial(QtWidgets.QDial):
-    '''QDial with a custom paint event.'''
+    """QDial with a custom paint event."""
 
     def __init__(self, widget=None):
         super().__init__(widget)
-        if args.stylesheet == 'native':
+        if args.stylesheet == "native":
             return
 
         self.installEventFilter(self)
@@ -161,10 +158,10 @@ class Dial(QtWidgets.QDial):
         self.handle = (0, 0)
         self.is_hovered = False
 
-    def paintEvent(self, event):  # pylint: disable=too-many-locals
-        '''Override the paint event to ensure the ticks are painted.'''
+    def paintEvent(self, event):
+        """Override the paint event to ensure the ticks are painted."""
 
-        if args.stylesheet == 'native':
+        if args.stylesheet == "native":
             return super().paintEvent(event)
 
         painter = QtWidgets.QStylePainter(self)
@@ -244,7 +241,7 @@ class Dial(QtWidgets.QDial):
         return None
 
     def eventFilter(self, obj, event):
-        '''Override the color when we have a hover event.'''
+        """Override the color when we have a hover event."""
 
         # If the window isn't active, ignore the hover event.
         if not self.window().isActiveWindow():

@@ -1,11 +1,11 @@
-'''
-    vcs
-    ===
+"""Track/untrack distribution files."""
 
-    Track/untrack distribution files.
-'''
+__version__ = "0.2.0"
+__version_info__ = (0, 2, 0)
+__author__ = "Alex Huszagh <ahuszagh@gmail.com>"
+__license__ = "MIT"
 
-__version__ = '0.1.0'
+from typing import TYPE_CHECKING, cast
 
 import argparse
 import errno
@@ -14,12 +14,16 @@ import shlex
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
-home = os.path.dirname(os.path.realpath(__file__))
+if TYPE_CHECKING:
+    from typing import Protocol
+
+HOME_DIR = Path(__file__).absolute().parent
 
 # Based off of:
 #   https://github.com/github/gitignore/blob/main/Python.gitignore
-PYTHON_GITIGNORE = '''
+PYTHON_GITIGNORE = """
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -181,11 +185,18 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
-'''
+
+# Rendered templates
+breezestylesheets/**/*.svg
+breezestylesheets/**/*.qss
+
+# Test reports
+__reports__
+"""
 
 # Based off of:
 #   https://github.com/github/gitignore/blob/main/C%2B%2B.gitignore
-CPP_GITIGNORE = '''
+CPP_GITIGNORE = """
 # Prerequisites
 *.d
 
@@ -218,17 +229,17 @@ CPP_GITIGNORE = '''
 *.exe
 *.out
 *.app
-'''
+"""
 
 EXTRAS_GITIGNORE = [
     # Comments
-    '# NOTE: this file is auto-generated via `vcs.py`',
-    '# DO NOT MANUALLY EDIT THIS FILE.',
+    "# NOTE: this file is auto-generated via `vcs.py`",
+    "# DO NOT MANUALLY EDIT THIS FILE.",
     # extra entries
-    'TODO.md',
+    "TODO.md",
 ]
 
-HOOK_SCRIPT = f'''
+HOOK_SCRIPT = f"""
 #!/usr/bin/env bash
 #
 # A custom Git hook.
@@ -240,56 +251,66 @@ git_home="$(dirname "${{hooks_home}}")"
 project_home="$(dirname "${{git_home}}")"
 
 export PYTHON={shlex.quote(sys.executable)}
-'''
+"""
+
+if TYPE_CHECKING:
+
+    class Args(Protocol):
+        track_dist: "bool"
+        no_track_dist: "bool"
+        track_gitignore: "bool"
+        no_track_gitignore: "bool"
+        install_hooks: "bool"
+        uninstall_hooks: "bool"
 
 
-def parse_args(argv=None):
-    '''Parse the command-line options.'''
+def parse_args(argv: "list[str] | None" = None) -> "Args":
+    """Parse the command-line options."""
 
-    parser = argparse.ArgumentParser(description='Git configuration changes.')
-    parser.add_argument('-v', '--version', action='version', version=f'%(prog)s {__version__}')
+    parser = argparse.ArgumentParser(description="Git configuration changes.")
+    parser.add_argument("-v", "--version", action="version", version=f"%(prog)s {__version__}")
 
     dist = parser.add_mutually_exclusive_group()
     dist.add_argument(
-        '--track-dist',
-        help='track changes to distribution files',
-        action='store_true',
+        "--track-dist",
+        help="track changes to distribution files",
+        action="store_true",
     )
     dist.add_argument(
-        '--no-track-dist',
-        help='do not track changes to distribution files',
-        action='store_true',
+        "--no-track-dist",
+        help="do not track changes to distribution files",
+        action="store_true",
     )
 
     gitignore = parser.add_mutually_exclusive_group()
     gitignore.add_argument(
-        '--track-gitignore',
-        help='track changes to `.gitignore`',
-        action='store_true',
+        "--track-gitignore",
+        help="track changes to `.gitignore`",
+        action="store_true",
     )
     gitignore.add_argument(
-        '--no-track-gitignore',
-        help='do not track changes to `.gitignore`',
-        action='store_true',
+        "--no-track-gitignore",
+        help="do not track changes to `.gitignore`",
+        action="store_true",
     )
 
     hooks = parser.add_mutually_exclusive_group()
     hooks.add_argument(
-        '--install-hooks',
-        help='install our git hooks',
-        action='store_true',
+        "--install-hooks",
+        help="install our git hooks",
+        action="store_true",
     )
     hooks.add_argument(
-        '--uninstall-hooks',
-        help='uninstall our git hooks',
-        action='store_true',
+        "--uninstall-hooks",
+        help="uninstall our git hooks",
+        action="store_true",
     )
 
-    return parser.parse_args(argv)
+    return cast("Args", parser.parse_args(argv))
 
 
-def call(command, ignore_errors=True):
-    '''Call subprocess command (ignoring output but checking code).'''
+def call(command: "list[str]", ignore_errors: "bool" = True) -> "bytes | None":
+    """Call subprocess command (ignoring output but checking code)."""
 
     try:
         return subprocess.check_output(
@@ -299,102 +320,99 @@ def call(command, ignore_errors=True):
             shell=False,
         )
     except subprocess.CalledProcessError as error:
-        if b'Unable to mark file' not in error.stderr or not ignore_errors:
+        if b"Unable to mark file" not in error.stderr or not ignore_errors:
             raise
         return None
 
 
-def assume_unchanged(git, file):
-    '''Assume a version-controlled file is unchanged.'''
+def assume_unchanged(git: "str", file: "str") -> "bytes | None":
+    """Assume a version-controlled file is unchanged."""
 
-    return call(
-        [
-            git,
-            'update-index',
-            '--assume-unchanged',
-            file,
-        ]
-    )
+    return call([
+        git,
+        "update-index",
+        "--assume-unchanged",
+        file,
+    ])
 
 
-def no_assume_unchanged(git, file):
-    '''No longer assume a version-controlled file is unchanged.'''
+def no_assume_unchanged(git: "str", file: "str") -> "bytes | None":
+    """No longer assume a version-controlled file is unchanged."""
 
-    return call(
-        [
-            git,
-            'update-index',
-            '--no-assume-unchanged',
-            file,
-        ]
-    )
+    return call([
+        git,
+        "update-index",
+        "--no-assume-unchanged",
+        file,
+    ])
 
 
-def write_gitignore(entries):
-    '''Write to ignore ignore file using the provided entries.'''
+def write_gitignore(entries: "list[str]") -> "None":
+    """Write to ignore ignore file using the provided entries."""
 
-    with open(os.path.join(home, '.gitignore'), 'w', encoding='utf-8') as file:
-        custom = '\n'.join(entries)
-        file.write(f'{custom}\n{PYTHON_GITIGNORE}\n{CPP_GITIGNORE}\n')
+    custom = "\n".join(entries)
+    path = HOME_DIR / ".gitignore"
+    path.write_text(f"{custom}\n{PYTHON_GITIGNORE}\n{CPP_GITIGNORE}\n", encoding="utf-8")
 
 
-def pip_install(packages):
-    '''Install our PIP dependencies.'''
+def pip_install(*packages: "str") -> "None":
+    """Install our PIP dependencies."""
     subprocess.check_call(
-        [sys.executable, '-m', 'pip', 'install'] + packages + ['--user'],
+        [sys.executable, "-m", "pip", "install"] + list(packages) + ["--user"],
         stdin=subprocess.DEVNULL,
         shell=False,
     )
 
 
-def chmod(mode, *args):
-    '''Modify our permissions for one or more files.'''
+def chmod(mode: "str", *args: "str") -> "None":
+    """Modify our permissions for one or more files."""
     subprocess.check_call(
-        ['chmod', mode, *args],
+        ["chmod", mode, *args],
         stdin=subprocess.DEVNULL,
         shell=False,
     )
 
 
-def install_hooks():
-    '''Install our Git hooks.'''
+def install_hooks() -> "None":
+    """Install our Git hooks."""
 
-    pip_install(['pylint', 'pyright', 'flake8', 'isort', 'black'])
-    if os.name == 'nt':
-        pip_install(['winrt-Windows.UI.ViewManagement', 'winrt-Windows.UI'])
-    scripts = ['lint', 'fmt', 'configure']
-    precommit = HOOK_SCRIPT + '\n'.join([f'scripts/{i}.sh' for i in scripts])
-    path = f'{home}/.git/hooks/pre-commit'
-    with open(path, 'w', encoding='utf8') as file:
-        file.write(precommit)
-    chmod('+x', path)
+    pip_install("pylint", "pyright", "flake8", "isort", "black")
+    if os.name == "nt":
+        pip_install("winrt-Windows.UI.ViewManagement", "winrt-Windows.UI")
+
+    scripts = ["lint", "fmt", "configure"]
+    precommit = HOOK_SCRIPT + "\n".join([f"scripts/{i}.sh" for i in scripts])
+
+    path = HOME_DIR / ".git" / "hooks" / "pre-commit"
+    path.write_text(precommit, encoding="utf-8")
+    chmod("+x", str(path))
 
 
-def uninstall_hooks():
-    '''Uninstall our Git hooks.'''
+def uninstall_hooks() -> "None":
+    """Uninstall our Git hooks."""
 
-    path = f'{home}/.git/hooks/pre-commit'
+    path = HOME_DIR / ".git" / "hooks" / "pre-commit"
     try:
         os.unlink(path)
     except FileNotFoundError:
         pass
 
 
-def main(argv=None):
-    '''Configuration entry point'''
+def main(argv: "list[str] | None" = None) -> "int":
+    """Configuration entry point"""
 
     # Validate and parse our arguments.
     if len(sys.argv) == 1:
-        raise ValueError('Must provide at least one command.')
+        raise ValueError("Must provide at least one command.")
     args = parse_args(argv)
 
     # Must be in the project home, or git won't work.
-    os.chdir(home)
+    os.chdir(HOME_DIR)
 
     # Find our git executable. Go to the in case on
     # Windows `.py` is added to valid suffixes so
     # we don't recursively call this file.
-    git = shutil.which('git')
+    git = shutil.which("git")
     if git is None:
         raise FileNotFoundError(errno.ENOENT, "No such file or directory: 'git'")
 
@@ -409,44 +427,43 @@ def main(argv=None):
     # we assume tracking/untracking dist should ignore
     # our gitignore file.
     if args.track_gitignore:
-        no_assume_unchanged(git, '.gitignore')
+        no_assume_unchanged(git, ".gitignore")
     elif args.no_track_gitignore:
-        assume_unchanged(git, '.gitignore')
+        assume_unchanged(git, ".gitignore")
 
     # Determine if we need to update our gitignore.
-    update_keys = ['track_dist', 'no_track_dist']
-    update_gitignore = any(getattr(args, i) for i in update_keys)
-    if not update_gitignore:
+    if not args.track_dist and not args.no_track_dist:
         return 0
 
     # Update our gitignore entries, and write to file.
     gitignore_entries = list(EXTRAS_GITIGNORE)
     if args.no_track_dist:
-        gitignore_entries += ['dist/', 'resources/']
+        gitignore_entries += ["dist/", "resources/"]
     write_gitignore(gitignore_entries)
 
     # Manage any distribution file extras here.
-    def update_dist_index(file):
-        '''Update the index of a file'''
+    def update_dist_index(file: "str") -> "None":
+        """Update the index of a file"""
 
-        exists = os.path.exists(f'{home}/{file}')
+        path = HOME_DIR / file
+        exists = path.exists()
         if args.no_track_dist and exists:
             assume_unchanged(git, file)
         elif args.track_dist and exists:
             no_assume_unchanged(git, file)
 
     dist_files = []
-    dist_dirs = [f'{home}/dist', f'{home}/resources']
+    dist_dirs = [HOME_DIR / "dist", HOME_DIR / "resources"]
     for dist_dir in dist_dirs:
         for root, _, files in os.walk(dist_dir):
-            relpath = os.path.relpath(root, home)
+            relpath = os.path.relpath(root, HOME_DIR)
             for file in files:
-                dist_files.append(f'{relpath}/{file}')
+                dist_files.append(f"{relpath}/{file}")
     for file in dist_files:
         update_dist_index(file)
 
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

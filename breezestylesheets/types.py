@@ -1,39 +1,78 @@
 """
-types
-
 Shared type hints for various modules.
+
+This aims for full backwards compatible for legacy types, and therefore
+complete support for the earliest type checking (Python 3.4).
 """
 
-import typing
+from collections.abc import Mapping, Sequence
+from typing import TYPE_CHECKING, Union
+
 import os
 import sys
-from collections import abc as typing_abc
 
-JSONKey: 'typing.TypeAlias' = 'str'
-JSONValue: 'typing.TypeAlias' = typing.Union['JSONPrimitive', 'JSONArray', 'JSONObject']
-JSONPrimitive: 'typing.TypeAlias' = typing.Union[float, str, None]
-JSONArray: 'typing.TypeAlias' = typing_abc.Sequence[typing.Union['JSONPrimitive', 'JSONArray', 'JSONObject']]
-JSONObject: 'typing.TypeAlias' = typing_abc.Mapping[
-    'JSONKey', typing.Union['JSONPrimitive', 'JSONArray', 'JSONObject']
+__all__ = [
+    "Dataclass",
+    "JSONKey",
+    "JSONValue",
+    "JSONPrimitive",
+    "JSONArray",
+    "JSONObject",
+    "PathOrStr",
+    "dataclass_transform",
 ]
 
-PathOrStr: 'typing.TypeAlias' = typing.Union[str, os.PathLike[str]]
+if TYPE_CHECKING:
+    from typing import Any, ForwardRef
+
+    JSONKey = str
+    JSONValue = Union["JSONPrimitive", "JSONArray", "JSONObject"]
+    JSONPrimitive = Union["float", "str", "None"]
+    JSONArray = Sequence[Union["JSONPrimitive", "JSONArray", "JSONObject"]]
+    JSONObject = Mapping["JSONKey", "JSONValue"]
+    PathOrStr = Union["str", "os.PathLike[str]"]
+
+
+def _identity(**kwds):
+    def decorator(t):
+        return t
+
+    return decorator
+
+
+if not TYPE_CHECKING:
+    dataclass_transform = _identity
+    Dataclass = object
+    Loads = type
+else:
+    from typing import ClassVar, Protocol, dataclass_transform
+
+    from dataclasses import Field
+
+    Loads = str | bytes | bytearray
+
+    class Dataclass(Protocol):
+        """An class that implements the dataclass protocol."""
+
+        __dataclass_fields__: "ClassVar[dict[str, Field]]"
 
 
 def evaluate_forward_ref(
-    ref: 'typing.ForwardRef | str',
-    globalns: dict[str, typing.Any],
-    localns: dict[str, typing.Any] | None = None,
+    ref: "ForwardRef | str",
+    globalns: "dict[str, Any]",
+    localns: "dict[str, Any] | None" = None,
     *,
-    is_argument: bool = True,
-    module: str | None = None,
-    is_class: bool = False,
+    is_argument: "bool" = True,
+    module: "str | None" = None,
+    is_class: "bool" = False,
 ) -> type:
     """
     Evaluate a forward reference to the raw type.
 
     This aims to be Python version-generic, due to the numerous
     changes prior to Python 3.14 for the "private" API.
+
+    This is only used on modern Python versions, that is, >=3.7.4.
 
     Args:
         ref: The forward reference to evaluate.
@@ -44,13 +83,26 @@ def evaluate_forward_ref(
         is_argument: If the type is a class.
 
     Returns:
-        `type`: The evaluated type.
+        The evaluated type.
     """
+
+    if sys.version_info < (3, 7, 4):
+        raise RuntimeError("Attempting to evaluating a forward reference for Python <3.7.4.")
+
+    from typing import ForwardRef
+
     if isinstance(ref, str):
-        ref = typing.ForwardRef(ref, is_argument=is_argument, module=module, is_class=is_class)
+        if sys.version_info >= (3, 11):
+            ref = ForwardRef(ref, is_argument=is_argument, module=module, is_class=is_class)
+        elif sys.version_info >= (3, 10):
+            ref = ForwardRef(ref, is_argument=is_argument, module=module)
+        else:
+            ref = ForwardRef(ref, is_argument=is_argument)
 
     if sys.version_info >= (3, 14, 0):
-        result = typing.evaluate_forward_ref(
+        from typing import evaluate_forward_ref
+
+        result = evaluate_forward_ref(
             forward_ref=ref,
             globals=globalns,
             locals=localns,
@@ -63,11 +115,16 @@ def evaluate_forward_ref(
             type_params=(),
             recursive_guard=frozenset(),
         )
-    else:
+    elif sys.version_info >= (3, 9, 0):
         result = ref._evaluate(
             globalns,
             localns,
             recursive_guard=frozenset(),
+        )
+    else:
+        result = ref._evaluate(
+            globalns,
+            localns,
         )
 
     if not isinstance(result, type):

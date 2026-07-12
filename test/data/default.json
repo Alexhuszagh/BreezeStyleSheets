@@ -2,7 +2,7 @@
   // Main foreground color.
   "foreground": "#eff0f1",
   // Lighter foreground color for selected items.
-  "foreground-light": "#ffffff",
+  "foreground:light": "#ffffff",
   // Main background color.
   "background": "#31363b",
   // Alternate background color for styles.

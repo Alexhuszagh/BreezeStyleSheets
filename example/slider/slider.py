@@ -20,14 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-'''
-    slider
-    ======
-
-    Example showing how to add ticks to a QSlider. Note that this does
-    not work with stylesheets, so it's merely an example of how to
-    get customized styling behavior with a QSlider.
-'''
+"""
+Example showing how to add ticks to a QSlider. Note that this does
+not work with stylesheets, so it's merely an example of how to
+get customized styling behavior with a QSlider.
+"""
 
 import os
 import sys
@@ -45,13 +42,13 @@ colors = shared.get_colors(args, compat)
 
 
 class Slider(QtWidgets.QSlider):
-    '''QSlider with a custom paint event.'''
+    """QSlider with a custom paint event."""
 
     def __init__(self, *args, **kwds):  # pylint: disable=useless-parent-delegation,redefined-outer-name
         super().__init__(*args, **kwds)
 
     def paintEvent(self, event):  # pylint: disable=unused-argument,(too-many-locals
-        '''Override the paint event to ensure the ticks are painted.'''
+        """Override the paint event to ensure the ticks are painted."""
 
         painter = QtWidgets.QStylePainter(self)
         options = QtWidgets.QStyleOptionSlider()

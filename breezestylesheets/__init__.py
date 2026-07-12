@@ -1,6 +1,4 @@
-'''
-breezestylesheets
-
+"""
 Configurable Breeze and BreezeDark-like stylesheets for Qt Applications.
 
 BreezeStyleSheets is a set of beautiful light and dark stylesheets that
@@ -11,11 +9,18 @@ application. The stylesheets are comprehensively tested with most Qt
 widgets and widget properties, providing a consistent, stylish feel on
 any platform, including different operating systems, desktop environments,
 and Qt versions.
-'''
+"""
 
-__version__ = '0.2.0'
+__version__ = "0.2.0"
+__version_info__ = (0, 2, 0)
+__author__ = "Alex Huszagh <ahuszagh@gmail.com>"
+__credits__ = "Colin Duquesnoy"
+__license__ = "MIT"
 
-from .config import Template, Theme  # noqa # type: ignore
+from .icon import Icon, IconTemplate
+from .style import Style
+from .stylesheet import StyleSheet, StyleSheetTemplate
+from .theme import Theme
 
 # TODO: Import `Theme` and define an `apply` here
 # That will call `Theme.apply` which will require the Qt app
