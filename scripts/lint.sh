@@ -9,5 +9,5 @@ SCRIPTS_HOME="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 PROJECT_HOME="$(dirname "${SCRIPTS_HOME}")"
 cd "${PROJECT_HOME}"
 
-uv run poe lint
-uv run poe type
+uvx --from poethepoet poe lint
+uvx --from poethepoet poe type

@@ -47,6 +47,7 @@ xml = [
 dev = [
   "pytest>=9.1.1; python_version >= '3.10'",
   "pytest>=7.4.4; python_version < '3.10'",
+  "ruff>=0.16.0",
 ]
 test = [
   "coverage>=7.2.4",
@@ -78,11 +79,11 @@ extra = ["yaml", "toml", "xml"]
 
 [tool.poe.tasks._check]
 cmd = "ruff check breezestylesheets example test"
-executor = { no-group = ["badge", "test"] }
+executor = { group = ["dev"], no-group = ["badge", "test", "type"] }
 
 [tool.poe.tasks._fmt-check]
 cmd = "ruff format breezestylesheets example test --check"
-executor = { no-group = ["badge", "test"] }
+executor = { group = ["dev"], no-group = ["badge", "test", "type"] }
 
 [tool.poe.tasks.lint]
 help = "run the code linters"
@@ -106,42 +107,42 @@ sequence = ["_pyright", "_mypy"]
 
 [tool.poe.tasks.test-py37]
 help = "run the test suite for Python 3.7"
-cmd = "uv run --python 3.7 pytest"
+cmd = "--python 3.7 pytest"
 executor = { group = ["dev", "test"], no-group = ["badge", "type"] }
 
 [tool.poe.tasks.test-py38]
 help = "run the test suite for Python 3.8"
-cmd = "uv run --python 3.8 pytest"
+cmd = "--python 3.8 pytest"
 executor = { group = ["dev", "test"], no-group = ["badge", "type"] }
 
 [tool.poe.tasks.test-py39]
 help = "run the test suite for Python 3.9"
-cmd = "uv run --python 3.9 pytest"
+cmd = "--python 3.9 pytest"
 executor = { group = ["dev", "test"], no-group = ["badge", "type"] }
 
 [tool.poe.tasks.test-py310]
 help = "run the test suite for Python 3.10"
-cmd = "uv run --python 3.10 pytest"
+cmd = "--python 3.10 pytest"
 executor = { group = ["dev", "test"], no-group = ["badge", "type"] }
 
 [tool.poe.tasks.test-py311]
 help = "run the test suite for Python 3.11"
-cmd = "uv run --python 3.11 pytest"
+cmd = "--python 3.11 pytest"
 executor = { group = ["dev", "test"], no-group = ["badge", "type"] }
 
 [tool.poe.tasks.test-py312]
 help = "run the test suite for Python 3.12"
-cmd = "uv run --python 3.12 pytest"
+cmd = "--python 3.12 pytest"
 executor = { group = ["dev", "test"], no-group = ["badge", "type"] }
 
 [tool.poe.tasks.test-py313]
 help = "run the test suite for Python 3.13"
-cmd = "uv run --python 3.13 pytest"
+cmd = "--python 3.13 pytest"
 executor = { group = ["dev", "test"], no-group = ["badge", "type"] }
 
 [tool.poe.tasks.test-py314]
 help = "run the test suite for Python 3.14"
-cmd = "uv run --python 3.14 pytest"
+cmd = "--python 3.14 pytest"
 executor = { group = ["dev", "test"], no-group = ["badge", "type"] }
 
 [tool.poe.tasks.test]
@@ -151,13 +152,13 @@ sequence = ["test-py38", "test-py39", "test-py310", "test-py311", "test-py312", 
 
 [tool.poe.tasks.badge]
 help = "generate the coverage and test badge"
-cmd = "uv run genbadge coverage --input-file coverage.xml --output-file coverage.svg"
+cmd = "genbadge coverage --input-file coverage.xml --output-file coverage.svg"
 executor = { group = ["badge"], no-group = ["dev", "test", "type"] }
 
 # TODO: Will need the frameworks and more
 [tool.poe.tasks.configure]
 help = "configure the stylesheets"
-cmd = "uv run python configure.py"
+cmd = "python configure.py"
 
 [tool.poe.tasks.ci]
 help = "run the CI suite"

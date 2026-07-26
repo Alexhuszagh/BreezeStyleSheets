@@ -35,6 +35,7 @@
         "lpcb",
         "LSTATUS",
         "mypy",
+        "poethepoet",
         "pyqt",
         "pyrcc",
         "pyright",

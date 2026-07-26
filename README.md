@@ -529,14 +529,13 @@ To see the complete list of Qt widgets covered by the unittests, see [Test Cover
 
 ### Linting and Type Checks
 
-You can check code quality using static typecheckers and code linters.
+You can check code quality using static type checkers and code linters. This requires [UV](https://docs.astral.sh/uv/) to be installed and [Ruff](https://docs.astral.sh/ruff/) to be added as a tool.
 
 ```bash
 # format python code to a standard style.
-# requires `black` and `isort` to be installed.
+# requires `uv` to be installed and `ruff` as a tool
 scripts/fmt.sh
 # run linters and static typecheckers
-# requires `pylint`, `pyright`, and `flake8` to be installed
 scripts/lint.sh
 # check if the system can automatically determine the theme
 # on windows, this requires `winrt-Windows.UI.ViewManagement`
@@ -577,6 +576,15 @@ Note that the `.gitignore` is auto-generated via `vcs.py`, and the scripts to tr
 python vcs.py --track-gitignore
 git add .gitignore
 git commit -m "..."
+```
+
+### CI
+
+You can test the Github pipelines locally using [act](https://github.com/nektos/act):
+
+```bash
+# TODO: Add more here
+gh act --workflows ".github/workflows/lint.yml"
 ```
 
 ## Known Issues and Workarounds
