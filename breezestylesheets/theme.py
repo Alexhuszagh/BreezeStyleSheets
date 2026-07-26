@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, overload
 from dataclasses import field
 
 from . import color, constants
-from .model import Model, field_metadata, model
+from .model import Model, expand_aliases, field_metadata, model
 from .pydantic.color import Color, NullableColor
 
 if TYPE_CHECKING:
@@ -410,7 +410,8 @@ class Theme(Model):
         if colors is None:
             colors = Theme.keys
         for key in colors:
-            s = s.replace(f"^{key}^", self.get_color(key, format="RGBA"))
+            for alias in expand_aliases(key):
+                s = s.replace(f"^{alias}^", self.get_color(key, format="RGBA"))
 
         return s
 
