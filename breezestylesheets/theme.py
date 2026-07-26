@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, overload
 from dataclasses import field
 
 from . import color, constants
-from .model import Model, expand_aliases, field_metadata, model
+from .model import Model, field_metadata, model
 from .pydantic.color import Color, NullableColor
 
 if TYPE_CHECKING:
@@ -77,58 +77,94 @@ class Theme(Model):
     ```
     """
 
-    foreground: "Color" = field(metadata=field_metadata("foreground", required=True))
+    foreground: "Color" = field(
+        metadata=field_metadata("foreground", required=True),
+    )
     """The main foreground color."""
 
-    foreground_light: "NullableColor" = field(metadata=field_metadata("foreground:light"))
+    foreground_light: "NullableColor" = field(
+        metadata=field_metadata("foreground:light"),
+    )
     """Lighter foreground color for selected items."""
 
-    background: "Color" = field(metadata=field_metadata("background"))
+    background: "Color" = field(
+        metadata=field_metadata("background"),
+    )
     """The main background color."""
 
-    background_alternate: "NullableColor" = field(metadata=field_metadata("background:alternate"))
+    background_alternate: "NullableColor" = field(
+        metadata=field_metadata("background:alternate"),
+    )
     """Alternate background color for styles."""
 
-    highlight: "Color" = field(metadata=field_metadata("highlight"))
+    highlight: "Color" = field(
+        metadata=field_metadata("highlight"),
+    )
     """Main color to highlight widgets, such as on hover events."""
 
-    highlight_dark: "NullableColor" = field(metadata=field_metadata("highlight:dark"))
+    highlight_dark: "NullableColor" = field(
+        metadata=field_metadata("highlight:dark"),
+    )
     """Color for selected widgets so hover events can change widget color."""
 
-    highlight_alternate: "NullableColor" = field(metadata=field_metadata("highlight:alternate"))
+    highlight_alternate: "NullableColor" = field(
+        metadata=field_metadata("highlight:alternate"),
+    )
     """Alternate highlight color for hovered widgets in QAbstractItemViews."""
 
-    midtone: "Color" = field(metadata=field_metadata("midtone"))
+    midtone: "Color" = field(
+        metadata=field_metadata("midtone"),
+    )
     """Main midtone color, such as for borders."""
 
-    midtone_light: "NullableColor" = field(metadata=field_metadata("midtone:light"))
+    midtone_light: "NullableColor" = field(
+        metadata=field_metadata("midtone:light"),
+    )
     """Lighter color for midtones, such as for certain disabled widgets."""
 
-    midtone_dark: "NullableColor" = field(metadata=field_metadata("midtone:dark"))
+    midtone_dark: "NullableColor" = field(
+        metadata=field_metadata("midtone:dark"),
+    )
     """Darker midtone, such as for the background of QPushButton and QSlider."""
 
-    midtone_hover: "NullableColor" = field(metadata=field_metadata("midtone:hover"))
+    midtone_hover: "NullableColor" = field(
+        metadata=field_metadata("midtone:hover"),
+    )
     """Lighter midtone for separator hover events."""
 
-    view_checked: "Color" = field(metadata=field_metadata("view:checked"))
+    view_checked: "Color" = field(
+        metadata=field_metadata("view:checked"),
+    )
     """Color for checked widgets in QAbstractItemViews."""
 
-    view_hover: "NullableColor" = field(metadata=field_metadata("view:hover"))
+    view_hover: "NullableColor" = field(
+        metadata=field_metadata("view:hover"),
+    )
     """Hover background color in QAbstractItemViews."""
 
-    view_corner: "NullableColor" = field(metadata=field_metadata("view:corner"))
+    view_corner: "NullableColor" = field(
+        metadata=field_metadata("view:corner"),
+    )
     """Background color for the corner widget in a QAbstractItemView."""
 
-    view_header_border: "NullableColor" = field(metadata=field_metadata("view:header:border"))
+    view_header_border: "NullableColor" = field(
+        metadata=field_metadata("view:header:border"),
+    )
     """Border color between items in a QHeaderView."""
 
-    view_header: "NullableColor" = field(metadata=field_metadata("view:header"))
+    view_header: "NullableColor" = field(
+        metadata=field_metadata("view:header"),
+    )
     """Background color for a QHeaderView."""
 
-    view_border: "NullableColor" = field(metadata=field_metadata("view:border"))
+    view_border: "NullableColor" = field(
+        metadata=field_metadata("view:border"),
+    )
     """Border color Between items in a QAbstractItemView."""
 
-    view_background: "NullableColor" = field(metadata=field_metadata("view:background"))
+    view_background: "NullableColor" = field(
+        metadata=field_metadata("view:background"),
+    )
     """Background for QAbstractItemViews."""
 
     toolbar_horizontal_background: "NullableColor" = field(
@@ -141,28 +177,42 @@ class Theme(Model):
     )
     """Background for a vertical QToolBar."""
 
-    text_background: "NullableColor" = field(metadata=field_metadata("text:background"))
+    text_background: "NullableColor" = field(
+        metadata=field_metadata("text:background"),
+    )
     """Background for widgets with text input."""
 
-    tab_background_selected: "NullableColor" = field(metadata=field_metadata("tab:background:selected"))
+    tab_background_selected: "NullableColor" = field(
+        metadata=field_metadata("tab:background:selected"),
+    )
     """Background for the currently selected tab."""
 
-    tab_background: "NullableColor" = field(metadata=field_metadata("tab:background"))
+    tab_background: "NullableColor" = field(
+        metadata=field_metadata("tab:background"),
+    )
     """Background for non-selected tabs."""
 
-    tree: "Color" = field(metadata=field_metadata("tree"))
+    tree: "Color" = field(
+        metadata=field_metadata("tree"),
+    )
     """Color for the branch/arrow icons in a QTreeView."""
 
-    slider_foreground: "NullableColor" = field(metadata=field_metadata("slider:foreground"))
+    slider_foreground: "NullableColor" = field(
+        metadata=field_metadata("slider:foreground"),
+    )
     """
     Color for the chunk of a QProgressBar, the active groove of a QSlider,
     and the border of a hovered QSlider handle.
     """
 
-    slider_handle_background: "NullableColor" = field(metadata=field_metadata("slider:handle:background"))
+    slider_handle_background: "NullableColor" = field(
+        metadata=field_metadata("slider:handle:background"),
+    )
     """Background color for the handle of a QSlider."""
 
-    menu_disabled_impl: "NullableColor" = field(metadata=field_metadata("menu:disabled"))
+    menu_disabled_impl: "NullableColor" = field(
+        metadata=field_metadata("menu:disabled"),
+    )
     """Internal helper for `menu_disabled`. Do not use directly."""
 
     @property
@@ -176,10 +226,14 @@ class Theme(Model):
     def menu_disabled(self, value: "NullableColor") -> "None":
         self.menu_disabled_impl = value
 
-    checkbox_light: "NullableColor" = field(metadata=field_metadata("checkbox:light"))
+    checkbox_light: "NullableColor" = field(
+        metadata=field_metadata("checkbox:light"),
+    )
     """Color for a checked/hovered QCheckBox or QRadioButton."""
 
-    checkbox_disabled_impl: "NullableColor" = field(metadata=field_metadata("checkbox:disabled"))
+    checkbox_disabled_impl: "NullableColor" = field(
+        metadata=field_metadata("checkbox:disabled"),
+    )
     """Internal helper for `checkbox_disabled`. Do not use directly."""
 
     @property
@@ -193,13 +247,17 @@ class Theme(Model):
     def checkbox_disabled(self, value: "NullableColor") -> "None":
         self.checkbox_disabled_impl = value
 
-    scrollbar_hover: "NullableColor" = field(metadata=field_metadata("scrollbar:hover"))
+    scrollbar_hover: "NullableColor" = field(
+        metadata=field_metadata("scrollbar:hover"),
+    )
     """
     Color for the handle of a scrollbar. Due to limitations of Qt stylesheets, any
     handle of a scrollbar must be treated like it's hovered.
     """
 
-    scrollbar_background: "NullableColor" = field(metadata=field_metadata("scrollbar:background"))
+    scrollbar_background: "NullableColor" = field(
+        metadata=field_metadata("scrollbar:background"),
+    )
     """Background for a non-hovered scrollbar."""
 
     scrollbar_background_hover: "NullableColor" = field(
@@ -295,7 +353,9 @@ class Theme(Model):
     def information(self, value: "NullableColor") -> "None":
         self.information_impl = value
 
-    question_impl: "NullableColor" = field(metadata=field_metadata("question"))
+    question_impl: "NullableColor" = field(
+        metadata=field_metadata("question"),
+    )
     """Internal helper for `question`. Do not use directly."""
 
     @property
@@ -346,17 +406,17 @@ class Theme(Model):
         return not self.is_light
 
     @overload
-    def get_color(self, alias: "str", format: None = None) -> "str | Color": ...
+    def get_color(self, field: "str", format: None = None) -> "str | Color": ...
 
     @overload
-    def get_color(self, alias: "str", format: "color.Format") -> "str": ...
+    def get_color(self, field: "str", format: "color.Format") -> "str": ...
 
-    def get_color(self, alias: "str", format: "color.Format | None" = None) -> "str | Color":
+    def get_color(self, field: "str", format: "color.Format | None" = None) -> "str | Color":
         """
-        Get a single color by the alias.
+        Get a single color by the field name.
 
         Args:
-            alias: The name of the alias or field to get, such as `foreground`.
+            field: The name of the field to get, such as `foreground:light`.
 
         Returns:
             `Color`: The color to use as the replacement.
@@ -366,23 +426,23 @@ class Theme(Model):
             `""`: A value signifying no color, without a transparent replacement.
 
         Raises:
-            `ValueError`: If the provided alias is not valid or the field is not a color.
+            `ValueError`: If the provided field name is not valid or the field is not a color.
         """
 
         # ensure we have our color data, for the value
-        is_hex = alias.endswith((":hex", ".hex", "-hex"))
-        is_opacity = not is_hex and alias.endswith((":opacity", ".opacity", "-opacity"))
+        is_hex = field.endswith(":hex")
+        is_opacity = not is_hex and field.endswith(":opacity")
         if is_hex:
-            alias = alias[: -len(":hex")]
+            field = field[: -len(":hex")]
         elif is_opacity:
-            alias = alias[: -len(":opacity")]
+            field = field[: -len(":opacity")]
 
         # get and process our value
-        value = self.get(alias)
+        value = self.get(field)
         if value != "" and not isinstance(value, Color):
-            raise ValueError(f'Got an unexpected color value of "{value}" for alias "{alias}".')
+            raise ValueError(f'Got an unexpected color value of "{value}" for field "{field}".')
         if value == "" and (is_hex or is_opacity):
-            raise ValueError(f'Missing required color for alias "{alias}" with hex/opacity variant.')
+            raise ValueError(f'Missing required color for field "{field}" with hex/opacity variant.')
         if isinstance(value, str):
             return value
 
@@ -410,8 +470,7 @@ class Theme(Model):
         if colors is None:
             colors = Theme.keys
         for key in colors:
-            for alias in expand_aliases(key):
-                s = s.replace(f"^{alias}^", self.get_color(key, format="RGBA"))
+            s = s.replace(f"^{key}^", self.get_color(key, format="RGBA"))
 
         return s
 

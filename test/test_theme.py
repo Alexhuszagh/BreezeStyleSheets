@@ -17,11 +17,6 @@ def test_load_theme(data_dir: "Path", filename: "str") -> "None":
     loaded = Theme.load(file)
     assert loaded == Theme.validate(data)
 
-    data['fg-light'] = data.pop('foreground:light')
-    assert loaded == Theme.validate(data)
-
-    _ = asdict(loaded)
-
 
 def test_load_theme_all(project_dir: "Path") -> "None":
     for file in (project_dir / "theme").glob("*.json"):

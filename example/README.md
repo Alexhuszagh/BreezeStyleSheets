@@ -31,7 +31,7 @@ import system_theme
 
 
 def get_theme() -> system_theme.Theme:
-    '''Detect the system theme.'''
+    """Detect the system theme."""
 
     if QT_VERSION >= (6, 5, 0):
         color_scheme = app.styleHints().colorScheme()
@@ -66,7 +66,7 @@ Then, create a style factory and register the style with your style:
 
 ```python
 # where the style name is a Qt style, like Windows or Fusion,
-style = QtWidgets.QStyleFactory.create('Windows')
+style = QtWidgets.QStyleFactory.create("Windows")
 style = StandardIconStyle(style)
 app.setStyle(style)
 ```
@@ -263,7 +263,7 @@ First, create a custom subclass of `QCommonStyle`:
 
 ```python
 class CustomStyle(QtWidgets.QCommonStyle):
-    '''A custom application style.'''
+    """A custom application style."""
 
     # implementation goes here
 ```
@@ -272,7 +272,7 @@ Then, create a style factory and register the style with your style:
 
 ```python
 # where the style name is a Qt style, like Windows or Fusion,
-style = QtWidgets.QStyleFactory.create('Windows')
+style = QtWidgets.QStyleFactory.create("Windows")
 style = CustomStyle(style)
 app.setStyle(style)
 ```

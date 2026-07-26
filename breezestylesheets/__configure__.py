@@ -169,11 +169,7 @@ def configure_icons(config: "resources.Compiler", style: "Style", qt_dist: "Path
             filename.write_text(icon.value, encoding="utf-8")
 
 
-def configure_stylesheet(
-    config: "resources.Compiler",
-    style: "Style",
-    qt_dist: "PathOrStr"
-) -> "None":
+def configure_stylesheet(config: "resources.Compiler", style: "Style", qt_dist: "PathOrStr") -> "None":
     """Configure the stylesheet for a given style."""
 
     stylesheet = config.template.render(style)

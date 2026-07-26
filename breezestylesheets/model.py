@@ -38,13 +38,10 @@ if TYPE_CHECKING:
 if TYPE_CHECKING:
 
     class FieldMetadata(TypedDict, total=False):
-        """The aliases for the field."""
+        """The serialized name and other field metadata."""
 
         name: "str"
-        """The primary alias, that is, what the field is serialized as."""
-
-        aliases: "set[str]"
-        """The additional aliases, which are valid when loading data."""
+        """The name the field is serialized as."""
 
         required: "bool"
         """
@@ -84,50 +81,9 @@ class Schema(Dict["str", "type[ModelT]"]):
         return repr(f"Schema({names})")
 
 
-def expand_aliases(value: "str") -> "Alias":
-    """
-    Expand foreground and other choices to create all permutations of our choices.
-
-    This converts all `:` and `-` characters internally to `.`, and then uses those
-    as delimiter components for all permutations.
-
-    For example, `"foreground:light"` is transformed into:
-    - `"fg-light"`
-    - `"fg.light"`
-    - `"fg:light"`
-    - `"foreground-light"`
-    - `"foreground.light"`
-    - `"foreground:light"`
-    """
-
-    # NOTE: This takes the `.` and `foreground`/`background` syntax, which expands this
-
-    # NOTE: for support with legacy aliases
-    value = value.replace(":", ".").replace("-", ".")
-
-    result = set()
-    result.add(value)
-    result.add(value.replace("foreground", "fg"))
-    result.add(value.replace("background", "bg"))
-    result.add(value.replace("alternate", "alt"))
-    updated: list[str] = []
-
-    if "." not in value:
-        updated += [f"{i}.default" for i in result]
-        updated += [f"{i}:default" for i in result]
-        updated += [f"{i}-default" for i in result]
-    else:
-        updated += [i.replace(".", ":") for i in result]
-        updated += [i.replace(".", "-") for i in result]
-    result.update(updated)
-
-    return tuple(sorted(result))
-
-
-def field_metadata(name: "str", *rest: "str", required: "bool" = False) -> "FieldMetadata":
-    """Get the alias choices from the expanded values."""
-    expanded = expand_aliases(name) + rest
-    return FieldMetadata(name=name, aliases=set(expanded), required=required)
+def field_metadata(name: "str", required: "bool" = False) -> "FieldMetadata":
+    """Create the field metadata from the components."""
+    return FieldMetadata(name=name, required=required)
 
 
 class Validator(Generic[ModelT]):
@@ -178,11 +134,7 @@ class Validator(Generic[ModelT]):
 
     @staticmethod
     def _create_schema(model: "type[ModelT]") -> "Schema[ModelT]":
-        """
-        Create the type schema from the model, resolving any forward references.
-
-        This does not expand any aliases.
-        """
+        """Create the type schema from the model, resolving any forward references."""
 
         schema = Schema()
         module = model.__module__
@@ -212,11 +164,11 @@ class Validator(Generic[ModelT]):
         Create the validator for the model type.
 
         This validates and loads the data from the model type and the
-        schema. This resolves any aliases and correctly handles any
+        schema. This maps the field names and correctly handles any
         missing fields present in the mapping.
         """
 
-        aliases = model.aliases
+        fields = model.fields
 
         def validate(data: "dict[str, Any]") -> "ModelT":
             """
@@ -231,10 +183,10 @@ class Validator(Generic[ModelT]):
                 raise ValueError(f'All keys must be strings for data "{data}".')
 
             loaded: "dict[str, Model]" = {}
-            mapped = {aliases[k]: v for k, v in data.items() if k in aliases}
-            extras = {k: v for k, v in data.items() if k not in aliases}
+            mapped = {fields[k]: v for k, v in data.items() if k in fields}
+            extras = {k: v for k, v in data.items() if k not in fields}
             if extras and model.unknown == "raise":
-                raise ValueError(f'Got unexpected: expected "{aliases.keys()}", got "{extras.keys()}".')
+                raise ValueError(f'Got unexpected: expected "{fields.keys()}", got "{extras.keys()}".')
 
             for key, value in mapped.items():
                 dtype = schema[key]
@@ -253,7 +205,7 @@ class Validator(Generic[ModelT]):
 
 
 class Model(Dataclass):
-    """The base, dependency-free loadable model that supports field aliases"""
+    """The base, dependency-free loadable model that supports mapped field names."""
 
     __slots__ = ()
 
@@ -275,27 +227,23 @@ class Model(Dataclass):
 
     @utils.lazy_attribute
     @classmethod
-    def aliases(cls) -> "Mapping[str, str]":
+    def fields(cls) -> "Mapping[str, str]":
         """
-        Get all aliases associated with the class.
+        Get all fields associated with the class.
 
-        This caches the stored aliases for all resolved values,
-        and then computes them to their desired values, allowing
-        efficient lookups of instance values from the alias.
+        This caches the serialized names to the model field names.
 
         ```python
         {
             'foreground': 'foreground',
-            'fg': 'foreground',
-            'fg-default': 'foreground',
-            'fg.default': 'foreground',
-            'fg:default': 'foreground',
-            'foreground-default': 'foreground',
+            'foreground:light': 'foreground_light',
+            'background': 'background',
+            'background:alternate': 'background_alternate',
         }
         ```
 
         Returns:
-            The mapping of all the aliases to the field names.
+            The mapping of all the data to the field names.
         """
 
         # NOTE: Do not `update` so we avoid overwriting existing fields.
@@ -303,9 +251,6 @@ class Model(Dataclass):
         for field, info in cls.__dataclass_fields__.items():
             meta = cast(FieldMetadata, info.metadata)
             result.setdefault(meta.get("name", field), field)
-            aliases: set[str] = meta.get("aliases", set())
-            for alias in aliases:
-                result.setdefault(alias, field)
 
         return result
 
@@ -332,23 +277,23 @@ class Model(Dataclass):
         """
         return cls._validator.validate(data)
 
-    def get(self, alias: "str") -> "Any":
+    def get(self, field: "str") -> "Any":
         """
-        Get a single attribute by the field alias.
+        Get a single attribute by the field name.
 
         Args:
-            alias: The name of the alias or field to get, such as `foreground`.
+            field: The name of field to get, such as `foreground`.
 
         Returns:
             The value of that field.
 
         Raises:
-            `ValueError`: If the provided alias is not valid.
+            `ValueError`: If the provided field is not valid.
         """
-        field = self.aliases.get(alias)
-        if field is None:
-            raise ValueError(f'Got an unknown alias "{alias}".')
-        return getattr(self, field)
+        try:
+            return getattr(self, self.fields[field])
+        except (AttributeError, KeyError):
+            raise ValueError(f'Got an unknown alias "{field}".') from None
 
     @classmethod
     def load(cls: "type[Self]", path: "PathOrStr") -> "Self":
@@ -469,7 +414,7 @@ def model(
         frozen: If assigning to fields will raise an exception.
 
     Returns:
-        The model type, with loaders and aliases on the class defined.
+        The model type, with loaders and mapped field names on the class defined.
     """
 
     def wrap(cls: "type[ModelT]") -> "type[ModelT]":
