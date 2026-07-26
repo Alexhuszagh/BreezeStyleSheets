@@ -12,11 +12,11 @@
 
 set -eux pipefail
 
-scripts_home="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
-project_home="$(dirname "${scripts_home}")"
-build_dir="${project_home}/dist/build"
+SCRIPTS_HOME="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+PROJECT_HOME="$(dirname "${SCRIPTS_HOME}")"
+BUILD_DIR="${PROJECT_HOME}/dist/build"
 
-mkdir -p "${build_dir}/"{qt5,qt6}
+mkdir -p "${BUILD_DIR}/"{qt5,qt6}
 
 # we xcb installed for our headless running, so exit if we don't have it
 if ! hash xvfb-run &>/dev/null; then
@@ -27,8 +27,8 @@ fi
 # NOTE: Since we're using `-e`, we need to specially
 # capture the error code immediately.
 export QT_QPA_PLATFORM=offscreen
-cd "${build_dir}/qt5"
-cmake "${project_home}/example/cmake" -D QT_VERSION=Qt5
+cd "${BUILD_DIR}/qt5"
+cmake "${PROJECT_HOME}/example/cmake" -D QT_VERSION=Qt5
 make -j
 if hash xvfb-run &>/dev/null; then
     timeout 1 xvfb-run -a ./testing || error_code=$?
@@ -38,8 +38,8 @@ if hash xvfb-run &>/dev/null; then
 fi
 
 # first, try Qt6
-cd "${build_dir}/qt6"
-cmake "${project_home}/example/cmake" -D QT_VERSION=Qt6
+cd "${BUILD_DIR}/qt6"
+cmake "${PROJECT_HOME}/example/cmake" -D QT_VERSION=Qt6
 make -j
 if hash xvfb-run &>/dev/null; then
     timeout 1 xvfb-run -a ./testing || error_code=$?

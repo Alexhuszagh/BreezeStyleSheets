@@ -21,12 +21,12 @@
 
 set -eux pipefail
 
-scripts_home="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
-project_home="$(dirname "${scripts_home}")"
-mkdir -p "${project_home}/dist/ci"
-cd "${project_home}"
+SCRIPTS_HOME="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+PROJECT_HOME="$(dirname "${SCRIPTS_HOME}")"
+mkdir -p "${PROJECT_HOME}/dist/ci"
+cd "${PROJECT_HOME}"
 # shellcheck source=/dev/null
-. "${scripts_home}/shared.sh"
+. "${SCRIPTS_HOME}/shared.sh"
 
 # we xcb installed for our headless running, so exit if we don't have it
 if ! hash xvfb-run &>/dev/null; then
@@ -38,10 +38,10 @@ fi
 if ! is-set PYTHON; then
     PYTHON=python
 fi
-frameworks=("pyqt5" "pyqt6" "pyside6")
-have_pyside=$(${PYTHON} -c 'import sys; print(sys.version_info < (3, 11))')
-if [[ "${have_pyside}" == "True" ]]; then
-    frameworks+=("pyside2")
+FRAMEWORKS=("pyqt5" "pyqt6" "pyside6")
+HAVE_PYSIDE=$(${PYTHON} -c 'import sys; print(sys.version_info < (3, 11))')
+if [[ "${HAVE_PYSIDE}" == "True" ]]; then
+    FRAMEWORKS+=("pyside2")
 fi
 
 # need to run everything in headless mode.
@@ -51,7 +51,7 @@ for script in example/*.py; do
     if [[ "${script}" == "example/advanced-dock.py" ]]; then
         continue
     fi
-    for framework in "${frameworks[@]}"; do
+    for framework in "${FRAMEWORKS[@]}"; do
         echo "Running '${script}' for framework '${framework}'."
         xvfb-run -a "${PYTHON}" "${script}" --qt-framework "${framework}" --stylesheet dark
     done
@@ -62,9 +62,9 @@ done
 # if a style doesn't exist, it simply won't be read
 # which is fine
 export QT_QPA_PLATFORM=offscreen
-styles=("dark-red" "dark-blue" "dark-purple" "dark-green" "light-red" "light-blue" "light-purple" "light-green")
-for framework in "${frameworks[@]}"; do
-    for style in "${styles[@]}"; do
+STYLES=("dark-red" "dark-blue" "dark-purple" "dark-green" "light-red" "light-blue" "light-purple" "light-green")
+for framework in "${FRAMEWORKS[@]}"; do
+    for style in "${STYLES[@]}"; do
         echo "Running widgets test for framework '${framework}' an style '${style}'."
         xvfb-run -a "${PYTHON}" "example/widgets.py" --qt-framework "${framework}" --stylesheet "${style}"
     done
@@ -75,7 +75,7 @@ done
 # Some tests don't work in headless mode so we skip them.
 widgets=$(${PYTHON} -c "import os; os.chdir('test'); import ui; print(' '.join([i[5:] for i in dir(ui) if i.startswith('test_')]))")
 for widget in ${widgets[@]}; do
-    for framework in "${frameworks[@]}"; do
+    for framework in "${FRAMEWORKS[@]}"; do
         echo "Running test for widget '${widget}' for framework '${framework}'."
         xvfb-run -a "${PYTHON}" test/ui.py --widget "${widget}" --qt-framework "${framework}" --stylesheet dark
     done

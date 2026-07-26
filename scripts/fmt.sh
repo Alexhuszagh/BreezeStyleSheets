@@ -6,18 +6,8 @@
 
 set -eux pipefail
 
-scripts_home="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
-project_home="$(dirname "${scripts_home}")"
-cd "${project_home}"
-# shellcheck source=/dev/null
-. "${scripts_home}/shared.sh"
+SCRIPTS_HOME="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+PROJECT_HOME="$(dirname "${SCRIPTS_HOME}")"
+cd "${PROJECT_HOME}"
 
-# unless we manually provide an override, use whatever's
-# on the path by default.
-if ! is-set PYTHON; then
-    isort ./*.py example/*.py example/**/*.py
-    black --config pyproject.toml example/ ./*.py
-else
-    ${PYTHON} -m isort ./*.py example/*.py example/**/*.py
-    ${PYTHON} -m black --config pyproject.toml example/ ./*.py
-fi
+uv run poe fmt

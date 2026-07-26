@@ -4,11 +4,11 @@
 
 set -eux pipefail
 
-scripts_home="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
-project_home="$(dirname "${scripts_home}")"
-cd "${project_home}/example/detect"
+SCRIPTS_HOME="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+PROJECT_HOME="$(dirname "${SCRIPTS_HOME}")"
+cd "${PROJECT_HOME}/example/detect"
 # shellcheck source=/dev/null
-. "${scripts_home}/shared.sh"
+. "${SCRIPTS_HOME}/shared.sh"
 
 if ! is-set PYTHON; then
     PYTHON=python

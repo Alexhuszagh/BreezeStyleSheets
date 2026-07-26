@@ -10,40 +10,40 @@
 
 set -eux pipefail
 
-scripts_home="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
-project_home="$(dirname "${scripts_home}")"
-mkdir -p "${project_home}/dist/ci"
-cd "${project_home}"
+SCRIPTS_HOME="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
+PROJECT_HOME="$(dirname "${SCRIPTS_HOME}")"
+mkdir -p "${PROJECT_HOME}/dist/ci"
+cd "${PROJECT_HOME}"
 # shellcheck source=/dev/null
-. "${scripts_home}/shared.sh"
+. "${SCRIPTS_HOME}/shared.sh"
 
 # pop them into dist since it's ignored anyway
 if ! is-set PYTHON; then
     PYTHON=python
 fi
-frameworks=("pyqt5" "pyqt6" "pyside6")
-have_pyside=$(${PYTHON} -c 'import sys; print(sys.version_info < (3, 11))')
-if [[ "${have_pyside}" == "True" ]]; then
-    frameworks+=("pyside2")
+FRAMEWORKS=("pyqt5" "pyqt6" "pyside6")
+HAVE_PYSIDE=$(${PYTHON} -c 'import sys; print(sys.version_info < (3, 11))')
+if [[ "${HAVE_PYSIDE}" == "True" ]]; then
+    FRAMEWORKS+=("pyside2")
 fi
 
 # NOTE: We need to make sure the scripts directory is added to the path
-python_home=$(${PYTHON} -c 'import site; print(site.getsitepackages()[0])')
-scripts_dir="${python_home}/scripts"
-uname_s="$(uname -s)"
-if [[ "${uname_s}" == MINGW* ]]; then
+PYTHON_HOME=$(${PYTHON} -c 'import site; print(site.getsitepackages()[0])')
+SCRIPTS_DIR="${PYTHON_HOME}/scripts"
+UNAME_S="$(uname -s)"
+if [[ "${UNAME_S}" == MINGW* ]]; then
     # want to convert C:/... to /c/...
-    scripts_dir=$(echo "/$scripts_dir" | sed -e 's/\\/\//g' -e 's/://')
+    SCRIPTS_DIR=$(echo "/${SCRIPTS_DIR}" | sed -e 's/\\/\//g' -e 's/://')
 fi
-export PATH="${scripts_dir}:${PATH}"
-for framework in "${frameworks[@]}"; do
-    ${PYTHON} "${project_home}/configure.py" \
+export PATH="${SCRIPTS_DIR}:${PATH}"
+for framework in "${FRAMEWORKS[@]}"; do
+    ${PYTHON} "${PROJECT_HOME}/configure.py" \
         --styles=all \
         --extensions=all \
         --qt-framework "${framework}" \
-        --output-dir "${project_home}/dist/ci" \
+        --output-dir "${PROJECT_HOME}/dist/ci" \
         --resource "breeze_${framework}.qrc" \
-        --compiled-resource "${project_home}/dist/ci/breeze_${framework}.py"
+        --compiled-resource "${PROJECT_HOME}/dist/ci/breeze_${framework}.py"
     # this will auto-fail due to pipefail, checks the imports work
     ${PYTHON} -c "import os; os.chdir('dist/ci'); import breeze_${framework}"
 done
