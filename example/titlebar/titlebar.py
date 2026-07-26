@@ -102,8 +102,6 @@ The current platforms/desktop environments have been tested:
 - Windows 10
 """
 
-# pylint: disable=protected-access
-
 import enum
 import os
 import sys
@@ -112,7 +110,7 @@ from pathlib import Path
 HOME = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, os.path.dirname(HOME))
 
-import shared  # noqa  # pylint: disable=wrong-import-position,import-error
+import shared  # noqa
 
 parser = shared.create_parser()
 parser.add_argument(
@@ -337,7 +335,7 @@ class SortableTree(QtWidgets.QTreeWidget):
 class SettingTabs(QtWidgets.QTabWidget):
     """Sample setting widget with a tab view."""
 
-    def __init__(self, parent=None):  # pylint: disable=too-many-statements
+    def __init__(self, parent=None):
         super().__init__(parent)
 
         self.setTabPosition(compat.North)
@@ -790,7 +788,7 @@ class TitleButton(QtWidgets.QToolButton):
 class TitleBar(QtWidgets.QFrame):
     """Custom instance of a QTitlebar"""
 
-    def __init__(self, window, parent=None, flags=None):  # pylint: disable=(too-many-statements
+    def __init__(self, window, parent=None, flags=None):
         super().__init__(parent)
 
         # Get and set some properties.
@@ -1317,7 +1315,7 @@ class SizeFrame(QtCore.QObject):
             and pos.y() <= rect.y() + rect.height()
         )
 
-    def cursor_position(self, pos, rect):  # pylint: disable=too-many-return-statements)
+    def cursor_position(self, pos, rect):
         """Calculate the cursor position inside the window."""
 
         if self.is_on_left(pos, rect):
@@ -1390,7 +1388,7 @@ class SizeFrame(QtCore.QObject):
 
         self._window.setCursor(self._cursor)
 
-    def resize(self, position, rect):  # pylint: disable=too-many-branches
+    def resize(self, position, rect):
         """Resize our window to the adjusted dimensions."""
 
         # Get our new frame dimensions.
@@ -1811,7 +1809,7 @@ class MdiArea(QtWidgets.QMdiArea):
         self._minimized.remove(subwindow)
         self.move_minimized()
 
-    def move_minimized(self):  # pylint: disable=too-many-locals
+    def move_minimized(self):
         """Move the minimized windows."""
 
         # No need to set the geometry of our minimized windows.
@@ -2222,7 +2220,7 @@ class FramelessWindow(Window):
         """Restore the window, showing the main widget and size grip."""
         self.showNormal()
 
-    def showNormal(self):  # pylint: disable=useless-parent-delegation
+    def showNormal(self):
         """Show the normal titlebar view."""
         super().showNormal()
 

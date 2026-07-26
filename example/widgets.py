@@ -25,8 +25,6 @@
 
 """Simple example showing numerous built-in widgets."""
 
-# pylint: disable=duplicate-code
-
 import sys
 
 import shared
@@ -46,10 +44,9 @@ def close_icon(widget):
 class Ui:
     """Main class for the user interface."""
 
-    def setup(self, MainWindow):  # pylint: disable=too-many-statements,too-many-locals
+    def setup(self, MainWindow):
         """Setup our main window for the UI."""
 
-        # pylint: disable=unused-variable
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1068, 824)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -422,9 +419,8 @@ class Ui:
         MainWindow.setTabOrder(self.verticalSlider, self.tabWidget)
         MainWindow.setTabOrder(self.tabWidget, self.lineEdit)
         MainWindow.setTabOrder(self.lineEdit, self.listWidget)
-        # pylint: enable=unused-variable
 
-    def retranslateUi(self, MainWindow):  # pylint: disable=too-many-statements
+    def retranslateUi(self, MainWindow):
         """Retranslate our UI after initializing some of our base modules."""
 
         _translate = QtCore.QCoreApplication.translate

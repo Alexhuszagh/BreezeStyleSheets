@@ -24,8 +24,6 @@
 
 """Simple PyQt application using the advanced-docking-system."""
 
-# pylint: disable=no-name-in-module,import-error
-
 import sys
 
 import shared

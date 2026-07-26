@@ -9,7 +9,7 @@ import standard
 class Ui:
     """Main class for the user interface."""
 
-    def setup(self, MainWindow):  # pylint: disable=too-many-statements
+    def setup(self, MainWindow):
         """Setup our main window for the UI."""
 
         MainWindow.setObjectName("MainWindow")

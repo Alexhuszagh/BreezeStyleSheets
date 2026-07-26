@@ -28,7 +28,7 @@ import sys
 HOME = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, os.path.dirname(HOME))
 
-import shared  # noqa  # pylint: disable=wrong-import-position,import-error
+import shared  # noqa
 
 parser = shared.create_parser()
 args, unknown = shared.parse_args(parser)

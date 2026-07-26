@@ -1,7 +1,5 @@
 """Shared imports and compatibility definitions between Qt5 and Qt6."""
 
-# pylint: disable=import-error
-
 import argparse
 import importlib
 import logging
@@ -14,7 +12,7 @@ dist = os.path.join(home, "dist")
 sys.path.append(home)
 THEME = None
 
-from example.detect import system_theme  # noqa  # pylint: disable=wrong-import-position,import-error
+from example.detect import system_theme  # noqa
 
 
 def create_parser():
@@ -141,7 +139,7 @@ def get_version(args):
     return QtCore.__version_info__[:3]
 
 
-def get_compat_definitions(args):  # pylint: disable=too-many-statements
+def get_compat_definitions(args):
     """Create our compatibility definitions."""
 
     ns = argparse.Namespace()

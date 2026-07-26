@@ -124,7 +124,7 @@ def _get_theme_windows() -> "Theme":
         # some headless Windows instances (e.g. GitHub Actions or Docker images) do not have this key
         # this is also not present if the user has never set the value. however, more recent Windows
         # installs will have this, starting at `10.0.10240.0`:
-        #   https://learn.microsoft.com/en-us/windows/apps/desktop/modernize/ui/apply-windows-themes#know-when-dark-mode-is-enabled  # noqa  # pylint: disable=line-too-long
+        #   https://learn.microsoft.com/en-us/windows/apps/desktop/modernize/ui/apply-windows-themes#know-when-dark-mode-is-enabled
         #
         # Note that the documentation is inverted: if the foreground is light, we are using DARK mode.
         winver = sys.getwindowsversion()  # pyright: ignore[reportAttributeAccessIssue]
@@ -151,7 +151,7 @@ def _get_theme_windows() -> "Theme":
 def _listener_windows(callback: "CallbackFn") -> "None":
     """Register an event listener for dark/light theme changes."""
 
-    import ctypes.wintypes  # pyright: ignore[reportMissingImports]  # pylint: disable=redefined-outer-name
+    import ctypes.wintypes  # pyright: ignore[reportMissingImports]
 
     global _advapi32
 
@@ -205,7 +205,7 @@ def _listener_windows(callback: "CallbackFn") -> "None":
 def _initialize_advapi32() -> "ctypes.CDLL":
     """Initialize our advapi32 library."""
 
-    import ctypes.wintypes  # pyright: ignore[reportMissingImports]  # pylint: disable=redefined-outer-name
+    import ctypes.wintypes  # pyright: ignore[reportMissingImports]
 
     advapi32 = ctypes.windll.advapi32  # pyright: ignore[reportAttributeAccessIssue]
 

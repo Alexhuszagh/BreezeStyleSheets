@@ -32,7 +32,7 @@ import sys
 EXAMPLE = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, os.path.dirname(EXAMPLE))
 
-import shared  # noqa  # pylint: disable=wrong-import-position,import-error
+import shared  # noqa
 
 parser = shared.create_parser()
 args, unknown = shared.parse_args(parser)
@@ -44,10 +44,10 @@ colors = shared.get_colors(args, compat)
 class Slider(QtWidgets.QSlider):
     """QSlider with a custom paint event."""
 
-    def __init__(self, *args, **kwds):  # pylint: disable=useless-parent-delegation,redefined-outer-name
+    def __init__(self, *args, **kwds):
         super().__init__(*args, **kwds)
 
-    def paintEvent(self, event):  # pylint: disable=unused-argument,(too-many-locals
+    def paintEvent(self, event):
         """Override the paint event to ensure the ticks are painted."""
 
         painter = QtWidgets.QStylePainter(self)

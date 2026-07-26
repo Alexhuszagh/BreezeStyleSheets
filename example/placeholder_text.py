@@ -32,8 +32,6 @@ Qt6 in `QPalette::PlaceholderText`, since both the stylesheets
 and palette edits correctly affect styles in Qt5, but not Qt6.
 """
 
-# pylint: disable=duplicate-code
-
 import sys
 
 import shared

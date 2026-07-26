@@ -276,7 +276,7 @@ def fix_imports(path: "PathOrStr", framework: "Framework") -> "None":
         file.write(text)
 
 
-def compile(  # pylint: disable=redefined-builtin
+def compile(
     qrc: "PathOrStr",
     dst: "PathOrStr",
     framework: "Framework",

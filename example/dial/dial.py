@@ -33,7 +33,7 @@ import sys
 EXAMPLE = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, os.path.dirname(EXAMPLE))
 
-import shared  # noqa  # pylint: disable=wrong-import-position,import-error
+import shared  # noqa
 
 parser = shared.create_parser()
 parser.add_argument(

@@ -523,7 +523,6 @@ def loads_json(s: "Loads") -> "Any":
 def loads_yaml(s: "Loads") -> "Any":
     """Load values from a YAML document."""
 
-    # pylint: disable-next=import-error
     import yaml  # type: ignore # noqa
 
     return yaml.safe_load(io.StringIO(decode(s)))
@@ -533,10 +532,8 @@ def loads_toml(s: "Loads") -> "Any":
     """Load values from a TOML document."""
 
     try:
-        # pylint: disable-next=import-error
         import tomllib  # type: ignore # noqa
     except ImportError:
-        # pylint: disable-next=import-error
         import tomli as tomllib  # type: ignore # noqa
 
     return tomllib.loads(decode(s))
@@ -545,7 +542,6 @@ def loads_toml(s: "Loads") -> "Any":
 def loads_xml(s: "Loads") -> "Any":
     """Load values from an XML document."""
 
-    # pylint: disable-next=import-error
     import xml2dict  # type: ignore # noqa
 
     return xml2dict.parse(decode(s))

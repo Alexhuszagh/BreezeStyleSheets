@@ -24,8 +24,6 @@
 
 """Example stylizing URLs using palettes."""
 
-# pylint: disable=duplicate-code
-
 import sys
 
 import shared
