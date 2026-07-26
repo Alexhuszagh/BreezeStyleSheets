@@ -24,7 +24,6 @@ from .utils import xml_escape
 
 if TYPE_CHECKING:
     from .constants import Compression, Framework
-    from .style import Style
     from .stylesheet import StyleSheetTemplate
     from .types import PathOrStr
 
@@ -397,15 +396,6 @@ class Compiler:
     EXTENSIONS: "ClassVar[tuple[str, ...]]" = (".qss", ".svg")
     """The file extensions of all configured resources."""
 
-    styles: "list[Style]"
-    """
-    A mapping of the resource style names to the themes.
-
-    This maps the names, for when the resources are configured, to the
-    paths of the resources, so the compiler can convert them to Qt
-    resources.
-    """
-
     template: "StyleSheetTemplate"
     """
     The stylesheet and icon templates to configure.
@@ -425,19 +415,6 @@ class Compiler:
     - pyqt6
     - pyside2
     - pyside6
-    """
-
-    qrc: "PathOrStr | None" = None
-    """
-    The path to the Qt Resource Collection File ([.qrc]) to write.
-
-    If the value is None, do not write (or build) a Qt Resource Collection
-    File ([.qrc]).
-
-    These enumerates the files within a compiled resource to be used
-    as inputs to the resource compiler.
-
-    [.qrc]: https://doc.qt.io/qt-6/resources.html#qt-resource-collection-file-qrc
     """
 
     rcc: "PathOrStr | None" = None

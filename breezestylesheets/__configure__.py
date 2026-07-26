@@ -172,18 +172,6 @@ def configure_style(config: "resources.Compiler", style: "Style", directory: "Pa
         (output / f"{icon.name}.svg").write_text(icon.value, encoding="utf-8")
 
 
-def write_qrc(config: "resources.Compiler", qt_dist: "PathOrStr") -> "None":
-    """Simple QRC writer."""
-
-    if config.qrc is None:
-        return
-
-    qrc_path = config.qrc
-    if not os.path.isabs(qrc_path):
-        qrc_path = f"{qt_dist}/{qrc_path}"
-    Path(qrc_path).write_text(config.to_qrc(qt_dist), encoding="utf-8")
-
-
 def compile_resource(args: "Args", config: "resources.Compiler") -> "None":
     """Compile our resource file to a standalone Python file."""
 
@@ -246,10 +234,8 @@ def configure(args: "Args") -> "None":
     qrc = args.resource if not args.no_qrc else None
     compression = "default" if not args.use_default_compression else "lzma"
     config = resources.Compiler(
-        styles=styles,
         template=StyleSheetTemplate.from_directories(*template_dirs),
         framework=args.qt_framework,
-        qrc=qrc,
         rcc=args.rcc,
         compression=compression,
     )
@@ -268,8 +254,12 @@ def configure(args: "Args") -> "None":
         shutil.copy2(source, destination)
 
     # Create and compile our resource files.
-    if not args.no_qrc:
-        write_qrc(config, str(args.output_dir))
+    if qrc is None:
+        return
+    if not os.path.isabs(qrc):
+        qrc = args.output_dir / qrc
+    Path(qrc).write_text(config.to_qrc(args.output_dir), encoding="utf-8")
+
     if args.compiled is not None:
         compile_resource(args, config)
 
