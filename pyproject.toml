@@ -65,18 +65,8 @@ badge = [
 [tool.hatch.version]
 path = "breezestylesheets/__init__.py"
 
-[tool.hatch.build.targets.sdist]
-include = ["breezestylesheets", "example", "extension", "template", "theme"]
-
-[tool.hatch.build.targets.sdist.sources]
-"breezestylesheets" = "breezestylesheets"
-"example" = "breezestylesheets/example"
-"extension" = "breezestylesheets/extension"
-"template" = "breezestylesheets/template"
-"theme" = "breezestylesheets/theme"
-
-[tool.hatch.build.targets.wheel]
-include = ["breezestylesheets", "example", "extension", "template", "theme"]
+[tool.hatch.build]
+only-include = ["breezestylesheets"]
 
 [tool.uv]
 add-bounds = "major"
