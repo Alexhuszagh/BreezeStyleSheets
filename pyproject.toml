@@ -155,10 +155,12 @@ help = "generate the coverage and test badge"
 cmd = "genbadge coverage --input-file coverage.xml --output-file coverage.svg"
 executor = { group = ["badge"], no-group = ["dev", "test", "type"] }
 
-# TODO: Will need the frameworks and more
 [tool.poe.tasks.configure]
 help = "configure the stylesheets"
 cmd = "python configure.py"
+
+# TODO: Add in the examples
+#   This will need the frameworks as optional dependencies and part of the executor
 
 [tool.poe.tasks.ci]
 help = "run the CI suite"

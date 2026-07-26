@@ -5,8 +5,6 @@ from typing import TYPE_CHECKING
 import os
 from dataclasses import dataclass
 
-from breezestylesheets.icon import IconTemplate
-from breezestylesheets.stylesheet import StyleSheetTemplate
 from .theme import Theme
 
 if TYPE_CHECKING:
@@ -30,6 +28,10 @@ class Style:
     @staticmethod
     def is_template(directory: "PathOrStr") -> bool:
         """Get if the path is a template directory."""
+
+        from breezestylesheets.icon import IconTemplate
+        from breezestylesheets.stylesheet import StyleSheetTemplate
+
         return os.path.isdir(directory) and (
             StyleSheetTemplate.get_template_file(directory) is not None
             or IconTemplate.get_replacements_file(directory) is not None

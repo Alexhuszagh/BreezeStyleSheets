@@ -237,7 +237,7 @@ class IconTemplate(Model):
         found in an unspecified order.
         """
         icons = glob.iglob("icons.*", root_dir=directory)
-        files = (i for i in icons if os.path.splitext(i)[1] in _EXTENSIONS)
+        files = (f"{directory}/{i}" for i in icons if os.path.splitext(i)[1] in _EXTENSIONS)
         return next(files, None)
 
     def render(self, theme: "Theme") -> "list[Icon]":

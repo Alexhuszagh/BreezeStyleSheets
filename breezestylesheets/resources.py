@@ -5,12 +5,14 @@ the compression of these resources.
 [resources]: https://doc.qt.io/qt-6/resources.html
 """
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 import ast
 import binascii
+import glob
 import gzip
 import lzma
+import os
 import re
 import shutil
 import subprocess
@@ -18,6 +20,7 @@ import zlib
 from dataclasses import dataclass
 
 from .exception import InvalidFrameworkError, RccNotFoundError, ResourceCompileError
+from .utils import xml_escape
 
 if TYPE_CHECKING:
     from .constants import Compression, Framework
@@ -385,6 +388,15 @@ class Compiler:
 
     # NOTE: `kw_only` is 3.10+
 
+    ALIASES: "ClassVar[dict[str, str]]" = {
+        "dark-blue": "dark",
+        "light-blue": "light",
+    }
+    """Legacy style names for backwards compatibility, as a map of the new to the old name."""
+
+    EXTENSIONS: "ClassVar[tuple[str, ...]]" = (".qss", ".svg")
+    """The file extensions of all configured resources."""
+
     styles: "list[Style]"
     """
     A mapping of the resource style names to the themes.
@@ -458,5 +470,26 @@ class Compiler:
     def compile(self) -> "None":
         raise NotImplementedError("TODO")
 
-    def to_qrc(self) -> "None":
-        raise NotImplementedError("TODO")
+    def to_qrc(self, directory: "PathOrStr") -> "str":
+        """
+        Create a Qt Resource Collection File ([.qrc]) from the contents of the directory.
+
+        These enumerates all files, including in subdirectories, within the configured directory
+        to generate the ([.qrc]), which is returned as a raw XML string. This handles XML escaping
+        of any invalid characters in the filename.
+
+        [.qrc]: https://doc.qt.io/qt-6/resources.html#qt-resource-collection-file-qrc
+
+        Args:
+            directory: The directory which to enumerate files in.
+
+        Returns:
+            The QRC file as a raw XML string.
+        """
+
+        globbed = (j for i in self.EXTENSIONS for j in glob.glob(f"**/*{i}", root_dir=directory))
+        normalized = (i.replace(os.sep, "/") for i in globbed)
+        escaped = (xml_escape(i) for i in normalized)
+        files = [f"    <file>{i}</file>" for i in escaped]
+
+        return "\n".join(["<RCC>", "  <qresource>", *files, "  </qresource>", "</RCC>"])

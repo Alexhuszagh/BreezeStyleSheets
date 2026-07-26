@@ -86,8 +86,8 @@ def parse_args(argv: "list[str] | None" = None) -> "Args":
     parser.add_argument(
         "--output",
         "--output-dir",
-        help="the default output directory path",
-        default=Path(DIST_DIR),
+        help="the directory where to store the configured styles",
+        default=DIST_DIR / "styles",
         dest="output_dir",
         type=Path,
     )
@@ -110,7 +110,7 @@ def parse_args(argv: "list[str] | None" = None) -> "Args":
         help=(
             "path to the rcc executable. "
             "Overrides rcc of chosen framework. "
-            "Only use if system cannot find the rcc exe."
+            "Only use if system cannot find the rcc executable."
         ),
     )
     parser.add_argument(
@@ -203,30 +203,10 @@ def write_qrc(config: "resources.Compiler", qt_dist: "PathOrStr") -> "None":
     if config.qrc is None:
         return
 
-    # NOTE: We also want to create aliases for light-blue and dark-blue from our
-    # light and dark. See:
-    #   https://github.com/Alexhuszagh/BreezeStyleSheets/pull/101#issuecomment-2336476041
-    resources = []
-    for style in config.styles:
-        files = os.listdir(f"{qt_dist}/{style.name}")
-        resources += [f"{style.name}/{i}" for i in files]
-
-    style_names = {i.name for i in config.styles}
-    if "dark-blue" in style_names:
-        resources.append("dark/stylesheet.qss")
-    if "light-blue" in style_names:
-        resources.append("light/stylesheet.qss")
-
     qrc_path = config.qrc
     if not os.path.isabs(qrc_path):
         qrc_path = f"{qt_dist}/{qrc_path}"
-    with open(qrc_path, "w", encoding="utf-8") as file:
-        print("<RCC>", file=file)
-        print("  <qresource>", file=file)
-        for resource in sorted(resources):
-            print(f"    <file>{resource}</file>", file=file)
-        print("  </qresource>", file=file)
-        print("</RCC>", file=file)
+    Path(qrc_path).write_text(config.to_qrc(qt_dist), encoding="utf-8")
 
 
 def compile_resource(args: "Args", config: "resources.Compiler") -> "None":
@@ -279,8 +259,9 @@ def compile_resource(args: "Args", config: "resources.Compiler") -> "None":
 def configure(args: "Args") -> "None":
     """Configure all styles and write the files to a QRC file."""
 
-    if args.clean and args.output_dir.is_relative_to(PACKAGE_DIR):
-        raise ValueError("Cannot clean the source code repository.")
+    if args.output_dir.is_relative_to(PACKAGE_DIR):
+        raise ValueError("Cannot configure the resources within the package.")
+
     if args.clean:
         shutil.rmtree(args.output_dir, ignore_errors=True)
 
@@ -304,10 +285,10 @@ def configure(args: "Args") -> "None":
 
     # Create aliases for our light-blue and dark-blue styles to light and dark.
     # Only create aliases if light-blue and/or dark-blue are to be built.
-    aliases = set(args.styles) & {"dark-blue", "light-blue"}
+    aliases = set(args.styles) & set(resources.Compiler.ALIASES)
     for theme in aliases:
         source = args.output_dir / theme / "stylesheet.qss"
-        destination = args.output_dir / theme.split("-")[0] / "stylesheet.qss"
+        destination = args.output_dir / resources.Compiler.ALIASES[theme] / "stylesheet.qss"
         destination.parent.mkdir(exist_ok=True)
         shutil.copy2(source, destination)
 
