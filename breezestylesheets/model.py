@@ -80,8 +80,8 @@ class Schema(Dict["str", "type[ModelT]"]):
     """
 
     def __repr__(self) -> "str":
-        # TODO: Fix this, better format the types
-        return super().__repr__()
+        names = {k: f"{v.__module__}{v.__name__}" for k, v in self.items()}
+        return repr(f"Schema({names})")
 
 
 def expand_aliases(value: "str") -> "Alias":
