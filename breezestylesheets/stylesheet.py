@@ -165,7 +165,7 @@ class StyleSheetTemplate(Model):
         stylesheet = "\n".join([i.stylesheet for i in templates])
         return cls(icons=icons, stylesheet=stylesheet)
 
-    def render(self, style: "Style", as_resource: "bool" = True) -> "StyleSheet":
+    def render(self, style: "Style", relative_to: "str | None" = ":/") -> "StyleSheet":
         """
         Render the stylesheet template and all icons.
 
@@ -188,7 +188,8 @@ class StyleSheetTemplate(Model):
 
         Args:
             style: The named theme with the colors for each configuration.
-            as_resource: If the stylesheet is to be compiled as a QT resource.
+            relative_to: The path all URIs (for example, for icons) in the stylesheet
+                will be relative to. If `:/`, then it is a Qt [resource].
 
         Returns:
             The fully rendered theme and icons with all placeholders replaced.
@@ -197,9 +198,9 @@ class StyleSheetTemplate(Model):
         icons = [i for j in self.icons for i in j.render(style.theme)]
 
         style_name = style.name
-        assert not style_name.startswith(":/")
-        if as_resource:
-            style_name = f":/{style_name}"
+        assert "/" not in style_name and "\\" not in style_name
+        if relative_to is not None:
+            style_name = f"{relative_to}{style_name}"
         if not style_name.endswith("/"):
             style_name = f"{style_name}/"
 
