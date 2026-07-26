@@ -376,7 +376,7 @@ def chmod(mode: "str", *args: "str") -> "None":
 def install_hooks() -> "None":
     """Install our Git hooks."""
 
-    pip_install("pylint", "pyright", "flake8", "isort", "black")
+    pip_install("uv",)
     if os.name == "nt":
         pip_install("winrt-Windows.UI.ViewManagement", "winrt-Windows.UI")
 

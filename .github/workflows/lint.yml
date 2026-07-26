@@ -24,8 +24,8 @@ jobs:
     - name: Analyzing the code with Ruff
       run: |
         export PATH="${HOME}/.local/bin:${PATH}"
-        chmod +x scripts/lint.sh
-        scripts/lint.sh
+        uvx --from poethepoet poe lint
+        uvx --from poethepoet poe type
 
   lint-cpp:
     strategy:

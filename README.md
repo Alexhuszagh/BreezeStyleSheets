@@ -532,11 +532,11 @@ To see the complete list of Qt widgets covered by the unittests, see [Test Cover
 You can check code quality using static type checkers and code linters. This requires [UV](https://docs.astral.sh/uv/) to be installed and [Ruff](https://docs.astral.sh/ruff/) to be added as a tool.
 
 ```bash
-# format python code to a standard style.
-# requires `uv` to be installed and `ruff` as a tool
-scripts/fmt.sh
 # run linters and static typecheckers
-scripts/lint.sh
+uvx --from poethepoet poe lint
+# format python code to a standard style.
+uvx --from poethepoet poe fmt
+
 # check if the system can automatically determine the theme
 # on windows, this requires `winrt-Windows.UI.ViewManagement`
 # and `winrt-Windows.UI` to be installed.
