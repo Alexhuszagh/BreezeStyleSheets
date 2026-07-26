@@ -10,18 +10,19 @@ import sys
 from pathlib import Path
 
 from breezestylesheets import (
-    Style,
-    StyleSheetTemplate,
-    Theme,
     __author__,
     __credits__,
     __license__,
     __version__,
     __version_info__,
-    exception,
     resources,
     utils,
 )
+from breezestylesheets.exception import RccNotFoundError, ResourceCompileError
+from breezestylesheets.model import EXTENSIONS
+from breezestylesheets.style import Style
+from breezestylesheets.stylesheet import StyleSheetTemplate
+from breezestylesheets.theme import Theme
 
 if TYPE_CHECKING:
     from typing import Literal, Protocol
@@ -144,7 +145,7 @@ def parse_styles(args: "Args") -> None:
 
     values = split_csv(args.styles)
     if "all" in values:
-        values = [i.stem for i in THEME_DIR.glob("*.json")]
+        values = [j.stem for i in EXTENSIONS for j in THEME_DIR.glob(f"*{i}")]
     args.styles = values
 
 
@@ -159,38 +160,16 @@ def parse_extensions(args: "Args") -> None:
     args.extensions = values
 
 
-def configure_icons(config: "resources.Compiler", style: "Style", qt_dist: "PathOrStr") -> "None":
-    """Configure icons for a given style."""
-
-    for template in config.template.icons:
-        rendered = template.render(style.theme)
-        for icon in rendered:
-            filename = Path(qt_dist) / style.name / f"{icon.name}.svg"
-            filename.write_text(icon.value, encoding="utf-8")
-
-
-def configure_stylesheet(config: "resources.Compiler", style: "Style", qt_dist: "PathOrStr") -> "None":
-    """Configure the stylesheet for a given style."""
-
-    stylesheet = config.template.render(style)
-    with open(f"{qt_dist}/{style.name}/stylesheet.qss", "w", encoding="utf-8") as file:
-        file.write(stylesheet.value)
-
-
-def configure_style(config: "resources.Compiler", style: "Style", qt_dist: "PathOrStr") -> "None":
+def configure_style(config: "resources.Compiler", style: "Style", directory: "Path") -> "None":
     """Configure the icons and stylesheet for a given style."""
 
-    def configure_qt(qt_dist: "PathOrStr") -> "None":
-        os.makedirs(f"{qt_dist}/{style.name}", exist_ok=True)
-        # Need to pass the qt_dist dir.
-        configure_icons(config, style, qt_dist)
-        configure_stylesheet(config, style, qt_dist)
+    output = directory / style.name
+    output.mkdir(parents=True, exist_ok=True)
 
-    # Need to replace the URL paths for loading icons/
-    # assets. This uses the resource system, AKA,
-    # `url(:/dark/path/to/resource)`.
-    if config.qrc is not None:
-        configure_qt(qt_dist)
+    stylesheet = config.template.render(style)
+    (output / "stylesheet.qss").write_text(stylesheet.value, encoding="utf-8")
+    for icon in stylesheet.icons:
+        (output / f"{icon.name}.svg").write_text(icon.value, encoding="utf-8")
 
 
 def write_qrc(config: "resources.Compiler", qt_dist: "PathOrStr") -> "None":
@@ -228,14 +207,14 @@ def compile_resource(args: "Args", config: "resources.Compiler") -> "None":
             rcc=args.rcc,
             compression=compression,
         )
-    except exception.ResourceCompileError as error:
+    except ResourceCompileError as error:
         inner = cast("subprocess.CalledProcessError", error.inner)
         if b"File does not exist" in inner.stderr:
             print('ERROR: Ensure qrc file exists or deselect "no-qrc" option!', file=sys.stderr)
         else:
             print(f'ERROR: Got an unknown error of "{inner.stderr.decode("utf-8")}"!', file=sys.stderr)
         raise SystemExit from error
-    except exception.RccNotFoundError as error:
+    except RccNotFoundError as error:
         if args.rcc:
             print("ERROR: rcc path invalid!", file=sys.stderr)
         else:
@@ -277,7 +256,7 @@ def configure(args: "Args") -> "None":
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     for style in styles:
-        configure_style(config, style, str(args.output_dir))
+        configure_style(config, style, args.output_dir)
 
     # Create aliases for our light-blue and dark-blue styles to light and dark.
     # Only create aliases if light-blue and/or dark-blue are to be built.

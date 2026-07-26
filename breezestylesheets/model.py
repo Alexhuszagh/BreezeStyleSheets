@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from .types import JSONObject, JSONValue, Loads, PathOrStr
 
 
-__all__ = ["Model", "model"]
+__all__ = ["EXTENSIONS", "Model", "model"]
 
 ModelT = TypeVar("ModelT", bound="Model")
 
@@ -55,15 +55,15 @@ else:
     FieldMetadata = dict
 
 
-_EXTENSIONS: "set[str]" = {".json", ".jsonc"}
+EXTENSIONS: "set[str]" = {".json", ".jsonc"}
 """The support theme and icon file extensions based on the installed extensions."""
 
 if find_spec("yaml") is not None:
-    _EXTENSIONS.update((".yml", ".yaml"))
+    EXTENSIONS.update((".yml", ".yaml"))
 if find_spec("tomllib") is not None or find_spec("tomli") is not None:
-    _EXTENSIONS.add(".toml")
+    EXTENSIONS.add(".toml")
 if find_spec("xml2dict") is not None:
-    _EXTENSIONS.add(".xml")
+    EXTENSIONS.add(".xml")
 
 
 class Schema(Dict["str", "type[ModelT]"]):
@@ -315,7 +315,8 @@ class Model(Dataclass):
         """
         with parse_block(path=path):
             with open(path, encoding="utf-8") as file:
-                return cls.loads(file.read(), os.path.splitext(os.path.basename(path))[1])
+                _, ext = os.path.splitext(os.path.basename(path))
+                return cls.loads(file.read(), ext)
 
     @classmethod
     def loads(cls: "type[Self]", s: "Loads", extension: "str") -> "Self":
@@ -461,7 +462,7 @@ def loads_model(s: "Loads", extension: "str") -> "JSONObject":
 def loads(s: "Loads", extension: "str") -> "Any":
     """Load values from a document."""
     # NOTE: Migrate to `match` with 3.10+ support.
-    if extension not in _EXTENSIONS:
+    if extension not in EXTENSIONS:
         raise ValueError(f'Got an unknown file type of "{extension}".')
     if extension in (".json", ".jsonc"):
         return loads_json(s)

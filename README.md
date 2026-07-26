@@ -84,8 +84,12 @@ By default, BreezeStyleSheets comes with the `dark` and `light` themes pre-built
 # choose only the frameworks you want
 frameworks=("pyqt5" "pyqt6" "pyside2" "pyside6")
 for framework in "${frameworks[@]}"; do
-    python configure.py --styles all --extensions all --qt-framework "${framework}" \
-        --resource breeze.qrc --compiled-resource "breeze_${framework}.py"
+    python configure.py \
+        --styles all \
+        --extensions all \
+        --qt-framework "${framework}" \
+        --resource breeze.qrc \
+        --compiled-resource "breeze_${framework}.py"
 done
 ```
 

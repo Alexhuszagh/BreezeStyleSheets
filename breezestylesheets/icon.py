@@ -7,7 +7,7 @@ import glob
 import os
 from dataclasses import dataclass
 
-from .model import _EXTENSIONS, Model, loads_model, model, parse_block
+from .model import EXTENSIONS, Model, loads_model, model, parse_block
 from .theme import Theme
 
 if TYPE_CHECKING:
@@ -176,7 +176,7 @@ if TYPE_CHECKING:
         volume_muted: "IconReplacement"
 
 
-REPLACEMENT_FILENAMES = [f"icon{i}" for i in _EXTENSIONS]
+REPLACEMENT_FILENAMES = [f"icon{i}" for i in EXTENSIONS]
 """The filenames for a icon replacements supported for the current extensions."""
 
 
@@ -237,7 +237,7 @@ class IconTemplate(Model):
         found in an unspecified order.
         """
         icons = glob.iglob("icons.*", root_dir=directory)
-        files = (f"{directory}/{i}" for i in icons if os.path.splitext(i)[1] in _EXTENSIONS)
+        files = (f"{directory}/{i}" for i in icons if os.path.splitext(i)[1] in EXTENSIONS)
         return next(files, None)
 
     def render(self, theme: "Theme") -> "list[Icon]":
