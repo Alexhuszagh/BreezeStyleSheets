@@ -12,7 +12,7 @@ Every template defines the following structure:
         *.svg.in
 ```
 
-Where `stylesheet.qss.in` is the template stylesheet, `icons.json` specifies the color replacements for each state (such as default, hovered, and disabled), and `svg/*.svg.in` is an icon (which must be specified in `icons.json`).
+Where `stylesheet.qss.in` is the template stylesheet, `icons.json` specifies the color replacements for each state (such as default, hovered, and disabled), and `svg/*.svg.in` is an icon (for which any replacements must be specified in `icons.json`).
 
 ## Default
 
@@ -230,8 +230,7 @@ Next, let's create an SVG template for the icon, at `icon.svg.in`:
 </svg>
 ```
 
-Here, `^0^` signifies index-based replacement, so we must define an entry in
-`icons.json` to specify how we should do the replacement.
+Here, `^0^` signifies index-based replacement, so we must define an entry in `icons.json` to specify how we should do the replacement.
 
 ```json
 {

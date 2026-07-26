@@ -151,12 +151,10 @@ def parse_styles(args: "Args") -> None:
 def parse_extensions(args: "Args") -> None:
     """Parse a list of valid extensions."""
 
-    ext_files = ("stylesheet.qss.in", "icons.json")
     values = split_csv(args.extensions)
     if "all" in values:
         directories = (i for i in TEMPLATE_DIR.iterdir() if i.is_dir())
-        values = [i.stem for i in directories if any((i / e).exists() for e in ext_files)]
-        values.remove(DEFAULT)
+        values = [i.stem for i in directories if Style.is_extension(i)]
 
     args.extensions = values
 

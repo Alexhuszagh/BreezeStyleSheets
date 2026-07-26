@@ -15,6 +15,7 @@ import os.path
 import sys
 from contextlib import contextmanager
 from dataclasses import dataclass
+from importlib.util import find_spec
 
 from . import exception, utils
 from .types import Dataclass, dataclass_transform, evaluate_forward_ref
@@ -55,6 +56,17 @@ if TYPE_CHECKING:
 
 else:
     FieldMetadata = dict
+
+
+_EXTENSIONS: "set[str]" = {".json", ".jsonc"}
+"""The support theme and icon file extensions based on the installed extensions."""
+
+if find_spec("yaml") is not None:
+    _EXTENSIONS.update((".yml", ".yaml"))
+if find_spec("tomllib") is not None or find_spec("tomli") is not None:
+    _EXTENSIONS.add(".toml")
+if find_spec("xml2dict") is not None:
+    _EXTENSIONS.add(".xml")
 
 
 class Schema(Dict["str", "type[ModelT]"]):
@@ -504,13 +516,15 @@ def loads_model(s: "Loads", extension: "str") -> "JSONObject":
 def loads(s: "Loads", extension: "str") -> "Any":
     """Load values from a document."""
     # NOTE: Migrate to `match` with 3.10+ support.
+    if extension not in _EXTENSIONS:
+        raise ValueError(f'Got an unknown file type of "{extension}".')
     if extension in (".json", ".jsonc"):
         return loads_json(s)
-    elif extension in (".yml", ".yaml"):
+    if extension in (".yml", ".yaml"):
         return loads_yaml(s)
-    elif extension == ".toml":
+    if extension == ".toml":
         return loads_toml(s)
-    elif extension == ".xml":
+    if extension == ".xml":
         return loads_xml(s)
     raise ValueError(f'Got an unknown file type of "{extension}".')
 

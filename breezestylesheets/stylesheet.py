@@ -2,6 +2,7 @@
 
 from typing import TYPE_CHECKING
 
+import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -17,6 +18,9 @@ if TYPE_CHECKING:
     from .types import PathOrStr
 
 __all__ = ["StyleSheet", "StyleSheetTemplate"]
+
+TEMPLATE_FILENAME = "stylesheet.qss.in"
+"""The filename for a stylesheet template."""
 
 
 @model
@@ -59,6 +63,13 @@ class StyleSheetTemplate(Model):
     a single stylesheet at the end.
     """
 
+    @staticmethod
+    def get_template_file(directory: "PathOrStr") -> "PathOrStr | None":
+        """Get the path to the template file if the directory contains stylesheet templates."""
+        path = os.path.join(directory, TEMPLATE_FILENAME)
+        if os.path.exists(path):
+            return path
+
     @classmethod
     def from_directory(cls: "type[Self]", directory: "PathOrStr") -> "Self":
         """
@@ -80,8 +91,8 @@ class StyleSheetTemplate(Model):
         Our builtin templates exist within the `template/` directory, relative to the
         package directory. Additional templates can be added to custom directories
         (by default, the `extension` directory relative to the project root when using
-        the `configure` script).
-        provide a
+        the `configure` script). The icons file must be on of the support types (such
+        as JSON, TOML, YAML, or XML).
 
         Args:
             directory: The path to the directory containing the templates.
@@ -91,19 +102,17 @@ class StyleSheetTemplate(Model):
         """
 
         stylesheet = ""
-        icons: "list[IconTemplate]" = []
+        stylesheet_path = cls.get_template_file(directory)
+        if stylesheet_path is not None:
+            stylesheet = Path(stylesheet_path).read_text(encoding="utf-8")
+
         icon_replacements: "IconReplacements" = {}
-
-        directory = Path(directory)
-        stylesheet_path = directory / "stylesheet.qss.in"
-        if stylesheet_path.exists():
-            stylesheet = stylesheet_path.read_text(encoding="utf-8")
-
-        icons_path = directory / "icons.json"
-        if icons_path.exists():
+        icons_path = IconTemplate.get_replacements_file(directory)
+        if icons_path is not None:
             icon_replacements = IconTemplate._load_replacements(icons_path)
 
-        for file in directory.glob("svg/*.svg.in"):
+        icons: "list[IconTemplate]" = []
+        for file in Path(directory).glob("svg/*.svg.in"):
             svg = file.read_text(encoding="utf-8")
             name = file.stem.rsplit(".", maxsplit=1)[0]
             replacements = icon_replacements.get(name)
@@ -136,7 +145,8 @@ class StyleSheetTemplate(Model):
         Our builtin templates exist within the `template/` directory, relative to the
         package directory. Additional templates can be added to custom directories
         (by default, the `extension` directory relative to the project root when using
-        the `configure` script).
+        the `configure` script). The icons file must be on of the support types (such
+        as JSON, TOML, YAML, or XML).
 
         Args:
             directories: The paths to the directories containing the templates.

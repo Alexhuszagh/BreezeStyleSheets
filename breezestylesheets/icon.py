@@ -3,10 +3,11 @@
 from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING, cast
 
+import glob
 import os
 from dataclasses import dataclass
 
-from .model import Model, loads_model, model, parse_block
+from .model import _EXTENSIONS, Model, loads_model, model, parse_block
 from .theme import Theme
 
 if TYPE_CHECKING:
@@ -175,6 +176,10 @@ if TYPE_CHECKING:
         volume_muted: "IconReplacement"
 
 
+REPLACEMENT_FILENAMES = [f"icon{i}" for i in _EXTENSIONS]
+"""The filenames for a icon replacements supported for the current extensions."""
+
+
 @model
 class IconTemplate(Model):
     """
@@ -197,7 +202,43 @@ class IconTemplate(Model):
     """The raw, template SVG data of the icon."""
 
     replacements: "IconReplacement"
-    """The template replacements for the icon, optionally with additional extensions defined."""
+    """
+    The template replacements for the icon, optionally with additional extensions defined.
+
+    These are the replacements for the specific icon, and can be provided as a sequence
+    (the color replacements for the icon placeholders, using the `^0^` syntax), or a
+    map (the variants mapped to the icon placeholders).
+
+    The mapping syntax defines 3 variants of the icon: the default (`ads_menu_button.svg`)
+    icon, the icon on hover events (`ads_menu_button_hover.svg`), and the icon when pressed
+    (`ads_menu_button_pressed.svg`).
+
+    ```json
+    {
+        "default": ["dock:float:hex", "dock:float:opacity"],
+        "hover": ["close:hover:hex", "close:hover:opacity"],
+        "pressed": ["highlight:dark:hex", "highlight:dark:opacity"]
+    }
+    ```
+
+    The sequence syntax only supports the default (`ads_menu_button.svg`) icon.
+
+    ```json
+    ["dock:float:hex", "dock:float:opacity"]
+    ```
+    """
+
+    @staticmethod
+    def get_replacements_file(directory: "PathOrStr") -> "PathOrStr | None":
+        """
+        Get the path to the icon replacements file if the directory contains icon replacements.
+
+        If multiple valid icon replacement files exist, it will return a the first file
+        found in an unspecified order.
+        """
+        icons = glob.iglob("icons.*", root_dir=directory)
+        files = (i for i in icons if os.path.splitext(i)[1] in _EXTENSIONS)
+        return next(files, None)
 
     def render(self, theme: "Theme") -> "list[Icon]":
         """
@@ -236,7 +277,23 @@ class IconTemplate(Model):
         """
         Load the icon replacements from a file.
 
-        This supports JSON, YAML, TOML, and XML file formats.
+        This supports JSON, YAML, TOML, and XML file formats. A sample replacements
+        document is a mapping of icon file names (without the `.svg.in` suffix) to
+        their replacements:
+
+        ```json
+        {
+            "ads_menu_button": {
+                "default": ["dock:float:hex", "dock:float:opacity"],
+                "hover": ["close:hover:hex", "close:hover:opacity"],
+                "pressed": ["highlight:dark:hex", "highlight:dark:opacity"]
+            },
+            "ads_detach_hover": {
+                "default": ["close:hover:hex", "close:hover:opacity"],
+                "pressed": ["highlight:dark:hex", "highlight:dark:opacity"]
+            }
+        }
+        ```
 
         Args:
             path: The path to the file to load.
@@ -254,9 +311,24 @@ class IconTemplate(Model):
     @staticmethod
     def _loads_replacements(s: "Loads", extension: "str") -> "IconReplacements":
         """
-        Load the icon replacements from a document.
+        Load all icon replacements from a document.
 
-        This supports JSON, YAML, TOML, and XML file formats.
+        This supports JSON, YAML, TOML, and XML file formats. A sample replacements
+        document is a mapping of icon file names (without the `.svg.in` suffix) to
+        their replacements:
+
+        ```json
+        {
+            "ads_menu_button": {
+                "default": ["dock:float:hex", "dock:float:opacity"],
+                "hover": ["close:hover:hex", "close:hover:opacity"],
+                "pressed": ["highlight:dark:hex", "highlight:dark:opacity"]
+            },
+            "ads_detach_hover": {
+                "default": ["close:hover:hex", "close:hover:opacity"],
+                "pressed": ["highlight:dark:hex", "highlight:dark:opacity"]
+            }
+        }
 
         Args:
             s: The document data, as a string or UTF-8 encoded bytes.
