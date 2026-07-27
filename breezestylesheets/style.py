@@ -60,7 +60,7 @@ class Style:
         for directory in directories:
             extensions += [i for i in directory.absolute().iterdir() if i.is_dir() and Style.is_extension(i)]
 
-        if subset is not None and 'all' not in subset:
+        if subset is not None and "all" not in subset:
             extensions = [i for i in extensions if i.stem in subset]
 
         return extensions

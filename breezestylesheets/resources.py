@@ -27,8 +27,10 @@ if TYPE_CHECKING:
 
     from .constants import Compression, Framework
 
+__all__ = ["Compiler"]
 
-def compress_resource(
+
+def _compress(
     code: "str",
     resource: "str",
     compression: "Compression | None" = "lzma",
@@ -129,8 +131,8 @@ def compress_resource(
     match = re.search(pattern, code, flags=re.DOTALL)
     if match is None and resource == "qt_resource_struct":
         # NOTE: some older versions use v1/v2 structs
-        v1 = compress_resource(code, "qt_resource_struct_v1", compression=compression)
-        v2 = compress_resource(v1, "qt_resource_struct_v2", compression=compression)
+        v1 = _compress(code, "qt_resource_struct_v1", compression=compression)
+        v2 = _compress(v1, "qt_resource_struct_v2", compression=compression)
         return v2
     if match is None:
         raise ValueError(f'Unable to extract resource with prefix "{resource}".')
@@ -155,217 +157,6 @@ def compress_resource(
     replacement = f'_{resource} = b"{escaped}"\n{replaced}\n'
 
     return code[: match.start()] + replacement + code[match.end() + 1 :]
-
-
-def compress(path: "Path", compression: "Compression | None" = "lzma") -> "None":
-    """
-    Compress the data within a Qt resource Python source code file.
-
-    Args:
-        path: The path of the Python file to compress the resources in.
-
-        compression: The compression of the replaced resource data.
-            Valid compression values are:
-            - zlib
-            - lzma
-            - gzip
-            - default (use the default Qt compression)
-
-    ## Example
-
-    A sample Python resource input file will have the following structure:
-
-    ```python
-    from PyQt5 import QtCore
-
-    qt_resource_data = b"\\xFD\\x37\\x7A..."
-    qt_resource_struct_v1 = b"\\xFD\\x37\\x7A..."
-    qt_resource_struct_v2 = b"\\xFD\\x37\\x7A..."
-
-    qt_version = [int(v) for v in QtCore.qVersion().split('.')]
-    if qt_version < [5, 8, 0]:
-        rcc_version = 1
-        qt_resource_struct = qt_resource_struct_v1
-    else:
-        rcc_version = 2
-        qt_resource_struct = qt_resource_struct_v2
-
-    def qInitResources():
-        QtCore.qRegisterResourceData(rcc_version, qt_resource_struct, qt_resource_name, qt_resource_data)
-
-    def qCleanupResources():
-        QtCore.qUnregisterResourceData(rcc_version, qt_resource_struct, qt_resource_name, qt_resource_data)
-
-    qInitResources()
-    ```
-
-    In order to handle our own compression, we replace this data with `_` underscore variants, having
-    the initial data be compressed and decompressing it to the raw data on the fly:
-
-    ```python
-    from PyQt5 import QtCore
-    import lzma
-
-    _qt_resource_data = b"\\xFD\\x37\\x7A..."
-    qt_resource_data = lzma.decompress(_qt_resource_data)
-
-    _qt_resource_struct_v1 = b"\\xFD\\x37\\x7A..."
-    qt_resource_struct_v1 = lzma.decompress(_qt_resource_struct_v1)
-
-    _qt_resource_struct_v2 = b"\\xFD\\x37\\x7A..."
-    qt_resource_struct_v2 = lzma.decompress(_qt_resource_struct_v2)
-
-    qt_version = [int(v) for v in QtCore.qVersion().split('.')]
-    if qt_version < [5, 8, 0]:
-        rcc_version = 1
-        qt_resource_struct = qt_resource_struct_v1
-    else:
-        rcc_version = 2
-        qt_resource_struct = qt_resource_struct_v2
-
-    def qInitResources():
-        QtCore.qRegisterResourceData(rcc_version, qt_resource_struct, qt_resource_name, qt_resource_data)
-
-    def qCleanupResources():
-        QtCore.qUnregisterResourceData(rcc_version, qt_resource_struct, qt_resource_name, qt_resource_data)
-
-    qInitResources()
-    ```
-    """
-
-    # want to minimize the file size, let's use custom gzip compression
-    code = path.read_text(encoding="utf-8")
-    code = code.replace("import QtCore", "import QtCore\nimport lzma", 1)
-    # NOTE: these should never be none or we have an error
-    code = compress_resource(code, "qt_resource_data", compression=compression)
-    code = compress_resource(code, "qt_resource_name", compression=compression)
-    code = compress_resource(code, "qt_resource_struct", compression=compression)
-
-    path.write_text(code, encoding="utf-8")
-
-
-def fix_imports(path: "Path", framework: "Framework") -> "None":
-    """
-    Fix imports after using PySide6-rcc to compile for PyQt6.
-
-    `PyQt6` does not contain a resource compiler, preferring native Python data
-    packaging, which produces suboptimal results and large distribution sizes.
-    A much simpler approach is to use `PySide6`'s resource compiler and fix the
-    imports.
-
-    Args:
-        path: The path of the Python file to containing the resources in.
-
-        framework: The Qt framework to target.
-            Valid frameworks are:
-            - pyqt5
-            - pyqt6
-            - pyside2
-            - pyside6
-    """
-
-    if framework != "pyqt6":
-        return
-    text = path.read_text(encoding="utf-8")
-    text = text.replace("PySide6", "PyQt6", 1)
-    path.write_text(text, encoding="utf-8")
-
-
-def compile(
-    qrc: "Path",
-    dst: "Path",
-    framework: "Framework",
-    *,
-    rcc: "Path | str | None" = None,
-    compression: "Compression | None" = "lzma",
-) -> "None":
-    """
-    Compile a Qt resource [Collection File] to a resource.
-
-    This invokes the Qt resource compiler and patches the compression
-    for more optimal compression.
-
-    [Collection File]: https://doc.qt.io/qt-6/resources.html
-
-    Args:
-        qrc: The path to the input QRC file.
-
-        dst: The path to the compiled resource.
-
-        framework: The Qt framework to target.
-            Valid frameworks are:
-            - pyqt5
-            - pyqt6
-            - pyside2
-            - pyside6
-
-        rcc: The path to the Qt resource compiler.
-
-        compression: The compression of the replaced resource data.
-            If not using the default or no compression, we optimize the generated
-            resource using a custom compression that compresses over all files,
-            rather than per-file, producing much smaller resource files.
-
-            Valid compression values are:
-            - zlib
-            - lzma
-            - gzip
-            - default (use the default Qt compression)
-    """
-
-    if rcc is None:
-        rcc = get_rcc(framework)
-    elif shutil.which(rcc) is None:
-        raise RccNotFoundError(rcc, framework)
-
-    # build our command and compile the file
-    command: list[str] = [str(rcc), str(qrc), "-o", str(dst)]
-    if compression != "default":
-        command.append("-no-compress")
-
-    try:
-        subprocess.check_output(
-            command,
-            stdin=subprocess.DEVNULL,
-            stderr=subprocess.PIPE,
-            shell=False,
-        )
-        fix_imports(dst, framework)
-        compress(dst, compression=compression)
-    except subprocess.CalledProcessError as error:
-        raise ResourceCompileError(rcc, qrc, framework, error) from error
-
-
-def get_rcc(framework: "Framework") -> "Path":
-    """
-    Get resource compiler (RCC) required the provided framework.
-
-    Args:
-        framework: The Qt framework to target.
-            Valid frameworks are:
-            - pyqt5
-            - pyqt6
-            - pyside2
-            - pyside6
-
-    Returns:
-        The path to the Qt resource compiler.
-    """
-
-    if framework in ("pyqt6", "pyside6"):
-        rcc = "pyside6-rcc"
-    elif framework == "pyqt5":
-        rcc = "pyrcc5"
-    elif framework == "pyside2":
-        rcc = "pyside2-rcc"
-    else:
-        raise InvalidFrameworkError(framework)
-
-    command = shutil.which(rcc)
-    if command is None:
-        raise RccNotFoundError(rcc, framework)
-
-    return Path(command)
 
 
 @dataclass
@@ -418,17 +209,160 @@ class Compiler:
     - default (use the default Qt compression)
     """
 
-    # TODO:
-    #   How can I configure this without a QRC?
-    #   Default to the current directory...
-    #   Output is configurable but should default to the current directory...
-    #   Document all these functions
-    #   Needs to configure for all styles...
-    def configure(self, output: "Path") -> None:
-        pass
+    def get_rcc(self) -> "Path":
+        """
+        Get resource compiler (RCC) required the provided framework.
 
-    def compile(self) -> "None":
-        raise NotImplementedError("TODO")
+        Returns:
+            The path to the Qt resource compiler.
+        """
+
+        if self.rcc is not None:
+            rcc = self.rcc
+        elif self.framework in ("pyqt6", "pyside6"):
+            rcc = "pyside6-rcc"
+        elif self.framework == "pyqt5":
+            rcc = "pyrcc5"
+        elif self.framework == "pyside2":
+            rcc = "pyside2-rcc"
+        else:
+            raise InvalidFrameworkError(self.framework)
+
+        command = shutil.which(rcc)
+        if command is None:
+            raise RccNotFoundError(rcc, self.framework)
+
+        return Path(command)
+
+    def compress(self, path: "Path") -> "None":
+        """
+        Compress the data within a Qt resource Python source code file.
+
+        Args:
+            path: The path of the Python file to compress the resources in.
+
+        ## Example
+
+        A sample Python resource input file will have the following structure:
+
+        ```python
+        from PyQt5 import QtCore
+
+        qt_resource_data = b"\\xFD\\x37\\x7A..."
+        qt_resource_struct_v1 = b"\\xFD\\x37\\x7A..."
+        qt_resource_struct_v2 = b"\\xFD\\x37\\x7A..."
+
+        qt_version = [int(v) for v in QtCore.qVersion().split('.')]
+        if qt_version < [5, 8, 0]:
+            rcc_version = 1
+            qt_resource_struct = qt_resource_struct_v1
+        else:
+            rcc_version = 2
+            qt_resource_struct = qt_resource_struct_v2
+
+        def qInitResources():
+            QtCore.qRegisterResourceData(rcc_version, qt_resource_struct, qt_resource_name, qt_resource_data)
+
+        def qCleanupResources():
+            QtCore.qUnregisterResourceData(rcc_version, qt_resource_struct, qt_resource_name, qt_resource_data)
+
+        qInitResources()
+        ```
+
+        In order to handle our own compression, we replace this data with `_` underscore variants, having
+        the initial data be compressed and decompressing it to the raw data on the fly:
+
+        ```python
+        from PyQt5 import QtCore
+        import lzma
+
+        _qt_resource_data = b"\\xFD\\x37\\x7A..."
+        qt_resource_data = lzma.decompress(_qt_resource_data)
+
+        _qt_resource_struct_v1 = b"\\xFD\\x37\\x7A..."
+        qt_resource_struct_v1 = lzma.decompress(_qt_resource_struct_v1)
+
+        _qt_resource_struct_v2 = b"\\xFD\\x37\\x7A..."
+        qt_resource_struct_v2 = lzma.decompress(_qt_resource_struct_v2)
+
+        qt_version = [int(v) for v in QtCore.qVersion().split('.')]
+        if qt_version < [5, 8, 0]:
+            rcc_version = 1
+            qt_resource_struct = qt_resource_struct_v1
+        else:
+            rcc_version = 2
+            qt_resource_struct = qt_resource_struct_v2
+
+        def qInitResources():
+            QtCore.qRegisterResourceData(rcc_version, qt_resource_struct, qt_resource_name, qt_resource_data)
+
+        def qCleanupResources():
+            QtCore.qUnregisterResourceData(rcc_version, qt_resource_struct, qt_resource_name, qt_resource_data)
+
+        qInitResources()
+        ```
+        """  # ruff: ignore[line-too-long]
+
+        # want to minimize the file size, let's use custom gzip compression
+        code = path.read_text(encoding="utf-8")
+        code = code.replace("import QtCore", "import QtCore\nimport lzma", 1)
+        # NOTE: these should never be none or we have an error
+        code = _compress(code, "qt_resource_data", compression=self.compression)
+        code = _compress(code, "qt_resource_name", compression=self.compression)
+        code = _compress(code, "qt_resource_struct", compression=self.compression)
+
+        path.write_text(code, encoding="utf-8")
+
+    def fix_imports(self, path: "Path") -> "None":
+        """
+        Fix imports after using PySide6-rcc to compile for PyQt6.
+
+        `PyQt6` does not contain a resource compiler, preferring native Python data
+        packaging, which produces suboptimal results and large distribution sizes.
+        A much simpler approach is to use `PySide6`'s resource compiler and fix the
+        imports.
+
+        Args:
+            path: The path of the Python file to containing the resources in.
+        """
+
+        if self.framework != "pyqt6":
+            return
+        text = path.read_text(encoding="utf-8")
+        text = text.replace("PySide6", "PyQt6", 1)
+        path.write_text(text, encoding="utf-8")
+
+    def compile(self, qrc: "Path", dst: "Path") -> "None":
+        """
+        Compile a Qt resource [Collection File] to a resource.
+
+        This invokes the Qt resource compiler and patches the compression
+        for more optimal compression.
+
+        [Collection File]: https://doc.qt.io/qt-6/resources.html
+
+        Args:
+            qrc: The path to the input QRC file.
+            dst: The path to the compiled resource.
+        """
+
+        # build our command and compile the file
+        rcc = self.get_rcc()
+        command: list[str] = [str(rcc), str(qrc), "-o", str(dst)]
+        if self.compression != "default":
+            command.append("-no-compress")
+
+        try:
+            subprocess.check_output(
+                command,
+                stdin=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
+                shell=False,
+            )
+            self.fix_imports(dst)
+            self.compress(dst)
+        except subprocess.CalledProcessError as error:
+            raise ResourceCompileError(rcc, qrc, self.framework, error) from error
 
     def to_qrc(self, directory: "Path") -> "str":
         """
