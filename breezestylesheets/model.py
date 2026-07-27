@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING, Dict, ForwardRef, Generic, TypeVar, cast, over
 
 import io
 import json
-import os.path
 import sys
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -23,7 +22,9 @@ from .types import Dataclass, dataclass_transform, evaluate_forward_ref
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Literal, Self, TypedDict
 
-    from .types import JSONObject, JSONValue, Loads, PathOrStr
+    from pathlib import Path
+
+    from .types import JSONObject, JSONValue, Loads
 
 
 __all__ = ["EXTENSIONS", "Model", "model"]
@@ -296,7 +297,7 @@ class Model(Dataclass):
             raise ValueError(f'Got an unknown alias "{field}".') from None
 
     @classmethod
-    def load(cls: "type[Self]", path: "PathOrStr") -> "Self":
+    def load(cls: "type[Self]", path: "Path") -> "Self":
         """
         Load the stylesheet configuration settings from file.
 
@@ -314,9 +315,7 @@ class Model(Dataclass):
             `ConfigParseError`: Any errors that occur during parsing the configuration data.
         """
         with parse_block(path=path):
-            with open(path, encoding="utf-8") as file:
-                _, ext = os.path.splitext(os.path.basename(path))
-                return cls.loads(file.read(), ext)
+            return cls.loads(path.read_text(encoding="utf-8"), path.suffix)
 
     @classmethod
     def loads(cls: "type[Self]", s: "Loads", extension: "str") -> "Self":
@@ -348,7 +347,7 @@ class Model(Dataclass):
 @contextmanager
 def parse_block(
     data: "Loads | None" = None,
-    path: "PathOrStr | None" = None,
+    path: "Path | None" = None,
     exc_type: "type[exception.ParseError]" = exception.ParseError,
 ) -> "Iterator[None]":
     """A helper to parse the config data within a context block."""

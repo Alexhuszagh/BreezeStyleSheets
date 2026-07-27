@@ -23,9 +23,9 @@ from .exception import InvalidFrameworkError, RccNotFoundError, ResourceCompileE
 from .utils import xml_escape
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from .constants import Compression, Framework
-    from .stylesheet import StyleSheetTemplate
-    from .types import PathOrStr
 
 
 def compress_resource(
@@ -157,10 +157,7 @@ def compress_resource(
     return code[: match.start()] + replacement + code[match.end() + 1 :]
 
 
-def compress(
-    path: "PathOrStr",
-    compression: "Compression | None" = "lzma",
-) -> "None":
+def compress(path: "Path", compression: "Compression | None" = "lzma") -> "None":
     """
     Compress the data within a Qt resource Python source code file.
 
@@ -237,19 +234,17 @@ def compress(
     """
 
     # want to minimize the file size, let's use custom gzip compression
-    with open(path, encoding="utf-8") as file:
-        code = file.read()
+    code = path.read_text(encoding="utf-8")
     code = code.replace("import QtCore", "import QtCore\nimport lzma", 1)
     # NOTE: these should never be none or we have an error
     code = compress_resource(code, "qt_resource_data", compression=compression)
     code = compress_resource(code, "qt_resource_name", compression=compression)
     code = compress_resource(code, "qt_resource_struct", compression=compression)
 
-    with open(path, "w", encoding="utf-8") as file:
-        file.write(code)
+    path.write_text(code, encoding="utf-8")
 
 
-def fix_imports(path: "PathOrStr", framework: "Framework") -> "None":
+def fix_imports(path: "Path", framework: "Framework") -> "None":
     """
     Fix imports after using PySide6-rcc to compile for PyQt6.
 
@@ -271,19 +266,17 @@ def fix_imports(path: "PathOrStr", framework: "Framework") -> "None":
 
     if framework != "pyqt6":
         return
-    with open(path, encoding="utf-8") as file:
-        text = file.read()
+    text = path.read_text(encoding="utf-8")
     text = text.replace("PySide6", "PyQt6", 1)
-    with open(path, "w", encoding="utf-8") as file:
-        file.write(text)
+    path.write_text(text, encoding="utf-8")
 
 
 def compile(
-    qrc: "PathOrStr",
-    dst: "PathOrStr",
+    qrc: "Path",
+    dst: "Path",
     framework: "Framework",
     *,
-    rcc: "PathOrStr | None" = None,
+    rcc: "Path | str | None" = None,
     compression: "Compression | None" = "lzma",
 ) -> "None":
     """
@@ -343,7 +336,7 @@ def compile(
         raise ResourceCompileError(rcc, qrc, framework, error) from error
 
 
-def get_rcc(framework: "Framework") -> "PathOrStr":
+def get_rcc(framework: "Framework") -> "Path":
     """
     Get resource compiler (RCC) required the provided framework.
 
@@ -372,7 +365,7 @@ def get_rcc(framework: "Framework") -> "PathOrStr":
     if command is None:
         raise RccNotFoundError(rcc, framework)
 
-    return command
+    return Path(command)
 
 
 @dataclass
@@ -396,16 +389,6 @@ class Compiler:
     EXTENSIONS: "ClassVar[tuple[str, ...]]" = (".qss", ".svg")
     """The file extensions of all configured resources."""
 
-    template: "StyleSheetTemplate"
-    """
-    The stylesheet and icon templates to configure.
-
-    The template defines placeholders, such as `^foreground^`,
-    which are then replaced by the values specified in the `Theme`.
-
-    These can be loaded from one or more directories.
-    """
-
     framework: "Framework"
     """
     The Qt framework to target.
@@ -417,7 +400,7 @@ class Compiler:
     - pyside6
     """
 
-    rcc: "PathOrStr | None" = None
+    rcc: "Path | str | None" = None
     """The path to the Qt resource compiler."""
 
     compression: "Compression | None" = None
@@ -441,13 +424,13 @@ class Compiler:
     #   Output is configurable but should default to the current directory...
     #   Document all these functions
     #   Needs to configure for all styles...
-    def configure(self, output: "PathOrStr") -> None:
+    def configure(self, output: "Path") -> None:
         pass
 
     def compile(self) -> "None":
         raise NotImplementedError("TODO")
 
-    def to_qrc(self, directory: "PathOrStr") -> "str":
+    def to_qrc(self, directory: "Path") -> "str":
         """
         Create a Qt Resource Collection File ([.qrc]) from the contents of the directory.
 
@@ -464,6 +447,7 @@ class Compiler:
             The QRC file as a raw XML string.
         """
 
+        # NOTE: Use the regular glob so we can get it relative_to
         globbed = (j for i in self.EXTENSIONS for j in glob.glob(f"**/*{i}", root_dir=directory))
         normalized = (i.replace(os.sep, "/") for i in globbed)
         escaped = (xml_escape(i) for i in normalized)

@@ -5,11 +5,13 @@ from typing import TYPE_CHECKING, overload
 from dataclasses import field
 
 from . import color, constants
-from .model import Model, field_metadata, model
+from .model import EXTENSIONS, Model, field_metadata, model
 from .pydantic.color import Color, NullableColor
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+
+    from pathlib import Path
 
 __all__ = ["Theme"]
 
@@ -404,6 +406,18 @@ class Theme(Model):
     def is_dark(self) -> "bool":
         """Get if the color scheme is a dark theme."""
         return not self.is_light
+
+    @staticmethod
+    def find_by_name(directory: "Path", name: "str") -> "Path | None":
+        """
+        Get the path to the theme file by name if found.
+
+        If multiple themes with the same name exist, it will return a the first file
+        found in an unspecified order.
+        """
+        icons = directory.glob(f"{name}.*")
+        files = (directory / i for i in icons if i.suffix in EXTENSIONS)
+        return next(files, None)
 
     @overload
     def get_color(self, field: "str", format: None = None) -> "str | Color": ...

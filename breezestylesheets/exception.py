@@ -3,8 +3,10 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from .constants import Framework
-    from .types import Loads, PathOrStr
+    from .types import Loads
 
 
 class BreezeStyleSheetError(Exception):
@@ -28,7 +30,7 @@ class ParseError(BreezeStyleSheetError):
     data: "Loads"
     """The input data provided to the parser."""
 
-    path: "PathOrStr | None"
+    path: "Path | None"
     """The path to the input file that caused the error, if parsing from file."""
 
     inner: "Exception | None"
@@ -38,7 +40,7 @@ class ParseError(BreezeStyleSheetError):
         self,
         message: "str",
         data: "Loads",
-        path: "PathOrStr | None" = None,
+        path: "Path | None" = None,
         inner: "Exception | None" = None,
     ) -> "None":
         """
@@ -82,13 +84,13 @@ class ResourceError(BreezeStyleSheetError):
 class RccNotFoundError(ResourceError):
     """An exception that occurs when the Qt resource compiler cannot be found."""
 
-    rcc: "PathOrStr"
+    rcc: "Path | str"
     """The name or path to the Qt resource compiler."""
 
     framework: "Framework"
     """The name of the provided Qt framework."""
 
-    def __init__(self, rcc: "PathOrStr", framework: "Framework") -> "None":
+    def __init__(self, rcc: "Path | str", framework: "Framework") -> "None":
         super().__init__(f'Unable to find a suitable "{rcc}" executable for framework "{framework}".')
         self.rcc = rcc
         self.framework = framework
@@ -97,10 +99,10 @@ class RccNotFoundError(ResourceError):
 class ResourceCompileError(ResourceError):
     """An exception that occurs when there is an external error compiling the Qt resources."""
 
-    rcc: "PathOrStr"
+    rcc: "Path | str"
     """The name or path to the Qt resource compiler."""
 
-    qrc: "PathOrStr"
+    qrc: "Path"
     """The path to the input QRC file."""
 
     framework: "Framework"
@@ -111,8 +113,8 @@ class ResourceCompileError(ResourceError):
 
     def __init__(
         self,
-        rcc: "PathOrStr",
-        qrc: "PathOrStr",
+        rcc: "Path | str",
+        qrc: "Path",
         framework: "Framework",
         inner: "Exception",
     ) -> "None":

@@ -8,7 +8,6 @@ complete support for the earliest type checking (Python 3.4).
 from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING, Union
 
-import os
 import sys
 
 __all__ = [
@@ -18,7 +17,6 @@ __all__ = [
     "JSONPrimitive",
     "JSONArray",
     "JSONObject",
-    "PathOrStr",
     "dataclass_transform",
 ]
 
@@ -30,7 +28,6 @@ if TYPE_CHECKING:
     JSONPrimitive = Union["float", "str", "None"]
     JSONArray = Sequence[Union["JSONPrimitive", "JSONArray", "JSONObject"]]
     JSONObject = Mapping["JSONKey", "JSONValue"]
-    PathOrStr = Union["str", "os.PathLike[str]"]
 
 
 def _identity(**kwds):

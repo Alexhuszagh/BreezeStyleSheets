@@ -27,8 +27,6 @@ from breezestylesheets.theme import Theme
 if TYPE_CHECKING:
     from typing import Literal, Protocol
 
-    from breezestylesheets.types import PathOrStr
-
 PACKAGE_DIR = utils.package_dir()
 PROJECT_DIR = utils.project_dir()
 DIST_DIR = PROJECT_DIR / "dist"
@@ -40,15 +38,15 @@ DEFAULT = "default"
 if TYPE_CHECKING:
 
     class Args(Protocol):
-        styles: "list[str]"
-        extensions: "list[str]"
-        resource: "str"
+        styles: "list[Path]"
+        extensions: "list[Path]"
+        resource: "Path"
         no_qrc: "bool"
         output_dir: "Path"
         qt_framework: Literal["pyqt5", "pyqt6", "pyside2", "pyside6"]
         clean: "bool"
         rcc: "str | None"
-        compiled: "str | None"
+        compiled: "Path | None"
         use_default_compression: "bool"
 
 
@@ -76,8 +74,9 @@ def parse_args(argv: "list[str] | None" = None) -> "Args":
         "--resource",
         "--resource-collection-file",
         help="output qrc resource file name",
-        default="breeze.qrc",
+        default=Path("breeze.qrc"),
         dest="resource",
+        type=Path,
     )
     parser.add_argument(
         "--no-qrc",
@@ -118,6 +117,7 @@ def parse_args(argv: "list[str] | None" = None) -> "Args":
         "--compiled",
         "--compiled-resource",
         help="output compiled python resource file.",
+        type=Path,
         dest="compiled",
     )
     parser.add_argument(
@@ -125,48 +125,28 @@ def parse_args(argv: "list[str] | None" = None) -> "Args":
         help="use the default Qt compression rather than the more efficient custom compression.",
         action="store_true",
     )
-    args = cast("Args", parser.parse_args(argv))
-    parse_styles(args)
-    parse_extensions(args)
 
-    return args
+    args = parser.parse_args(argv)
+    args.styles = Style.find_styles(THEME_DIR, subset=set(split_csv(args.styles)))
+    args.extensions = Style.find_extensions(THEME_DIR, subset=set(split_csv(args.extensions)))
+
+    return cast("Args", args)
 
 
-def split_csv(value: "list[str] | str") -> "list[str]":
+def split_csv(value: "list[str] | str") -> "set[str]":
     """Split a list of values provided as comma-separated values."""
     if isinstance(value, list):
-        return [j for i in value for j in split_csv(i)]
-    values = map(str.strip, value.split(","))
-    return [i for i in values if i]
+        return {j for i in value for j in split_csv(i)}
+    return {i for i in map(str.strip, value.split(",")) if i}
 
 
-def parse_styles(args: "Args") -> None:
-    """Parse a list of valid styles."""
-
-    values = split_csv(args.styles)
-    if "all" in values:
-        values = [j.stem for i in EXTENSIONS for j in THEME_DIR.glob(f"*{i}")]
-    args.styles = values
-
-
-def parse_extensions(args: "Args") -> None:
-    """Parse a list of valid extensions."""
-
-    values = split_csv(args.extensions)
-    if "all" in values:
-        directories = (i for i in TEMPLATE_DIR.iterdir() if i.is_dir())
-        values = [i.stem for i in directories if Style.is_extension(i)]
-
-    args.extensions = values
-
-
-def configure_style(config: "resources.Compiler", style: "Style", directory: "Path") -> "None":
+def configure_style(template: "StyleSheetTemplate", style: "Style", directory: "Path") -> "None":
     """Configure the icons and stylesheet for a given style."""
 
     output = directory / style.name
     output.mkdir(parents=True, exist_ok=True)
 
-    stylesheet = config.template.render(style)
+    stylesheet = template.render(style)
     (output / "stylesheet.qss").write_text(stylesheet.value, encoding="utf-8")
     for icon in stylesheet.icons:
         (output / f"{icon.name}.svg").write_text(icon.value, encoding="utf-8")
@@ -179,10 +159,10 @@ def compile_resource(args: "Args", config: "resources.Compiler") -> "None":
 
     resource_path = args.resource
     compiled_resource_path = args.compiled
-    if not os.path.isabs(resource_path):
-        resource_path = f"{args.output_dir}/{resource_path}"
-    if not os.path.isabs(compiled_resource_path):
-        compiled_resource_path = f"{RESOURCES_DIR}/{compiled_resource_path}"
+    if not resource_path.is_absolute():
+        resource_path = args.output_dir / resource_path
+    if not compiled_resource_path.is_absolute():
+        compiled_resource_path = RESOURCES_DIR / compiled_resource_path
 
     compression: resources.Compression = "lzma"
     if not args.use_default_compression:
@@ -229,24 +209,19 @@ def configure(args: "Args") -> "None":
         shutil.rmtree(args.output_dir, ignore_errors=True)
 
     # Need to convert our styles accordingly.
-    styles = [Style(i, Theme.load(f"{THEME_DIR}/{i}.json")) for i in args.styles]
-    template_dirs = [TEMPLATE_DIR / DEFAULT] + [TEMPLATE_DIR / i for i in args.extensions]
+    styles = [Style(i.stem, Theme.load(i)) for i in args.styles]
     qrc = args.resource if not args.no_qrc else None
     compression = "default" if not args.use_default_compression else "lzma"
-    config = resources.Compiler(
-        template=StyleSheetTemplate.from_directories(*template_dirs),
-        framework=args.qt_framework,
-        rcc=args.rcc,
-        compression=compression,
-    )
+    config = resources.Compiler(framework=args.qt_framework, rcc=args.rcc, compression=compression)
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
+    template = StyleSheetTemplate.from_directories(TEMPLATE_DIR / DEFAULT, *args.extensions)
     for style in styles:
-        configure_style(config, style, args.output_dir)
+        configure_style(template, style, args.output_dir)
 
     # Create aliases for our light-blue and dark-blue styles to light and dark.
     # Only create aliases if light-blue and/or dark-blue are to be built.
-    aliases = set(args.styles) & set(resources.Compiler.ALIASES)
+    aliases = {i.stem for i in args.styles} & set(resources.Compiler.ALIASES)
     for theme in aliases:
         source = args.output_dir / theme / "stylesheet.qss"
         destination = args.output_dir / resources.Compiler.ALIASES[theme] / "stylesheet.qss"

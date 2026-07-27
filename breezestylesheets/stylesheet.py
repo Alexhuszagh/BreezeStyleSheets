@@ -2,10 +2,8 @@
 
 from typing import TYPE_CHECKING
 
-import os
 import re
 from dataclasses import dataclass
-from pathlib import Path
 
 from .icon import Icon, IconTemplate
 from .model import Model, model
@@ -14,8 +12,9 @@ from .style import Style
 if TYPE_CHECKING:
     from typing import Self
 
+    from pathlib import Path
+
     from .icon import IconReplacements
-    from .types import PathOrStr
 
 __all__ = ["StyleSheet", "StyleSheetTemplate"]
 
@@ -64,14 +63,14 @@ class StyleSheetTemplate(Model):
     """
 
     @staticmethod
-    def get_template_file(directory: "PathOrStr") -> "PathOrStr | None":
+    def find(directory: "Path") -> "Path | None":
         """Get the path to the template file if the directory contains stylesheet templates."""
-        path = os.path.join(directory, TEMPLATE_FILENAME)
-        if os.path.exists(path):
+        path = directory / TEMPLATE_FILENAME
+        if path.exists():
             return path
 
     @classmethod
-    def from_directory(cls: "type[Self]", directory: "PathOrStr") -> "Self":
+    def from_directory(cls: "type[Self]", directory: "Path") -> "Self":
         """
         Read the icon and stylesheet templates from a directory.
 
@@ -102,17 +101,17 @@ class StyleSheetTemplate(Model):
         """
 
         stylesheet = ""
-        stylesheet_path = cls.get_template_file(directory)
+        stylesheet_path = cls.find(directory)
         if stylesheet_path is not None:
-            stylesheet = Path(stylesheet_path).read_text(encoding="utf-8")
+            stylesheet = stylesheet_path.read_text(encoding="utf-8")
 
         icon_replacements: "IconReplacements" = {}
-        icons_path = IconTemplate.get_replacements_file(directory)
+        icons_path = IconTemplate.find_replacements(directory)
         if icons_path is not None:
             icon_replacements = IconTemplate._load_replacements(icons_path)
 
         icons: "list[IconTemplate]" = []
-        for file in Path(directory).glob("svg/*.svg.in"):
+        for file in directory.glob("svg/*.svg.in"):
             svg = file.read_text(encoding="utf-8")
             name = file.stem.rsplit(".", maxsplit=1)[0]
             replacements = icon_replacements.get(name)
@@ -125,7 +124,7 @@ class StyleSheetTemplate(Model):
         return cls(icons=icons, stylesheet=stylesheet)
 
     @classmethod
-    def from_directories(cls: "type[Self]", *directories: "PathOrStr") -> "Self":
+    def from_directories(cls: "type[Self]", *directories: "Path") -> "Self":
         """
         Read the icon and stylesheet templates from multiple directories and merge them.
 
