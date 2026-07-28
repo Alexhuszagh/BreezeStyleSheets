@@ -35,7 +35,6 @@ if TYPE_CHECKING:
         no_qrc: "bool"
         output_dir: "Path"
         framework: Literal["pyqt5", "pyqt6", "pyside2", "pyside6"]
-        clean: "bool"
         rcc: "str | None"
         compiled: "Path | None"
         use_default_compression: "bool"
@@ -92,11 +91,6 @@ def parse_args(argv: "list[str] | None" = None) -> "Args":
         choices=["pyqt5", "pyqt6", "pyside2", "pyside6"],
         default="pyqt5",
         dest="framework",
-    )
-    parser.add_argument(
-        "--clean",
-        help="clean dist directory prior to configuring themes.",
-        action="store_true",
     )
     parser.add_argument(
         "--rcc",
@@ -171,8 +165,9 @@ def compile_resource(compiler: "Compiler", qrc: "Path", dst: "Path") -> "None":
 def configure(args: "Args") -> "None":
     """Configure all styles and write the files to a QRC file."""
 
-    if args.clean:
-        shutil.rmtree(args.output_dir, ignore_errors=True)
+    to_clean = list(args.output_dir.rglob("*.svg")) + list(args.output_dir.rglob("*.qss"))
+    for file in to_clean:
+        file.unlink()
 
     styles = [Style(i.stem, Theme.load(i)) for i in args.styles]
     compression = "default" if not args.use_default_compression else "lzma"
