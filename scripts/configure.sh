@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
 #
 # Run each configure for all supported frameworks, and store them in `dist/ci`.
-# This requires the correct frameworks to be installed:
+#
+# This requires the correct frameworks to be installed (so we validate the framework
+# is installed afterward):
 #   - PyQt5
 #   - PyQt6
 #   - PySide6
+#
 # And if using Python 3.10 or earlier:
 #   - PySide2
+#
+# Optionally, you can ensure the frameworks are installed using `INSTALLED`.
 
 set -eux pipefail
 
@@ -14,11 +19,9 @@ SCRIPTS_HOME="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 PROJECT_HOME="$(dirname "${SCRIPTS_HOME}")"
 mkdir -p "${PROJECT_HOME}/dist/ci"
 cd "${PROJECT_HOME}"
-# shellcheck source=/dev/null
-. "${SCRIPTS_HOME}/shared.sh"
 
 # pop them into dist since it's ignored anyway
-if ! is-set PYTHON; then
+if [ -z "${PYTHON+x}" ]; then
     PYTHON=python
 fi
 FRAMEWORKS=("pyqt5" "pyqt6" "pyside6")

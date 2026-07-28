@@ -198,7 +198,7 @@ def configure(args: "Args") -> "None":
         shutil.copy2(source, destination)
 
     # Create and compile our resource files.
-    if not args.no_qrc:
+    if args.no_qrc:
         return
     args.resource.write_text(compiler.to_qrc(args.output_dir), encoding="utf-8")
 

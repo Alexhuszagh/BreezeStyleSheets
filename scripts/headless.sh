@@ -2,14 +2,18 @@
 # shellcheck disable=SC2086,2068
 #
 # Run each configure for all supported frameworks, and store them in `dist/ci`.
+#
 # This requires the correct frameworks to be installed:
 #   - PyQt5
 #   - PyQt6
 #   - PySide6
+#
 # And if using Python 3.10 or earlier:
 #   - PySide2
 #
 # On Ubuntu, this requires the following install logic:
+#
+#   ```bash
 #   python -m pip install --upgrade pip
 #   pip install PySide2 PySide6 PyQt5 PyQt6
 #   sudo apt-get update
@@ -18,6 +22,7 @@
 #       libxcb-glx0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 \
 #       libxcb-render0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-util1 libxcb-xfixes0 \
 #       libxcb-xinerama0 libxcb1 libxkbcommon-dev libxkbcommon-x11-0 libxcb-xkb-dev
+#   ```
 
 set -eux pipefail
 
@@ -25,8 +30,6 @@ SCRIPTS_HOME="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 PROJECT_HOME="$(dirname "${SCRIPTS_HOME}")"
 mkdir -p "${PROJECT_HOME}/dist/ci"
 cd "${PROJECT_HOME}"
-# shellcheck source=/dev/null
-. "${SCRIPTS_HOME}/shared.sh"
 
 # we xcb installed for our headless running, so exit if we don't have it
 if ! hash xvfb-run &>/dev/null; then
@@ -35,7 +38,7 @@ if ! hash xvfb-run &>/dev/null; then
 fi
 
 # pop them into dist since it's ignored anyway
-if ! is-set PYTHON; then
+if [ -z "${PYTHON+x}" ]; then
     PYTHON=python
 fi
 FRAMEWORKS=("pyqt5" "pyqt6" "pyside6")

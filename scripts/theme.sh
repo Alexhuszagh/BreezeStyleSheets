@@ -7,10 +7,8 @@ set -eux pipefail
 SCRIPTS_HOME="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 PROJECT_HOME="$(dirname "${SCRIPTS_HOME}")"
 cd "${PROJECT_HOME}/example/detect"
-# shellcheck source=/dev/null
-. "${SCRIPTS_HOME}/shared.sh"
 
-if ! is-set PYTHON; then
+if [ -z "${PYTHON+x}" ]; then
     PYTHON=python
 fi
 # Check the import first, then calling the function for easier debugging.

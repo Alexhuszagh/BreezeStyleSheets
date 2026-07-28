@@ -2,6 +2,8 @@
 #
 # Run custom CMake build script which auto-downloads,
 # builds, and then uses the compiled code in an application.
+#
+#   ```bash
 #   sudo apt-get update
 #   sudo apt-get install xvfb
 #   sudo apt-get install build-essential libgl1-mesa-dev libgstreamer-gl1.0-0 libpulse-dev \
@@ -9,6 +11,7 @@
 #       libxcb-render0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-util1 libxcb-xfixes0 \
 #       libxcb-xinerama0 libxcb1 libxkbcommon-dev libxkbcommon-x11-0 libxcb-xkb-dev cmake
 #   sudo apt install qt6-base-dev qtbase5-dev
+#   ```
 
 set -eux pipefail
 

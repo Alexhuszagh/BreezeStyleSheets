@@ -18,13 +18,12 @@ import shutil
 import subprocess
 import zlib
 from dataclasses import dataclass
+from pathlib import Path
 
 from .exception import InvalidFrameworkError, RccNotFoundError, ResourceCompileError
 from .utils import xml_escape
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from .constants import Compression, Framework
 
 __all__ = ["Compiler"]

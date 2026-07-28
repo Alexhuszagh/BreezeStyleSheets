@@ -51,9 +51,9 @@ import sys
 from pathlib import Path
 from uuid import UUID
 
-CallbackFn: "TypeAlias" = "Callable[[Theme], None]"
-ThemeFn: "TypeAlias" = "Callable[[], Theme]"
-ListenerFn: "TypeAlias" = "Callable[[CallbackFn], None]"
+CallbackFn: TypeAlias = "Callable[[Theme], None]"
+ThemeFn: TypeAlias = "Callable[[], Theme]"
+ListenerFn: TypeAlias = "Callable[[CallbackFn], None]"
 
 
 class Theme(enum.IntEnum):
