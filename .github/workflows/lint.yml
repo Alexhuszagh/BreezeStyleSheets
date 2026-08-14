@@ -1,6 +1,6 @@
 name: Linters
 
-on: [push, pull_request]
+on: [pull_request, workflow_dispatch]
 
 jobs:
   lint-version-python:
