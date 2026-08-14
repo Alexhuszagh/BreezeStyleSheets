@@ -6,7 +6,8 @@
  *
  *  This code has been minimally tested but should be useful on most platforms.
  *  This makes extensive use of C++17 features. On Windows, this requires adding
- *  `OleAut32.lib` and `Advapi32.lib` to the linker.
+ *  `OleAut32.lib` and `Advapi32.lib` to the linker. For 2.0 versions of winrt,
+ *  you will also need to add `RuntimeObject.lib` to the linker.
  *
  *  This currently supports:
  *  - Windows

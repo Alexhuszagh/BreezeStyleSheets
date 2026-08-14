@@ -56,5 +56,5 @@ jobs:
       run: |
         mkdir dist -ErrorAction SilentlyContinue
         cd dist
-        cl ..\scripts\test_theme.cpp /std:c++17 /EHsc /link Advapi32.lib OleAut32.lib
+        cl ..\scripts\test_theme.cpp /std:c++20 /EHsc /link Advapi32.lib OleAut32.lib RuntimeObject.lib
         .\test_theme.exe
