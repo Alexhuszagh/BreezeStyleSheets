@@ -32,7 +32,6 @@ Repository = "https://github.com/Alexhuszagh/BreezeStyleSheets.git"
 Changelog = "https://github.com/Alexhuszagh/BreezeStyleSheets/main/CHANGELOG.md"
 
 [project.optional-dependencies]
-# TODO: Add optional dependencies on Qt5, Qt6, etc. when making this a full package
 yaml = [
   "pyyaml>=6.0.1,<7.0.0",
 ]
@@ -78,11 +77,11 @@ type = "uv"
 extra = ["yaml", "toml", "xml"]
 
 [tool.poe.tasks._check]
-cmd = "ruff check breezestylesheets example test"
+cmd = "ruff check breezestylesheets test"
 executor = { group = ["dev"], no-group = ["badge", "test", "type"] }
 
 [tool.poe.tasks._fmt-check]
-cmd = "ruff format breezestylesheets example test --check"
+cmd = "ruff format breezestylesheets test --check"
 executor = { group = ["dev"], no-group = ["badge", "test", "type"] }
 
 [tool.poe.tasks.lint]
@@ -91,7 +90,7 @@ sequence = ["_check", "_fmt-check"]
 
 [tool.poe.tasks.fmt]
 help = "run the code formatters"
-cmd = "ruff format breezestylesheets example test"
+cmd = "ruff format breezestylesheets test"
 
 [tool.poe.tasks._pyright]
 cmd = "pyright"
@@ -159,9 +158,6 @@ executor = { group = ["badge"], no-group = ["dev", "test", "type"] }
 help = "configure the stylesheets"
 cmd = "python configure.py"
 
-# TODO: Add in the examples
-#   This will need the frameworks as optional dependencies and part of the executor
-
 [tool.poe.tasks.ci]
 help = "run the CI suite"
 sequence = ["lint", "test", "type", "badge"]
@@ -198,9 +194,11 @@ typing = ["typing", "types", "typing_extensions", "mypy", "mypy_extensions", "co
 minversion = "8.0"
 addopts = "--cov=breezestylesheets --junitxml=__reports__/junit.xml --html=__reports__/report.html --cov-report=xml"
 
+# NOTE: `example` is handled in its own project
 [tool.pyright]
-include = ["breezestylesheets", "example", "test"]
+include = ["breezestylesheets", "test"]
 pythonVersion = "3.12"
 
 [tool.mypy]
-packages = ["breezestylesheets", "example", "test"]
+packages = ["breezestylesheets", "test"]
+warn_no_return = false

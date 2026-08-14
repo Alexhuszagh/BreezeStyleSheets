@@ -1,6 +1,6 @@
 """Style sheet and style sheet templates to configure templates from themes."""
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import re
 from dataclasses import dataclass
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
     from pathlib import Path
 
-    from .icon import IconReplacements
+    from .icon import IconReplacement, IconReplacements
 
 __all__ = ["StyleSheet", "StyleSheetTemplate"]
 
@@ -114,7 +114,7 @@ class StyleSheetTemplate(Model):
         for file in directory.glob("svg/*.svg.in"):
             svg = file.read_text(encoding="utf-8")
             name = file.stem.rsplit(".", maxsplit=1)[0]
-            replacements = icon_replacements.get(name)
+            replacements = cast("IconReplacement", icon_replacements.get(name))
             if replacements is None:
                 keys: list[str] = re.findall(r"\^[0-9a-zA-Z_-]+\^", svg)
                 replacements = [i[1:-1] for i in keys]

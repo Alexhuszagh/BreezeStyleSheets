@@ -18,6 +18,8 @@ from breezestylesheets.theme import Theme
 if TYPE_CHECKING:
     from typing import Literal, Protocol
 
+    from breezestylesheets.resources import Compression
+
 PACKAGE_DIR = utils.package_dir()
 PROJECT_DIR = utils.project_dir()
 DIST_DIR = PROJECT_DIR / "dist"
@@ -118,17 +120,24 @@ def parse_args(argv: "list[str] | None" = None) -> "Args":
             return {j for i in value for j in split(i)}
         return {i for i in map(str.strip, value.split(",")) if i}
 
-    args = parser.parse_args(argv)
-    args.styles = Style.find_styles(THEME_DIR, subset=split(args.styles))
-    args.extensions = Style.find_extensions(THEME_DIR, subset=split(args.extensions))
+    parsed = parser.parse_args(argv)
+    parsed.styles = Style.find_styles(THEME_DIR, subset=split(parsed.styles))
+    parsed.extensions = Style.find_extensions(TEMPLATE_DIR, subset=split(parsed.extensions))
 
-    args = cast("Args", args)
+    args = cast("Args", parsed)
     if not args.resource.is_absolute():
         args.resource = args.output_dir / args.resource
     if args.compiled is not None and not args.compiled.is_absolute():
         args.compiled = RESOURCES_DIR / args.compiled
-    if args.output_dir.is_relative_to(PACKAGE_DIR):
-        raise ValueError("Cannot configure the resources within the package.")
+
+    # NOTE: Change to `is_relative_to` on Python 3.9+
+    try:
+        _ = args.output_dir.relative_to(PACKAGE_DIR)
+        raise AssertionError
+    except ValueError:
+        pass
+    except AssertionError:
+        raise ValueError("Cannot configure the resources within the package.") from None
 
     return args
 
@@ -152,8 +161,8 @@ def compile_resource(compiler: "Compiler", qrc: "Path", dst: "Path") -> "None":
             print("ERROR: Ensure rcc executable exists for chosen framework!", file=sys.stderr)
         print(
             "Required rcc for PyQt5: pyrcc5",
-            "Required rcc for PySide6 & PyQt6: PySide6-rcc",
-            "Required rcc for PySide2: PySide2-rcc",
+            "Required rcc for PySide6 & PyQt6: pyside6-rcc",
+            "Required rcc for PySide2: pyside2-rcc",
             "",
             "if using venv, activate it or provide path to rcc.",
             sep="\n",
@@ -170,7 +179,7 @@ def configure(args: "Args") -> "None":
         file.unlink()
 
     styles = [Style(i.stem, Theme.load(i)) for i in args.styles]
-    compression = "default" if not args.use_default_compression else "lzma"
+    compression: "Compression" = "default" if not args.use_default_compression else "lzma"
     compiler = Compiler(framework=args.framework, rcc=args.rcc, compression=compression)
 
     args.output_dir.mkdir(parents=True, exist_ok=True)

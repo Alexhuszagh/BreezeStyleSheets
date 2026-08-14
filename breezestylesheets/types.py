@@ -96,7 +96,7 @@ def evaluate_forward_ref(
         else:
             ref = ForwardRef(ref, is_argument=is_argument)
 
-    if sys.version_info >= (3, 14, 0):
+    if sys.version_info >= (3, 14):
         from typing import evaluate_forward_ref
 
         result = evaluate_forward_ref(
@@ -105,14 +105,14 @@ def evaluate_forward_ref(
             locals=localns,
             type_params=None,
         )
-    elif sys.version_info >= (3, 13, 0):
+    elif sys.version_info >= (3, 13):
         result = ref._evaluate(
             globalns,
             localns,
             type_params=(),
             recursive_guard=frozenset(),
         )
-    elif sys.version_info >= (3, 9, 0):
+    elif sys.version_info >= (3, 9):
         result = ref._evaluate(
             globalns,
             localns,

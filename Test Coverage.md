@@ -1,6 +1,6 @@
 # Test Coverage
 
-A list of the widgets and properties covered in [ui.py](test/ui.py).
+A list of the widgets and properties covered in [ui.py](example/test/ui.py).
 
 - QCalendarWidget
   - No Grid

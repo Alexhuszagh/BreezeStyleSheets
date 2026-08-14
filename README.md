@@ -137,7 +137,7 @@ You can also use the pre-compiled resources in the [resources](/resources/) dire
 
 ### CMake Installation
 
-Using CMake, you can download, configure, and compile the resources as part part of the build process. The following configurations are provided by @ruilvo. You can see a full example in [example](/example/cmake/). First, save the following as `breeze.cmake`.
+Using CMake, you can download, configure, and compile the resources as part part of the build process. The following configurations are provided by @ruilvo. You can see a full example in [example](/example/cpp/cmake/). First, save the following as `breeze.cmake`.
 
 ```cmake
 # Setup Qt: this works with both Qt5 and Qt6
@@ -272,7 +272,7 @@ If using a minimal installation of Qt, ensure [`QtSvg`](https://doc.qt.io/qt-6/q
 
 ## Examples
 
-Many examples of widgets using [custom themes](/example/widgets.py), including with the [Advanced Docking System](/example/advanced-dock.py), [custom icons](/example/standard_icons.py), and [titlebars](/example/titlebar.py) can be found in the [example](/example/) directory.
+Many examples of widgets using [custom themes](/example/example/widgets/), including with the [Advanced Docking System](/example/example/ads/), [custom icons](/example/example/icons/), and [titlebars](/example/example/titlebar/) can be found in the [example](/example/) directory.
 
 The support stylesheets include:
 - `dark`
@@ -454,7 +454,7 @@ The limitations of stylesheets include:
 - QToolButton cannot control the icon size without also affecting the arrow size.
 - Close and dock float icon sizes scale poorly with font size.
 
-For an example of using QCommonStyle to override standard icons in a PyQt application, see [standard_icons.py](/example/standard_icons.py). An extensive reference can be found [here](https://doc.qt.io/qt-6/style-reference.html). A reference of QStyle, and the default styles Qt provides can be found [here](https://doc.qt.io/qt-6/qstyle.html).
+For an example of using QCommonStyle to override standard icons in a PyQt application, see [standard_icons](/example/example/icons/). An extensive reference can be found for [Qt styles](https://doc.qt.io/qt-6/style-reference.html). A reference documentation and default styles Qt provides can be found for [QStyle](https://doc.qt.io/qt-6/qstyle.html) too.
 
 ## Debugging
 
@@ -482,15 +482,16 @@ python configure.py --compiled-resource breeze_resources.py
 
 ### Testing
 
-The unittest suite is [ui.py](test/ui.py). By default, the suite runs every test, so to test changes to a specific widget, pass the `--widget $widget` flag. To test other configurations, see the options for `--stylesheet`, `--widget`, `--font-size`, and `--font-family`, and then run the tests with the complete UI in [widgets.py](/example/widgets.py). If the widget you fixed the style for does not exist in the test suite or [widgets.py](/example/widgets.py), please add it.
+The unittest suite is [ui.py](example/test/ui.py). By default, the suite runs every test, so to test changes to a specific widget, pass the `--widget $widget` flag. To test other configurations, see the options for `--stylesheet`, `--widget`, `--font-size`, and `--font-family`, and then run the tests with the complete UI in [widgets](/example/example/widgets/). If the widget you fixed the style for does not exist in the test suite or [widgets](/example/example/widgets/), please add it.
 
 ```bash
+$ cd example
 # Test all widgets
-$ python test/ui.py --stylesheet $theme
+$ uv run python test/ui.py --stylesheet $theme
 # Test only a single widget.
-$ python test/ui.py --widget $widget --stylesheet $theme
+$ uv run python test/ui.py --widget $widget --stylesheet $theme
 # Get the help options.
-$ python test/ui.py --help
+$ uv run python test/ui.py --help
 usage: ui.py [-h] [--stylesheet STYLESHEET] [--style STYLE] [--font-size FONT_SIZE] [--font-family FONT_FAMILY]
              [--scale SCALE] [--qt-framework {pyqt5,pyqt6,pyside2,pyside6}] [--use-x11] [--widget WIDGET]
              [--width WIDTH] [--height HEIGHT] [--alignment ALIGNMENT] [--compress] [--print-tests] [--start START]
@@ -520,7 +521,7 @@ options:
   --print-tests         print all available tests (widget names).
   --start START         test widget to start at.
 # Get a complete list of available tests.
-$ python test/ui.py --print-tests
+$ uv run python test/ui.py --print-tests
 aero_wizard
 all_focus_tree
 alpha_colordialog
@@ -533,7 +534,7 @@ To see the complete list of Qt widgets covered by the unittests, see [Test Cover
 
 ### Linting and Type Checks
 
-You can check code quality using static type checkers and code linters. This requires [UV](https://docs.astral.sh/uv/) to be installed and [Ruff](https://docs.astral.sh/ruff/) to be added as a tool.
+You can check code quality using static type checkers and code linters. This requires [uv](https://docs.astral.sh/uv/) to be installed and [ruff](https://docs.astral.sh/ruff/) to be added as a tool.
 
 ```bash
 # run linters and static typecheckers

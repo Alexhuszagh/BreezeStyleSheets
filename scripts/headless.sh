@@ -69,6 +69,7 @@ STYLES=("dark-red" "dark-blue" "dark-purple" "dark-green" "light-red" "light-blu
 for framework in "${FRAMEWORKS[@]}"; do
     for style in "${STYLES[@]}"; do
         echo "Running widgets test for framework '${framework}' an style '${style}'."
+        # TODO: Change to use `uv`
         xvfb-run -a "${PYTHON}" "example/widgets.py" --qt-framework "${framework}" --stylesheet "${style}"
     done
 done
@@ -80,6 +81,7 @@ widgets=$(${PYTHON} -c "import os; os.chdir('test'); import ui; print(' '.join([
 for widget in ${widgets[@]}; do
     for framework in "${FRAMEWORKS[@]}"; do
         echo "Running test for widget '${widget}' for framework '${framework}'."
+        # TODO: Change to use `uv`
         xvfb-run -a "${PYTHON}" test/ui.py --widget "${widget}" --qt-framework "${framework}" --stylesheet dark
     done
 done

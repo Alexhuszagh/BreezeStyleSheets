@@ -381,8 +381,8 @@ class Compiler:
         """
 
         # NOTE: Use the regular glob so we can get it relative_to
-        globbed = (j for i in self.EXTENSIONS for j in glob.glob(f"**/*{i}", root_dir=directory))
-        normalized = (i.replace(os.sep, "/") for i in globbed)
+        globbed = (j.relative_to(directory) for i in self.EXTENSIONS for j in directory.rglob(f"*{i}"))
+        normalized = (i.as_posix() for i in globbed)
         escaped = (xml_escape(i) for i in normalized)
         files = [f"    <file>{i}</file>" for i in escaped]
 

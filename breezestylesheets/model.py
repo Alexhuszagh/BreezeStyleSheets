@@ -67,7 +67,7 @@ if find_spec("xml2dict") is not None:
     EXTENSIONS.add(".xml")
 
 
-class Schema(Dict["str", "type[ModelT]"]):
+class Schema(Dict["str", "type"], Generic[ModelT]):
     """
     A custom schema for validating data.
 
@@ -76,6 +76,13 @@ class Schema(Dict["str", "type[ModelT]"]):
     type to parse the data as. The actual primary key for the field can
     be found via `FieldMetadata.name`.
     """
+
+    model_type: "type[ModelT]"
+    """The type of the model used to generate the schema."""
+
+    def __init__(self, model_type: "type[ModelT]") -> None:
+        """Initialize the schema with the model type."""
+        self.model_type = model_type
 
     def __repr__(self) -> "str":
         names = {k: f"{v.__module__}{v.__name__}" for k, v in self.items()}
@@ -137,7 +144,7 @@ class Validator(Generic[ModelT]):
     def _create_schema(model: "type[ModelT]") -> "Schema[ModelT]":
         """Create the type schema from the model, resolving any forward references."""
 
-        schema = Schema()
+        schema = Schema(model)
         module = model.__module__
         for field, info in model.__dataclass_fields__.items():
             dtype = info.type
@@ -145,7 +152,7 @@ class Validator(Generic[ModelT]):
                 dtype = evaluate_forward_ref(
                     dtype,
                     globalns=sys.modules.get(module).__dict__,
-                    localns=model.__dict__,
+                    localns=dict(model.__dict__),
                     module=module,
                     is_class=True,
                 )
@@ -276,7 +283,7 @@ class Model(Dataclass):
         Raises:
             `ValueError`: If the data does not match the model schema.
         """
-        return cls._validator.validate(data)
+        return cls._validator.validate(data)  # type: ignore[arg-type]
 
     def get(self, field: "str") -> "Any":
         """
