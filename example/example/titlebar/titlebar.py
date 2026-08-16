@@ -379,6 +379,7 @@ class TitleBar(Qt.QtWidgets.QFrame):
     _has_shown: "bool"
     _title_column: "int"
     _move_timer: "QtCore.QTimer"
+    _move_start: "QtCore.QPoint"
     _resize_timer: "QtCore.QTimer"
     _layout: "QtWidgets.QGridLayout"
     _menu: "TitleButton"
@@ -420,6 +421,7 @@ class TitleBar(Qt.QtWidgets.QFrame):
         self._move_timer = Qt.QtCore.QTimer()
         self._move_timer.setSingleShot(True)
         self._move_timer.timeout.connect(self.menuMove)
+        self._move_start = self.cursorPosition()
         self._resize_timer = Qt.QtCore.QTimer()
         self._resize_timer.setSingleShot(True)
         self._resize_timer.timeout.connect(self.menuResize)
@@ -594,6 +596,10 @@ class TitleBar(Qt.QtWidgets.QFrame):
         # MousePressEvent, which instantly cancels the move event.
         self._move_timer.start(CLICK_TIMER)
 
+    def cursorPosition(self) -> "QtCore.QPoint":
+        """Get the current cursor position mapped to the window."""
+        return self._window.mapFromGlobal(Qt.QtGui.QCursor.pos())
+
     def menuMove(self) -> None:
         """Start a manually trigger move."""
 
@@ -601,23 +607,15 @@ class TitleBar(Qt.QtWidgets.QFrame):
             self.window()._subwindow_move = self
         elif isinstance(self._window, Window):
             self.window()._window_move = self
-        self.menuMoveTo(Qt.QtGui.QCursor.pos())
+        self._move_start = self.cursorPosition()
 
-    def menuMoveTo(self, global_position: "QtCore.QPoint") -> None:
+    def menuMoveTo(self) -> None:
         """
         Move the subwindow so that the position is in the center bottom
         of the title bar. The position is given in global coordinates.
         """
-
-        # Move it so the position is right below the bottom and the center.
-        position = self.mapFromGlobal(global_position)
-        rect = self.geometry()
-        x = position.x() - rect.width() // 2
-        y = position.y()
-        rect.moveBottomLeft(Qt.QtCore.QPoint(x, y))
-
-        window = self._window
-        window.moveTo(window.mapToParent(rect.topLeft()))
+        delta = self._move_start - self.cursorPosition()
+        self._window.moveTo(self._window.geometry().topLeft() - delta)
 
     def resizeTimer(self) -> None:
         """Start timer to invoke menuResize."""
@@ -1869,8 +1867,7 @@ class Window(Qt.QtWidgets.QMainWindow):
         types = Qt.QtCore.QEvent.Type
         if self._window_move is not None and type == types.MouseMove:
             # Cannot occur while the size frame is active.
-            position = PyQtPosition(cast("QtGui.QSinglePointEvent", event)).position()
-            self._window_move.menuMoveTo(position)
+            self._window_move.menuMoveTo()
         elif self._window_move is not None and type == types.MouseButtonPress:
             self._window_move = None
         elif self._window_resize is not None and type in (types.MouseMove, types.HoverMove):
@@ -1885,8 +1882,7 @@ class Window(Qt.QtWidgets.QMainWindow):
             self.handleFrame(obj, event, "window")
         elif self._subwindow_move is not None and type == types.MouseMove:
             # Cannot occur while the size frame is active.
-            position = PyQtPosition(cast("QtGui.QSinglePointEvent", event)).position()
-            self._subwindow_move.menuMoveTo(position)
+            self._subwindow_move.menuMoveTo()
         elif self._subwindow_move is not None and type == types.MouseButtonPress:
             self._subwindow_move = None
         elif self._subwindow_resize is not None and type in (types.MouseMove, types.HoverMove):
