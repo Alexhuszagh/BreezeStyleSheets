@@ -119,10 +119,7 @@ def evaluate_forward_ref(
             recursive_guard=frozenset(),
         )
     else:
-        result = ref._evaluate(
-            globalns,
-            localns,
-        )
+        result = ref._evaluate(globalns, localns)
 
     if not isinstance(result, type):
         class_name = type(result).__name__

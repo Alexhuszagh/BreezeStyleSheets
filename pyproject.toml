@@ -47,6 +47,7 @@ dev = [
   "pytest>=9.1.1; python_version >= '3.10'",
   "pytest>=7.4.4; python_version < '3.10'",
   "ruff>=0.16.0",
+  "ty>=0.0.72; python_version >= '3.8'",
 ]
 test = [
   "coverage>=7.2.4",
@@ -100,9 +101,13 @@ executor = { group = ["dev", "type"], no-group = ["badge", "test"] }
 cmd = "mypy"
 executor = { group = ["dev", "type"], no-group = ["badge", "test"] }
 
+[tool.poe.tasks._ty]
+cmd = "ty check"
+executor = { group = ["dev", "type"], no-group = ["badge", "test"] }
+
 [tool.poe.tasks.type]
 help = "run the static type checkers"
-sequence = ["_pyright", "_mypy"]
+sequence = ["_pyright", "_mypy", "_ty"]
 
 [tool.poe.tasks.test-py37]
 help = "run the test suite for Python 3.7"
@@ -202,3 +207,15 @@ pythonVersion = "3.12"
 [tool.mypy]
 packages = ["breezestylesheets", "test"]
 warn_no_return = false
+
+[tool.ty.environment]
+python-version = "3.12"
+
+[tool.ty.src]
+include = ["breezestylesheets", "test"]
+
+[tool.ty.rules]
+# NOTE: does not report inconsistent argument name overrides
+unused-type-ignore-comment = "ignore"
+# NOTE: cannot correctly detect that our type bases are classes
+unsupported-base = "ignore"

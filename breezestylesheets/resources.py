@@ -9,10 +9,8 @@ from typing import TYPE_CHECKING, ClassVar
 
 import ast
 import binascii
-import glob
 import gzip
 import lzma
-import os
 import re
 import shutil
 import subprocess

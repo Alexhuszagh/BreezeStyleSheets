@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from example._util.assertions import nonnull
 from example._util.style import style_icon
 from .cli import ARGS, STANDARD_ICONS, Qt
 
@@ -381,14 +382,14 @@ class Ui:
         self.group_box.setTitle(_translate("MainWindow", "ToolBox"))
         self.tool_box.setItemText(self.tool_box.indexOf(self.page), _translate("MainWindow", "Page 1"))
         self.list_widget.setSortingEnabled(False)
-        self.list_widget.item(0).setText(_translate("MainWindow", "New Item"))  # type: ignore
-        self.list_widget.item(1).setText(_translate("MainWindow", "New Item"))  # type: ignore
-        self.list_widget.item(2).setText(_translate("MainWindow", "New Item"))  # type: ignore
-        self.list_widget.item(3).setText(_translate("MainWindow", "New Item"))  # type: ignore
-        self.list_widget.item(4).setText(_translate("MainWindow", "New Item"))  # type: ignore
-        self.list_widget.item(5).setText(_translate("MainWindow", "New Item"))  # type: ignore
-        self.list_widget.item(6).setText(_translate("MainWindow", "New Item"))  # type: ignore
-        self.list_widget.item(7).setText(_translate("MainWindow", "New Item"))  # type: ignore
+        nonnull(self.list_widget.item(0)).setText(_translate("MainWindow", "New Item"))
+        nonnull(self.list_widget.item(1)).setText(_translate("MainWindow", "New Item"))
+        nonnull(self.list_widget.item(2)).setText(_translate("MainWindow", "New Item"))
+        nonnull(self.list_widget.item(3)).setText(_translate("MainWindow", "New Item"))
+        nonnull(self.list_widget.item(4)).setText(_translate("MainWindow", "New Item"))
+        nonnull(self.list_widget.item(5)).setText(_translate("MainWindow", "New Item"))
+        nonnull(self.list_widget.item(6)).setText(_translate("MainWindow", "New Item"))
+        nonnull(self.list_widget.item(7)).setText(_translate("MainWindow", "New Item"))
         self.list_widget.setSortingEnabled(True)
         self.tool_box.setItemText(self.tool_box.indexOf(self.page_2), _translate("MainWindow", "Page 2"))
         self.checkable_button.setText(_translate("MainWindow", "Checkable button"))
@@ -396,12 +397,12 @@ class Ui:
         self.push_button_5.setText(_translate("MainWindow", "PushButton"))
         self.tab_widget_2.setTabText(self.tab_widget_2.indexOf(self.tab_3), _translate("MainWindow", "Tab 1"))
         self.table_widget.setSortingEnabled(False)
-        self.table_widget.verticalHeaderItem(0).setText(_translate("MainWindow", "New Row"))  # type: ignore
-        self.table_widget.verticalHeaderItem(1).setText(_translate("MainWindow", "New Row"))  # type: ignore
-        self.table_widget.verticalHeaderItem(2).setText(_translate("MainWindow", "New Row"))  # type: ignore
-        self.table_widget.verticalHeaderItem(3).setText(_translate("MainWindow", "New Row"))  # type: ignore
-        self.table_widget.horizontalHeaderItem(0).setText(_translate("MainWindow", "New Column"))  # type: ignore
-        self.table_widget.horizontalHeaderItem(1).setText(_translate("MainWindow", "New Column 2"))  # type: ignore
+        nonnull(self.table_widget.verticalHeaderItem(0)).setText(_translate("MainWindow", "New Row"))
+        nonnull(self.table_widget.verticalHeaderItem(1)).setText(_translate("MainWindow", "New Row"))
+        nonnull(self.table_widget.verticalHeaderItem(2)).setText(_translate("MainWindow", "New Row"))
+        nonnull(self.table_widget.verticalHeaderItem(3)).setText(_translate("MainWindow", "New Row"))
+        nonnull(self.table_widget.horizontalHeaderItem(0)).setText(_translate("MainWindow", "New Column"))
+        nonnull(self.table_widget.horizontalHeaderItem(1)).setText(_translate("MainWindow", "New Column 2"))
         self.table_widget.setSortingEnabled(True)
         self.tab_widget_2.setTabText(self.tab_widget_2.indexOf(self.tab_5), _translate("MainWindow", "Page"))
         self.tab_widget_2.setTabText(self.tab_widget_2.indexOf(self.tab_4), _translate("MainWindow", "Tab 2"))
@@ -418,10 +419,10 @@ class Ui:
         self.check_box.setText(_translate("MainWindow", "CheckBox"))
         self.check_box_2.setText(_translate("MainWindow", "CheckBox Tristate"))
         self.check_box_3.setText(_translate("MainWindow", "CheckBox Disabled"))
-        self.tree_widget.headerItem().setText(0, _translate("MainWindow", "qdz"))  # type: ignore
+        nonnull(self.tree_widget.headerItem()).setText(0, _translate("MainWindow", "qdz"))
         self.tree_widget.setSortingEnabled(False)
-        self.tree_widget.topLevelItem(0).setText(0, _translate("MainWindow", "qzd"))  # type: ignore
-        self.tree_widget.topLevelItem(1).setText(0, _translate("MainWindow", "effefe"))  # type: ignore
+        nonnull(self.tree_widget.topLevelItem(0)).setText(0, _translate("MainWindow", "qzd"))
+        nonnull(self.tree_widget.topLevelItem(1)).setText(0, _translate("MainWindow", "effefe"))
         self.tree_widget.setSortingEnabled(True)
         self.tab_widget.setTabText(self.tab_widget.indexOf(self.tab_2), _translate("MainWindow", "Tab 2"))
         self.tab_widget.setTabText(self.tab_widget.indexOf(self.tab_3v2), _translate("MainWindow", "Tab 3"))

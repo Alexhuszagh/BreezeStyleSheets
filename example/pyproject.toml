@@ -49,6 +49,7 @@ breezestylesheets-widgets = "example.widgets.__main__:main"
 type = [
   "mypy>=2.3.0; python_version >= '3.10'",
   "pyright>=1.1.411,<2.0.0",
+  "ty>=0.0.72; python_version >= '3.8'",
 ]
 ads = [
   # NOTE: We don't support Qt5 since this requires conda-forge
@@ -97,9 +98,13 @@ executor = { group = ["ads", "type"] }
 cmd = "mypy"
 executor = { group = ["ads", "type"] }
 
+[tool.poe.tasks._ty]
+cmd = "ty check"
+executor = { group = ["ads", "type"] }
+
 [tool.poe.tasks.type]
 help = "run the static type checkers"
-sequence = ["_pyright", "_mypy"]
+sequence = ["_pyright", "_mypy", "_ty"]
 
 [tool.ruff]
 extend = "../pyproject.toml"
@@ -125,3 +130,13 @@ packages = ["example", "test"]
 exclude  = ["example/_util/styles"]
 warn_no_return = false
 disable_error_code = ["func-returns-value", "name-defined"]
+
+[tool.ty.src]
+include = ["example", "test"]
+exclude = ["example/_util/styles"]
+
+[tool.ty.rules]
+# NOTE: does not report inconsistent argument name overrides
+unused-type-ignore-comment = "ignore"
+# NOTE: cannot correctly detect that our type bases are classes
+unsupported-base = "ignore"

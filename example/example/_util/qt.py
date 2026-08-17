@@ -19,15 +19,17 @@ if TYPE_CHECKING:
     from breezestylesheets.constants import Framework  # type: ignore
 
     from .cli import Args
-    from .typing import QtCore, QtGui, QtWidgets
+    from .typing import QtCore as _QtCore
+    from .typing import QtGui as _QtGui
+    from .typing import QtWidgets as _QtWidgets
 
 
 class PyQtExec:
     """Compatibility wrapper for an executable Qt object."""
 
-    obj: "QtCore.QCoreApplication | QtWidgets.QDialog"
+    obj: "_QtCore.QCoreApplication | _QtWidgets.QDialog"
 
-    def __init__(self, obj: "QtCore.QCoreApplication | QtWidgets.QDialog") -> None:
+    def __init__(self, obj: "_QtCore.QCoreApplication | _QtWidgets.QDialog") -> None:
         self.obj = obj
 
     def exec(self) -> int:
@@ -45,12 +47,12 @@ class PyQtExec:
 class PyQtMenu:
     """Compatibility layer for a menu."""
 
-    obj: "QtWidgets.QMenu"
+    obj: "_QtWidgets.QMenu"
 
-    def __init__(self, obj: "QtWidgets.QMenu") -> None:
+    def __init__(self, obj: "_QtWidgets.QMenu") -> None:
         self.obj = obj
 
-    def exec(self, pos: "QtCore.QPoint", at: "QtGui.QAction | None" = None) -> "QtGui.QAction | None":
+    def exec(self, pos: "_QtCore.QPoint", at: "_QtGui.QAction | None" = None) -> "_QtGui.QAction | None":
         """Execute the menu."""
 
         f = getattr(self.obj, "exec_", None)
@@ -65,12 +67,12 @@ class PyQtMenu:
 class PyQtApplication(PyQtExec):
     """Compatibility wrapper for Qt applications."""
 
-    obj: "QtCore.QCoreApplication"  # type: ignore
+    obj: "_QtCore.QCoreApplication"  # type: ignore
 
-    def __init__(self, app: "QtCore.QCoreApplication") -> None:
+    def __init__(self, app: "_QtCore.QCoreApplication") -> None:
         super().__init__(app)
 
-    def start(self, window: "QtWidgets.QMainWindow") -> None:
+    def start(self, window: "_QtWidgets.QMainWindow") -> None:
         """Start and execute the application and window."""
         window.show()
         if os.environ.get("QT_QPA_PLATFORM") == "offscreen":
@@ -82,12 +84,12 @@ class PyQtApplication(PyQtExec):
 class PyQtPosition:
     """A wrapper for a single point event."""
 
-    event: "QtGui.QSinglePointEvent"
+    event: "_QtGui.QSinglePointEvent"
 
-    def __init__(self, event: "QtGui.QSinglePointEvent") -> None:
+    def __init__(self, event: "_QtGui.QSinglePointEvent") -> None:
         self.event = event
 
-    def position(self) -> "QtCore.QPoint":
+    def position(self) -> "_QtCore.QPoint":
         """Get the single point position for the event."""
         try:
             return self.event.position().toPoint()
@@ -123,15 +125,15 @@ class PyQt(abc.ABC):
 
     @cached_property
     @abc.abstractmethod
-    def QtCore(self) -> "QtCore._QtCore": ...  # ruff: ignore[invalid-function-name]
+    def QtCore(self) -> "_QtCore._QtCore": ...  # ruff: ignore[invalid-function-name]
 
     @cached_property
     @abc.abstractmethod
-    def QtGui(self) -> "QtGui._QtGui": ...  # ruff: ignore[invalid-function-name]
+    def QtGui(self) -> "_QtGui._QtGui": ...  # ruff: ignore[invalid-function-name]
 
     @cached_property
     @abc.abstractmethod
-    def QtWidgets(self) -> "QtWidgets._QtWidgets": ...  # ruff: ignore[invalid-function-name]
+    def QtWidgets(self) -> "_QtWidgets._QtWidgets": ...  # ruff: ignore[invalid-function-name]
 
     @classmethod
     def from_framework(cls: "type[PyQt]", framework: "Framework") -> "PyQt":
@@ -149,9 +151,9 @@ class PyQt(abc.ABC):
         self,
         args: "Args",
         unknown: "list[str]",
-        style_class: "type[QtWidgets.QStyle] | None" = None,
-        window_class: "type[QtWidgets.QMainWindow] | None" = None,
-    ) -> "tuple[QtWidgets.QApplication, QtWidgets.QMainWindow]":
+        style_class: "type[_QtWidgets.QStyle] | None" = None,
+        window_class: "type[_QtWidgets.QMainWindow] | None" = None,
+    ) -> "tuple[_QtWidgets.QApplication, _QtWidgets.QMainWindow]":
         """
         Setup and create a new instance of the Qt application.
 
@@ -170,7 +172,7 @@ class PyQt(abc.ABC):
         else:
             os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 
-        app = cast("QtWidgets.QApplication | None", self.QtWidgets.QApplication.instance())
+        app = cast("_QtWidgets.QApplication | None", self.QtWidgets.QApplication.instance())
         is_initial = app is None
         if app is None:
             app = self.QtWidgets.QApplication(sys.argv[:1] + unknown)
@@ -204,7 +206,7 @@ class PyQt(abc.ABC):
         if self._theme is not None and not reinitialize:
             return self._theme
 
-        app = cast("QtWidgets.QApplication", self.QtWidgets.QApplication.instance())
+        app = cast("_QtWidgets.QApplication", self.QtWidgets.QApplication.instance())
         if app is None:
             raise RuntimeError("Must initialize the global application prior to getting dark mode.")
 
@@ -238,7 +240,7 @@ class PyQt(abc.ABC):
         self.QtGui.QUndoGroup = self.QtWidgets.QUndoGroup  # type: ignore
 
     @property
-    def standard_icons(self) -> "dict[QtWidgets.QStyle.StandardPixmap, str]":
+    def standard_icons(self) -> "dict[_QtWidgets.QStyle.StandardPixmap, str]":
         """Create a map of standard icons to resource paths."""
 
         from .icons import get_standard_icons
@@ -270,18 +272,18 @@ class _PyQt5(PyQt):
 
     @cached_property
     @override
-    def QtCore(self) -> "QtCore._QtCore":
-        return cast("QtCore._QtCore", self._QtCore)
+    def QtCore(self) -> "_QtCore._QtCore":
+        return cast("_QtCore._QtCore", self._QtCore)
 
     @cached_property
     @override
-    def QtGui(self) -> "QtGui._QtGui":
-        return cast("QtGui._QtGui", self._QtGui)
+    def QtGui(self) -> "_QtGui._QtGui":
+        return cast("_QtGui._QtGui", self._QtGui)
 
     @cached_property
     @override
-    def QtWidgets(self) -> "QtWidgets._QtWidgets":
-        return cast("QtWidgets._QtWidgets", self._QtWidgets)
+    def QtWidgets(self) -> "_QtWidgets._QtWidgets":
+        return cast("_QtWidgets._QtWidgets", self._QtWidgets)
 
 
 class _PyQt6(PyQt):
@@ -307,18 +309,18 @@ class _PyQt6(PyQt):
 
     @cached_property
     @override
-    def QtCore(self) -> "QtCore._QtCore":
-        return cast("QtCore._QtCore", self._QtCore)
+    def QtCore(self) -> "_QtCore._QtCore":
+        return cast("_QtCore._QtCore", self._QtCore)
 
     @cached_property
     @override
-    def QtGui(self) -> "QtGui._QtGui":
-        return cast("QtGui._QtGui", self._QtGui)
+    def QtGui(self) -> "_QtGui._QtGui":
+        return cast("_QtGui._QtGui", self._QtGui)
 
     @cached_property
     @override
-    def QtWidgets(self) -> "QtWidgets._QtWidgets":
-        return cast("QtWidgets._QtWidgets", self._QtWidgets)
+    def QtWidgets(self) -> "_QtWidgets._QtWidgets":
+        return cast("_QtWidgets._QtWidgets", self._QtWidgets)
 
 
 class _PySide2(PyQt):
@@ -345,18 +347,18 @@ class _PySide2(PyQt):
 
     @cached_property
     @override
-    def QtCore(self) -> "QtCore._QtCore":
-        return cast("QtCore._QtCore", self._QtCore)
+    def QtCore(self) -> "_QtCore._QtCore":
+        return cast("_QtCore._QtCore", self._QtCore)
 
     @cached_property
     @override
-    def QtGui(self) -> "QtGui._QtGui":
-        return cast("QtGui._QtGui", self._QtGui)
+    def QtGui(self) -> "_QtGui._QtGui":
+        return cast("_QtGui._QtGui", self._QtGui)
 
     @cached_property
     @override
-    def QtWidgets(self) -> "QtWidgets._QtWidgets":
-        return cast("QtWidgets._QtWidgets", self._QtWidgets)
+    def QtWidgets(self) -> "_QtWidgets._QtWidgets":
+        return cast("_QtWidgets._QtWidgets", self._QtWidgets)
 
 
 class _PySide6(PyQt):
@@ -382,15 +384,15 @@ class _PySide6(PyQt):
 
     @cached_property
     @override
-    def QtCore(self) -> "QtCore._QtCore":
-        return cast("QtCore._QtCore", self._QtCore)
+    def QtCore(self) -> "_QtCore._QtCore":
+        return cast("_QtCore._QtCore", self._QtCore)
 
     @cached_property
     @override
-    def QtGui(self) -> "QtGui._QtGui":
-        return cast("QtGui._QtGui", self._QtGui)
+    def QtGui(self) -> "_QtGui._QtGui":
+        return cast("_QtGui._QtGui", self._QtGui)
 
     @cached_property
     @override
-    def QtWidgets(self) -> "QtWidgets._QtWidgets":
-        return cast("QtWidgets._QtWidgets", self._QtWidgets)
+    def QtWidgets(self) -> "_QtWidgets._QtWidgets":
+        return cast("_QtWidgets._QtWidgets", self._QtWidgets)
