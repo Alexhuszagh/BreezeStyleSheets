@@ -1,5 +1,4 @@
-Issues
-======
+# Issues
 
 There are limitations to what can be styled with stylesheets, as well as rare bugs that prevent certain styles or widgets from rendering properly. This is a list of known issues, as well as suitable workarounds. THese issues are organized by the widget type, then the description of the properties/styles they affect.
 
@@ -31,13 +30,13 @@ There are limitations to what can be styled with stylesheets, as well as rare bu
 - [QWizard](#qwizard)
   - [Aero Style Background Color](#aero-style-background-color)
 
-# QCompleter
+## QCompleter
 
 ### Menu Hover Background Color
 
 `QCompleter` doesn't have a hover background color in Qt5 on the drop-down menu. This works fine in Qt6, and changing rules for `QListView` (the drop-down menu) changes the drop-down menu in Qt6, but not Qt5.
 
-# QDial
+## QDial
 
 ### Custom Style
 
@@ -45,7 +44,7 @@ There are limitations to what can be styled with stylesheets, as well as rare bu
 
 <img src="/assets/custom_dial.png" alt="Custom Dial" width="500" height="192"/>
 
-# QLCDNumber
+## QLCDNumber
 
 ### LCD Color
 
@@ -53,19 +52,19 @@ The LCD display of a `QLCDNumber` cannot be customized via a stylesheet. An exam
 
 <img src="/assets/custom_lcd.png" alt="Custom Dial" width="500" height="132"/>
 
-# QMdiSubwindow
+## QMdiSubwindow
 
 ### Title Bar Icons
 
 The tilebar icons (except for the menu icon) cannot be overridden in the stylesheet, which is a known bug in [QTBUG-1399](https://bugreports.qt.io/browse/QTBUG-1399). This bug has been present for ~15 years, so it is unlikely to be patched soon, if ever. For a working example on how to customize your own title bar, including icons, see [Title Bar Customization for QWindow](#title-bar-customization).
 
-# QSlider
+## QSlider
 
 ### Invisible Ticks
 
 `QSlider` ticks disappear when using stylesheets, which is a known bug referenced in [QTBUG-3304](https://bugreports.qt.io/browse/QTBUG-3304) and [QTBUG-3564](https://bugreports.qt.io/browse/QTBUG-3564). An example of how to style a `QSlider` is available in [slider.py](/example/slider.py), however, this does not work with a stylesheet applied to a `QSlider`.
 
-# QTabBar
+## QTabBar
 
 ### Triangular Tab Color
 
@@ -79,17 +78,17 @@ Triangular tab bars do not have `:hover` pseudo-states for non-selected tabs. On
 
 Custom padding for triangular QTabBars on the bottom is ignored. All other tab positions work.
 
-# QTextDocument
+## QTextDocument
 
 ### Placeholder Text
 
 For the widgets `QTextEdit`, `QPlainTextEdit`, and `QLineEdit`, which use an internal `QTextDocument`, you can set placeholder text for when no text is present. In Qt5, this is correctly grayed out when the placeholder text is present, which is not respected in Qt6 (as of Qt version 6.3.0).
 
-An example of a workaround [placeholder_text.py](/example/placeholder_text.py), which only works currently for Qt5 or Qt6 without a stylesheet. Using the native stylesheet shows it uses hard-coded colors for Qt6, so this is almost certainly a Qt bug. This is likely referenced in [QTBUG-92947](https://bugreports.qt.io/browse/QTBUG-92947) and [QTCREATORBUG-25444](https://bugreports.qt.io/browse/QTCREATORBUG-25444).
+An example of a workaround [placeholder_text](/example/example/placeholder_text/), which only works currently for Qt5 or Qt6 without a stylesheet. Using the native stylesheet shows it uses hard-coded colors for Qt6, so this is almost certainly a Qt bug. This is likely referenced in [QTBUG-92947](https://bugreports.qt.io/browse/QTBUG-92947) and [QTCREATORBUG-25444](https://bugreports.qt.io/browse/QTCREATORBUG-25444).
 
 An example workaround setting the placeholder text at palette at the application level (for all widgets) is as follows. You can also set the placeholder text color for each individual widget.
 
-**C++**
+#### C++
 
 ```cpp
 #include <QApplication>
@@ -111,7 +110,7 @@ int main(int argc, char* argv[])
 }
 ```
 
-**Python**
+#### Python
 
 ```python
 import sys
@@ -134,7 +133,7 @@ def main():
 
 ### Links
 
-There is no way to set the default color of a link in a `QLabel`, `QTextEdit`, `QPlainTextEdit`, `QTextBrowser`,  `QMessageBox`, etc. There are a few possible workarounds. A working example using `QPalette` can be found [url.py](/example/url.py).
+There is no way to set the default color of a link in a `QLabel`, `QTextEdit`, `QPlainTextEdit`, `QTextBrowser`,  `QMessageBox`, etc. There are a few possible workarounds. A working example using `QPalette` can be found [url](/example/example/url).
 
 One is to set the link color when setting the label text, here, setting the label text to red. This will override the default color, and you can use a theme-dependent color to ensure the links are rendered properly.
 
@@ -147,7 +146,7 @@ label.setText('<a href="https://google.com" style="color: red;">Google</a>')
 
 However, this won't work with markdown input, and requires you to modify any existing text to include the styles, which is undesirable. A better solution is to set a default palette for `ColorRole.Link`.
 
-**C++**
+#### C++
 
 ```cpp
 #include <QApplication>
@@ -169,7 +168,7 @@ int main(int argc, char* argv[])
 }
 ```
 
-**Python**
+#### Python
 
 ```python
 import sys
@@ -191,7 +190,7 @@ def main():
     return app.exec()
 ```
 
-# QToolButton
+## QToolButton
 
 ### Menu Button Padding
 
@@ -199,7 +198,7 @@ def main():
 
 A simple example of creating a `QToolButton` with text and with no menu drop-down is as follows:
 
-**C++**
+#### C++
 
 ```cpp
 #include <QApplication>
@@ -222,7 +221,7 @@ int main(int argc, char* argv[])
 }
 ```
 
-**Python**
+#### Python
 
 ```python
 import sys
@@ -246,15 +245,15 @@ def main():
 
 The default icon for `QCommandLinkButton` is platform-dependent, and depends on the standard icon `SP_CommandLink` (which cannot be specified in a stylesheet). See [Standard Icons](#standard-icons) for an explanation on how to override this standard icon.
 
-# QWhatsThis
+## QWhatsThis
 
 ### Tooltip Colors
 
-QWhatsThis uses `QPalette::toolTipText` and `QPalette::toolTipBase` for its colors: unfortunately, these are not influenced by the stylesheet. To modify these, you can change the colors for `QPalette::ToolTipBase` and `QPalette::ToolTipText`. An example can be found in [whatsthis.py](/example/whatsthis.py).
+QWhatsThis uses `QPalette::toolTipText` and `QPalette::toolTipBase` for its colors: unfortunately, these are not influenced by the stylesheet. To modify these, you can change the colors for `QPalette::ToolTipBase` and `QPalette::ToolTipText`. An example can be found in [whatsthis](/example/example/whatsthis/).
 
 A simple example of modifying the tooltip palette for the `QWhatsThis` style is as follows:
 
-**C++**
+#### C++
 
 ```cpp
 #include <QApplication>
@@ -278,7 +277,7 @@ int main(int argc, char* argv[])
 }
 ```
 
-**Python**
+#### Python
 
 ```python
 import sys
@@ -303,7 +302,7 @@ def main():
 
 ![Custom Whats This](/assets/custom_whatsthis.png)
 
-# QWidget
+## QWidget
 
 ### Standard Icons
 
@@ -388,15 +387,15 @@ def main():
 
 <img src="/assets/custom_standard_icons.png" alt="Custom Standard Icons" width="500" height="438"/>
 
-# QWindow
+## QWindow
 
 ### Title Bar Customization
 
-The system title bar cannot be customized extensively, since it depends on either the application style or the system theme for how it renders. For a comprehensive example on how to create your own, custom title bar, with fully functional minimize, maximize, shade, unshade, context help, keep above, window title, and a context menu, see [titlebar.py](/example/titlebar.py). This is a drop-in replacement for the title bar on `QMdiSubWindow` and `QMaindWindow` which also lets you customize the placement of where the windows minimize to, but could also be modified for `QDialog`.
+The system title bar cannot be customized extensively, since it depends on either the application style or the system theme for how it renders. For a comprehensive example on how to create your own, custom title bar, with fully functional minimize, maximize, shade, unshade, context help, keep above, window title, and a context menu, see [titlebar.py](/example/example/titlebar/). This is a drop-in replacement for the title bar on `QMdiSubWindow` and `QMaindWindow` which also lets you customize the placement of where the windows minimize to, but could also be modified for `QDialog`.
 
 <img src="/assets/custom_titlebar.png" alt="Custom Title Bar" width="500" height="399"/>
 
-# QWizard
+## QWizard
 
 ### Aero Style Background Color
 

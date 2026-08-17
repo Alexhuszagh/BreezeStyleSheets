@@ -1,0 +1,142 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "example"
+description = "Examples for breeze stylesheets."
+readme = "README.md"
+requires-python = ">=3.7.4"
+version = "0.0.1"
+dependencies = [
+  "breezestylesheets[toml,xml,yaml] @ file://{root}/../",
+  "typing-extensions>=4.0.0",
+  "PyQt5>=5.15.10",
+  "PyQt6>=6.6.1",
+  "PySide2>=5.15.2.1; python_version < '3.11'",
+  "PySide6>=6.5.3; python_version < '3.15'",
+]
+license = { "file" = "../LICENSE.md" }
+classifiers = [
+  "Private :: Do Not Upload",
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Environment :: X11 Applications :: Qt",
+]
+keywords = ["qt", "gui", "stylesheets"]
+
+[project.urls]
+Homepage = "https://github.com/Alexhuszagh/BreezeStyleSheets"
+Documentation = "https://readthedocs.org"
+Repository = "https://github.com/Alexhuszagh/BreezeStyleSheets.git"
+"Bug Tracker" = "https://github.com/Alexhuszagh/BreezeStyleSheets/issues"
+Changelog = "https://github.com/Alexhuszagh/BreezeStyleSheets/main/CHANGELOG.md"
+
+[project.scripts]
+breezestylesheets-ads = "example.ads.__main__:main"
+breezestylesheets-branchless = "example.branchless.__main__:main"
+breezestylesheets-dial = "example.dial.__main__:main"
+breezestylesheets-icons = "example.icons.__main__:main"
+breezestylesheets-lcd = "example.lcd.__main__:main"
+breezestylesheets-placeholder-text = "example.placeholder_text.__main__:main"
+breezestylesheets-slider = "example.slider.__main__:main"
+breezestylesheets-titlebar = "example.titlebar.__main__:main"
+breezestylesheets-url = "example.url.__main__:main"
+breezestylesheets-whatsthis = "example.whatsthis.__main__:main"
+breezestylesheets-widgets = "example.widgets.__main__:main"
+
+[dependency-groups]
+type = [
+  "mypy>=2.3.0; python_version >= '3.10'",
+  "pyright>=1.1.411,<2.0.0",
+  "ty>=0.0.72; python_version >= '3.8'",
+]
+ads = [
+  # NOTE: We don't support Qt5 since this requires conda-forge
+  # and therefore another package management system.
+  #   "PyQtAds>=3.8.1",
+  "PySide6-QtAds>=5.0.0; python_version >= '3.10'",
+  "PyQt6Ads>=5.0.0; python_version >= '3.9'",
+]
+
+[tool.uv]
+required-environments = [
+  # NOTE: PySide2 doesn't ship wheels for ARM64.
+  "sys_platform == 'win32' and platform_machine == 'AMD64'",
+  "sys_platform == 'linux' and platform_machine == 'x86_64'",
+  "sys_platform == 'darwin' and platform_machine == 'x86_64'",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["example"]
+
+[tool.poe.executor]
+type = "uv"
+
+[tool.poe.tasks._check]
+cmd = "ruff check example test"
+
+[tool.poe.tasks._fmt-check]
+cmd = "ruff format example test --check"
+
+[tool.poe.tasks.lint]
+help = "run the code linters"
+sequence = ["_check", "_fmt-check"]
+
+[tool.poe.tasks.fmt]
+help = "run the code formatters"
+cmd = "ruff format example test"
+
+[tool.poe.tasks._pyright]
+cmd = "pyright"
+executor = { group = ["ads", "type"] }
+
+[tool.poe.tasks._mypy]
+cmd = "mypy"
+executor = { group = ["ads", "type"] }
+
+[tool.poe.tasks._ty]
+cmd = "ty check"
+executor = { group = ["ads", "type"] }
+
+[tool.poe.tasks.type]
+help = "run the static type checkers"
+sequence = ["_pyright", "_mypy", "_ty"]
+
+[tool.ruff]
+extend = "../pyproject.toml"
+
+[tool.ruff.lint]
+ignore = ["E203", "D202", "D212", "D300", "UP037"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"example/_util/styles/*.py" = ["F401", "I001", "N802", "UP009"]
+"example/_util/typing/*.py" = ["N802", "N999"]
+"example/_util/qt.py" = ["N802", "N803", "N815", "E741"]
+"example/titlebar/titlebar.py" = ["N802"]
+"test/*.py" = ["F841"]
+
+[tool.pyright]
+include = ["example", "test"]
+ignore = ["example/_util/styles"]
+pythonVersion = "3.10"
+
+[tool.mypy]
+packages = ["example", "test"]
+exclude  = ["example/_util/styles"]
+warn_no_return = false
+disable_error_code = ["func-returns-value", "name-defined"]
+
+[tool.ty.src]
+include = ["example", "test"]
+exclude = ["example/_util/styles"]
+
+[tool.ty.rules]
+# NOTE: does not report inconsistent argument name overrides
+unused-type-ignore-comment = "ignore"
+# NOTE: cannot correctly detect that our type bases are classes
+unsupported-base = "ignore"

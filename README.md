@@ -84,8 +84,12 @@ By default, BreezeStyleSheets comes with the `dark` and `light` themes pre-built
 # choose only the frameworks you want
 frameworks=("pyqt5" "pyqt6" "pyside2" "pyside6")
 for framework in "${frameworks[@]}"; do
-    python configure.py --styles=all --extensions=all --qt-framework "${framework}" \
-        --resource breeze.qrc --compiled-resource "breeze_${framework}.py"
+    python configure.py \
+        --styles all \
+        --extensions all \
+        --qt-framework "${framework}" \
+        --resource breeze.qrc \
+        --compiled-resource "breeze_${framework}.py"
 done
 ```
 
@@ -133,7 +137,7 @@ You can also use the pre-compiled resources in the [resources](/resources/) dire
 
 ### CMake Installation
 
-Using CMake, you can download, configure, and compile the resources as part part of the build process. The following configurations are provided by @ruilvo. You can see a full example in [example](/example/cmake/). First, save the following as `breeze.cmake`.
+Using CMake, you can download, configure, and compile the resources as part part of the build process. The following configurations are provided by @ruilvo. You can see a full example in [example](/example/cpp/cmake/). First, save the following as `breeze.cmake`.
 
 ```cmake
 # Setup Qt: this works with both Qt5 and Qt6
@@ -268,7 +272,7 @@ If using a minimal installation of Qt, ensure [`QtSvg`](https://doc.qt.io/qt-6/q
 
 ## Examples
 
-Many examples of widgets using [custom themes](/example/widgets.py), including with the [Advanced Docking System](/example/advanced-dock.py), [custom icons](/example/standard_icons.py), and [titlebars](/example/titlebar.py) can be found in the [example](/example/) directory.
+Many examples of widgets using [custom themes](/example/example/widgets/), including with the [Advanced Docking System](/example/example/ads/), [custom icons](/example/example/icons/), and [titlebars](/example/example/titlebar/) can be found in the [example](/example/) directory.
 
 The support stylesheets include:
 - `dark`
@@ -307,7 +311,7 @@ Here is a sample theme, with the color descriptions annotated. Please note that 
     // Main foreground color.
     "foreground": "#eff0f1",
     // Lighter foreground color for selected items.
-    "foreground-light": "#ffffff",
+    "foreground:light": "#ffffff",
     // Main background color.
     "background": "#31363b",
     // Alternate background color for styles.
@@ -378,6 +382,8 @@ Here is a sample theme, with the color descriptions annotated. Please note that 
     "button:background:pressed": "#454a4f",
     // Border for a non-hovered QPushButton.
     "button:border": "#76797c",
+    // Background for a checked QPushButton.
+    "button:checked": "#626568",
     // Background for a disabled QPushButton, or fallthrough
     // for disabled QWidgets.
     "button:disabled": "#454545",
@@ -448,7 +454,7 @@ The limitations of stylesheets include:
 - QToolButton cannot control the icon size without also affecting the arrow size.
 - Close and dock float icon sizes scale poorly with font size.
 
-For an example of using QCommonStyle to override standard icons in a PyQt application, see [standard_icons.py](/example/standard_icons.py). An extensive reference can be found [here](https://doc.qt.io/qt-6/style-reference.html). A reference of QStyle, and the default styles Qt provides can be found [here](https://doc.qt.io/qt-6/qstyle.html).
+For an example of using QCommonStyle to override standard icons in a PyQt application, see [standard_icons](/example/example/icons/). An extensive reference can be found for [Qt styles](https://doc.qt.io/qt-6/style-reference.html). A reference documentation and default styles Qt provides can be found for [QStyle](https://doc.qt.io/qt-6/qstyle.html) too.
 
 ## Debugging
 
@@ -458,13 +464,6 @@ Have an issue with the styles? Here's a few suggestions, prior to filing a bug r
 
 ## Development Guide
 
-### Git Hooks
-
-Contributors to BreezeStylesheets should make use of [vcs](/vcs.py) and [scripts](/scripts/) to both install Git hooks and run local tests and typechecking. After cloning the repository, developers should first install a pre-commit hook, to ensure their code is formatted and linted prior to commiting:
-
-```bash
-python vcs.py --install-hooks
-```
 
 ### Configuring Styles
 
@@ -476,15 +475,16 @@ python configure.py --compiled-resource breeze_resources.py
 
 ### Testing
 
-The unittest suite is [ui.py](test/ui.py). By default, the suite runs every test, so to test changes to a specific widget, pass the `--widget $widget` flag. To test other configurations, see the options for `--stylesheet`, `--widget`, `--font-size`, and `--font-family`, and then run the tests with the complete UI in [widgets.py](/example/widgets.py). If the widget you fixed the style for does not exist in the test suite or [widgets.py](/example/widgets.py), please add it.
+The unittest suite is [ui.py](example/test/ui.py). By default, the suite runs every test, so to test changes to a specific widget, pass the `--widget $widget` flag. To test other configurations, see the options for `--stylesheet`, `--widget`, `--font-size`, and `--font-family`, and then run the tests with the complete UI in [widgets](/example/example/widgets/). If the widget you fixed the style for does not exist in the test suite or [widgets](/example/example/widgets/), please add it.
 
 ```bash
+$ cd example
 # Test all widgets
-$ python test/ui.py --stylesheet $theme
+$ uv run python test/ui.py --stylesheet $theme
 # Test only a single widget.
-$ python test/ui.py --widget $widget --stylesheet $theme
+$ uv run python test/ui.py --widget $widget --stylesheet $theme
 # Get the help options.
-$ python test/ui.py --help
+$ uv run python test/ui.py --help
 usage: ui.py [-h] [--stylesheet STYLESHEET] [--style STYLE] [--font-size FONT_SIZE] [--font-family FONT_FAMILY]
              [--scale SCALE] [--qt-framework {pyqt5,pyqt6,pyside2,pyside6}] [--use-x11] [--widget WIDGET]
              [--width WIDTH] [--height HEIGHT] [--alignment ALIGNMENT] [--compress] [--print-tests] [--start START]
@@ -514,7 +514,7 @@ options:
   --print-tests         print all available tests (widget names).
   --start START         test widget to start at.
 # Get a complete list of available tests.
-$ python test/ui.py --print-tests
+$ uv run python test/ui.py --print-tests
 aero_wizard
 all_focus_tree
 alpha_colordialog
@@ -527,15 +527,14 @@ To see the complete list of Qt widgets covered by the unittests, see [Test Cover
 
 ### Linting and Type Checks
 
-You can check code quality using static typecheckers and code linters.
+You can check code quality using static type checkers and code linters. This requires [uv](https://docs.astral.sh/uv/) to be installed and [ruff](https://docs.astral.sh/ruff/) to be added as a tool.
 
 ```bash
-# format python code to a standard style.
-# requires `black` and `isort` to be installed.
-scripts/fmt.sh
 # run linters and static typecheckers
-# requires `pylint`, `pyright`, and `flake8` to be installed
-scripts/lint.sh
+uvx --from poethepoet poe lint
+# format python code to a standard style.
+uvx --from poethepoet poe fmt
+
 # check if the system can automatically determine the theme
 # on windows, this requires `winrt-Windows.UI.ViewManagement`
 # and `winrt-Windows.UI` to be installed.
@@ -555,26 +554,22 @@ python configure.py --clean \
     --compiled-resource breeze_resources.py
 ```
 
-If no changes are being made to the icons or stylesheets, you may want to ensure that the `dist` directory is assumed to be unchanged in git, no longer tracking changes to these files. You can turn tracking distribution files off with:
+### CI
+
+You can test the Github pipelines locally using [act](https://github.com/nektos/act), either to run all workflows or one at a time:
 
 ```bash
-python vcs.py --no-track-dist
-```
+# run all
+gh act
 
-To turn back on tracking, run:
-
-```bash
-python vcs.py --track-dist
-```
-
-### Git Ignore
-
-Note that the `.gitignore` is auto-generated via `vcs.py`, and the scripts to track or untrack distribution files turn off `.gitignore` tracking. Any changes should be made in `vcs.py`, and ensure that `.gitignore` is tracked, and commit any changes:
-
-```bash
-python vcs.py --track-gitignore
-git add .gitignore
-git commit -m "..."
+# individual jobs
+gh act --list
+gh act --job cmake
+gh act --job lint-cpp
+gh act --job lint-python
+gh act --job theme-cpp
+gh act --job theme-python
+gh act --job ui
 ```
 
 ## Known Issues and Workarounds
@@ -583,7 +578,7 @@ For known issues and workarounds, see [issues](/ISSUES.md).
 
 ## License
 
-MIT, see [license](/LICENSE.md).
+All files except for [detect.py](/breezestylesheets/detect.py) are subject to an [MIT License](/LICENSE.md). [detect.py](/breezestylesheets/detect.py) is subject a [3-clause BSD license](/LICENSES/darkdetect.txt).
 
 ## Contributing
 

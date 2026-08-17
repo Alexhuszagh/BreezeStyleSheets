@@ -14,14 +14,18 @@ jobs:
     - name: Install dependencies
       shell: bash
       run: |
+        set -x
+
+        export DEBIAN_FRONTEND=noninteractive
         python -m pip install --upgrade pip
-        pip install PySide2 PySide6 PyQt5 PyQt6
+        pip install PySide2 PySide6 PyQt5 PyQt6 typing_extensions
         sudo apt-get update
-        sudo apt-get install xvfb
+        sudo apt-get install xvfb -y
         sudo apt-get install build-essential libgl1-mesa-dev libgstreamer-gl1.0-0 libpulse-dev \
             libxcb-glx0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 \
             libxcb-render0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-util1 libxcb-xfixes0 \
-            libxcb-xinerama0 libxcb1 libxkbcommon-dev libxkbcommon-x11-0 libxcb-xkb-dev
+            libxcb-xinerama0 libxcb1 libxkbcommon-dev libxkbcommon-x11-0 libxcb-xkb-dev -y
     - name: Checking our Python imports.
+      shell: bash
       run: |
-        scripts/headless.sh
+        bash scripts/headless.sh

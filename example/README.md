@@ -16,36 +16,45 @@ Here are numerous examples, including recipes, including auto-detecting the syst
 10. [CMake](#cmake)
 11. [Example Widgets](#example-widgets)
 
+If you have [uv](https://docs.astral.sh/uv/), you can run these examples as shown below.
+
 ## Advanced Docking System
 
-Shows use of the [Advanced Docking System](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System) in [Python](/example/advanced-dock.py). This requires `PySide6-QtAds` (for PySide6) or `PyQtAds` (for PyQt5) (`PyQt6` and `PySide2` are not supported). This requires configuring with the `advanced-docking-system` extension.
+Shows use of the [Advanced Docking System](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System) in [Python](/example/example/ads/). This requires `PySide6-QtAds` (for PySide6) or `PyQtAds` (for PyQt5) (`PyQt6` and `PySide2` are not supported). This requires configuring with the `advanced-docking-system` extension.
 
 ![Advanced Docking System](/assets/advanced_docking_system_example.png)
 
+```bash
+uv run \
+  --group ads breezestylesheets-ads \
+  --stylesheet dark \
+  --qt-framework pyside6
+```
+
 ## System Theme Detection
 
-To provide a consistent application style matching the system theme, you can detect it via using Qt for versions 6.5+, or using the [system theme](/example/detect/) Python and C++ utilities. Both are stand-alone libraries that can be dropped in any project. A cross-platform, version-agnostic approach to detect if light or dark mode is:
+To provide a consistent application style matching the system theme, you can detect it via using Qt for versions 6.5+, or using the system theme for [Python](/breezestylesheets/detect.py) or [C++](/example/cpp/detect/) utilities. Both are stand-alone libraries that can be dropped in any project. A cross-platform, version-agnostic approach to detect if light or dark mode is:
 
 ```python
-import system_theme
+from example import theme
 
 
-def get_theme() -> system_theme.Theme:
-    '''Detect the system theme.'''
+def get_theme() -> theme.Theme:
+    """Detect the system theme."""
 
     if QT_VERSION >= (6, 5, 0):
         color_scheme = app.styleHints().colorScheme()
         if color_schema == ColorScheme.Unknown:
-            return system_theme.UNKNOWN
+            return theme.Theme.UNKNOWN
         elif color_schema == ColorScheme.Light:
-            return system_theme.LIGHT
-        return system_theme.DARK
-    return system_theme.get_theme()
+            return theme.Theme.LIGHT
+        return theme.Theme.DARK
+    return theme.get_theme()
 ```
 
 ## System Icons
 
-To provide consistent themes, you can override the default system icons. An [example](/example/icons/standard.py) comparing the icons between Windows and our overrides is below.  This requires configuring with the `standard-icons` extension.
+To provide consistent themes, you can override the default system icons. An [example](/example/example/icons/) comparing the icons between Windows and our overrides is below. This requires configuring with the `standard-icons` extension.
 
 <table cellspacing="0" cellpadding="0">
   <thead>
@@ -66,9 +75,18 @@ Then, create a style factory and register the style with your style:
 
 ```python
 # where the style name is a Qt style, like Windows or Fusion,
-style = QtWidgets.QStyleFactory.create('Windows')
+style = QtWidgets.QStyleFactory.create("Windows")
 style = StandardIconStyle(style)
 app.setStyle(style)
+```
+
+Or, to run the full standalone example
+
+```bash
+uv run \
+  breezestylesheets-icons \
+  --stylesheet dark \
+  --qt-framework pyside6
 ```
 
 ## Custom Titlebars
@@ -77,7 +95,7 @@ When the stylesheet color does not match the system theme, the titlebar can look
 
 ![Mismatched Titlebar](/assets/mismatched_titlebar.png)
 
-Removing the application titlebar and using a custom [titlebar](/example/titlebar/titlebar.py) can create a consistent look anbd feel.
+Removing the application titlebar and using a custom [titlebar](/example/example/titlebar/) can create a consistent look anbd feel.
 
 First, ensure the main window (and any subwindows) remove the titlebar, optionally removing hints:
 
@@ -193,13 +211,20 @@ ShowWindow(window_handle, SW_RESTORE);
 
 ## Dial Widgets
 
-The standard [QDial] widget cannot be stylized via stylesheets and is quite aesthetically unappealing. However, subclassing the paint events in `QDial` can apply the stylesheet colors to restyle the [dial](/example/dial/dial.py).
+The standard [QDial] widget cannot be stylized via stylesheets and is quite aesthetically unappealing. However, subclassing the paint events in `QDial` can apply the stylesheet colors to restyle the [dial](/example/example/dial/).
+
+```bash
+uv run \
+  breezestylesheets-dial \
+  --stylesheet dark \
+  --qt-framework pyside6
+```
 
 ![Custom Dial](/assets/custom_dial.png)
 
 ## Branchless QTreeView
 
-This is an example widget for a `QTreeView` where the branch indicators are hidden. In order to add these branchless indicators to your project, copy the branchless [directory](/example/branchless/) into the [extension](/extension) folder, and then configure with (adding any additional resources or styles as you see fit):
+This is an example widget for a `QTreeView` where the branch indicators are hidden. In order to add these branchless indicators to your project, copy the branchless [directory](/example/example/branchless/) into the [extension](/extension) folder, and then configure with (adding any additional resources or styles as you see fit):
 
 ```bash
 # choose the desired framework from pyqt5, pyqt6, pyside2, pyside6
@@ -243,15 +268,38 @@ Then, to remove the branch indicators, you must also set the object name for eac
   </tbody>
 </table>
 
+A custom, complete example can be run with:
+
+```bash
+uv run \
+  breezestylesheets-branchless \
+  --stylesheet dark \
+  --qt-framework pyside6
+```
+
 ## LCD
 
-Similar to [QDial], the standard [QLCDNumber] widget cannot be stylized via stylesheets and is quite aesthetically unappealing. However, subclassing the paint events in `QLCDNumber` can apply the stylesheet colors to restyle the [LCD display](/example/lcd/lcd.py).
+Similar to [QDial], the standard [QLCDNumber] widget cannot be stylized via stylesheets and is quite aesthetically unappealing. However, subclassing the paint events in `QLCDNumber` can apply the stylesheet colors to restyle the [LCD display](/example/example/lcd/).
+
+```bash
+uv run \
+  breezestylesheets-lcd \
+  --stylesheet dark \
+  --qt-framework pyside6
+```
 
 ![Custom LCD](/assets/custom_lcd.png)
 
 ## Slider
 
-Similar to [QDial], the standard [QSlider] widget cannot be stylized via stylesheets and is quite aesthetically unappealing. However, subclassing the paint events in `QSlider` can apply the stylesheet colors to restyle the [slider](/example/slider/slider.py).
+Similar to [QDial], the standard [QSlider] widget cannot be stylized via stylesheets and is quite aesthetically unappealing. However, subclassing the paint events in `QSlider` can apply the stylesheet colors to restyle the [slider](/example/example/slider/).
+
+```bash
+uv run \
+  breezestylesheets-slider \
+  --stylesheet dark \
+  --qt-framework pyside6
+```
 
 ![Custom Slider](/assets/custom_slider.png)
 
@@ -263,7 +311,7 @@ First, create a custom subclass of `QCommonStyle`:
 
 ```python
 class CustomStyle(QtWidgets.QCommonStyle):
-    '''A custom application style.'''
+    """A custom application style."""
 
     # implementation goes here
 ```
@@ -272,14 +320,16 @@ Then, create a style factory and register the style with your style:
 
 ```python
 # where the style name is a Qt style, like Windows or Fusion,
-style = QtWidgets.QStyleFactory.create('Windows')
+style = QtWidgets.QStyleFactory.create("Windows")
 style = CustomStyle(style)
 app.setStyle(style)
 ```
 
+A sample implementation is in the system icons [overrides](#system-icons).
+
 ## CMake
 
-Using CMake, you can download, configure, and compile the resources as part part of the build process. The following configurations are provided by [ruilvo](https://github.com/ruilvo/). You can see a full example in [example](/example/cmake/). First, use the CMake module [breeze.cmake](/example/cmake/breeze.cmake) and create a [CMakeLists](/example/cmake/CMakeLists.txt).
+Using CMake, you can download, configure, and compile the resources as part part of the build process. The following configurations are provided by [ruilvo](https://github.com/ruilvo/). You can see a full example in [example](/example/cpp/cmake/). First, use the CMake module [breeze.cmake](/example/cpp/cmake/breeze.cmake) and create a [CMakeLists](/example/cpp/cmake/CMakeLists.txt).
 
 Add in cached variables necessary to configure the `breeze.cmake` module:
 
@@ -302,21 +352,47 @@ target_link_libraries(executable PRIVATE Qt${QT_VERSION_MAJOR}::Widgets breeze)
 
 Examples of some simple UIs with our stylesheets include:
 
-[**Widgets**](/example/widgets.py)
+[**Widgets**](/example/example/widgets/)
+
+```bash
+uv run \
+  breezestylesheets-widgets \
+  --stylesheet dark \
+  --qt-framework pyside6
+```
 
 ![Widgets](/assets/Breeze%20Dark.gif)
 
-[**Placeholder Text**](/example/placeholder_text.py)
+```bash
+uv run \
+  breezestylesheets-placeholder-text \
+  --stylesheet dark \
+  --qt-framework pyside6
+```
 
-This only works on Qt5.
+[**Placeholder Text**](/example/example/placeholder_text/)
 
 ![Custom Placeholder Text](/assets/custom_placeholder_text.png)
 
-[**What's This**](/example/whatsthis.py)
+[**What's This**](/example/example/whatsthis/)
+
+```bash
+uv run \
+  breezestylesheets-whatsthis \
+  --stylesheet dark \
+  --qt-framework pyside6
+```
 
 ![What's This](/assets/custom_whatsthis.png)
 
-[**URL**](/example/url.py)
+[**URL**](/example/example/url)
+
+```bash
+uv run \
+  breezestylesheets-url \
+  --stylesheet dark \
+  --qt-framework pyside6
+```
 
 ![URL](/assets/custom_url.png)
 

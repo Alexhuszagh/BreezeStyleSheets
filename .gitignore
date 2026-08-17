@@ -1,5 +1,3 @@
-# NOTE: this file is auto-generated via `vcs.py`
-# DO NOT MANUALLY EDIT THIS FILE.
 TODO.md
 dist/
 resources/
@@ -200,3 +198,9 @@ cython_debug/
 *.out
 *.app
 
+# Rendered templates
+breezestylesheets/**/*.svg
+breezestylesheets/**/*.qss
+
+# Test reports
+__reports__

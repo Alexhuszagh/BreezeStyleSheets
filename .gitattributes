@@ -1,0 +1,10 @@
+
+*.py text eol=lf
+*.toml text eol=lf
+*.svg text eol=lf
+*.qss text eol=lf
+*.in text eol=lf
+*.json text eol=lf
+*.sh text eol=lf
+*.cpp text eol=lf
+*.md text eol=lf
