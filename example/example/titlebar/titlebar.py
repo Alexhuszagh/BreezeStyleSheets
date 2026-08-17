@@ -1424,17 +1424,12 @@ class FramelessSubWindow(SubWindow):
 
     def moveTo(self, position: "QtCore.QPoint") -> None:
         """Move the window to the desired position."""
+        # NOTE: Do not remove and use raw `move` in case this needs to be updated later.
         self.move(position)
-        if self._titlebar._window_rect is not None:
-            self._titlebar._window_rect.moveTo(position)
 
     def setWindowGeometry(self, rect: "QtCore.QRect") -> None:
         """Set the window geometry."""
         self.resize(rect.size())
-        window_rect = self._titlebar._window_rect
-        if window_rect is not None:
-            window_rect.setSize(rect.size())
-
         self.moveTo(rect.topLeft())
 
     def setAbsoluteMinimumSize(self) -> None:
@@ -2043,8 +2038,6 @@ class FramelessWindow(Window):
         if IS_WAYLAND:
             return
         self.move(position)
-        if self._titlebar._window_rect is not None:
-            self._titlebar._window_rect.moveTo(position)
 
     def setWindowGeometry(self, rect: "QtCore.QRect") -> None:
         """Set the window geometry."""
