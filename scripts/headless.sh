@@ -41,19 +41,36 @@ fi
 if [ -z "${PYTHON+x}" ]; then
     PYTHON=python
 fi
-FRAMEWORKS=("pyqt5" "pyqt6" "pyside6")
-HAVE_PYSIDE=$(${PYTHON} -c 'import sys; print(sys.version_info < (3, 11))')
-if [[ "${HAVE_PYSIDE}" == "True" ]]; then
+FRAMEWORKS=()
+HAVE_PYQT5=$(${PYTHON} -c 'import importlib.util; print(importlib.util.find_spec("PyQt5") is not None)')
+if [[ "${HAVE_PYQT5}" == "True" ]]; then
+    FRAMEWORKS+=("pyqt5")
+fi
+HAVE_PYQT6=$(${PYTHON} -c 'import importlib.util; print(importlib.util.find_spec("PyQt6") is not None)')
+if [[ "${HAVE_PYQT6}" == "True" ]]; then
+    FRAMEWORKS+=("pyqt6")
+fi
+HAVE_PYSIDE2=$(${PYTHON} -c 'import importlib.util; print(importlib.util.find_spec("PySide2") is not None)')
+if [[ "${HAVE_PYSIDE2}" == "True" ]]; then
     FRAMEWORKS+=("pyside2")
 fi
+HAVE_PYSIDE6=$(${PYTHON} -c 'import importlib.util; print(importlib.util.find_spec("PySide6") is not None)')
+if [[ "${HAVE_PYSIDE6}" == "True" ]]; then
+    FRAMEWORKS+=("pyside6")
+fi
 
-# FIXME: Change all to use uv
+if [ ${#FRAMEWORKS[@]} -eq 0 ]; then
+    >&2 echo "Unable to find any installed Python Qt frameworks..."
+    exit 1
+fi
+
 
 # need to run everything in headless mode.
 # note: our shared libraries can be run without issues
 export QT_QPA_PLATFORM=offscreen
-for script in example/*.py; do
-    if [[ "${script}" == "example/advanced-dock.py" ]]; then
+export PYTHONPATH="$(realpath example):$(realpath .)"
+for script in example/example/*/__main__.py; do
+    if [[ "${script}" == *"/ads/"* ]]; then
         continue
     fi
     for framework in "${FRAMEWORKS[@]}"; do
@@ -71,17 +88,18 @@ STYLES=("dark-red" "dark-blue" "dark-purple" "dark-green" "light-red" "light-blu
 for framework in "${FRAMEWORKS[@]}"; do
     for style in "${STYLES[@]}"; do
         echo "Running widgets test for framework '${framework}' an style '${style}'."
-        xvfb-run -a "${PYTHON}" "example/widgets.py" --qt-framework "${framework}" --stylesheet "${style}"
+        xvfb-run -a "${PYTHON}" "example/example/widgets/__main__.py" --qt-framework "${framework}" --stylesheet "${style}"
     done
 done
 
 # now we need to run our tests
 # NOTE: We run each test separately just because it simplifies the logic.
 # Some tests don't work in headless mode so we skip them.
-widgets=$(${PYTHON} -c "import os; os.chdir('test'); import ui; print(' '.join([i[5:] for i in dir(ui) if i.startswith('test_')]))")
+export PYTHONPATH="${PYTHONPATH}:$(realpath example/test)"
+widgets=$(${PYTHON} -c "import os; os.chdir('example/test'); import ui; print(' '.join([i[5:] for i in dir(ui) if i.startswith('test_')]))")
 for widget in ${widgets[@]}; do
     for framework in "${FRAMEWORKS[@]}"; do
         echo "Running test for widget '${widget}' for framework '${framework}'."
-        xvfb-run -a "${PYTHON}" test/ui.py --widget "${widget}" --qt-framework "${framework}" --stylesheet dark
+        xvfb-run -a "${PYTHON}" example/test/ui.py --widget "${widget}" --qt-framework "${framework}" --stylesheet dark
     done
 done

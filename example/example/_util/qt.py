@@ -11,6 +11,7 @@ from typing_extensions import override
 import abc
 import os
 import sys
+from contextlib import suppress
 from functools import cached_property
 
 from breezestylesheets.detect import SystemTheme, get_theme  # type: ignore
@@ -232,12 +233,18 @@ class PyQt(abc.ABC):
         # Changes to QtCore: https://doc.qt.io/qt-6/qtcore-changes-qt6.html
         # Changes to QtGui: https://doc.qt.io/qt-6/gui-changes-qt6.html
         # Changes to QtWidgets: https://doc.qt.io/qt-6/widgets-changes-qt6.html
-        self.QtGui.QAction = self.QtWidgets.QAction  # type: ignore
-        self.QtGui.QActionGroup = self.QtWidgets.QActionGroup  # type: ignore
-        self.QtGui.QFileSystemModel = self.QtWidgets.QFileSystemModel  # type: ignore
-        self.QtGui.QUndoCommand = self.QtWidgets.QUndoCommand  # type: ignore
-        self.QtGui.QUndoStack = self.QtWidgets.QUndoStack  # type: ignore
-        self.QtGui.QUndoGroup = self.QtWidgets.QUndoGroup  # type: ignore
+        with suppress(AttributeError, ImportError):
+            self.QtGui.QAction = self.QtWidgets.QAction  # type: ignore
+        with suppress(AttributeError, ImportError):
+            self.QtGui.QActionGroup = self.QtWidgets.QActionGroup  # type: ignore
+        with suppress(AttributeError, ImportError):
+            self.QtGui.QFileSystemModel = self.QtWidgets.QFileSystemModel  # type: ignore
+        with suppress(AttributeError, ImportError):
+            self.QtGui.QUndoCommand = self.QtWidgets.QUndoCommand  # type: ignore
+        with suppress(AttributeError, ImportError):
+            self.QtGui.QUndoStack = self.QtWidgets.QUndoStack  # type: ignore
+        with suppress(AttributeError, ImportError):
+            self.QtGui.QUndoGroup = self.QtWidgets.QUndoGroup  # type: ignore
 
     @property
     def standard_icons(self) -> "dict[_QtWidgets.QStyle.StandardPixmap, str]":
@@ -371,6 +378,7 @@ class _PySide6(PyQt):
         self._QtCore = QtCore
         self._QtGui = QtGui
         self._QtWidgets = QtWidgets
+        self._migrate_pyside6()
 
     @property
     @override
@@ -396,3 +404,9 @@ class _PySide6(PyQt):
     @override
     def QtWidgets(self) -> "_QtWidgets._QtWidgets":
         return cast("_QtWidgets._QtWidgets", self._QtWidgets)
+
+    def _migrate_pyside6(self) -> None:
+        """Migrate some type definitions that are legacy from Qt5 in PySide6."""
+        # NOTE: Oddly never updated
+        with suppress(AttributeError, ImportError):
+            self.QtGui.QFileSystemModel = self.QtWidgets.QFileSystemModel  # type: ignore

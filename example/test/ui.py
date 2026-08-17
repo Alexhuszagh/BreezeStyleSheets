@@ -626,7 +626,7 @@ def test_autohide_tabwidget(widget: _W, window: _Win, app: _A) -> ManyReturn:
 
     item1 = Qt.QtWidgets.QTabWidget(widget)
     item1.setTabPosition(Qt.QtWidgets.QTabWidget.TabPosition.North)
-    item1.addTab(QtWidgets.QWidget(), "Tab 1")
+    item1.addTab(Qt.QtWidgets.QWidget(), "Tab 1")
     item1.setTabBarAutoHide(True)
     child.append(item1)
 
@@ -669,7 +669,7 @@ def test_use_scroll_tabwidget(widget: _W, window: _Win, app: _A) -> OneReturn:
     child = Qt.QtWidgets.QTabWidget(widget)
     child.setTabPosition(Qt.QtWidgets.QTabWidget.TabPosition.North)
     for i in range(1, 100):
-        child.addTab(QtWidgets.QWidget(), f"Tab {i}")
+        child.addTab(Qt.QtWidgets.QWidget(), f"Tab {i}")
     child.setUsesScrollButtons(True)
 
     return OneReturn(child)
@@ -679,7 +679,7 @@ def test_no_scroll_tabwidget(widget: _W, window: _Win, app: _A) -> OneReturn:
     child = Qt.QtWidgets.QTabWidget(widget)
     child.setTabPosition(Qt.QtWidgets.QTabWidget.TabPosition.North)
     for i in range(1, 100):
-        child.addTab(QtWidgets.QWidget(), f"Tab {i}")
+        child.addTab(Qt.QtWidgets.QWidget(), f"Tab {i}")
     child.setUsesScrollButtons(False)
 
     return OneReturn(child)
@@ -777,7 +777,7 @@ def test_button_position_tabwidget(widget: _W, window: _Win, app: _A) -> OneRetu
     child = Qt.QtWidgets.QTabWidget(widget)
     child.setTabPosition(Qt.QtWidgets.QTabWidget.TabPosition.North)
     for i in range(1, 10):
-        child.addTab(QtWidgets.QWidget(), f"Tab {i}")
+        child.addTab(Qt.QtWidgets.QWidget(), f"Tab {i}")
         if i % 2 == 0:
             side = Qt.QtWidgets.QTabBar.ButtonPosition.LeftSide
         else:
@@ -808,9 +808,9 @@ def test_dock(widget: _W, window: _Win, app: _A) -> ZeroReturn:
     dock2.setFeatures(all_features)
     dock3 = Qt.QtWidgets.QDockWidget("&Dock widget 3", window)
     dock3.setFeatures(Qt.QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetVerticalTitleBar)
-    window.addDockWidget(QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, dock1)
-    window.addDockWidget(QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, dock2)
-    window.addDockWidget(QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, dock3)
+    window.addDockWidget(Qt.QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, dock1)
+    window.addDockWidget(Qt.QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, dock2)
+    window.addDockWidget(Qt.QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, dock3)
     window.tabifyDockWidget(dock1, dock2)
 
     return ZeroReturn()
@@ -1221,6 +1221,15 @@ def test_nosizegrip_column_view(widget: _W, window: _Win, app: _A) -> OneReturn:
     return OneReturn(child)
 
 
+def _normalize_style_mask(value: "QtWidgets.QFrame.StyleMask") -> int:
+    # NOTE: PyQt6 makes it so `StyleMask` is an int-like enum but
+    # it cannot be directly deserialize from int. This is a workaround.
+    try:
+        return int(value.value)  # type: ignore
+    except (AttributeError, TypeError, ValueError):
+        return int(value)  # type: ignore
+
+
 def test_comprehensive_frame(widget: _W, window: _Win, app: _A) -> ManyReturn:
     child = [
         Qt.QtWidgets.QFrame(widget),
@@ -1243,8 +1252,8 @@ def test_comprehensive_frame(widget: _W, window: _Win, app: _A) -> ManyReturn:
     child[4].setFrameShape(Qt.QtWidgets.QFrame.Shape.HLine)
     child[5].setFrameShape(Qt.QtWidgets.QFrame.Shape.VLine)
     child[6].setFrameShape(Qt.QtWidgets.QFrame.Shape.WinPanel)
-    child[7].setFrameStyle(cast(int, Qt.QtWidgets.QFrame.StyleMask.Shadow_Mask))
-    child[8].setFrameStyle(cast(int, Qt.QtWidgets.QFrame.StyleMask.Shape_Mask))
+    child[7].setFrameStyle(_normalize_style_mask(Qt.QtWidgets.QFrame.StyleMask.Shadow_Mask))
+    child[8].setFrameStyle(_normalize_style_mask(Qt.QtWidgets.QFrame.StyleMask.Shape_Mask))
     child[9].setFrameShadow(Qt.QtWidgets.QFrame.Shadow.Plain)
     child[10].setFrameShadow(Qt.QtWidgets.QFrame.Shadow.Raised)
     child[11].setFrameShadow(Qt.QtWidgets.QFrame.Shadow.Sunken)
@@ -1458,14 +1467,14 @@ def test_groupbox(widget: _W, window: _Win, app: _A) -> ManyReturn:
     groupbox = Qt.QtWidgets.QGroupBox("Groupbox 1", widget)
     vbox1 = Qt.QtWidgets.QVBoxLayout(groupbox)
     vbox1.setAlignment(Qt.QtCore.Qt.AlignmentFlag.AlignHCenter)
-    vbox1.addWidget(QtWidgets.QLineEdit("Sample Label"))
+    vbox1.addWidget(Qt.QtWidgets.QLineEdit("Sample Label"))
     child.append(groupbox)
     checkable = Qt.QtWidgets.QGroupBox("Groupbox 2", widget)
     checkable.setCheckable(True)
     child.append(checkable)
     vbox = Qt.QtWidgets.QVBoxLayout(checkable)
     vbox.setAlignment(Qt.QtCore.Qt.AlignmentFlag.AlignHCenter)
-    vbox.addWidget(QtWidgets.QLineEdit("Sample Label"))
+    vbox.addWidget(Qt.QtWidgets.QLineEdit("Sample Label"))
     flat = Qt.QtWidgets.QGroupBox("Groupbox 3", widget)
     flat.setFlat(True)
     child.append(flat)
@@ -1474,7 +1483,7 @@ def test_groupbox(widget: _W, window: _Win, app: _A) -> ManyReturn:
 
 
 def test_dial(widget: _W, window: _Win, app: _A) -> ManyReturn:
-    child = [QtWidgets.QDial(widget), Qt.QtWidgets.QDial(widget)]
+    child = [Qt.QtWidgets.QDial(widget), Qt.QtWidgets.QDial(widget)]
     child[1].setNotchesVisible(True)
     for item in child:
         item.setMinimum(0)
@@ -2192,13 +2201,13 @@ def test_warning_icon(widget: _W, window: _Win, app: _A) -> ZeroReturn:
 
 def test_horizontal_buttons(widget: _W, window: _Win, app: _A) -> ManyReturn:
     child: "MutableSequence[_W]" = []
-    child.append(QtWidgets.QTextEdit(widget))
+    child.append(Qt.QtWidgets.QTextEdit(widget))
     container = Qt.QtWidgets.QWidget(widget)
     hbox = Qt.QtWidgets.QHBoxLayout(container)
-    hbox.addWidget(QtWidgets.QPushButton("Delete"))
-    hbox.addWidget(QtWidgets.QPushButton("Complete"))
+    hbox.addWidget(Qt.QtWidgets.QPushButton("Delete"))
+    hbox.addWidget(Qt.QtWidgets.QPushButton("Complete"))
     child.append(container)
-    child.append(QtWidgets.QLineEdit(widget))
+    child.append(Qt.QtWidgets.QLineEdit(widget))
     dialog = Qt.QtWidgets.QDialogButtonBox(Qt.QtCore.Qt.Orientation.Horizontal, widget)
     dialog.addButton("Yes", Qt.QtWidgets.QDialogButtonBox.ButtonRole.YesRole)
     dialog.addButton("Really really really long", Qt.QtWidgets.QDialogButtonBox.ButtonRole.YesRole)
@@ -2211,13 +2220,13 @@ def test_horizontal_buttons(widget: _W, window: _Win, app: _A) -> ManyReturn:
 
 def test_vertical_buttons(widget: _W, window: _Win, app: _A) -> ManyReturn:
     child: "MutableSequence[_W]" = []
-    child.append(QtWidgets.QTextEdit(widget))
+    child.append(Qt.QtWidgets.QTextEdit(widget))
     container = Qt.QtWidgets.QWidget(widget)
     hbox = Qt.QtWidgets.QHBoxLayout(container)
-    hbox.addWidget(QtWidgets.QPushButton("Delete"))
-    hbox.addWidget(QtWidgets.QPushButton("Complete"))
+    hbox.addWidget(Qt.QtWidgets.QPushButton("Delete"))
+    hbox.addWidget(Qt.QtWidgets.QPushButton("Complete"))
     child.append(container)
-    child.append(QtWidgets.QLineEdit(widget))
+    child.append(Qt.QtWidgets.QLineEdit(widget))
     dialog = Qt.QtWidgets.QDialogButtonBox(Qt.QtCore.Qt.Orientation.Vertical, widget)
     dialog.addButton("Yes", Qt.QtWidgets.QDialogButtonBox.ButtonRole.YesRole)
     dialog.addButton("Really really really long", Qt.QtWidgets.QDialogButtonBox.ButtonRole.YesRole)
@@ -2231,10 +2240,10 @@ def test_vertical_buttons(widget: _W, window: _Win, app: _A) -> ManyReturn:
 
 def test_stacked_widget(widget: _W, window: _Win, app: _A) -> OneReturn:
     child = Qt.QtWidgets.QStackedWidget(widget)
-    child.addWidget(QtWidgets.QLabel("Label 1"))
-    child.addWidget(QtWidgets.QLabel("Label 2"))
-    child.addWidget(QtWidgets.QLabel("Label 3"))
-    child.addWidget(QtWidgets.QLabel("Label 4"))
+    child.addWidget(Qt.QtWidgets.QLabel("Label 1"))
+    child.addWidget(Qt.QtWidgets.QLabel("Label 2"))
+    child.addWidget(Qt.QtWidgets.QLabel("Label 3"))
+    child.addWidget(Qt.QtWidgets.QLabel("Label 4"))
     child.setCurrentIndex(2)
 
     return OneReturn(child)

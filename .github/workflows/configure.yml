@@ -19,4 +19,4 @@ jobs:
     - name: Checking our configuration scripts.
       shell: bash
       run: |
-        scripts/configure.sh
+        bash scripts/configure.sh

@@ -585,11 +585,20 @@ git commit -m "..."
 
 ### CI
 
-You can test the Github pipelines locally using [act](https://github.com/nektos/act):
+You can test the Github pipelines locally using [act](https://github.com/nektos/act), either to run all workflows or one at a time:
 
 ```bash
-# TODO: Add more here
-gh act --workflows ".github/workflows/lint.yml"
+# run all
+gh act
+
+# individual jobs
+gh act --list
+gh act --job cmake
+gh act --job lint-cpp
+gh act --job lint-python
+gh act --job theme-cpp
+gh act --job theme-python
+gh act --job ui
 ```
 
 ## Known Issues and Workarounds

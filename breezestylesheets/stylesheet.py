@@ -193,6 +193,17 @@ class StyleSheetTemplate(Model):
         }
         ```
 
+        ## Caveats
+
+        SVG icons **must** be written to disk and do not support inline base64 data.
+        For example, applying this stylesheet will not load any icons.
+
+        ```qss
+        QWidget {
+            dialog-cancel-icon: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0...);
+        }
+        ```
+
         [resource]: https://doc.qt.io/qt-6/resources.html
 
         Args:

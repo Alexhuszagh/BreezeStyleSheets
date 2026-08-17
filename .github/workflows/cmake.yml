@@ -20,4 +20,4 @@ jobs:
     - name: Running our CMake flow.
       shell: bash
       run: |
-        scripts/cmake.sh
+        bash scripts/cmake.sh
