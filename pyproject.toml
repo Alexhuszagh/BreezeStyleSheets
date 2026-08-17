@@ -98,11 +98,11 @@ help = "run the code formatters"
 cmd = "ruff format breezestylesheets test"
 
 [tool.poe.tasks._pyright]
-cmd = "pyright"
+cmd = "--python 3.12 pyright"
 executor = { group = ["dev", "type"], no-group = ["badge", "test"] }
 
 [tool.poe.tasks._mypy]
-cmd = "mypy"
+cmd = "--python 3.12 mypy"
 executor = { group = ["dev", "type"], no-group = ["badge", "test"] }
 
 [tool.poe.tasks._ty]

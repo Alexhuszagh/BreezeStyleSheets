@@ -162,7 +162,6 @@ from PyQt6.QtCore import (
     QVariantAnimation,
     QVersionNumber,
     QWaitCondition,
-    QWinEventNotifier,
     QWriteLocker,
     QXmlStreamAttribute,
     QXmlStreamAttributes,
@@ -334,7 +333,6 @@ __all__ = [
     "QVariantAnimation",
     "QVersionNumber",
     "QWaitCondition",
-    "QWinEventNotifier",
     "QWriteLocker",
     "QXmlStreamAttribute",
     "QXmlStreamAttributes",
@@ -508,7 +506,6 @@ class _QtCore:
     QVariantAnimation: ClassVar["type[QVariantAnimation]"]
     QVersionNumber: ClassVar["type[QVersionNumber]"]
     QWaitCondition: ClassVar["type[QWaitCondition]"]
-    QWinEventNotifier: ClassVar["type[QWinEventNotifier]"]
     QWriteLocker: ClassVar["type[QWriteLocker]"]
     QXmlStreamAttribute: ClassVar["type[QXmlStreamAttribute]"]
     QXmlStreamAttributes: ClassVar["type[QXmlStreamAttributes]"]

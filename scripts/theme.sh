@@ -6,17 +6,17 @@ set -eux pipefail
 
 SCRIPTS_HOME="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
 PROJECT_HOME="$(dirname "${SCRIPTS_HOME}")"
-cd "${PROJECT_HOME}/example/detect"
+cd "${PROJECT_HOME}"
 
 if [ -z "${PYTHON+x}" ]; then
     PYTHON=python
 fi
 # Check the import first, then calling the function for easier debugging.
-${PYTHON} -c "import system_theme"
-theme=$(${PYTHON} -c "import system_theme; print(system_theme.get_theme())")
-if [[ "${theme}" != Theme.* ]]; then
+${PYTHON} -c "import breezestylesheets"
+theme=$(${PYTHON} -c "from breezestylesheets import detect; print(detect.get_theme())")
+if [[ "${theme}" =~ ^[0-9]+$ ]]; then
     >&2 echo "Unable to get the correct theme."
     exit 1
 fi
-${PYTHON} -c "import system_theme; print(system_theme.is_light())"
-${PYTHON} -c "import system_theme; print(system_theme.is_dark())"
+${PYTHON} -c "from breezestylesheets import detect; print(detect.is_light())"
+${PYTHON} -c "from breezestylesheets import detect; print(detect.is_dark())"

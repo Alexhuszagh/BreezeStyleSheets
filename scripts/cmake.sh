@@ -31,7 +31,7 @@ fi
 # capture the error code immediately.
 export QT_QPA_PLATFORM=offscreen
 cd "${BUILD_DIR}/qt5"
-cmake "${PROJECT_HOME}/example/cmake" -D QT_VERSION=Qt5
+cmake "${PROJECT_HOME}/example/cpp/cmake" -D QT_VERSION=Qt5
 make -j
 if hash xvfb-run &>/dev/null; then
     timeout 1 xvfb-run -a ./testing || error_code=$?
@@ -42,7 +42,7 @@ fi
 
 # first, try Qt6
 cd "${BUILD_DIR}/qt6"
-cmake "${PROJECT_HOME}/example/cmake" -D QT_VERSION=Qt6
+cmake "${PROJECT_HOME}/example/cpp/cmake" -D QT_VERSION=Qt6
 make -j
 if hash xvfb-run &>/dev/null; then
     timeout 1 xvfb-run -a ./testing || error_code=$?

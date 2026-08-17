@@ -3,7 +3,7 @@
 */
 
 #include <iostream>
-#include "../example/detect/system_theme.hpp"
+#include "../example/cpp/detect/system_theme.hpp"
 
 int main()
 {

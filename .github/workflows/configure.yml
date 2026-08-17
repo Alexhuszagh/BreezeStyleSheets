@@ -17,5 +17,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install PySide2 PySide6 PyQt5 PyQt6
     - name: Checking our configuration scripts.
+      shell: bash
       run: |
         scripts/configure.sh

@@ -12,8 +12,7 @@ See [darkdetect.txt](/LICENSES/darkdetect.txt) for the full license info.
 """
 
 from collections.abc import Callable
-from typing import Any, cast
-from typing_extensions import TypeAlias
+from typing import TYPE_CHECKING, Any, cast
 
 import ctypes
 import ctypes.util
@@ -27,9 +26,12 @@ import sys
 from pathlib import Path
 from uuid import UUID
 
-CallbackFn: TypeAlias = "Callable[[SystemTheme], None]"
-ThemeFn: TypeAlias = "Callable[[], SystemTheme]"
-ListenerFn: TypeAlias = "Callable[[CallbackFn], None]"
+if TYPE_CHECKING:
+    from typing_extensions import TypeAlias
+
+    CallbackFn: TypeAlias = "Callable[[SystemTheme], None]"
+    ThemeFn: TypeAlias = "Callable[[], SystemTheme]"
+    ListenerFn: TypeAlias = "Callable[[CallbackFn], None]"
 
 
 class SystemTheme(enum.IntEnum):
@@ -87,7 +89,7 @@ def is_light_color(r: "int", g: "int", b: "int") -> "bool":
 def _get_theme_windows() -> "SystemTheme":
     """Get the current theme, as light or dark, for the system on Windows."""
 
-    from winreg import HKEY_CURRENT_USER, OpenKey, QueryValueEx  # pyright: ignore[reportAttributeAccessIssue]
+    from winreg import HKEY_CURRENT_USER, OpenKey, QueryValueEx  # type: ignore
 
     # In HKEY_CURRENT_USER, get the personalization Key.
     try:
@@ -103,7 +105,7 @@ def _get_theme_windows() -> "SystemTheme":
         #   https://learn.microsoft.com/en-us/windows/apps/desktop/modernize/ui/apply-windows-themes#know-when-dark-mode-is-enabled
         #
         # Note that the documentation is inverted: if the foreground is light, we are using DARK mode.
-        winver = sys.getwindowsversion()  # pyright: ignore[reportAttributeAccessIssue]
+        winver = sys.getwindowsversion()  # type: ignore
         if winver[:4] < (10, 0, 10240, 0):
             return SystemTheme.UNKNOWN
         try:
@@ -127,7 +129,7 @@ def _get_theme_windows() -> "SystemTheme":
 def _listener_windows(callback: "CallbackFn") -> "None":
     """Register an event listener for dark/light theme changes."""
 
-    import ctypes.wintypes  # pyright: ignore[reportMissingImports]
+    import ctypes.wintypes  # type: ignore
 
     global _advapi32
 
@@ -181,9 +183,9 @@ def _listener_windows(callback: "CallbackFn") -> "None":
 def _initialize_advapi32() -> "ctypes.CDLL":
     """Initialize our advapi32 library."""
 
-    import ctypes.wintypes  # pyright: ignore[reportMissingImports]
+    import ctypes.wintypes  # type: ignore
 
-    advapi32 = ctypes.windll.advapi32  # pyright: ignore[reportAttributeAccessIssue]
+    advapi32 = ctypes.windll.advapi32  # type: ignore
 
     # LSTATUS RegOpenKeyExA(
     #     HKEY hKey,

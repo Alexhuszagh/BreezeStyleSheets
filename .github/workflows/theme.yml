@@ -23,6 +23,7 @@ jobs:
           python -m pip install winrt-Windows.UI.ViewManagement winrt-Windows.UI
         fi
     - name: Checking our Python imports.
+      shell: bash
       run: |
         scripts/theme.sh
 

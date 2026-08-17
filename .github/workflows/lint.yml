@@ -16,14 +16,24 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install Dependencies
+      shell: bash
       run: |
         pipx install uv
         export PATH="${HOME}/.local/bin:${PATH}"
         uv tool install poethepoet
         uv tool install ruff
     - name: Analyzing the code with Ruff
+      shell: bash
       run: |
         export PATH="${HOME}/.local/bin:${PATH}"
+        uvx --from poethepoet poe lint
+        uvx --from poethepoet poe type
+    - name: Analyzing the examples with Ruff
+      shell: bash
+      if: ${{ matrix.os != 'macos-latest' }}
+      run: |
+        export PATH="${HOME}/.local/bin:${PATH}"
+        cd example
         uvx --from poethepoet poe lint
         uvx --from poethepoet poe type
 
@@ -35,6 +45,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install dependencies
+      shell: bash
       run: |
         pipx install clang-tidy
     - name: Analysing the code with clang-tidy
@@ -58,4 +69,4 @@ jobs:
           extra_args="-extra-arg=-std=c++17"
           passthrough=""
         fi
-        clang-tidy -checks=-*,clang-analyzer-*,-clang-analyzer-cplusplus* ${extra_args} example/detect/system_theme.hpp -- ${passthrough}
+        clang-tidy -checks=-*,clang-analyzer-*,-clang-analyzer-cplusplus* ${extra_args} example/cpp/detect/system_theme.hpp -- ${passthrough}

@@ -23,5 +23,6 @@ jobs:
             libxcb-render0 libxcb-shape0 libxcb-shm0 libxcb-sync1 libxcb-util1 libxcb-xfixes0 \
             libxcb-xinerama0 libxcb1 libxkbcommon-dev libxkbcommon-x11-0 libxcb-xkb-dev
     - name: Checking our Python imports.
+      shell: bash
       run: |
         scripts/headless.sh

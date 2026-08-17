@@ -18,5 +18,6 @@ jobs:
             libxcb-xinerama0 libxcb1 libxkbcommon-dev libxkbcommon-x11-0 libxcb-xkb-dev cmake
         sudo apt install qt6-base-dev qtbase5-dev libqt5svg5-dev qt6-svg-dev
     - name: Running our CMake flow.
+      shell: bash
       run: |
         scripts/cmake.sh
