@@ -1,6 +1,6 @@
 from collections.abc import Callable
 from typing import TYPE_CHECKING, cast
-from typing_extensions import Literal, TypeAlias, override
+from typing_extensions import TypeAlias, override
 
 import enum
 import os
@@ -16,10 +16,9 @@ if TYPE_CHECKING:
     from example._util.typing import QtCore, QtGui, QtWidgets
 
 # 100ms between repaints, so we avoid over-repainting.
-# Allows us to avoid glitchy motion during drags/
+# Allows us to avoid glitchy motion during drags.
 REPAINT_TIMER = 100
-TRACK_TIMER = 20
-CLICK_TIMER = 20
+TRACK_TIMER = 4
 # Make the titlebar size too large, so we can get the real value with min.
 TITLEBAR_HEIGHT = 2**16
 # QWIDGETSIZE_MAX isn't exported, which is needed to remove fixedSize constraints.
@@ -399,6 +398,7 @@ class TitleBar(Qt.QtWidgets.QFrame):
     _max_action: "QtGui.QAction"
     _top_action: "QtGui.QAction"
     _close_action: "QtGui.QAction"
+    _app: "QtWidgets.QApplication"
 
     def __init__(
         self,
@@ -419,12 +419,11 @@ class TitleBar(Qt.QtWidgets.QFrame):
         self._has_shown = False
         self._title_column = 0
         self._move_timer = Qt.QtCore.QTimer()
-        self._move_timer.setSingleShot(True)
-        self._move_timer.timeout.connect(self.menuMove)
+        self._move_timer.timeout.connect(self.customMove)
         self._move_start = self.cursorPosition()
         self._resize_timer = Qt.QtCore.QTimer()
-        self._resize_timer.setSingleShot(True)
-        self._resize_timer.timeout.connect(self.menuResize)
+        self._resize_timer.timeout.connect(self.customResize)
+        self._app = cast("QtWidgets.QApplication", Qt.QtWidgets.QApplication.instance())
         if flags is not None:
             self._has_help = bool(flags & Qt.QtCore.Qt.WindowType.WindowContextHelpButtonHint)
             self._has_shade = bool(flags & Qt.QtCore.Qt.WindowType.WindowShadeButtonHint)
@@ -454,9 +453,9 @@ class TitleBar(Qt.QtWidgets.QFrame):
         self._restore_action = action("&Restore", self, restore_icon(self))
         self._restore_action.triggered.connect(self.restore)
         self._move_action = action("&Move", self, transparent_icon(self))
-        self._move_action.triggered.connect(self.moveTimer)
+        self._move_action.triggered.connect(self.startCustomMove)
         self._size_action = action("&Size", self, transparent_icon(self))
-        self._size_action.triggered.connect(self.resizeTimer)
+        self._size_action.triggered.connect(self.startCustomResize)
         self._min_action = action("Mi&nimize", self, minimize_icon(self))
         self._min_action.triggered.connect(self.minimize)
         self._max_action = action("Ma&ximize", self, maximize_icon(self))
@@ -589,63 +588,137 @@ class TitleBar(Qt.QtWidgets.QFrame):
         """Set the minimum size of the titlebar."""
         self.setMinimumSize(self.absoluteMinimumWidth, self.absoluteMinimumHeight)
 
-    def moveTimer(self) -> None:
-        """Start timer to invoke menuMove."""
-
-        # We use a timer since the clicks on the menu can invoke the
-        # MousePressEvent, which instantly cancels the move event.
-        self._move_timer.start(CLICK_TIMER)
-
     def cursorPosition(self) -> "QtCore.QPoint":
         """Get the current cursor position mapped to the window."""
         return self._window.mapFromGlobal(Qt.QtGui.QCursor.pos())
 
-    def menuMove(self) -> None:
-        """Start a manually trigger move."""
+    def startCustomMove(self) -> None:
+        """Start the menu move tracking."""
+        self._move_timer.start(TRACK_TIMER)
 
-        if isinstance(self._window, SubWindow):
-            self.window()._subwindow_move = self
-        elif isinstance(self._window, Window):
-            self.window()._window_move = self
+    def stopCustomMove(self) -> None:
+        """Stop the menu move tracking."""
+        self._move_timer.stop()
+        self.window()._move = None
+
+    def customMove(self) -> None:
+        """Handle a menu move event."""
+        if self._app.activeWindow() is None:
+            self.stopCustomMove()
+        elif self.window()._move is not None:
+            self.customMoveUpdate()
+        else:
+            self.customMoveInitialize()
+
+    def customMoveInitialize(self) -> None:
+        """Start the process to track the menu move."""
+
+        if self.window() == self._window:
+            raise NotImplementedError("Custom move events at the window level are not yet supported.")
+
+        window = self.window()
+        window._move = self
         self._move_start = self.cursorPosition()
 
-    def menuMoveTo(self) -> None:
+    def customMoveUpdate(self) -> None:
         """
+        Update the position of the window after starting.
+
         Move the subwindow so that the position is in the center bottom
         of the title bar. The position is given in global coordinates.
         """
+
+        if self.window() == self._window:
+            raise NotImplementedError("Custom resize events at the window level are not yet supported.")
+
         delta = self._move_start - self.cursorPosition()
-        self._window.moveTo(self._window.geometry().topLeft() - delta)
+        geometry = self._window.geometry()
+        position = geometry.topLeft() - delta
 
-    def resizeTimer(self) -> None:
-        """Start timer to invoke menuResize."""
+        bounds = self.window()._area.contentsRect()
+        left = position.x()
+        right = left + geometry.width()
+        if left < bounds.left():
+            position.setX(bounds.left())
+        elif right > bounds.right():
+            position.setX(bounds.right() - geometry.width())
 
-        # We use a timer since the clicks on the menu can invoke the
-        # MousePressEvent, which instantly cancels the size event.
-        self._resize_timer.start(CLICK_TIMER)
+        top = position.y()
+        bottom = top + geometry.height()
+        if top < bounds.top():
+            position.setY(bounds.top())
+        elif bottom > bounds.bottom():
+            position.setY(bounds.bottom() - geometry.height())
 
-    def menuResize(self) -> None:
-        """Start a manually triggered resize event."""
+        self._window.moveTo(position)
 
-        # NOTE: We can't use a rubber band with mouse tracking,
-        # since mouse events only occurs if the user is holding
-        # down the house. Simulating a mouse click isn't enough,
-        # even if it sends a mouse press without a release.
+    def startCustomResize(self) -> None:
+        """Start the menu resize tracking."""
+        self._resize_timer.start(TRACK_TIMER)
+
+    def stopCustomResize(self) -> None:
+        """Stop the menu resize tracking."""
+
+        self._resize_timer.stop()
         window = self.window()
-        if window != self._window:
-            window._subwindow_resize = self._window
-        else:
-            window._window_resize = self._window
-        window.setCursor(Qt.QtCore.Qt.CursorShape.SizeFDiagCursor)
-        window.menuResizeTo(Qt.QtGui.QCursor.pos())
+        window._resize = None
+        window.unsetCursor()
+        _release_wayland(window)
 
-        # Grab the mouse so we can intercept the click event,
-        # and track hover events outside the app. This doesn't
-        # work on Wayland or on macOS. On Windows, it only works
-        # within the window owned by the process.
-        #   https://doc.qt.io/qt-6/qwidget.html#grabMouse
-        if not IS_TRUE_WAYLAND and sys.platform != "darwin":
-            window.grabMouse()
+    def customResize(self) -> None:
+        """Handle a menu resize event."""
+        if self._app.activeWindow() is None:
+            self.stopCustomResize()
+        elif self.window()._resize is not None:
+            self.customResizeUpdate()
+        else:
+            self.customResizeInitialize()
+
+    def customResizeInitialize(self) -> None:
+        """Start the process to track the menu resize."""
+
+        if self.window() == self._window:
+            raise NotImplementedError("Custom resize events at the window level are not yet supported.")
+
+        # NOTE: set the cursor FIRST and then fire, so when it
+        # triggers we've already ensured the UI updates.
+        geometry = self._window.geometry()
+        point = geometry.bottomRight() - geometry.topLeft()
+        Qt.QtGui.QCursor.setPos(self._window.mapToGlobal(point))
+
+        window = self.window()
+        window._resize = self
+        self._resize_start = self.cursorPosition()
+        self._resize_rect = self._window.geometry()
+
+        window._resize = self
+        self._resize_start = self.cursorPosition()
+        self._resize_rect = self._window.geometry()
+
+        window.setCursor(Qt.QtCore.Qt.CursorShape.SizeFDiagCursor)
+
+    def customResizeUpdate(self) -> None:
+        """
+        Update the size of the window after starting.
+
+        Size the window so that the position is in the center bottom
+        of the title bar. The position is given in global coordinates.
+        """
+
+        if self.window() == self._window:
+            raise NotImplementedError("Custom move events at the window level are not yet supported.")
+
+        delta = self._resize_start - self.cursorPosition()
+        start = self._resize_rect.topLeft()
+        end = self._resize_rect.bottomRight() - delta
+        rect = Qt.QtCore.QRect(start, end)
+
+        bounds = self.window()._area.contentsRect()
+        capped = bounds.bottomRight() - bounds.topLeft()
+        rect.setRight(min(end.x(), capped.x()))
+        rect.setBottom(min(end.y(), capped.y()))
+
+        self._window.setGeometry(rect)
 
     def minimize(self) -> None:
         """Minimize the current window."""
@@ -1677,12 +1750,10 @@ class Window(Qt.QtWidgets.QMainWindow):
     _window3: "SubWindow"
     _tree: "SortableTree"
     _subwindow_drag: "QtCore.QPoint | None"
-    _subwindow_move: "TitleBar | None"
-    _subwindow_resize: "FramelessWindow | FramelessSubWindow | None"
     _subwindow_frame: "SizeFrame | None"
     _window_drag: "QtCore.QPoint | None"
-    _window_move: "TitleBar | None"
-    _window_resize: "FramelessWindow | FramelessSubWindow | None"
+    _move: "TitleBar | None"
+    _resize: "TitleBar | None"
     _window_frame: "SizeFrame | None"
     _sizeframe: "SizeFrame | None"
 
@@ -1701,11 +1772,9 @@ class Window(Qt.QtWidgets.QMainWindow):
 
         self._subwindow_frame = None
         self._subwindow_drag = None
-        self._subwindow_move = None
-        self._subwindow_resize = None
         self._window_drag = None
-        self._window_move = None
-        self._window_resize = None
+        self._move = None
+        self._resize = None
         self._window_frame = None
         self._sizeframe = None
 
@@ -1756,46 +1825,6 @@ class Window(Qt.QtWidgets.QMainWindow):
 
     # ACTIONS
 
-    def menuResizeTo(self, point: "QtCore.QPoint") -> None:
-        """
-        Size the window so that the position is in the center bottom
-        of the title bar. The position is given in global coordinates.
-        """
-
-        window = self._window_resize or self._subwindow_resize
-        assert window is not None
-        rect = window.geometry()
-        # We add a trivial amount so we avoid a bug where we are
-        # exactly on the sizegrip, which keeps us in resize mode
-        # unless we do another button click, we weirdly doesn't
-        # work well when simulated.
-        point += Qt.QtCore.QPoint(2, 2)
-
-        # If we have a subwindow, need to limit to the MDI area rect.
-        if window.window() != window:
-            assert isinstance(window, SubWindow)
-            point = cast("QtWidgets.QWidget", nonnull(window.parent())).mapFromGlobal(point)
-            area_rect = nonnull(window.mdiArea()).contentsRect()
-            point.setX(min(point.x(), area_rect.right()))
-            point.setY(min(point.y(), area_rect.bottom()))
-
-        # Need to ensure we didn't go past the top left.
-        # Don't want to shift to negative values.
-        top_left = rect.topLeft()
-        point.setX(max(top_left.x(), point.x()))
-        point.setY(max(top_left.y(), point.y()))
-
-        # We add a trivial amount to simplify growing the window on Wayland.
-        # Wayland cannot track outside of the application.
-        if IS_TRUE_WAYLAND and window.window() == window:
-            point += Qt.QtCore.QPoint(16, 16)
-        rect.setBottomRight(point)
-        window.setWindowGeometry(rect)
-
-        # Ensure we trigger the elide resize timer.
-        titlebar = window._titlebar
-        titlebar._title._timer.start(REPAINT_TIMER)
-
     def resolveState(self) -> None:
         """Handle theoretically possible conflicts in window state."""
 
@@ -1808,30 +1837,19 @@ class Window(Qt.QtWidgets.QMainWindow):
         # widgets next.
 
         has_state = False
-        if has_state or self._window_frame is not None:
-            if self._window_resize is not None:
-                window = self._window_resize
-                self._window_resize = None
-                nonnull(window.window()).unsetCursor()
-                _release_wayland(self)
+        if self._window_frame is not None:
+            if self._resize is not None:
+                self._resize.stopCustomResize()
             has_state = True
-        if has_state or self._window_resize is not None:
-            self._window_move = None
+        if has_state or self._resize is not None:
+            if self._move is not None:
+                self._move.stopCustomMove()
             has_state = True
-        if has_state or self._window_move is not None:
+        if has_state or self._move is not None:
             self._window_drag = None
             has_state = True
         if has_state or self._window_drag is not None:
             self._window_frame = None
-            has_state = True
-        if has_state or self._subwindow_frame is not None:
-            self._subwindow_move = None
-            has_state = True
-        if has_state or self._subwindow_resize is not None:
-            self._subwindow_move = None
-            has_state = True
-        if has_state or self._subwindow_move is not None:
-            self._subwindow_drag = None
             has_state = True
 
     def frameEvent(self, event: "QtCore.QEvent", frame: "SizeFrame"):
@@ -1865,62 +1883,24 @@ class Window(Qt.QtWidgets.QMainWindow):
         self.resolveState()
         type = event.type()
         types = Qt.QtCore.QEvent.Type
-        if self._window_move is not None and type == types.MouseMove:
-            # Cannot occur while the size frame is active.
-            self._window_move.menuMoveTo()
-        elif self._window_move is not None and type == types.MouseButtonPress:
-            self._window_move = None
-        elif self._window_resize is not None and type in (types.MouseMove, types.HoverMove):
-            position = PyQtPosition(cast("QtGui.QSinglePointEvent", event)).position()
-            self.menuResizeTo(position)
-        elif self._window_resize is not None and type == types.MouseButtonPress:
-            window = self._window_resize
-            self._window_resize = None
-            nonnull(window.window()).unsetCursor()
-            _release_wayland(self)
-        elif isinstance(obj, Window) and not obj.isMinimized():
-            self.handleFrame(obj, event, "window")
-        elif self._subwindow_move is not None and type == types.MouseMove:
-            # Cannot occur while the size frame is active.
-            self._subwindow_move.menuMoveTo()
-        elif self._subwindow_move is not None and type == types.MouseButtonPress:
-            self._subwindow_move = None
-        elif self._subwindow_resize is not None and type in (types.MouseMove, types.HoverMove):
-            position = PyQtPosition(cast("QtGui.QSinglePointEvent", event)).position()
-            self.menuResizeTo(position)
-        elif self._subwindow_resize is not None and type == types.MouseButtonPress:
-            window = self._subwindow_resize
-            self._subwindow_resize = None
-            nonnull(window.window()).unsetCursor()
-            _release_wayland(self)
-        elif isinstance(obj, SubWindow) and not obj.isMinimized():
-            self.handleFrame(obj, event, "subwindow")
+        if self._move is not None and type == types.MouseMove:
+            # NOTE: explicit pass, we use a timer and not mouse clicks
+            pass
+        elif self._move is not None and type == types.MouseButtonPress:
+            self._move.stopCustomMove()
+        elif self._resize is not None and type in (types.MouseMove, types.HoverMove):
+            # NOTE: explicit pass, we use a timer and not mouse clicks
+            pass
+        elif self._resize is not None and type == types.MouseButtonPress:
+            self._resize.stopCustomResize()
+        elif isinstance(obj, Window) and not obj.isMinimized() and obj._sizeframe is not None:
+            self.frameEvent(event, obj._sizeframe)
+            self._window_frame = obj._sizeframe if obj._sizeframe.isActive else None
+        elif isinstance(obj, SubWindow) and not obj.isMinimized() and obj._sizeframe is not None:
+            self.frameEvent(event, obj._sizeframe)
+            self._subwindow_frame = obj._sizeframe if obj._sizeframe.isActive else None
 
         return super().eventFilter(obj, event)
-
-    def handleFrame(
-        self,
-        window: "Window | SubWindow",
-        event: "QtCore.QEvent",
-        window_name: Literal["subwindow", "window"],
-    ):
-        """Handle the window frame resize event."""
-
-        # Check if use size grips, return early.
-        frame = window._sizeframe
-        if frame is None:
-            return
-        self.frameEvent(event, frame)
-
-        # Store if the frame state is active.
-        if frame.isActive and window_name == "window" and self._window_frame is None:
-            self._window_frame = frame
-        elif frame.isActive and window_name == "subwindow" and self._subwindow_frame is None:
-            self._subwindow_frame = frame
-        elif not frame.isActive and window_name == "window" and self._window_frame is not None:
-            self._window_frame = None
-        elif not frame.isActive and window_name == "subwindow" and self._subwindow_frame is not None:
-            self._subwindow_frame = None
 
 
 class FramelessWindow(Window):
