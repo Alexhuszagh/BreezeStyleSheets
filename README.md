@@ -598,7 +598,7 @@ For known issues and workarounds, see [issues](/ISSUES.md).
 
 ## License
 
-MIT, see [license](/LICENSE.md).
+All files except for [detect.py](/breezestylesheets/detect.py) are subject to an [MIT License](/LICENSE.md). [detect.py](/breezestylesheets/detect.py) is subject a [3-clause BSD license](/LICENSES/darkdetect.txt).
 
 ## Contributing
 

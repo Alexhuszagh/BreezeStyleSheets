@@ -1,39 +1,14 @@
 """
-Get the current system them information. This is adapted from [darkdetect]
-and is subject to the license terms below:
-    https://github.com/albertosottile/darkdetect
+Get the current system them information.
 
-The files have been modified to be merged into a single file. This is
-distributed under a 3-clause BSD license. On Windows, the fallback
-path for the theme detection requires the `winrt-Windows.UI.ViewManagement`
+The files have been modified to be merged into a single file. On Windows, the
+fallback path for the theme detection requires the `winrt-Windows.UI.ViewManagement`
 and `winrt-Windows.UI` libraries installed.
 
+This is adapted from [darkdetect] and is subject to a 3-clause BSD license.
+See [darkdetect.txt](/LICENSES/darkdetect.txt) for the full license info.
+
 [darkdetect]: https://github.com/albertosottile/darkdetect
-
-    Copyright (c) 2019, Alberto Sottile
-    All rights reserved.
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-        * Redistributions of source code must retain the above copyright
-        notice, this list of conditions and the following disclaimer.
-        * Redistributions in binary form must reproduce the above copyright
-        notice, this list of conditions and the following disclaimer in the
-        documentation and/or other materials provided with the distribution.
-        * Neither the name of "darkdetect" nor the
-        names of its contributors may be used to endorse or promote products
-        derived from this software without specific prior written permission.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL "Alberto Sottile" BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 from collections.abc import Callable
@@ -52,12 +27,12 @@ import sys
 from pathlib import Path
 from uuid import UUID
 
-CallbackFn: TypeAlias = "Callable[[Theme], None]"
-ThemeFn: TypeAlias = "Callable[[], Theme]"
+CallbackFn: TypeAlias = "Callable[[SystemTheme], None]"
+ThemeFn: TypeAlias = "Callable[[], SystemTheme]"
 ListenerFn: TypeAlias = "Callable[[CallbackFn], None]"
 
 
-class Theme(enum.IntEnum):
+class SystemTheme(enum.IntEnum):
     """The list of valid themes."""
 
     DARK = 0
@@ -65,28 +40,28 @@ class Theme(enum.IntEnum):
     UNKNOWN = 2
 
     @staticmethod
-    def from_string(value: "str | None") -> "Theme":
+    def from_string(value: "str | None") -> "SystemTheme":
         """Initialize the enumeration from value."""
 
         # NOTE: This is for Py3.10 and earlier support.
         if value is None or not value:
-            return Theme.UNKNOWN
+            return SystemTheme.UNKNOWN
         value = value.lower()
         if value == "dark":
-            return Theme.DARK
+            return SystemTheme.DARK
         if value == "light":
-            return Theme.LIGHT
+            return SystemTheme.LIGHT
         raise ValueError(f'Got an invalid theme value of "{value}".')
 
     def to_string(self) -> "str":
         """Serialize the theme to string."""
 
         # NOTE: This is for Py3.10 and earlier support.
-        if self == Theme.DARK:
+        if self == SystemTheme.DARK:
             return "Dark"
-        if self == Theme.LIGHT:
+        if self == SystemTheme.LIGHT:
             return "Light"
-        if self == Theme.UNKNOWN:
+        if self == SystemTheme.UNKNOWN:
             return "Unknown"
         raise ValueError(f'Got an invalid theme value of "{self}".')
 
@@ -109,7 +84,7 @@ def is_light_color(r: "int", g: "int", b: "int") -> "bool":
 # region windows
 
 
-def _get_theme_windows() -> "Theme":
+def _get_theme_windows() -> "SystemTheme":
     """Get the current theme, as light or dark, for the system on Windows."""
 
     from winreg import HKEY_CURRENT_USER, OpenKey, QueryValueEx  # pyright: ignore[reportAttributeAccessIssue]
@@ -130,7 +105,7 @@ def _get_theme_windows() -> "Theme":
         # Note that the documentation is inverted: if the foreground is light, we are using DARK mode.
         winver = sys.getwindowsversion()  # pyright: ignore[reportAttributeAccessIssue]
         if winver[:4] < (10, 0, 10240, 0):
-            return Theme.UNKNOWN
+            return SystemTheme.UNKNOWN
         try:
             # NOTE: This only works if we have the `winrt-Windows.UI.ViewManagement`
             # and `winrt-Windows.UI` dependencies installed.
@@ -140,13 +115,13 @@ def _get_theme_windows() -> "Theme":
             foreground = settings.get_color_value(viewmanagement.UIColorType.FOREGROUND)
             use_light = int(not is_light_color(foreground.r, foreground.g, foreground.b))
         except Exception:
-            return Theme.UNKNOWN
+            return SystemTheme.UNKNOWN
 
     if use_light == 0:
-        return Theme.DARK
+        return SystemTheme.DARK
     if use_light == 1:
-        return Theme.LIGHT
-    return Theme.UNKNOWN
+        return SystemTheme.LIGHT
+    return SystemTheme.UNKNOWN
 
 
 def _listener_windows(callback: "CallbackFn") -> "None":
@@ -200,7 +175,7 @@ def _listener_windows(callback: "CallbackFn") -> "None":
         )
         if query_last_value.value != query_value.value:
             query_last_value.value = query_value.value
-            callback(Theme.LIGHT if query_value.value else Theme.DARK)
+            callback(SystemTheme.LIGHT if query_value.value else SystemTheme.DARK)
 
 
 def _initialize_advapi32() -> "ctypes.CDLL":
@@ -286,12 +261,12 @@ def _macos_supported_version() -> "bool":
     return minor >= 14
 
 
-def _get_theme_macos() -> "Theme":
+def _get_theme_macos() -> "SystemTheme":
     """Get the current theme, as light or dark, for the system on macOS."""
 
     # old macOS versions were always light
     if not _macos_supported_version():
-        return Theme.LIGHT
+        return SystemTheme.LIGHT
 
     # NOTE: This can segfault on M1 and M2 Macs on Big Sur 11.4+. So, we also
     # try reading directly using subprocess. Specifically, it's documented that
@@ -302,9 +277,9 @@ def _get_theme_macos() -> "Theme":
         process = subprocess.run(command, capture_output=True, check=True)
         try:
             result = process.stdout.decode("utf-8").strip()
-            return Theme.DARK if result == "Dark" else Theme.LIGHT
+            return SystemTheme.DARK if result == "Dark" else SystemTheme.LIGHT
         except UnicodeDecodeError:
-            return Theme.LIGHT
+            return SystemTheme.LIGHT
     except subprocess.CalledProcessError as error:
         # If this key pair does not exist, then it's a specific error because the style
         # hasn't been set before, so then it specifically is a light theme. this can
@@ -313,7 +288,7 @@ def _get_theme_macos() -> "Theme":
         any_app = b"kCFPreferencesAnyApplication" in error.stderr
         interface_style = b"AppleInterfaceStyle" in error.stderr
         if not_exist and any_app and interface_style:
-            return Theme.LIGHT
+            return SystemTheme.LIGHT
 
     # NOTE: We do this so we don't need imports at the global level.
     try:
@@ -343,7 +318,7 @@ def _get_theme_macos() -> "Theme":
     out = ctypes.string_at(appearance_c) if appearance_c is not None else None
     msg(pool, _register_name(objc, "release"))
 
-    return Theme.from_string(out.decode("utf-8")) if out is not None else Theme.LIGHT
+    return SystemTheme.from_string(out.decode("utf-8")) if out is not None else SystemTheme.LIGHT
 
 
 def _as_utf8(value: "bytes | str") -> "bytes":
@@ -351,8 +326,8 @@ def _as_utf8(value: "bytes | str") -> "bytes":
     return value if isinstance(value, bytes) else value.encode("utf-8")
 
 
-def _register_name(objc: "ctypes.CDLL", name: "bytes | str") -> "None":
-    """Register a name within our DLLs."""
+def _register_name(objc: "ctypes.CDLL", name: "bytes | str") -> "Any":
+    """Register a name within our DLLs on macOS."""
     return objc.sel_registerName(_as_utf8(name))
 
 
@@ -381,7 +356,7 @@ def _listener_macos(callback: "CallbackFn") -> "None":
         cwd=path.parent,
     ) as process:
         for line in cast(str, process.stdout):
-            callback(Theme.from_string(line.strip()))
+            callback(SystemTheme.from_string(line.strip()))
 
 
 def _listen_child_macos() -> "None":
@@ -440,17 +415,17 @@ def _listen_child_macos() -> "None":
 # region linux
 
 
-def _get_theme_linux() -> "Theme":
+def _get_theme_linux() -> "SystemTheme":
     """Get the current theme, as light or dark, for the system on Linux OSes."""
 
     try:
         _, stdout = _get_gsettings_schema()
     except Exception:
-        return Theme.LIGHT
+        return SystemTheme.LIGHT
 
     # we have a string, now remove start and end quote
     value = stdout.lower().strip()[1:-1]
-    return Theme.DARK if "-dark" in value.lower() else Theme.LIGHT
+    return SystemTheme.DARK if "-dark" in value.lower() else SystemTheme.LIGHT
 
 
 def _listener_linux(callback: "CallbackFn") -> "None":
@@ -463,7 +438,7 @@ def _listener_linux(callback: "CallbackFn") -> "None":
     with subprocess.Popen(command, stdout=subprocess.PIPE, universal_newlines=True) as process:
         for line in cast(str, process.stdout):
             value = line.removeprefix(f"{schema}: '").removesuffix("'")
-            callback(Theme.DARK if "-dark" in value.lower() else Theme.LIGHT)
+            callback(SystemTheme.DARK if "-dark" in value.lower() else SystemTheme.LIGHT)
 
 
 def _get_gsettings_schema() -> "tuple[str, str]":
@@ -509,9 +484,9 @@ _gsettings: "str | None" = None
 # region dummy
 
 
-def _get_theme_dummy() -> "Theme":
+def _get_theme_dummy() -> "SystemTheme":
     """Get the current theme, as light or dark, for the system (always unknown)."""
-    return Theme.UNKNOWN
+    return SystemTheme.UNKNOWN
 
 
 def _listener_dummy(callback: "CallbackFn") -> "None":
@@ -522,19 +497,19 @@ def _listener_dummy(callback: "CallbackFn") -> "None":
 # endregion
 
 
-def get_theme() -> "Theme":
+def get_theme() -> "SystemTheme":
     """Get the current theme, as light or dark, for the system."""
     return _get_theme()
 
 
 def is_dark() -> "bool":
     """Get if the current theme is a dark color."""
-    return get_theme() == Theme.DARK
+    return get_theme() == SystemTheme.DARK
 
 
 def is_light() -> "bool":
     """Get if the current theme is a light color."""
-    return get_theme() == Theme.LIGHT
+    return get_theme() == SystemTheme.LIGHT
 
 
 def listener(callback: "CallbackFn") -> "None":

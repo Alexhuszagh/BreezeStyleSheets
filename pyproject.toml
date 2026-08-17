@@ -41,6 +41,10 @@ toml = [
 xml = [
   "xml2dict>=0.2.2,<0.3.0",
 ]
+detect = [
+  "winrt-Windows.UI>=3.2.1; platform_system == 'Windows' and python_version > '3.8'",
+  "winrt-Windows.UI.ViewManagement>=3.2.1; platform_system == 'Windows' and python_version > '3.8'",
+]
 
 [dependency-groups]
 dev = [

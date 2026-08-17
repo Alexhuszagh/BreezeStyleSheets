@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING, cast
 import importlib
 import logging
 
-from ..theme import Theme, get_theme
+from breezestylesheets.detect import SystemTheme, get_theme
+
 from .qt import PyQt
 
 if TYPE_CHECKING:
@@ -51,9 +52,9 @@ class Stylesheet:
         # so we can differentiate between light/dark/unknown.
         if self.name.startswith("auto"):
             theme = get_theme()
-            if theme == Theme.DARK:
+            if theme == SystemTheme.DARK:
                 self.name = self.name.replace("auto", "dark", 1)
-            elif theme == Theme.LIGHT:
+            elif theme == SystemTheme.LIGHT:
                 self.name = self.name.replace("auto", "light", 1)
             else:
                 logger.warning("Unknown an unknown system theme, falling back to the system native theme.")

@@ -13,7 +13,7 @@ import os
 import sys
 from functools import cached_property
 
-from ..theme import Theme, get_theme
+from breezestylesheets.detect import SystemTheme, get_theme  # type: ignore
 
 if TYPE_CHECKING:
     from breezestylesheets.constants import Framework  # type: ignore
@@ -104,7 +104,7 @@ class PyQt(abc.ABC):
     This modifies the Qt5 APIs to match the Qt6 ones, wherever possible.
     """
 
-    _theme: "Theme | None"
+    _theme: "SystemTheme | None"
 
     def __init__(self) -> None:
         self._theme = None
@@ -200,7 +200,7 @@ class PyQt(abc.ABC):
 
         return app, window
 
-    def get_theme(self, reinitialize: bool = False) -> Theme:
+    def get_theme(self, reinitialize: bool = False) -> SystemTheme:
         """Determine if the system theme is in dark mode."""
 
         if self._theme is not None and not reinitialize:
@@ -216,11 +216,11 @@ class PyQt(abc.ABC):
             color_scheme = style_hints.colorScheme()
             theme_cls = color_scheme.__class__
             if color_scheme == theme_cls.Unknown:
-                self._theme = Theme.UNKNOWN
+                self._theme = SystemTheme.UNKNOWN
             elif color_scheme == theme_cls.Light:
-                self._theme = Theme.LIGHT
+                self._theme = SystemTheme.LIGHT
             else:
-                self._theme = Theme.DARK
+                self._theme = SystemTheme.DARK
         else:
             self._theme = get_theme()
 

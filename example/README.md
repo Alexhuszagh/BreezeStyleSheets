@@ -33,7 +33,7 @@ uv run \
 
 ## System Theme Detection
 
-To provide a consistent application style matching the system theme, you can detect it via using Qt for versions 6.5+, or using the system theme for [Python](/example/example/theme.py) or [C++](/example/cpp/detect/) utilities. Both are stand-alone libraries that can be dropped in any project. A cross-platform, version-agnostic approach to detect if light or dark mode is:
+To provide a consistent application style matching the system theme, you can detect it via using Qt for versions 6.5+, or using the system theme for [Python](/breezestylesheets/detect.py) or [C++](/example/cpp/detect/) utilities. Both are stand-alone libraries that can be dropped in any project. A cross-platform, version-agnostic approach to detect if light or dark mode is:
 
 ```python
 from example import theme
