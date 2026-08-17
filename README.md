@@ -464,13 +464,6 @@ Have an issue with the styles? Here's a few suggestions, prior to filing a bug r
 
 ## Development Guide
 
-### Git Hooks
-
-Contributors to BreezeStylesheets should make use of [vcs](/vcs.py) and [scripts](/scripts/) to both install Git hooks and run local tests and typechecking. After cloning the repository, developers should first install a pre-commit hook, to ensure their code is formatted and linted prior to committing:
-
-```bash
-python vcs.py --install-hooks
-```
 
 ### Configuring Styles
 
@@ -559,28 +552,6 @@ When pushing changes, only the `light` and `dark` themes should be configured, w
 ```bash
 python configure.py --clean \
     --compiled-resource breeze_resources.py
-```
-
-If no changes are being made to the icons or stylesheets, you may want to ensure that the `dist` directory is assumed to be unchanged in git, no longer tracking changes to these files. You can turn tracking distribution files off with:
-
-```bash
-python vcs.py --no-track-dist
-```
-
-To turn back on tracking, run:
-
-```bash
-python vcs.py --track-dist
-```
-
-### Git Ignore
-
-Note that the `.gitignore` is auto-generated via `vcs.py`, and the scripts to track or untrack distribution files turn off `.gitignore` tracking. Any changes should be made in `vcs.py`, and ensure that `.gitignore` is tracked, and commit any changes:
-
-```bash
-python vcs.py --track-gitignore
-git add .gitignore
-git commit -m "..."
 ```
 
 ### CI
