@@ -758,8 +758,7 @@ QFrame[frameShape="StyledPanel"]
     border-width: 0.04em;
     padding: 0.09em;
     border-style: solid;
-    border-color: ^background^;
-    background-color: ^midtone^;
+    border-color: ^midtone^;
     border-radius: 0.23em;
 }
 
