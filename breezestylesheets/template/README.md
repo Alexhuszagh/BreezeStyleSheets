@@ -1,6 +1,6 @@
 # Templates
 
-This defines the templates used to generate the stylesheets, containing both the [default](/breezestylesheets/template/default/) and pre-packaged extensions (including the [Advanced Docking System](/breezestylesheets/template/advanced-docking-system/), [Dock Tooltips](/breezestylesheets/template/dock-tooltips/), and [Standard Icons](/breezestylesheets/template/standard-icons/)).
+This defines the templates used to generate the stylesheets, containing both the [default](/breezestylesheets/template/default/) and pre-packaged extensions (including the [Advanced Docking System](/breezestylesheets/template/advanced-docking-system/), [Dock Tooltips](/breezestylesheets/template/dock-tooltips/), [Standard Icons](/breezestylesheets/template/standard-icons/), and a [Custom Titlebar](/breezestylesheets/template/titlebar/)).
 
 Every template defines the following structure:
 
