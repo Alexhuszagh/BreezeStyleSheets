@@ -22,10 +22,11 @@ if TYPE_CHECKING:
 
 PACKAGE_DIR = utils.package_dir()
 PROJECT_DIR = utils.project_dir()
+# TODO: Not necessarily the case...
 DIST_DIR = PROJECT_DIR / "dist"
 RESOURCES_DIR = PROJECT_DIR / "resources"
-TEMPLATE_DIR = PACKAGE_DIR / "template"
-THEME_DIR = PACKAGE_DIR / "theme"
+TEMPLATE_DIR = utils.template_dir()
+THEME_DIR = utils.theme_dir()
 DEFAULT = "default"
 
 if TYPE_CHECKING:
@@ -121,6 +122,8 @@ def parse_args(argv: "list[str] | None" = None) -> "Args":
         return {i for i in map(str.strip, value.split(",")) if i}
 
     parsed = parser.parse_args(argv)
+    # TODO: FIXME, THESE SHOULD BE...
+    # USED AS NAMES RELATIVE TO THE THEME DIR
     parsed.styles = Style.find_styles(THEME_DIR, subset=split(parsed.styles))
     parsed.extensions = Style.find_extensions(TEMPLATE_DIR, subset=split(parsed.extensions))
 

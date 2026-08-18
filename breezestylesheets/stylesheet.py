@@ -12,9 +12,8 @@ from .style import Style
 if TYPE_CHECKING:
     from typing import Self
 
-    from pathlib import Path
-
     from .icon import IconReplacement, IconReplacements
+    from .utils import Traversable
 
 __all__ = ["StyleSheet", "StyleSheetTemplate"]
 
@@ -63,14 +62,14 @@ class StyleSheetTemplate(Model):
     """
 
     @staticmethod
-    def find(directory: "Path") -> "Path | None":
+    def find(directory: "Traversable") -> "Traversable | None":
         """Get the path to the template file if the directory contains stylesheet templates."""
-        path = directory / TEMPLATE_FILENAME
-        if path.exists():
+        path = directory.joinpath(TEMPLATE_FILENAME)
+        if path.is_file():
             return path
 
     @classmethod
-    def from_directory(cls: "type[Self]", directory: "Path") -> "Self":
+    def from_directory(cls: "type[Self]", directory: "Traversable") -> "Self":
         """
         Read the icon and stylesheet templates from a directory.
 
@@ -111,10 +110,15 @@ class StyleSheetTemplate(Model):
             icon_replacements = IconTemplate._load_replacements(icons_path)
 
         icons: "list[IconTemplate]" = []
-        for file in directory.glob("svg/*.svg.in"):
+        svg_dir = directory.joinpath("svg")
+        if not svg_dir.is_dir():
+            files = ()
+        else:
+            files = (i for i in svg_dir.iterdir() if i.name.endswith(".svg.in"))
+        for file in files:
             svg = file.read_text(encoding="utf-8")
-            name = file.stem.rsplit(".", maxsplit=1)[0]
-            replacements = cast("IconReplacement", icon_replacements.get(name))
+            name = file.name.removesuffix(".svg.in")
+            replacements = cast("IconReplacement | None", icon_replacements.get(name))
             if replacements is None:
                 keys: list[str] = re.findall(r"\^[0-9a-zA-Z_-]+\^", svg)
                 replacements = [i[1:-1] for i in keys]
@@ -124,7 +128,7 @@ class StyleSheetTemplate(Model):
         return cls(icons=icons, stylesheet=stylesheet)
 
     @classmethod
-    def from_directories(cls: "type[Self]", *directories: "Path") -> "Self":
+    def from_directories(cls: "type[Self]", *directories: "Traversable") -> "Self":
         """
         Read the icon and stylesheet templates from multiple directories and merge them.
 

@@ -3,8 +3,8 @@
 from collections.abc import Mapping, Sequence
 from typing import TYPE_CHECKING, cast
 
+import os
 from dataclasses import dataclass
-from pathlib import Path
 
 from .model import EXTENSIONS, Model, loads_model, model, parse_block
 from .theme import Theme
@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
     from .pydantic.color import Color
     from .types import Loads
+    from .utils import Traversable
 
     ColorType: TypeAlias = "Color | Literal['']"
     """The valid color types."""
@@ -228,14 +229,15 @@ class IconTemplate(Model):
     """
 
     @staticmethod
-    def find_replacements(directory: "Path") -> "Path | None":
+    def find_replacements(directory: "Traversable") -> "Traversable | None":
         """
         Get the path to the icon replacements file if the directory contains icon replacements.
 
         If multiple valid icon replacement files exist, it will return a the first file
         found in an unspecified order.
         """
-        files = (directory / i for i in directory.glob("icons.*") if i.suffix in EXTENSIONS)
+        icons = (i for i in directory.iterdir() if i.name.startswith("icons."))
+        files = (i for i in icons if os.path.splitext(i.name)[1] in EXTENSIONS)
         return next(files, None)
 
     def render(self, theme: "Theme") -> "list[Icon]":
@@ -271,7 +273,7 @@ class IconTemplate(Model):
         return result
 
     @staticmethod
-    def _load_replacements(path: "Path") -> "IconReplacements":
+    def _load_replacements(path: "Traversable") -> "IconReplacements":
         """
         Load the icon replacements from a file.
 
@@ -304,7 +306,8 @@ class IconTemplate(Model):
         """
         with parse_block(path=path):
             with path.open(encoding="utf-8") as file:
-                return _loads_icon_replacements(file.read(), path.suffix)
+                _, extension = os.path.splitext(path.name)
+                return _loads_icon_replacements(file.read(), extension)
 
     @staticmethod
     def _loads_replacements(s: "Loads", extension: "str") -> "IconReplacements":

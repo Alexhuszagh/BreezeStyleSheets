@@ -7,6 +7,7 @@ if TYPE_CHECKING:
 
     from .constants import Framework
     from .types import Loads
+    from .utils.paths import Traversable
 
 
 class BreezeStyleSheetError(Exception):
@@ -30,7 +31,7 @@ class ParseError(BreezeStyleSheetError):
     data: "Loads"
     """The input data provided to the parser."""
 
-    path: "Path | None"
+    path: "Traversable | None"
     """The path to the input file that caused the error, if parsing from file."""
 
     inner: "Exception | None"
@@ -40,7 +41,7 @@ class ParseError(BreezeStyleSheetError):
         self,
         message: "str",
         data: "Loads",
-        path: "Path | None" = None,
+        path: "Traversable | None" = None,
         inner: "Exception | None" = None,
     ) -> "None":
         """

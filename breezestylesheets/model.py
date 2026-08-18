@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Dict, ForwardRef, Generic, TypeVar, cast, over
 
 import io
 import json
+import os
 import sys
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -22,9 +23,8 @@ from .types import Dataclass, dataclass_transform, evaluate_forward_ref
 if TYPE_CHECKING:
     from typing import Any, ClassVar, Literal, Self, TypedDict
 
-    from pathlib import Path
-
     from .types import JSONObject, JSONValue, Loads
+    from .utils import Traversable
 
 
 __all__ = ["EXTENSIONS", "Model", "model"]
@@ -304,7 +304,7 @@ class Model(Dataclass):
             raise ValueError(f'Got an unknown alias "{field}".') from None
 
     @classmethod
-    def load(cls: "type[Self]", path: "Path") -> "Self":
+    def load(cls: "type[Self]", path: "Traversable") -> "Self":
         """
         Load the stylesheet configuration settings from file.
 
@@ -322,7 +322,8 @@ class Model(Dataclass):
             `ConfigParseError`: Any errors that occur during parsing the configuration data.
         """
         with parse_block(path=path):
-            return cls.loads(path.read_text(encoding="utf-8"), path.suffix)
+            _, extension = os.path.splitext(path.name)
+            return cls.loads(path.read_text(encoding="utf-8"), extension)
 
     @classmethod
     def loads(cls: "type[Self]", s: "Loads", extension: "str") -> "Self":
@@ -354,7 +355,7 @@ class Model(Dataclass):
 @contextmanager
 def parse_block(
     data: "Loads | None" = None,
-    path: "Path | None" = None,
+    path: "Traversable | None" = None,
     exc_type: "type[exception.ParseError]" = exception.ParseError,
 ) -> "Iterator[None]":
     """A helper to parse the config data within a context block."""
@@ -368,8 +369,7 @@ def parse_block(
             raise ValueError("Must provide either the data or the path.") from error
         if data is None:
             assert path is not None
-            with open(path, encoding="utf-8") as file:
-                data = file.read()
+            data = path.read_text(encoding="utf-8")
         raise exc_type(str(error), data, path, error) from error
 
 

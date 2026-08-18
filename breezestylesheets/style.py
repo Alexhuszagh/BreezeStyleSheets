@@ -1,11 +1,15 @@
 """A named theme with a given style."""
 
+from typing import TYPE_CHECKING
+
 import os
 from dataclasses import dataclass
-from pathlib import Path
 
 from .model import EXTENSIONS
 from .theme import Theme
+
+if TYPE_CHECKING:
+    from .utils import Traversable
 
 __all__ = ["Style"]
 
@@ -23,24 +27,24 @@ class Style:
     """The theme settings for how to style the Qt Stylesheet."""
 
     @staticmethod
-    def is_template(directory: "Path") -> bool:
+    def is_template(directory: "Traversable") -> bool:
         """Get if the path is a template directory."""
 
         from breezestylesheets.icon import IconTemplate
         from breezestylesheets.stylesheet import StyleSheetTemplate
 
-        return os.path.isdir(directory) and (
+        return directory.is_dir() and (
             StyleSheetTemplate.find(directory) is not None
             or IconTemplate.find_replacements(directory) is not None
         )
 
     @staticmethod
-    def is_extension(directory: "Path") -> bool:
+    def is_extension(directory: "Traversable") -> bool:
         """Get if the path is an extension template directory."""
         return directory.name != DEFAULT and Style.is_template(directory)
 
     @staticmethod
-    def find_extensions(*directories: "Path", subset: "set[str] | None" = None) -> "list[Path]":
+    def find_extensions(*directories: "Traversable", subset: "set[str] | None" = None) -> "list[Traversable]":
         """
         Find all extensions within the provided directory.
 
@@ -56,17 +60,17 @@ class Style:
             The full path to all found extensions within the directories.
         """
 
-        extensions: "list[Path]" = []
+        extensions: "list[Traversable]" = []
         for directory in directories:
-            extensions += [i for i in directory.absolute().iterdir() if i.is_dir() and Style.is_extension(i)]
+            extensions += [i for i in directory.iterdir() if i.is_dir() and Style.is_extension(i)]
 
         if subset is not None and "all" not in subset:
-            extensions = [i for i in extensions if i.stem in subset]
+            extensions = [i for i in extensions if os.path.splitext(i.name)[0] in subset]
 
         return extensions
 
     @staticmethod
-    def find_styles(*directories: "Path", subset: "set[str] | None" = None) -> "list[Path]":
+    def find_styles(*directories: "Traversable", subset: "set[str] | None" = None) -> "list[Traversable]":
         """
         Find all styles within the provided directory.
 
@@ -79,14 +83,14 @@ class Style:
             subset: An subset of styles to find by the style name.
 
         Returns:
-            The full path to all found styles within the directories.
+            The path to all found styles within the directories.
         """
 
-        styles: "list[Path]" = []
+        styles: "list[Traversable]" = []
         for directory in directories:
-            styles += [j for i in EXTENSIONS for j in directory.absolute().glob(f"*{i}")]
+            styles += [j for i in EXTENSIONS for j in directory.iterdir() if j.name.endswith(i)]
 
         if subset is not None and "all" not in subset:
-            styles = [i for i in styles if i.stem in subset]
+            styles = [i for i in styles if os.path.splitext(i.name)[0] in subset]
 
         return styles

@@ -2,6 +2,7 @@
 
 from typing import TYPE_CHECKING, overload
 
+import os
 from dataclasses import field
 
 from . import color, constants
@@ -11,7 +12,7 @@ from .pydantic.color import Color, NullableColor
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from pathlib import Path
+    from .utils import Traversable
 
 __all__ = ["Theme"]
 
@@ -408,16 +409,16 @@ class Theme(Model):
         return not self.is_light
 
     @staticmethod
-    def find_by_name(directory: "Path", name: "str") -> "Path | None":
+    def find_by_name(directory: "Traversable", name: "str") -> "Traversable | None":
         """
         Get the path to the theme file by name if found.
 
         If multiple themes with the same name exist, it will return a the first file
         found in an unspecified order.
         """
-        icons = directory.glob(f"{name}.*")
-        files = (directory / i for i in icons if i.suffix in EXTENSIONS)
-        return next(files, None)
+        files = (i for i in directory.iterdir() if i.name.startswith(f".{name}"))
+        icons = (i for i in files if os.path.splitext(i.name)[1] in EXTENSIONS)
+        return next(icons, None)
 
     @overload
     def get_color(self, field: "str", format: None = None) -> "str | Color": ...
