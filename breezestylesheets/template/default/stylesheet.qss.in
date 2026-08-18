@@ -40,6 +40,17 @@
  *  ---------------
  */
 
+/*
+ * NOTE: For selecting by attributes, such as a QFrame with a certain frame
+ * shape, we can do `QFrame[frameShape="0"]` or `QFrame[frameShape="NoFrame"]`,
+ * however, not all Python frameworks support each. For example, `PyQt5` supports
+ * by integral names, while PyQt6, PySide2, and PySide6 need the enumeration
+ * name to be provided.
+ *
+ * Therefore, for each selector, we provide the enumerated value and then
+ * the actual enumeration name immediately on the next line.
+ */
+
 QToolTip
 {
     /* 0.2ex is the smallest value that's not ignored on Windows. */
@@ -721,7 +732,7 @@ QMenu::separator
     margin-right: 0.41em;
 }
 
-* QFrame[frameShape="0"][frameShadow="16"], /* QFrame::NoFrame == 0x0000 */  /* QFrame::Plain == 0x0010 */
+* QFrame[frameShape="0"][frameShadow="16"],
 * QFrame[frameShape="NoFrame"][frameShadow="Plain"]
 {
     /*
@@ -733,11 +744,16 @@ QMenu::separator
     background-color: transparent;
 }
 
-QFrame[frameShape="2"], /* QFrame::Panel == 0x0003 */
-QFrame[frameShape="3"], /* QFrame::WinPanel == 0x0003 */
-QFrame[frameShape="4"], /* QFrame::HLine == 0x0004 */
-QFrame[frameShape="5"], /* QFrame::VLine == 0x0005 */
-QFrame[frameShape="6"]  /* QFrame::StyledPanel == 0x0006 */
+QFrame[frameShape="2"],
+QFrame[frameShape="Panel"],
+QFrame[frameShape="3"],
+QFrame[frameShape="WinPanel"],
+QFrame[frameShape="4"],
+QFrame[frameShape="HLine"],
+QFrame[frameShape="5"],
+QFrame[frameShape="VLine"],
+QFrame[frameShape="6"],
+QFrame[frameShape="StyledPanel"]
 {
     border-width: 0.04em;
     padding: 0.09em;
@@ -749,10 +765,15 @@ QFrame[frameShape="6"]  /* QFrame::StyledPanel == 0x0006 */
 
 /* Provide highlighting for frame objects. */
 QFrame[frameShape="2"]:hover,
+QFrame[frameShape="Panel"]:hover,
 QFrame[frameShape="3"]:hover,
+QFrame[frameShape="WinPanel"]:hover,
 QFrame[frameShape="4"]:hover,
+QFrame[frameShape="HLine"]:hover,
 QFrame[frameShape="5"]:hover,
-QFrame[frameShape="6"]:hover
+QFrame[frameShape="VLine"]:hover,
+QFrame[frameShape="6"]:hover,
+QFrame[frameShape="StyledPanel"]:hover
 {
     border: 0.04em solid ^highlight^;
 }
@@ -834,13 +855,16 @@ QToolBar QToolButton:pressed
  *  the drop-down menu in the popup.
  */
 QDialog QToolBar QToolButton[popupMode="0"],
-QDialog QToolBar QToolButton[popupMode="1"]
+QDialog QToolBar QToolButton[popupMode="DelayedPopup"],
+QDialog QToolBar QToolButton[popupMode="1"],
+QDialog QToolBar QToolButton[popupMode="MenuButtonPopup"]
 {
     padding-left: 0.1em;
     padding-right: 0.1em;
 }
 
-QDialog QToolBar QToolButton[popupMode="2"]
+QDialog QToolBar QToolButton[popupMode="2"],
+QDialog QToolBar QToolButton[popupMode="InstantPopup"]
 {
     padding-left: 0.1em;
     padding-right: 0.7em;
@@ -1273,7 +1297,8 @@ QCalendarWidget QToolButton::menu-arrow,
  *  select are QToolButtons, and both are auto-raised. The year
  *  button however has the popup mode set to `DelayedPopup`.
  */
-QCalendarWidget QToolButton[autoRaise="true"][popupMode="0"]
+QCalendarWidget QToolButton[autoRaise="true"][popupMode="0"],
+QCalendarWidget QToolButton[autoRaise="true"][popupMode="DelayedPopup"]
 {
     padding: 0.23em;
 }
@@ -1635,17 +1660,29 @@ QTabBar::tab:right:!selected:first:hover
  *      outline-color
  */
 QTabBar[shape="4"]::tab,
+QTabBar[shape="TriangularNorth"]::tab,
 QTabBar[shape="5"]::tab,
+QTabBar[shape="TriangularSouth"]::tab,
 QTabBar[shape="6"]::tab,
+QTabBar[shape="TriangularWest"]::tab,
 QTabBar[shape="7"]::tab,
+QTabBar[shape="TriangularEast"]::tab,
 QTabBar[shape="4"]::tab:last,
+QTabBar[shape="TriangularNorth"]::last,
 QTabBar[shape="5"]::tab:last,
+QTabBar[shape="TriangularSouth"]::tab:last,
 QTabBar[shape="6"]::tab:last,
+QTabBar[shape="TriangularWest"]::tab:last,
 QTabBar[shape="7"]::tab:last,
+QTabBar[shape="TriangularEast"]::tab:last,
 QTabBar[shape="4"]::tab:only-one,
+QTabBar[shape="TriangularNorth"]::tab:only-one,
 QTabBar[shape="5"]::tab:only-one,
+QTabBar[shape="TriangularWest"]::tab:only-one,
 QTabBar[shape="6"]::tab:only-one,
-QTabBar[shape="7"]::tab:only-one
+QTabBar[shape="TriangularEast"]::tab:only-one,
+QTabBar[shape="7"]::tab:only-one,
+QTabBar[shape="TriangularWest"]::tab:only-one
 {
     /* Need a dark color without alpha channel since it affects the text. */
     color: ^slider:foreground^;
@@ -1654,29 +1691,45 @@ QTabBar[shape="7"]::tab:only-one
 }
 
 QTabBar[shape="4"]::tab,
+QTabBar[shape="TriangularNorth"]::tab,
 QTabBar[shape="5"]::tab,
+QTabBar[shape="TriangularSouth"]::tab,
 QTabBar[shape="4"]::tab:last,
+QTabBar[shape="TriangularNorth"]::tab:last,
 QTabBar[shape="5"]::tab:last,
+QTabBar[shape="TriangularSouth"]::tab:last,
 QTabBar[shape="4"]::tab:only-one,
-QTabBar[shape="5"]::tab:only-one
+QTabBar[shape="TriangularNorth"]::tab:only-one,
+QTabBar[shape="5"]::tab:only-one,
+QTabBar[shape="TriangularSouth"]::tab:only-one
 {
     min-width: 50px;
 }
 
 QTabBar[shape="6"]::tab,
+QTabBar[shape="TriangularWest"]::tab,
 QTabBar[shape="7"]::tab,
+QTabBar[shape="TriangularEast"]::tab,
 QTabBar[shape="6"]::tab:last,
+QTabBar[shape="TriangularWest"]::tab:last,
 QTabBar[shape="7"]::tab:last,
+QTabBar[shape="TriangularEast"]::tab:last,
 QTabBar[shape="6"]::tab:only-one,
-QTabBar[shape="7"]::tab:only-one
+QTabBar[shape="TriangularWest"]::tab:only-one,
+QTabBar[shape="7"]::tab:only-one,
+QTabBar[shape="TriangularEast"]::tab:only-one
 {
     min-height: 50px;
 }
 
 QTabBar[shape="4"]::tab:!selected,
+QTabBar[shape="TriangularNorth"]::tab:!selected,
 QTabBar[shape="5"]::tab:!selected,
+QTabBar[shape="TriangularSouth"]::tab:!selected,
 QTabBar[shape="6"]::tab:!selected,
-QTabBar[shape="7"]::tab:!selected
+QTabBar[shape="TriangularWest"]::tab:!selected,
+QTabBar[shape="7"]::tab:!selected,
+QTabBar[shape="TriangularEast"]::tab:!selected
 {
     color: ^foreground^;
     background-color: ^tab:background^;
@@ -1689,17 +1742,21 @@ QTabBar[shape="7"]::tab:!selected
  *  work. All tab positions work for triangular tabs in Qt6.
  */
 QTabBar[shape="4"][tabsClosable="true"]::tab,
-QTabBar[shape="5"][tabsClosable="true"]::tab
+QTabBar[shape="TriangularNorth"][tabsClosable="true"]::tab,
+QTabBar[shape="5"][tabsClosable="true"]::tab,
+QTabBar[shape="TriangularSouth"][tabsClosable="true"]::tab
 {
     padding-left: 0.5em;
 }
 
-QTabBar[shape="6"][tabsClosable="true"]::tab
+QTabBar[shape="6"][tabsClosable="true"]::tab,
+QTabBar[shape="TriangularWest"][tabsClosable="true"]::tab
 {
     padding-bottom: 0.5em;
 }
 
-QTabBar[shape="7"][tabsClosable="true"]::tab
+QTabBar[shape="7"][tabsClosable="true"]::tab,
+QTabBar[shape="TriangularEast"][tabsClosable="true"]::tab
 {
     padding-top: 0.5em;
 }
@@ -1713,17 +1770,21 @@ QTabBar[shape="7"][tabsClosable="true"]::tab
 *   NOTE: Any higher padding will clip the icon.
 */
 QTabBar[shape="4"]::close-button,
-QTabBar[shape="5"]::close-button
+QTabBar[shape="TriangularNorth"]::close-button,
+QTabBar[shape="5"]::close-button,
+QTabBar[shape="TriangularSouth"]::close-button
 {
     padding-left: -0.12em;
 }
 
-QTabBar[shape="6"]::close-button
+QTabBar[shape="6"]::close-button,
+QTabBar[shape="TriangularWest"]::close-button
 {
     padding-bottom: -0.18em;
 }
 
-QTabBar[shape="7"]::close-button
+QTabBar[shape="7"]::close-button,
+QTabBar[shape="TriangularEast"]::close-button
 {
     padding-top: -0.18em;
 }
@@ -2048,8 +2109,11 @@ QSlider::sub-page:vertical
 QToolButton,
 QToolButton[hasMenu="false"][autoRaise="false"][text],
 QDialog QToolBar QToolButton[hasMenu="false"][popupMode="0"],
+QDialog QToolBar QToolButton[hasMenu="false"][popupMode="DelayedPopup"],
 QDialog QToolBar QToolButton[hasMenu="false"][popupMode="1"],
-QDialog QToolBar QToolButton[hasMenu="false"][popupMode="2"]
+QDialog QToolBar QToolButton[hasMenu="false"][popupMode="MenuButtonPopup"],
+QDialog QToolBar QToolButton[hasMenu="false"][popupMode="2"],
+QDialog QToolBar QToolButton[hasMenu="false"][popupMode="InstantPopup"]
 {
     margin: 0em;
     padding: 0em;
@@ -2072,8 +2136,11 @@ QToolButton[autoRaise="true"]
 QToolButton[hasMenu="true"],
 QToolButton[autoRaise="false"][text],
 QDialog QToolBar QToolButton[hasMenu="true"][popupMode="0"],
+QDialog QToolBar QToolButton[hasMenu="true"][popupMode="DelayedPopup"],
 QDialog QToolBar QToolButton[hasMenu="true"][popupMode="1"],
-QDialog QToolBar QToolButton[hasMenu="true"][popupMode="2"]
+QDialog QToolBar QToolButton[hasMenu="true"][popupMode="MenuButtonPopup"],
+QDialog QToolBar QToolButton[hasMenu="true"][popupMode="2"],
+QDialog QToolBar QToolButton[hasMenu="true"][popupMode="InstantPopup"]
 {
     margin: 0.23em;
     padding: 0.23em;
@@ -2172,7 +2239,8 @@ QToolButton::menu-indicator
  *  Special rule for the drop-down indicator in a QFileDialog.
  *  We want these to be more compact, hence the smaller padding.
  */
-QDialog QToolBar QToolButton[popupMode="2"]::menu-indicator
+QDialog QToolBar QToolButton[popupMode="2"]::menu-indicator,
+QDialog QToolBar QToolButton[popupMode="InstantPopup"]::menu-indicator
 {
     padding-right: -0.7em;
 }
