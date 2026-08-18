@@ -721,6 +721,18 @@ QMenu::separator
     margin-right: 0.41em;
 }
 
+* QFrame[frameShape="0"][frameShadow="16"], /* QFrame::NoFrame == 0x0000 */  /* QFrame::Plain == 0x0010 */
+* QFrame[frameShape="NoFrame"][frameShadow="Plain"]
+{
+    /*
+     *  NOTE: required to fix a persistant bug in the titlebar example where the
+     *  frame in an QMdiArea was being displayed with a background color. Since
+     *  the frame should draw nothing, we can force it to be transparent.
+     *  Note that the parent specifier is required for specificity rules.
+     */
+    background-color: transparent;
+}
+
 QFrame[frameShape="2"], /* QFrame::Panel == 0x0003 */
 QFrame[frameShape="3"], /* QFrame::WinPanel == 0x0003 */
 QFrame[frameShape="4"], /* QFrame::HLine == 0x0004 */

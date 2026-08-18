@@ -106,6 +106,7 @@ class DefaultWindow(Window):
         parent: "QtWidgets.QWidget | None" = None,
         flags: "QtCore.Qt.WindowType" = Qt.QtCore.Qt.WindowType(0),
     ) -> None:
+        flags |= Qt.QtCore.Qt.WindowType.WindowCloseButtonHint
         if ARGS.window_help:
             flags |= Qt.QtCore.Qt.WindowType.WindowContextHelpButtonHint
         if ARGS.window_shade:
