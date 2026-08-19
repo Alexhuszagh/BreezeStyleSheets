@@ -4,18 +4,29 @@ on: [pull_request, workflow_dispatch]
 
 jobs:
   theme-python:
+    strategy:
+      matrix:
+        # NOTE: Github doesn't support 3.7
+        python-version: ["3.8", "3.10", "3.11", "3.13"]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python 3.10
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
-        python-version: "3.10"
+        python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       shell: bash
       run: |
         python -m pip install --upgrade pip
-        pip install PySide2 PySide6 PyQt5 PyQt6
+        pip install PySide6 PyQt5 PyQt6
+
+        minor="$(echo "${PYTHON_VERSION}" | cut -d '.' -f 2)"
+        if (( minor < "11" )); then
+            pip install PySide2
+        fi
+      env:
+        PYTHON_VERSION: ${{ matrix.python-version }}
     - name: Checking our configuration scripts.
       shell: bash
       run: |
