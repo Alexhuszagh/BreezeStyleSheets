@@ -37,13 +37,16 @@ jobs:
     - name: Checking our C++ theme detection.
       shell: bash
       run: |
+        set -x
+
+        export DEBIAN_FRONTEND=noninteractive
         mkdir -p dist
         cd dist
         if [[ "${RUNNER_OS}" == "macOS" ]]; then
           clang++ ../scripts/test_theme.cpp -o test_theme -std=c++17
           ./test_theme
         else
-          sudo apt install gsettings-desktop-schemas
+          sudo apt install gsettings-desktop-schemas -y
           g++ ../scripts/test_theme.cpp -o test_theme -std=c++17
           ./test_theme
         fi

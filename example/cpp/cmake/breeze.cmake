@@ -29,22 +29,19 @@ FetchContent_Declare(
   GIT_SHALLOW 1
   USES_TERMINAL_DOWNLOAD TRUE)
 
-FetchContent_GetProperties(breeze_stylesheets)
-if(NOT breeze_stylesheets_POPULATED)
-  FetchContent_Populate(breeze_stylesheets)
+FetchContent_MakeAvailable(breeze_stylesheets)
 
-  add_library(breeze STATIC "${breeze_stylesheets_SOURCE_DIR}/dist/breeze.qrc")
+add_library(breeze STATIC "${breeze_stylesheets_SOURCE_DIR}/dist/styles/breeze.qrc")
 
-  add_custom_target(
-    run_python_breeze ALL
-    COMMAND ${Python_EXECUTABLE} configure.py --extensions=${BREEZE_EXTENSIONS}
-            --styles=${BREEZE_STYLES} --resource breeze.qrc
-    WORKING_DIRECTORY ${breeze_stylesheets_SOURCE_DIR}
-    BYPRODUCTS "${breeze_stylesheets_SOURCE_DIR}/dist/breeze.qrc"
-    COMMENT "Generating themes")
+add_custom_target(
+run_python_breeze ALL
+COMMAND ${Python_EXECUTABLE} configure.py --extensions=${BREEZE_EXTENSIONS}
+        --styles=${BREEZE_STYLES} --resource breeze.qrc
+WORKING_DIRECTORY ${breeze_stylesheets_SOURCE_DIR}
+BYPRODUCTS "${breeze_stylesheets_SOURCE_DIR}/dist/styles/breeze.qrc"
+COMMENT "Generating themes")
 
-  add_dependencies(breeze run_python_breeze)
-endif()
+add_dependencies(breeze run_python_breeze)
 
 # Prefer position independent code, if the compiler supports it.
 if(PREFER_PIE)
