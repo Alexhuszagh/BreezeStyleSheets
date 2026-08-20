@@ -302,7 +302,8 @@ class Compiler:
 
         # want to minimize the file size, let's use custom gzip compression
         code = path.read_text(encoding="utf-8")
-        code = code.replace("import QtCore", "import QtCore\nimport lzma", 1)
+        if self.compression != "default":
+            code = code.replace("import QtCore", f"import QtCore\nimport {self.compression}", 1)
         # NOTE: these should never be none or we have an error
         code = _compress(code, "qt_resource_data", compression=self.compression)
         code = _compress(code, "qt_resource_name", compression=self.compression)

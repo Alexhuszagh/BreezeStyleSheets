@@ -108,6 +108,7 @@ sequence = ["_pyright", "_mypy", "_ty"]
 
 [tool.ruff]
 extend = "../pyproject.toml"
+extend-exclude = ["example/_util/styles"]
 
 [tool.ruff.lint]
 ignore = ["E203", "D202", "D212", "D300", "UP037"]
