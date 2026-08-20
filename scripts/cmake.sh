@@ -21,11 +21,6 @@ BUILD_DIR="${PROJECT_HOME}/dist/build"
 
 mkdir -p "${BUILD_DIR}/"{qt5,qt6}
 
-# we xcb installed for our headless running, so exit if we don't have it
-if ! hash xvfb-run &>/dev/null; then
-    >&2 echo "Do not have xvfb installed..."
-fi
-
 # first, try Qt5
 # NOTE: Since we're using `-e`, we need to specially
 # capture the error code immediately.
