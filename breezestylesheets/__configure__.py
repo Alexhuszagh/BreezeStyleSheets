@@ -179,7 +179,7 @@ def configure(args: "Args") -> "None":
         file.unlink()
 
     styles = [Style(i.stem, Theme.load(i)) for i in args.styles]
-    compression: "Compression" = "default" if not args.use_default_compression else "lzma"
+    compression: "Compression" = "default" if args.use_default_compression else "lzma"
     compiler = Compiler(framework=args.framework, rcc=args.rcc, compression=compression)
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
